@@ -1,8 +1,10 @@
+import { Bignum } from "../utils";
 import { DelegateRegistrationBuilder } from "./transactions/delegate-registration";
 import { DelegateResignationBuilder } from "./transactions/delegate-resignation";
 import { IPFSBuilder } from "./transactions/ipfs";
 import { MultiPaymentBuilder } from "./transactions/multi-payment";
 import { MultiSignatureBuilder } from "./transactions/multi-signature";
+import { NFTTransferBuilder, NFTUpdateBuilder } from "./transactions/nft";
 import { SecondSignatureBuilder } from "./transactions/second-signature";
 import { TimelockTransferBuilder } from "./transactions/timelock-transfer";
 import { TransferBuilder } from "./transactions/transfer";
@@ -70,6 +72,20 @@ export class TransactionBuilderFactory {
      */
     public delegateResignation(): DelegateResignationBuilder {
         return new DelegateResignationBuilder();
+    }
+
+    /**
+     * Create a new nft transaction type.
+     */
+    public nftTransfer(tokenId: Bignum): NFTTransferBuilder {
+        return new NFTTransferBuilder(tokenId);
+    }
+
+    /**
+     * Create a new nft transaction type.
+     */
+    public nftUpdate(tokenId: Bignum): NFTUpdateBuilder {
+        return new NFTUpdateBuilder(tokenId);
     }
 }
 

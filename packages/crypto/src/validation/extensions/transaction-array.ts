@@ -11,6 +11,8 @@ export const transactionArray = joi => ({
                     joi.delegateRegistration(),
                     joi.vote(),
                     joi.multiSignature(),
+                    joi.nftTransfer(),
+                    joi.nftUpdate(),
                 ),
         ),
 });

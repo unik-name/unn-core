@@ -3,6 +3,7 @@ import { delegateResignation } from "./delegate-resignation";
 import { ipfs } from "./ipfs";
 import { multiPayment } from "./multi-payment";
 import { multiSignature } from "./multi-signature";
+import { nftTransfer, nftUpdate } from "./nft";
 import { secondSignature } from "./second-signature";
 import { timelockTransfer } from "./timelock-transfer";
 import { transfer } from "./transfer";
@@ -18,4 +19,6 @@ export const transactions = [
     timelockTransfer,
     multiPayment,
     delegateResignation,
+    nftTransfer,
+    nftUpdate,
 ];

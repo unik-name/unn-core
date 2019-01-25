@@ -20,7 +20,8 @@
                 "ipfs": 0,
                 "timelockTransfer": 0,
                 "multiPayment": 0,
-                "delegateResignation": 0
+                "delegateResignation": 0,
+                "nft": 0
             }
         },
         "ignoreInvalidSecondSignatureField": true

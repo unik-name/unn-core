@@ -67,6 +67,10 @@ class TransactionDeserializer {
             this.deserializeMultiPayment(transaction, buf);
         } else if (transaction.type === TransactionTypes.DelegateResignation) {
             this.deserializeDelegateResignation(transaction, buf);
+        } else if (transaction.type === TransactionTypes.NftTransfer) {
+            this.deserializeNftTransfer(transaction, buf);
+        } else if (transaction.type === TransactionTypes.NftUpdate) {
+            this.deserializeNftUpdate(transaction, buf);
         } else {
             throw new TransactionTypeError(transaction.type);
         }
@@ -197,6 +201,31 @@ class TransactionDeserializer {
                 transaction.signatures.push(multiSignature);
             }
         }
+    }
+
+    private deserializeNftTransfer(transaction: ITransactionData, buf: ByteBuffer): void {
+        transaction.asset = {
+            nft: {
+                tokenId: new Bignum(buf.readBytes(16).toHex(), 16),
+            },
+        };
+        transaction.recipientId = buf.readUint8() ? bs58check.encode(buf.readBytes(21).toBuffer()) : undefined;
+    }
+    private deserializeNftUpdate(transaction: ITransactionData, buf: ByteBuffer): void {
+        transaction.asset = {
+            nft: {
+                tokenId: new Bignum(buf.readBytes(16).toHex(), 16),
+            },
+        };
+        const properties = [];
+        const propertiesLength = buf.readByte();
+        for (let i = 0; i < propertiesLength; i++) {
+            const propertyKeyLength = buf.readByte();
+            const propertyKey = buf.readBytes(propertyKeyLength).toUTF8();
+            const propertyValue = buf.readBytes(32).toHex();
+            properties.push([propertyKey, propertyValue]);
+        }
+        transaction.asset.nft.properties = properties;
     }
 
     private applyV1Compatibility(transaction: ITransactionData): void {

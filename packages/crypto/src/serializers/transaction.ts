@@ -66,6 +66,10 @@ class TransactionSerializer {
             this.serializeMultiPayment(transaction, buffer);
         } else if (transaction.type === TransactionTypes.DelegateResignation) {
             this.serializeDelegateResignation(transaction, buffer);
+        } else if (transaction.type === TransactionTypes.NftTransfer) {
+            this.serializeNftTransfer(transaction, buffer);
+        } else if (transaction.type === TransactionTypes.NftUpdate) {
+            this.serializeNftUpdate(transaction, buffer);
         } else {
             throw new TransactionTypeError(transaction.type);
         }
@@ -148,6 +152,26 @@ class TransactionSerializer {
             buffer.append("ff", "hex"); // 0xff separator to signal start of multi-signature transactions
             buffer.append(transaction.signatures.join(""), "hex");
         }
+    }
+
+    private serializeNftTransfer(transaction: ITransactionData, buffer: ByteBuffer): void {
+        buffer.append(new Bignum(transaction.asset.nft.tokenId).toString(16).padStart(32, "0"), "hex");
+        const recipientId = transaction.recipientId;
+        buffer.writeByte(recipientId ? 0x01 : 0x00);
+        if (recipientId) {
+            buffer.append(bs58check.decode(recipientId));
+        }
+    }
+
+    private serializeNftUpdate(transaction: ITransactionData, buffer: ByteBuffer): void {
+        buffer.append(new Bignum(transaction.asset.nft.tokenId).toString(16).padStart(32, "0"), "hex");
+        buffer.writeByte(transaction.asset.nft.properties.length);
+        transaction.asset.nft.properties.map(([key, value]) => {
+            const keyBytes = Buffer.from(key, "utf8");
+            buffer.writeByte(keyBytes.length);
+            buffer.append(keyBytes, "hex");
+            buffer.append(value, "hex");
+        });
     }
 }
 

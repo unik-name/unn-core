@@ -234,6 +234,14 @@ export class Wallet {
             audit.push({ IPFS: true });
         }
 
+        if (transaction.type === TransactionTypes.NftTransfer) {
+            audit.push({ NftTransfer: true });
+        }
+
+        if (transaction.type === TransactionTypes.NftUpdate) {
+            audit.push({ NftUpdate: true });
+        }
+
         if (transaction.type === TransactionTypes.TimelockTransfer) {
             audit.push({ Timelock: true });
         }

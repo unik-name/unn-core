@@ -18,6 +18,10 @@ export interface ITransactionAsset {
         dag: string;
     };
     payments?: any;
+    nft?: {
+        tokenId: Bignum;
+        properties?: Array<[string, string]>;
+    };
 }
 
 export interface IMultiSignatureAsset {

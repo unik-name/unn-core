@@ -17,4 +17,6 @@ export enum TransactionTypes {
     TimelockTransfer = 6,
     MultiPayment = 7,
     DelegateResignation = 8,
+    NftTransfer = 9,
+    NftUpdate = 10,
 }

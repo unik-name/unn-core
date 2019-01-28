@@ -21,7 +21,8 @@
                 "timelockTransfer": 0,
                 "multiPayment": 0,
                 "delegateResignation": 0,
-                "nft": 0
+                "nftTransfer": 1,
+                "nftUpdate": 1
             }
         }
     },

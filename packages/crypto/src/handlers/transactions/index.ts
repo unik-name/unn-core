@@ -6,6 +6,8 @@ import { Handler } from "./handler";
 import { IpfsHandler } from "./ipfs";
 import { MultiPaymentHandler } from "./multi-payment";
 import { MultiSignatureHandler } from "./multi-signature";
+import { NftTransferHandler } from "./nft-transfer";
+import { NftUpdateHandler } from "./nft-update";
 import { SecondSignatureHandler } from "./second-signature";
 import { TimelockTransferHandler } from "./timelock-transfer";
 import { TransferHandler } from "./transfer";
@@ -25,6 +27,8 @@ class TransactionHandler {
             [TransactionTypes.TimelockTransfer]: TimelockTransferHandler,
             [TransactionTypes.MultiPayment]: MultiPaymentHandler,
             [TransactionTypes.DelegateResignation]: DelegateResignationHandler,
+            [TransactionTypes.NftTransfer]: NftTransferHandler,
+            [TransactionTypes.NftUpdate]: NftUpdateHandler,
         };
     }
 

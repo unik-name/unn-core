@@ -3,6 +3,7 @@ import { crypto } from "../crypto/crypto";
 import { transactionHandler } from "../handlers/transactions";
 import { Bignum, formatArktoshi } from "../utils";
 import { IBlockData } from "./block";
+import { NFT } from "./nft";
 import { IMultiSignatureAsset, ITransactionData } from "./transaction";
 
 /**
@@ -60,6 +61,7 @@ export class Wallet {
         this.missedBlocks = 0;
         this.forgedFees = Bignum.ZERO;
         this.forgedRewards = Bignum.ZERO;
+        this.tokens = [];
     }
 
     /**

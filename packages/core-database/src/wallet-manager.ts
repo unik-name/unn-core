@@ -437,6 +437,10 @@ export class WalletManager implements Database.IWalletManager {
             recipient.applyTransactionToRecipient(data);
         }
 
+        if (recipientId && type === TransactionTypes.NftTransfer) {
+            recipient.applyTransactionToRecipient(data);
+        }
+
         this._updateVoteBalances(sender, recipient, data);
 
         return transaction;
@@ -508,7 +512,11 @@ export class WalletManager implements Database.IWalletManager {
             delete this.byUsername[data.asset.delegate.username];
         }
 
-        if (recipient && type === TransactionTypes.Transfer) {
+        if (recipient && (type === TransactionTypes.Transfer || type === TransactionTypes.NftTransfer)) {
+            recipient.revertTransactionForRecipient(data);
+        }
+
+        if (data.recipientId && type === TransactionTypes.NftTransfer) {
             recipient.revertTransactionForRecipient(data);
         }
 

@@ -42,6 +42,7 @@ export class Wallet {
     public missedBlocks: number;
     public forgedFees: Bignum;
     public forgedRewards: Bignum;
+    public tokens: Bignum[];
 
     constructor(address: string) {
         this.address = address;

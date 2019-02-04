@@ -2,6 +2,7 @@ import Hapi from "hapi";
 import * as Blockchain from "./blockchain";
 import * as Blocks from "./blocks";
 import * as Delegates from "./delegates";
+import * as Nft from "./nft";
 import * as Node from "./node";
 import * as Peers from "./peers";
 import * as Transactions from "./transactions";
@@ -9,7 +10,7 @@ import * as Votes from "./votes";
 import * as Wallets from "./wallets";
 
 const register = async (server: Hapi.Server): Promise<void> => {
-    const modules = [Blockchain, Blocks, Delegates, Node, Peers, Transactions, Votes, Wallets];
+    const modules = [Blockchain, Blocks, Delegates, Node, Peers, Transactions, Votes, Wallets, Nft];
 
     for (const module of modules) {
         module.register(server);

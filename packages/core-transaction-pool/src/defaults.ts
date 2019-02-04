@@ -25,6 +25,8 @@ export const defaults = {
             timelockTransfer: 500,
             multiPayment: 500,
             delegateResignation: 400000,
+            nftTransfer: 1,
+            nftUpdate: 1,
         },
     },
 };

@@ -245,6 +245,9 @@ export class TransactionGuard implements transactionPool.ITransactionGuard {
                     return false;
                 }
                 break;
+            case TransactionTypes.NftTransfer:
+            case TransactionTypes.NftUpdate:
+                break;
             case TransactionTypes.MultiSignature:
             case TransactionTypes.Ipfs:
             case TransactionTypes.TimelockTransfer:

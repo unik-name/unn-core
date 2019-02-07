@@ -60,7 +60,7 @@ export class PoolWalletManager extends WalletManager {
         }
 
         const sender = this.findByPublicKey(transaction.senderPublicKey);
-        const { type, asset } = transaction;
+        const { type, asset, recipientId } = transaction;
 
         if (
             type === TransactionTypes.DelegateRegistration &&
@@ -85,6 +85,18 @@ export class PoolWalletManager extends WalletManager {
             );
 
             errors.push(`Can't apply transaction ${transaction.id}: delegate ${asset.votes[0]} does not exist.`);
+        } else if (
+            type === TransactionTypes.NftTransfer &&
+            !recipientId &&
+            this.databaseService.walletManager.isTokenOwned(asset.nft.tokenId)
+        ) {
+            this.logger.error(
+                `[PoolWalletManager] Can't apply nft mint transaction: token ${
+                    asset.nft.tokenId
+                } is already owned. Data: ${JSON.stringify(transaction)}`,
+            );
+
+            errors.push(`Can't apply transaction ${transaction.id}: token ${asset.nft.tokenId} is already owned.`);
         } else if (isException(transaction)) {
             this.logger.warn(
                 `Transaction forcibly applied because it has been added as an exception: ${transaction.id}`,

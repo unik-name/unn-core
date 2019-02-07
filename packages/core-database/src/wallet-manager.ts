@@ -1,5 +1,5 @@
 import { app } from "@arkecosystem/core-container";
-import { Database, Logger } from "@arkecosystem/core-interfaces";
+import { Database, Logger, NFT } from "@arkecosystem/core-interfaces";
 import { roundCalculator } from "@arkecosystem/core-utils";
 import { Bignum, constants, crypto, formatArktoshi, isException, models } from "@arkecosystem/crypto";
 import pluralize from "pluralize";
@@ -9,6 +9,7 @@ const { TransactionTypes } = constants;
 
 export class WalletManager implements Database.IWalletManager {
     public logger = app.resolvePlugin<Logger.ILogger>("logger");
+    public nftManager: NFT.INFTManager = app.resolvePlugin<NFT.INFTManager>("nft");
     public config = app.getConfig();
 
     public networkId: number;
@@ -198,7 +199,7 @@ export class WalletManager implements Database.IWalletManager {
             throw new Error(
                 `Expected to find ${maxDelegates} delegates but only found ${
                     delegatesWallets.length
-                    }. This indicates an issue with the genesis block & delegates.`,
+                }. This indicates an issue with the genesis block & delegates.`,
             );
         }
 
@@ -221,7 +222,7 @@ export class WalletManager implements Database.IWalletManager {
                         throw new Error(
                             `The balance and public key of both delegates are identical! Delegate "${
                                 a.username
-                                }" appears twice in the list.`,
+                            }" appears twice in the list.`,
                         );
                     }
 
@@ -403,7 +404,7 @@ export class WalletManager implements Database.IWalletManager {
             this.logger.error(
                 `Can't apply transaction ${
                     data.id
-                    }: delegate name '${asset.delegate.username.toLowerCase()}' already taken.`,
+                }: delegate name '${asset.delegate.username.toLowerCase()}' already taken.`,
             );
             throw new Error(`Can't apply transaction ${data.id}: delegate name already taken.`);
 
@@ -412,6 +413,11 @@ export class WalletManager implements Database.IWalletManager {
         } else if (type === TransactionTypes.Vote && !this.isDelegate(asset.votes[0].slice(1))) {
             this.logger.error(`Can't apply vote transaction ${data.id}: delegate ${asset.votes[0]} does not exist.`);
             throw new Error(`Can't apply transaction ${data.id}: delegate ${asset.votes[0]} does not exist.`);
+        } else if (type === TransactionTypes.NftTransfer && !recipientId && this.isTokenOwned(asset.nft.tokenId)) {
+            this.logger.error(
+                `Can't apply nft mint transaction ${data.id}: token ${asset.nft.tokenId} is already owned.`,
+            );
+            throw new Error(`Can't apply transaction ${data.id}: token ${asset.nft.tokenId} is already owned.`);
         } else if (type === TransactionTypes.SecondSignature) {
             data.recipientId = "";
         }
@@ -538,6 +544,10 @@ export class WalletManager implements Database.IWalletManager {
         }
 
         return false;
+    }
+
+    public isTokenOwned(tokenId) {
+        return this.nftManager.isRegistered(tokenId);
     }
 
     /**

@@ -34,7 +34,7 @@ export abstract class BaseCommand extends Command {
         }),
         p2pPort: flags.integer({
             description: "base p2p port",
-            default: 4002,
+            default: 4000,
         }),
         passphrase: flags.string({
             description: "passphrase of initial wallet",

@@ -179,6 +179,16 @@ export abstract class BaseCommand extends Command {
         return Bignum.ZERO;
     }
 
+    public async getTokens() {
+        try {
+            const response = await request(this.config).get(`/api/v2/nft`);
+            return response.result;
+        } catch (error) {
+            const message = error.response ? error.response.data.message : error.message;
+            throw new Error(`Could not get tokens: ${message}`);
+        }
+    }
+
     /**
      * Get wallet by address.
      * @param  {String} address

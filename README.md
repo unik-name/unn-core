@@ -56,9 +56,9 @@ _Coming soon_
 
 ## TODOs
 
--   [] fix double transaction execution (in the pool **and** in the block processor). The branch `debug/nft` trace execution to visualize the bug.
--   [] persist in database. Currently, when you restart node, all tokens are erased.
--   [] implement a way to revert `update` transactions.
--   [] estimate and set default fees amount.
--   [] rename `/nft` API to `/nfts`
--   [] fix old tests.
+- [ ] fix double transaction execution (in the pool **and** in the block processor). The branch `debug/nft` trace execution to visualize the bug.
+- [ ] persist in database. Currently, when you restart node, all tokens are erased.
+- [ ] implement a way to revert `update` transactions.
+- [ ] estimate and set default fees amount.
+- [ ] rename `/nft` API to `/nfts`
+- [ ] fix old tests.

@@ -57,7 +57,6 @@ jobs:
             - ./packages/core-nft/node_modules
             - ./packages/core-p2p/node_modules
             - ./packages/core-snapshots/node_modules
-            - ./packages/core-snapshots-cli/node_modules
             - ./packages/core-test-utils/node_modules
             - ./packages/core-tester-cli/node_modules
             - ./packages/core-transaction-pool/node_modules
@@ -166,7 +165,6 @@ jobs:
             - ./packages/core-nft/node_modules
             - ./packages/core-p2p/node_modules
             - ./packages/core-snapshots/node_modules
-            - ./packages/core-snapshots-cli/node_modules
             - ./packages/core-test-utils/node_modules
             - ./packages/core-tester-cli/node_modules
             - ./packages/core-transaction-pool/node_modules
@@ -275,7 +273,6 @@ jobs:
             - ./packages/core-nft/node_modules
             - ./packages/core-p2p/node_modules
             - ./packages/core-snapshots/node_modules
-            - ./packages/core-snapshots-cli/node_modules
             - ./packages/core-test-utils/node_modules
             - ./packages/core-tester-cli/node_modules
             - ./packages/core-transaction-pool/node_modules
@@ -399,7 +396,6 @@ jobs:
             - ./packages/core-nft/node_modules
             - ./packages/core-p2p/node_modules
             - ./packages/core-snapshots/node_modules
-            - ./packages/core-snapshots-cli/node_modules
             - ./packages/core-test-utils/node_modules
             - ./packages/core-tester-cli/node_modules
             - ./packages/core-transaction-pool/node_modules
@@ -523,7 +519,6 @@ jobs:
             - ./packages/core-nft/node_modules
             - ./packages/core-p2p/node_modules
             - ./packages/core-snapshots/node_modules
-            - ./packages/core-snapshots-cli/node_modules
             - ./packages/core-test-utils/node_modules
             - ./packages/core-tester-cli/node_modules
             - ./packages/core-transaction-pool/node_modules
@@ -647,7 +642,6 @@ jobs:
             - ./packages/core-nft/node_modules
             - ./packages/core-p2p/node_modules
             - ./packages/core-snapshots/node_modules
-            - ./packages/core-snapshots-cli/node_modules
             - ./packages/core-test-utils/node_modules
             - ./packages/core-tester-cli/node_modules
             - ./packages/core-transaction-pool/node_modules

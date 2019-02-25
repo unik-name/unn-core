@@ -12,7 +12,7 @@ import { TransactionPool } from "../dist";
 import { transactions as mockData } from "./__fixtures__/transactions";
 import { setUpFull, tearDownFull } from "./__support__/setup";
 
-const { ARKTOSHI, TransactionTypes } = constants;
+const { SATOSHI, TransactionTypes } = constants;
 const { Block, Transaction } = models;
 const { generateTransfers } = generators;
 const delegatesSecrets = delegates.map(d => d.secret);
@@ -161,7 +161,7 @@ describe("Connection", () => {
         it("should not add not-appliable transactions", () => {
             // This should be skipped due to insufficient funds
             const highFeeTransaction = new Transaction(mockData.dummy3);
-            highFeeTransaction.fee = bignumify(1e9 * ARKTOSHI);
+            highFeeTransaction.fee = bignumify(1e9 * SATOSHI);
             // changing public key as fixture transactions have the same one
             highFeeTransaction.senderPublicKey = "000000000000000000000000000000000000000420000000000000000000000000";
 
@@ -385,6 +385,51 @@ describe("Connection", () => {
             expect(transactionIds[4]).toBe(mockData.dummy5.id);
             expect(transactionIds[5]).toBe(mockData.dummy6.id);
         });
+
+        it("should only return transaction ids for transactions not exceeding the maximum payload size", () => {
+            mockData.dummyLarge1.data.signatures = mockData.dummyLarge2.data.signatures = [""];
+            for (let i = 0; i < connection.options.maxTransactionBytes * 0.6; i++) {
+                mockData.dummyLarge1.data.signatures += "1";
+                mockData.dummyLarge2.data.signatures += "2";
+            }
+
+            const transactions = [
+                mockData.dummyLarge1,
+                mockData.dummyLarge2,
+                mockData.dummy3,
+                mockData.dummy4,
+                mockData.dummy5,
+                mockData.dummy6,
+                mockData.dummy7,
+            ];
+
+            // Add exception for oversized transactions with extra signatures data
+            config.set("exceptions.transactions", [mockData.dummyLarge1.id, mockData.dummyLarge2.id]);
+
+            connection.addTransactions(transactions);
+
+            let transactionIds = connection.getTransactionIdsForForging(0, 7);
+            expect(transactionIds).toBeArray();
+            expect(transactionIds.length).toBe(6);
+            expect(transactionIds[0]).toBe(mockData.dummyLarge1.id);
+            expect(transactionIds[1]).toBe(mockData.dummy3.id);
+            expect(transactionIds[2]).toBe(mockData.dummy4.id);
+            expect(transactionIds[3]).toBe(mockData.dummy5.id);
+            expect(transactionIds[4]).toBe(mockData.dummy6.id);
+            expect(transactionIds[5]).toBe(mockData.dummy7.id);
+
+            connection.removeTransactionById(mockData.dummyLarge1.id);
+            connection.removeTransactionById(mockData.dummy3.id);
+            connection.removeTransactionById(mockData.dummy4.id);
+            connection.removeTransactionById(mockData.dummy5.id);
+            connection.removeTransactionById(mockData.dummy6.id);
+            connection.removeTransactionById(mockData.dummy7.id);
+
+            transactionIds = connection.getTransactionIdsForForging(0, 7);
+            expect(transactionIds).toBeArray();
+            expect(transactionIds.length).toBe(1);
+            expect(transactionIds[0]).toBe(mockData.dummyLarge2.id);
+        });
     });
 
     describe("getTransactionsForForging", () => {
@@ -395,6 +440,49 @@ describe("Connection", () => {
             const transactionsForForging = connection.getTransactionsForForging(4);
 
             expect(transactionsForForging).toEqual(transactions.map(tx => tx.serialized));
+        });
+        it("should only return transactions not exceeding the maximum payload size", () => {
+            mockData.dummyLarge1.data.signatures = mockData.dummyLarge2.data.signatures = [""];
+            for (let i = 0; i < connection.options.maxTransactionBytes * 0.6; i++) {
+                mockData.dummyLarge1.data.signatures += "1";
+                mockData.dummyLarge2.data.signatures += "2";
+            }
+
+            const transactions = [
+                mockData.dummyLarge1,
+                mockData.dummyLarge2,
+                mockData.dummy3,
+                mockData.dummy4,
+                mockData.dummy5,
+                mockData.dummy6,
+                mockData.dummy7,
+            ];
+
+            // Add exception for oversized transactions with extra signatures data
+            config.set("exceptions.transactions", [mockData.dummyLarge1.id, mockData.dummyLarge2.id]);
+
+            connection.addTransactions(transactions);
+
+            let transactionsForForging = connection.getTransactionsForForging(7);
+
+            expect(transactionsForForging.length).toBe(6);
+            expect(transactionsForForging[0]).toEqual(mockData.dummyLarge1.serialized);
+            expect(transactionsForForging[1]).toEqual(mockData.dummy3.serialized);
+            expect(transactionsForForging[2]).toEqual(mockData.dummy4.serialized);
+            expect(transactionsForForging[3]).toEqual(mockData.dummy5.serialized);
+            expect(transactionsForForging[4]).toEqual(mockData.dummy6.serialized);
+            expect(transactionsForForging[5]).toEqual(mockData.dummy7.serialized);
+
+            connection.removeTransactionById(mockData.dummyLarge1.id);
+            connection.removeTransactionById(mockData.dummy3.id);
+            connection.removeTransactionById(mockData.dummy4.id);
+            connection.removeTransactionById(mockData.dummy5.id);
+            connection.removeTransactionById(mockData.dummy6.id);
+            connection.removeTransactionById(mockData.dummy7.id);
+
+            transactionsForForging = connection.getTransactionsForForging(7);
+            expect(transactionsForForging.length).toBe(1);
+            expect(transactionsForForging[0]).toEqual(mockData.dummyLarge2.serialized);
         });
     });
 
@@ -627,6 +715,7 @@ describe("Connection", () => {
             // they are not loaded from the local storage and this fails otherwise.
             // TODO: Use jest.spyOn() to change behavior instead. jest.restoreAllMocks() will reset afterwards
             const original = databaseService.getForgedTransactionsIds;
+            // @ts-ignore
             databaseService.getForgedTransactionsIds = jest.fn(() => [forgedTransaction.id]);
 
             expect(forgedTransaction instanceof Transaction).toBeTrue();
@@ -715,7 +804,7 @@ describe("Connection", () => {
             for (let i = 0; i < nAdd; i++) {
                 const transaction = new Transaction(mockData.dummy1);
                 transaction.id = fakeTransactionId(i);
-                transaction.fee = bignumify(rand.intBetween(0.002 * ARKTOSHI, 2 * ARKTOSHI));
+                transaction.fee = bignumify(rand.intBetween(0.002 * SATOSHI, 2 * SATOSHI));
                 transaction.serialized = Transaction.serialize(transaction).toString("hex");
                 allTransactions.push(transaction);
             }

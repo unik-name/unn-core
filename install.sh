@@ -201,10 +201,25 @@ success "Installed system updates!"
 
 heading "Installing Ark Core..."
 
-yarn global add @arkecosystem/core
-echo 'export PATH=$(yarn global bin):$PATH' >> ~/.bashrc
-export PATH=$(yarn global bin):$PATH
-ark config:publish
+cd "$HOME"
+
+if [ -d "core" ]; then
+   heading "Removing existing folder..."
+   rm -rf core
+fi
+
+git clone https://github.com/spacelephantlabs/ark-core_non-fungible-token.git ~/core
+cd core
+yarn setup
+
+echo 'alias ark="$HOME/core/packages/core/bin/run"' >> ~/.bashrc
+alias ark='$HOME/core/packages/core/bin/run'
+
+
+# yarn global add @arkecosystem/core
+# echo 'export PATH=$(yarn global bin):$PATH' >> ~/.bashrc
+# export PATH=$(yarn global bin):$PATH
+# ark config:publish
 
 success "Installed Ark Core!"
 

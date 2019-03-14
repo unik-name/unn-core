@@ -1,4 +1,4 @@
-import { Bignum, client, crypto } from "@arkecosystem/crypto";
+import { Bignum, client, crypto, unicodeToBignum } from "@arkecosystem/crypto";
 import { flags } from "@oclif/command";
 import pluralize from "pluralize";
 import { customFlags } from "../flags";
@@ -17,6 +17,10 @@ export class NFTMint extends BaseCommand {
         nftFee: customFlags.number({
             description: "nft fee",
             default: 1,
+        }),
+        unikname: flags.boolean({
+            description: "token identifier is unikname",
+            default: false,
         }),
     };
 
@@ -47,6 +51,8 @@ export class NFTMint extends BaseCommand {
                 logger.error(error);
                 return;
             }
+        } else if (this.options.unikname) {
+            id = unicodeToBignum(id);
         }
 
         // logger.info(`Sending ${this.options.number} nft mint ${pluralize("transaction", this.options.number)}`);

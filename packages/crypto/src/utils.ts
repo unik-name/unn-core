@@ -57,4 +57,27 @@ export function sortTransactions(transactions: ITransactionData[]): ITransaction
     });
 }
 
+export function chunk(value: string, size: number): string[] {
+    return value.match(new RegExp(`.{1,${size}}`, "g"));
+}
+
+export function bignumToUnicode(identifier: Bignum): string {
+    return chunk(identifier.toString(16), 2)
+        .map(charCodeHex => parseInt(charCodeHex, 16))
+        .map(charCode => String.fromCharCode(charCode))
+        .join("");
+}
+
+export function unicodeToBignum(unicode: string): Bignum {
+    return new Bignum(
+        unicode
+            .split("")
+            .map(char => char.charCodeAt(0))
+            .map(charCode => charCode.toString(16))
+            .map(charCodeHex => charCodeHex.padStart(2, "0"))
+            .join(""),
+        16,
+    );
+}
+
 export { Bignum };

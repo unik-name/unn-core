@@ -1,15 +1,15 @@
 [
     {
         "height": 1,
-        "reward": 0,
-        "activeDelegates": 51,
+        "reward": 200000000,
+        "activeDelegates": 2,
         "blocktime": 8,
         "block": {
             "version": 0,
             "maxTransactions": 50,
             "maxPayload": 2097152
         },
-        "epoch": "2017-03-21T13:00:00.000Z",
+        "epoch": "2019-02-19T15:14:14.000Z",
         "fees": {
             "staticFees": {
                 "transfer": 10000000,
@@ -20,33 +20,9 @@
                 "ipfs": 0,
                 "timelockTransfer": 0,
                 "multiPayment": 0,
-                "delegateResignation": 0,
-                "nftTransfer": 1,
-                "nftUpdate": 1
+                "delegateResignation": 0
             }
         },
         "ignoreInvalidSecondSignatureField": true
-    },
-    {
-        "height": 10800,
-        "reward": 200000000
-    },
-    {
-        "height": 21600,
-        "block": {
-            "maxTransactions": 150,
-            "maxPayload": 6300000
-        }
-    },
-    {
-        "height": 910000,
-        "block": {
-            "maxTransactions": 500,
-            "maxPayload": 21000000
-        }
-    },
-    {
-        "height": 950000,
-        "ignoreInvalidSecondSignatureField": false
     }
 ]

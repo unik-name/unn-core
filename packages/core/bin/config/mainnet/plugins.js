@@ -14,6 +14,7 @@ module.exports = {
             },
         },
     },
+    "@arkecosystem/core-nft":{},
     "@arkecosystem/core-database-postgres": {
         connection: {
             host: process.env.CORE_DB_HOST || "localhost",

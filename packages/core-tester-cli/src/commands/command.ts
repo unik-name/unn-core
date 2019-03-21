@@ -181,7 +181,7 @@ export abstract class BaseCommand extends Command {
 
     public async getTokens() {
         try {
-            const response = await request(this.config).get(`/api/v2/nft`);
+            const response = await request(this.config).get(`/api/v2/nfts`);
             return response.result;
         } catch (error) {
             const message = error.response ? error.response.data.message : error.message;

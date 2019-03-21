@@ -31,7 +31,7 @@ This command will create a transaction to mint the token number `1`.
 Then, it'll broadcast the transaction to your local node, which should forge a new block.
 The command ends successfully after checking if token has been really minted (calling node API).
 
-You can run `curl 127.0.0.1:4003/api/v2/nft` to manually check your new token through node API.
+You can run `curl 127.0.0.1:4003/api/v2/nfts` to manually check your new token through node API.
 You can run `curl 127.0.0.1:4003/api/v2/wallets/AJPicaX6vmokoK3x8abBMDpi8GMPc7rLiW` to manually check if the wallet is the owner of the new token.
 
 _Note: you can omit the `--id` flag, command will generate an id for you and print it to the console._
@@ -56,10 +56,10 @@ _Coming soon_
 
 ## TODOs
 
-- [ ] fix double transaction execution (in the pool **and** in the block processor). The branch `debug/nft` trace execution to visualize the bug.
-- [ ] persist in database. Currently, when you restart node, all tokens are erased.
-- [ ] implement a way to revert `update` transactions.
-- [ ] update token id to `Buffer` to fit with specifications
-- [ ] estimate and set default fees amount.
-- [ ] rename `/nft` API to `/nfts`
-- [ ] fix old tests.
+-   [ ] fix double transaction execution (in the pool **and** in the block processor). The branch `debug/nft` trace execution to visualize the bug.
+-   [ ] persist in database. Currently, when you restart node, all tokens are erased.
+-   [ ] implement a way to revert `update` transactions.
+-   [ ] update token id to `Buffer` to fit with specifications
+-   [ ] estimate and set default fees amount.
+-   [x] rename `/nft` API to `/nfts`
+-   [ ] fix old tests.

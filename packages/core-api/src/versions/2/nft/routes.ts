@@ -8,13 +8,13 @@ export function registerRoutes(server: Hapi.Server): void {
 
     server.route({
         method: "GET",
-        path: "/nft",
+        path: "/nfts",
         handler: controller.index,
     });
 
     server.route({
         method: "GET",
-        path: "/nft/{id}",
+        path: "/nfts/{id}",
         handler: controller.show,
         options: {
             validate: Schema.show,

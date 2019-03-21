@@ -8,6 +8,7 @@ const tokenId = joi =>
             .number()
             .integer()
             .positive(),
+        joi.string().regex(/^[0-9]+$/, "numbers"),
     );
 
 const nft = (type, joi) => {

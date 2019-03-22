@@ -1,10 +1,8 @@
 import { Bignum, client, crypto } from "@arkecosystem/crypto";
 import { flags } from "@oclif/command";
-import pluralize from "pluralize";
 import { customFlags } from "../flags";
 import { logger, parseFee, satoshiToArk } from "../utils";
 import { BaseCommand } from "./command";
-import { TransferCommand } from "./transfer";
 
 export class NFTTransfer extends BaseCommand {
     public static description: string = "transfer a non-fungible token";
@@ -92,7 +90,7 @@ export class NFTTransfer extends BaseCommand {
                 logger.error(`Token ${this.options.id} is still in sender wallet`);
             }
 
-            if (recipientToken.includes(this.options.id)) {
+            if (!recipientToken.includes(this.options.id)) {
                 logger.error(`Token ${this.options.id} is not in recipient wallet`);
             }
         } catch (error) {

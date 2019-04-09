@@ -1,17 +1,18 @@
 import { app } from "@arkecosystem/core-container";
-import { EventEmitter, Logger, NFT as INFT } from "@arkecosystem/core-interfaces";
-import { Bignum, constants, models } from "@arkecosystem/crypto";
+import { EventEmitter, Logger, NFT as _NFT_ } from "@arkecosystem/core-interfaces";
+import { Bignum, constants, ITransactionData, models } from "@arkecosystem/crypto";
+import { NFT } from "./nft";
 import { isNftTransaction } from "./utils";
 
 const { TransactionTypes } = constants;
 const emitter: EventEmitter.EventEmitter = app.resolvePlugin<EventEmitter.EventEmitter>("event-emitter");
 const logger: Logger.ILogger = app.resolvePlugin<Logger.ILogger>("logger");
 
-export class NFTManager implements INFT.INFTManager {
+export class NFTManager implements _NFT_.INFTManager {
     get tokens() {
         return this.registeredTokens;
     }
-    public registeredTokens: { [id: string]: models.NFT };
+    public registeredTokens: { [id: string]: _NFT_.INFT };
 
     private eventActions = [
         {
@@ -28,7 +29,7 @@ export class NFTManager implements INFT.INFTManager {
         this.registeredTokens = {};
     }
 
-    public start(): INFT.INFTManager {
+    public start(): _NFT_.INFTManager {
         // start all event listeners
         this.eventActions.map(({ event, action }) => emitter.on(event, action.bind(this)));
         return this;
@@ -38,7 +39,7 @@ export class NFTManager implements INFT.INFTManager {
         this.eventActions.map(({ event, action }) => emitter.off(event, action.bind(this)));
     }
 
-    public findById(id: Bignum): models.NFT {
+    public findById(id: Bignum): _NFT_.INFT {
         const tokenIndex = id.toString();
         return this.tokens[tokenIndex];
     }
@@ -48,12 +49,12 @@ export class NFTManager implements INFT.INFTManager {
         return this.tokens.hasOwnProperty(tokenIndex);
     }
 
-    private transactionApplied(transaction: models.ITransactionData) {
+    private transactionApplied(transaction: ITransactionData) {
         switch (transaction.type) {
             case TransactionTypes.NftTransfer:
                 if (!transaction.recipientId) {
                     logger.debug(`[NFT Manager] register new token with id '${transaction.asset.nft.tokenId}'`);
-                    this.register(new models.NFT(transaction.asset.nft.tokenId));
+                    this.register(new NFT(transaction.asset.nft.tokenId));
                 }
                 break;
             case TransactionTypes.NftUpdate:
@@ -64,7 +65,7 @@ export class NFTManager implements INFT.INFTManager {
         }
     }
 
-    private transactionReverted(transaction: models.ITransactionData) {
+    private transactionReverted(transaction: ITransactionData) {
         switch (transaction.type) {
             case TransactionTypes.NftTransfer:
                 if (!transaction.recipientId) {
@@ -97,7 +98,7 @@ export class NFTManager implements INFT.INFTManager {
         return false;
     }
 
-    private register(token: models.NFT): boolean {
+    private register(token: _NFT_.INFT): boolean {
         const tokenIndex = token.id.toString();
         if (!this.isRegistered(token.id)) {
             this.tokens[tokenIndex] = token;

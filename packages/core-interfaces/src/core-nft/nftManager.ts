@@ -1,9 +1,16 @@
-import { Bignum, models } from "@arkecosystem/crypto";
+import { Bignum } from "@arkecosystem/crypto";
+
+export interface INFT {
+    id: Bignum;
+    properties: { [_: string]: string };
+    updateProperty(key: string, value: string);
+    updateProperties(properties: Array<[string, string]>);
+}
 
 export interface INFTManager {
-    readonly tokens: { [id: string]: models.NFT };
+    readonly tokens: { [id: string]: INFT };
     start(): INFTManager;
     stop(): void;
     isRegistered(tokenId: Bignum): boolean;
-    findById(tokenId: Bignum): models.NFT;
+    findById(tokenId: Bignum): INFT;
 }

@@ -24,10 +24,21 @@
                 "nftTransfer": 1,
                 "nftUpdate": 1
             }
-        }
+        },
+        "vendorFieldLength": 64
     },
     {
         "height": 75600,
         "reward": 200000000
+    },
+    {
+        "height": 100000,
+        "vendorFieldLength": 255
+    },
+    {
+        "height": 4000000,
+        "block": {
+            "idFullSha256": true
+        }
     }
 ]

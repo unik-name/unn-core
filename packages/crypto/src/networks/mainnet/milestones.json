@@ -24,7 +24,8 @@
                 "nftTransfer": 1,
                 "nftUpdate": 1
             }
-        }
+        },
+        "vendorFieldLength": 64
     },
     {
         "height": 75600,
@@ -35,6 +36,16 @@
         "block": {
             "maxTransactions": 150,
             "maxPayload": 6300000
+        }
+    },
+    {
+        "height": 8000000,
+        "vendorFieldLength": 255
+    },
+    {
+        "height": 8050000,
+        "block": {
+            "idFullSha256": true
         }
     }
 ]

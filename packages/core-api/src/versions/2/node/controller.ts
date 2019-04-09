@@ -1,7 +1,7 @@
 import { app } from "@arkecosystem/core-container";
+import { Database } from "@arkecosystem/core-interfaces";
 import Boom from "boom";
 import Hapi from "hapi";
-import { transactionsRepository } from "../../../repositories";
 import { Controller } from "../shared/controller";
 
 export class NodeController extends Controller {
@@ -42,10 +42,12 @@ export class NodeController extends Controller {
 
     public async configuration(request: Hapi.Request, h: Hapi.ResponseToolkit) {
         try {
-            const feeStatisticsData = await transactionsRepository.getFeeStatistics();
+            const transactionsBusinessRepository = app.resolvePlugin<Database.IDatabaseService>("database")
+                .transactionsBusinessRepository;
+            const feeStatisticsData = await transactionsBusinessRepository.getFeeStatistics();
 
             const network = this.config.get("network");
-            const dynamicFees = app.resolveOptions("transactionPool").dynamicFees;
+            const dynamicFees = app.resolveOptions("transaction-pool").dynamicFees;
 
             return {
                 data: {
@@ -58,7 +60,7 @@ export class NodeController extends Controller {
                     constants: this.config.getMilestone(this.blockchain.getLastHeight()),
                     feeStatistics: super.toCollection(request, feeStatisticsData, "fee-statistics"),
                     transactionPool: {
-                        maxTransactionAge: app.resolveOptions("transactionPool").maxTransactionAge,
+                        maxTransactionAge: app.resolveOptions("transaction-pool").maxTransactionAge,
                         dynamicFees: dynamicFees.enabled ? dynamicFees : { enabled: false },
                     },
                 },

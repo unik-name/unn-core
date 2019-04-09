@@ -1,8 +1,8 @@
-import { constants, models } from "@arkecosystem/crypto";
+import { constants, ITransactionData } from "@arkecosystem/crypto";
 
 const { TransactionTypes } = constants;
 
-function isNftTransaction(transaction: models.ITransactionData): boolean {
+function isNftTransaction(transaction: ITransactionData): boolean {
     return transaction.type === TransactionTypes.NftTransfer || transaction.type === TransactionTypes.NftUpdate;
 }
 

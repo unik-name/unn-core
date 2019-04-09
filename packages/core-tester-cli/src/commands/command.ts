@@ -232,6 +232,6 @@ export abstract class BaseCommand extends Command {
         const waitPerBlock =
             this.constants.blocktime * Math.ceil(transactions.length / this.constants.block.maxTransactions);
 
-        await delay(waitPerBlock * 5000);
+        await delay(waitPerBlock * 1000);
     }
 }

@@ -199,7 +199,7 @@ fi
 
 success "Installed system updates!"
 
-heading "Installing Ark Core..."
+heading "Installing ARK Core..."
 
 cd "$HOME"
 
@@ -221,7 +221,7 @@ alias ark='$HOME/core/packages/core/bin/run'
 # export PATH=$(yarn global bin):$PATH
 # ark config:publish
 
-success "Installed Ark Core!"
+success "Installed ARK Core!"
 
 # setup postgres username, password and database
 read -p "Would you like to configure the database? [y/N]: " choice

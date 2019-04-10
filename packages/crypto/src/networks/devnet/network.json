@@ -8,6 +8,7 @@
     "pubKeyHash": 30,
     "nethash": "3791db03238b053984fab6e4ae2738ef8cca7983353e3be166b55790b9bd0196",
     "wif": 190,
+    "slip44": 1,
     "aip20": 1,
     "client": {
         "token": "UNS",

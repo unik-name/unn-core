@@ -1,4 +1,4 @@
-import { Address } from "@arkecosystem/crypto";
+import { Address, unicodeToBignum } from "@arkecosystem/crypto";
 import { flags } from "@oclif/command";
 import { satoshiFlag } from "../../flags";
 import { logger } from "../../logger";
@@ -6,21 +6,28 @@ import { SendCommand } from "../../shared/send";
 import { TransferCommand } from "./transfer";
 
 export class NFTTransferCommand extends SendCommand {
-    public static description: string = "transfer a non-fungible token";
+    public static description: string = "transfer a non-fungible token from A to B";
 
     public static flags = {
         ...SendCommand.flagsSend,
         id: flags.string({
             description: "token identifier",
+            exclusive: ["unikname"],
+        }),
+        owner: flags.string({
+            description: "NFT owner passphrase",
             required: true,
         }),
         recipient: flags.string({
-            description: "recipient address",
-            required: true,
+            description: "new NFT owner",
         }),
         nftFee: satoshiFlag({
             description: "nft fee",
             default: 1,
+        }),
+        unikname: flags.string({
+            description: "unikname NFT",
+            exclusive: ["id"],
         }),
     };
 
@@ -29,28 +36,46 @@ export class NFTTransferCommand extends SendCommand {
     }
 
     protected async createWalletsWithBalance(flags: Record<string, any>): Promise<any[]> {
-        return TransferCommand.run(
-            [`--amount=${flags.nftFee}`, `--number=${flags.number}`, "--skipProbing"].concat(this.castFlags(flags)),
+        if (flags.recipientId && !flags.id && !flags.unikname) {
+            throw new Error("[send:nfttransfer] no NFT identifier (--id or --unikname)");
+        }
+
+        const ownerAddress = Address.fromPassphrase(flags.owner);
+
+        await TransferCommand.run(
+            [`--amount=${flags.nftFee}`, `--recipient=${ownerAddress}`, "--skipProbing"].concat(this.castFlags(flags)),
         );
+
+        const wallets = [];
+        wallets[ownerAddress] = {
+            address: ownerAddress,
+            passphrase: flags.owner,
+        };
+        return wallets;
     }
 
     protected async signTransactions(flags: Record<string, any>, wallets: Record<string, any>): Promise<any[]> {
-        const transactions = [];
+        const [address, wallet] = Object.entries(wallets)[0];
 
-        for (const [address, wallet] of Object.entries(wallets)) {
-            const transaction = this.signer.makeNftTransfer({
-                ...flags,
-                ...{
-                    passphrase: wallet.passphrase,
-                },
-            });
+        let id = flags.id;
 
-            wallets[address].expectedNft = flags.id;
-
-            transaction.transactions.push(transaction);
+        if (flags.unikname) {
+            id = unicodeToBignum(flags.unikname);
+        } else if (!flags.recipient && !id) {
+            id = this.getRandomInt(1, 10000);
         }
 
-        return transactions;
+        const transaction = this.signer.makeNftTransfer({
+            ...flags,
+            ...{
+                id,
+                passphrase: wallet.passphrase,
+            },
+        });
+
+        wallets[address].expectedNft = id;
+
+        return [transaction];
     }
 
     protected async expectBalances(transactions, wallets): Promise<void> {
@@ -68,28 +93,33 @@ export class NFTTransferCommand extends SendCommand {
 
             if (wasCreated) {
                 const senderId = Address.fromPublicKey(transaction.senderPublicKey, this.network.version);
-                const recipientId = Address.fromPublicKey(transaction.recipientId, this.network.version);
                 const tokenId = wallets[senderId].expectedNft;
+                const recipient = transaction.recipientId;
 
                 await this.knockBalance(senderId, wallets[senderId].expectedBalance);
-                await this.knockWallet(senderId, tokenId);
-                await this.knockWallet(recipientId, tokenId, true);
+                await this.knockWallet(senderId, tokenId, !recipient);
                 await this.knockNfts(tokenId);
+
+                if (recipient) {
+                    const recipientId = Address.fromPublicKey(transaction.recipientId, this.network.version);
+                    await this.knockWallet(recipientId, tokenId, true);
+                }
             }
         }
     }
 
     private async knockWallet(address: string, expected: string, mustContain: boolean = false): Promise<void> {
-        const { tokens: tokens } = (await this.api.get(`wallets/${address}`)).data;
+        const tokens: string[] = (await this.api.get(`wallets/${address}`)).data.tokens;
+        const contained: boolean = tokens.some(t => t === expected);
 
         if (mustContain) {
-            if (tokens.contains(expected)) {
-                logger.info(`[W] recipient ${address} received token ${expected} `);
+            if (contained) {
+                logger.info(`[W] recipient ${address} received token ${expected}`);
             } else {
                 logger.error(`[W] token ${expected} not received by ${address}`);
             }
         } else {
-            if (tokens.contains(expected)) {
+            if (contained) {
                 logger.error(`[W] ${address} still has token ${expected}`);
             } else {
                 logger.info(`[W] ${address} sent token ${expected}`);
@@ -100,10 +130,16 @@ export class NFTTransferCommand extends SendCommand {
     private async knockNfts(expected: string): Promise<void> {
         const actual = (await this.api.get(`nfts`)).result;
 
-        if (actual.expected) {
+        if (actual[expected]) {
             logger.info(`[W] ${expected} still exists`);
         } else {
             logger.error(`[W] ${expected} has been destroyed`);
         }
+    }
+
+    private getRandomInt(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min)) + min; // The maximum is exclusive and the minimum is inclusive
     }
 }

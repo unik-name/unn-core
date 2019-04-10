@@ -249,8 +249,6 @@ export class TransactionGuard implements TransactionPool.IGuard {
             this.errors[transaction.id] = [];
         }
 
-        app.resolvePlugin<Logger.ILogger>("logger").error(`Push error ${JSON.stringify(transaction)}${message}`);
-
         this.errors[transaction.id].push({ type, message });
 
         this.invalid.set(transaction.id, transaction);

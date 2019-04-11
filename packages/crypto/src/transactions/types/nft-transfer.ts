@@ -32,7 +32,7 @@ export class NFTTransferTransaction extends Transaction {
             nft: {
                 tokenId: new Bignum(buf.readBytes(16).toHex(), 16),
             },
-            recipientId: buf.readUint8() ? bs58check.encode(buf.readBytes(21).toBuffer()) : undefined,
         };
+        data.recipientId = buf.readUint8() ? bs58check.encode(buf.readBytes(21).toBuffer()) : undefined;
     }
 }

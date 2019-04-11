@@ -1,5 +1,11 @@
 import { Database, TransactionPool } from "@arkecosystem/core-interfaces";
-import { ITransactionData, NFTTransferTransaction, Transaction, TransactionConstructor } from "@arkecosystem/crypto";
+import {
+    Bignum,
+    ITransactionData,
+    NFTTransferTransaction,
+    Transaction,
+    TransactionConstructor,
+} from "@arkecosystem/crypto";
 import { NftOwnedError, NftOwnerError } from "../errors";
 
 import { TransactionHandler } from "./transaction";
@@ -27,7 +33,7 @@ export class NftTransferTransactionHandler extends TransactionHandler {
     }
 
     public applyToRecipient(transaction: Transaction, wallet: Database.IWallet): void {
-        wallet.tokens.push(transaction.data.asset.nft.tokenId);
+        this.addTokenToWallet(wallet, transaction.data.asset.nft.tokenId);
     }
 
     public revertForRecipient(transaction: Transaction, wallet: Database.IWallet): void {
@@ -42,15 +48,7 @@ export class NftTransferTransactionHandler extends TransactionHandler {
         if (data.recipientId) {
             this.removeTokenFromWallet(wallet, data);
         } else {
-            if (!wallet.tokens.find(token => token.isEqualTo(data.asset.nft.tokenId))) {
-                /* TODO: remove condition
-                 * Condition is used because `apply` function is called twice (by transaction-pool and block processor)
-                 * without condition, token id is pushed twice in wallet
-                 * Issue is that `transaction-pool` and `block-processor` should not execute `apply` on the same wallet.
-                 * I couldn't find why it does.
-                 */
-                wallet.tokens.push(data.asset.nft.tokenId);
-            }
+            this.addTokenToWallet(wallet, data.asset.nft.tokenId);
         }
     }
 
@@ -60,16 +58,7 @@ export class NftTransferTransactionHandler extends TransactionHandler {
     public revert(transaction: Transaction, wallet: Database.IWallet): void {
         const { data } = transaction;
         if (data.recipientId) {
-            // get token back to the previous owner
-            if (!wallet.tokens.find(token => token.isEqualTo(data.asset.nft.tokenId))) {
-                /* TODO: remove condition
-                 * Condition is used because `apply` function is called twice (by transaction-pool and block processor)
-                 * without condition, token id is pushed twice in wallet
-                 * Issue is that `transaction-pool` and `block-processor` should not execute `apply` on the same wallet.
-                 * I couldn't find why it does.
-                 */
-                wallet.tokens.push(data.asset.nft.tokenId);
-            }
+            this.addTokenToWallet(wallet, data.asset.nft.tokenId);
         } else {
             // it was a token mint
             this.removeTokenFromWallet(wallet, data);
@@ -83,5 +72,10 @@ export class NftTransferTransactionHandler extends TransactionHandler {
     private removeTokenFromWallet(wallet: Database.IWallet, transaction: ITransactionData): void {
         const transferredTokenIndex = wallet.tokens.findIndex(tokenId => tokenId === transaction.asset.nft.tokenId);
         wallet.tokens.splice(transferredTokenIndex, 1);
+    }
+    private addTokenToWallet(wallet: Database.IWallet, tokenId: Bignum): void {
+        const copy = wallet.tokens.slice();
+        copy.push(tokenId);
+        wallet.tokens = copy;
     }
 }

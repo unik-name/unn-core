@@ -1,6 +1,6 @@
 import ByteBuffer from "bytebuffer";
 import { TransactionTypes } from "../../constants";
-import { Bignum, sum } from "../../utils";
+import { sum } from "../../utils";
 import * as schemas from "./schemas";
 import { Transaction } from "./transaction";
 
@@ -17,7 +17,7 @@ export class NFTUpdateTransaction extends Transaction {
         const bufferSize = this.computePropertiesSize(properties) + 33;
         const buffer = new ByteBuffer(bufferSize, true);
 
-        buffer.append(new Bignum(data.asset.nft.tokenId).toString(16).padStart(32, "0"), "hex");
+        buffer.append(data.asset.nft.tokenId, "hex");
         buffer.writeByte(data.asset.nft.properties.length);
         properties.map(([key, value]) => {
             const keyBytes = Buffer.from(key, "utf8");
@@ -33,7 +33,7 @@ export class NFTUpdateTransaction extends Transaction {
         const { data } = this;
         data.asset = {
             nft: {
-                tokenId: new Bignum(buf.readBytes(16).toHex(), 16),
+                tokenId: Buffer.from(buf.readBytes(16).toHex()),
             },
         };
         const properties = [];

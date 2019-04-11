@@ -145,7 +145,7 @@ export const nftTransfer = extend(transactionBaseSchema, {
                     properties: {
                         tokenId: {
                             oneOf: [
-                                { bignumber: { minimum: 1, bypassGenesis: true } },
+                                { buffer: { minimum: Buffer.from("1"), bypassGenesis: true } },
                                 { type: "integer", minimum: 1 },
                                 { type: "string", pattern: "[0-9]+" },
                             ],
@@ -173,7 +173,7 @@ export const nftUpdate = extend(transactionBaseSchema, {
                     properties: {
                         tokenId: {
                             oneOf: [
-                                { bignumber: { minimum: 1, bypassGenesis: true } },
+                                { buffer: { minimum: Buffer.from("1"), bypassGenesis: true } },
                                 { type: "integer", minimum: 1 },
                                 { type: "string", pattern: "[0-9]+" },
                             ],

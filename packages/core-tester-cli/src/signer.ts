@@ -76,7 +76,7 @@ export class Signer {
     public makeNftTransfer(opts: Record<string, any>): any {
         const transaction = client
             .getBuilder()
-            .nftTransfer(new Bignum(opts.id))
+            .nftTransfer(Buffer.from(opts.id))
             .recipientId(opts.recipient)
             .fee(this.toSatoshi(opts.nftFee))
             .network(this.network.version)

@@ -1,9 +1,9 @@
 import "jest-extended";
 
-import { bignumToUnicode, unicodeToBignum } from "../../src/utils";
+import { bignumToUnicode, unicodeToBignumBuffer } from "../../src/utils";
 
-describe("bignumToUnicode and unicodeToBignum", () => {
+describe("bignumToUnicode and unicodeToBignumBuffer", () => {
     it("should do convertion between unicode and bignum", () => {
-        expect(bignumToUnicode(unicodeToBignum("hello"))).toEqual("hello");
+        expect(bignumToUnicode(unicodeToBignumBuffer("hello").toString())).toEqual("hello");
     });
 });

@@ -1,12 +1,10 @@
 import { NFT as _NFT_ } from "@arkecosystem/core-interfaces";
-import { Bignum } from "@arkecosystem/crypto";
-
 export class NFT implements _NFT_.INFT {
-    public id: Bignum;
+    public id: Buffer;
     public owner: string;
     public properties: { [_: string]: string };
 
-    constructor(id: Bignum, owner: string) {
+    constructor(id: Buffer, owner: string) {
         this.id = id;
         this.owner = owner;
         this.properties = {};

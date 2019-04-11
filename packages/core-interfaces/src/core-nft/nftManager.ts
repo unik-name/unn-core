@@ -1,7 +1,5 @@
-import { Bignum } from "@arkecosystem/crypto";
-
 export interface INFT {
-    id: Bignum;
+    id: Buffer;
     owner: string;
     properties: { [_: string]: string };
     updateOwner(owner: string);
@@ -13,6 +11,6 @@ export interface INFTManager {
     readonly tokens: { [id: string]: INFT };
     start(): INFTManager;
     stop(): void;
-    isRegistered(tokenId: Bignum): boolean;
-    findById(tokenId: Bignum): INFT;
+    isRegistered(tokenId: Buffer): boolean;
+    findById(tokenId: Buffer): INFT;
 }

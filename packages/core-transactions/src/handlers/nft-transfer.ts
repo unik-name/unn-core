@@ -1,11 +1,5 @@
 import { Database, TransactionPool } from "@arkecosystem/core-interfaces";
-import {
-    Bignum,
-    ITransactionData,
-    NFTTransferTransaction,
-    Transaction,
-    TransactionConstructor,
-} from "@arkecosystem/crypto";
+import { ITransactionData, NFTTransferTransaction, Transaction, TransactionConstructor } from "@arkecosystem/crypto";
 import { NftOwnedError, NftOwnerError } from "../errors";
 
 import { TransactionHandler } from "./transaction";
@@ -23,7 +17,7 @@ export class NftTransferTransactionHandler extends TransactionHandler {
         const { data } = transaction;
 
         if (data.recipientId) {
-            if (!wallet.tokens.find(tokenId => tokenId.isEqualTo(data.asset.nft.tokenId))) {
+            if (!wallet.tokens.find(tokenId => Buffer.from(tokenId).equals(Buffer.from(data.asset.nft.tokenId)))) {
                 throw new NftOwnerError(wallet.publicKey, data.asset.nft.tokenId.toString());
             }
         } else if (walletManager.isTokenOwned(data.asset.nft.tokenId)) {
@@ -73,7 +67,7 @@ export class NftTransferTransactionHandler extends TransactionHandler {
         const transferredTokenIndex = wallet.tokens.findIndex(tokenId => tokenId === transaction.asset.nft.tokenId);
         wallet.tokens.splice(transferredTokenIndex, 1);
     }
-    private addTokenToWallet(wallet: Database.IWallet, tokenId: Bignum): void {
+    private addTokenToWallet(wallet: Database.IWallet, tokenId: Buffer): void {
         const copy = wallet.tokens.slice();
         copy.push(tokenId);
         wallet.tokens = copy;

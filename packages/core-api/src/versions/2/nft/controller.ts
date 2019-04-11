@@ -18,8 +18,8 @@ export class NftController extends Controller {
     }
 
     public async show(request: Hapi.Request, h: Hapi.ResponseToolkit) {
-        const tokenId = new Bignum(request.params.id);
-        const token = this.nftManager.findById(tokenId);
+        const tokenId = request.params.id;
+        const token = this.nftManager.findById(Buffer.from(tokenId));
 
         if (!token) {
             return Boom.notFound(`Token ${request.params.id} not found`);

@@ -1,7 +1,6 @@
 import { app } from "@arkecosystem/core-container";
 import { Database, NFT } from "@arkecosystem/core-interfaces";
 import { Bignum, bignumToUnicode } from "@arkecosystem/crypto";
-import Boom from "boom";
 import Hapi from "hapi";
 import { Controller } from "../shared/controller";
 
@@ -14,7 +13,7 @@ export class ChallengeController extends Controller {
 
         const wallet = await this.databaseService.wallets.findById(publicKey);
 
-        const uniknames: Bignum[] = wallet.tokens;
+        const uniknames: Buffer[] = wallet.tokens;
 
         return uniknames.map(bignumToUnicode);
     }

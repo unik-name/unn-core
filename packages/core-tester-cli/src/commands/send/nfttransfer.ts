@@ -1,4 +1,4 @@
-import { Address, unicodeToBignum } from "@arkecosystem/crypto";
+import { Address, unicodeToBignumBuffer } from "@arkecosystem/crypto";
 import { flags } from "@oclif/command";
 import { satoshiFlag } from "../../flags";
 import { logger } from "../../logger";
@@ -60,9 +60,7 @@ export class NFTTransferCommand extends SendCommand {
         let id = flags.id;
 
         if (flags.unikname) {
-            id = unicodeToBignum(flags.unikname)
-                .toNumber()
-                .toString();
+            id = unicodeToBignumBuffer(flags.unikname).toString();
         } else if (!flags.recipient && !id) {
             id = this.getRandomInt(1, 10000);
         }
@@ -110,8 +108,9 @@ export class NFTTransferCommand extends SendCommand {
     }
 
     private async knockWallet(address: string, expected: string, mustContain: boolean = false): Promise<void> {
-        const tokens: string[] = (await this.api.get(`wallets/${address}`)).data.tokens;
-
+        const tokens: string[] = (await this.api.get(`wallets/${address}`)).data.tokens.map(token =>
+            Buffer.from(token).toString(),
+        );
         const contained: boolean = tokens.includes(expected);
 
         if (mustContain) {

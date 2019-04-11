@@ -39,12 +39,12 @@ export class NFTManager implements _NFT_.INFTManager {
         this.eventActions.map(({ event, action }) => emitter.off(event, action.bind(this)));
     }
 
-    public findById(id: Bignum): _NFT_.INFT {
+    public findById(id: Buffer): _NFT_.INFT {
         const tokenIndex = id.toString();
         return this.tokens[tokenIndex];
     }
 
-    public isRegistered(tokenId: Bignum): boolean {
+    public isRegistered(tokenId: Buffer): boolean {
         const tokenIndex = tokenId.toString();
         return this.tokens.hasOwnProperty(tokenIndex);
     }
@@ -101,8 +101,8 @@ export class NFTManager implements _NFT_.INFTManager {
         }
     }
 
-    private delete(id: Bignum): boolean {
-        const tokenIndex = id.toString();
+    private delete(id: Buffer): boolean {
+        const tokenIndex = id.toString("utf8");
         if (this.isRegistered(id)) {
             delete this.tokens[tokenIndex];
             return true;
@@ -111,7 +111,7 @@ export class NFTManager implements _NFT_.INFTManager {
     }
 
     private register(token: _NFT_.INFT): boolean {
-        const tokenIndex = token.id.toString();
+        const tokenIndex = token.id.toString("utf8");
         if (!this.isRegistered(token.id)) {
             this.tokens[tokenIndex] = token;
             return true;

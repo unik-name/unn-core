@@ -16,7 +16,7 @@ export interface ITransactionAsset {
     };
     payments?: any;
     nft?: {
-        tokenId: Bignum;
+        tokenId: Buffer;
         properties?: Array<[string, string]>;
     };
     [custom: string]: any;

@@ -17,7 +17,7 @@ export interface IWallet {
     producedBlocks: number;
     forgedFees: Bignum;
     forgedRewards: Bignum;
-    tokens: Bignum[];
+    tokens: Buffer[];
     rate?: number;
 
     verifySignatures(transaction: ITransactionData, multisignature: IMultiSignatureAsset): boolean;
@@ -68,7 +68,7 @@ export interface IWalletManager {
 
     isDelegate(publicKey: string): boolean;
 
-    isTokenOwned(tokenId): boolean;
+    isTokenOwned(tokenId: Buffer): boolean;
 
     canBePurged(wallet: IWallet): boolean;
 

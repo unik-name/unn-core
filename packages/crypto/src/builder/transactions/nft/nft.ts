@@ -1,11 +1,10 @@
 import { TransactionTypes } from "../../../constants";
 import { feeManager } from "../../../managers";
 import { ITransactionData } from "../../../transactions";
-import { Bignum } from "../../../utils";
 import { TransactionBuilder } from "../transaction";
 
 export abstract class NFTBuilder extends TransactionBuilder<NFTBuilder> {
-    constructor(type: TransactionTypes, tokenId: Bignum) {
+    constructor(type: TransactionTypes, tokenId: Buffer) {
         super();
 
         this.data.amount = 0;

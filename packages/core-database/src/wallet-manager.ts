@@ -435,7 +435,7 @@ export class WalletManager implements Database.IWalletManager {
         return false;
     }
 
-    public isTokenOwned(tokenId) {
+    public isTokenOwned(tokenId: Buffer) {
         return this.nftManager.isRegistered(tokenId);
     }
 

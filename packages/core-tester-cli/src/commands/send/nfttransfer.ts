@@ -60,7 +60,9 @@ export class NFTTransferCommand extends SendCommand {
         let id = flags.id;
 
         if (flags.unikname) {
-            id = unicodeToBignum(flags.unikname);
+            id = unicodeToBignum(flags.unikname)
+                .toNumber()
+                .toString();
         } else if (!flags.recipient && !id) {
             id = this.getRandomInt(1, 10000);
         }
@@ -101,8 +103,7 @@ export class NFTTransferCommand extends SendCommand {
                 await this.knockNfts(tokenId);
 
                 if (recipient) {
-                    const recipientId = Address.fromPublicKey(transaction.recipientId, this.network.version);
-                    await this.knockWallet(recipientId, tokenId, true);
+                    await this.knockWallet(transaction.recipientId, tokenId, true);
                 }
             }
         }
@@ -110,7 +111,8 @@ export class NFTTransferCommand extends SendCommand {
 
     private async knockWallet(address: string, expected: string, mustContain: boolean = false): Promise<void> {
         const tokens: string[] = (await this.api.get(`wallets/${address}`)).data.tokens;
-        const contained: boolean = tokens.some(t => t === expected);
+
+        const contained: boolean = tokens.includes(expected);
 
         if (mustContain) {
             if (contained) {

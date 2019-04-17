@@ -58,7 +58,7 @@ export class WalletManager implements Database.IWalletManager {
      * Find a wallet by the given address.
      */
     public findByAddress(address: string): Wallet {
-        if (!this.byAddress[address]) {
+        if (address && !this.byAddress[address]) {
             this.byAddress[address] = new Wallet(address);
         }
 
@@ -84,7 +84,7 @@ export class WalletManager implements Database.IWalletManager {
      * @return {Wallet}
      */
     public findByPublicKey(publicKey: string): Wallet {
-        if (!this.byPublicKey[publicKey]) {
+        if (publicKey && !this.byPublicKey[publicKey]) {
             const address = crypto.getAddress(publicKey);
 
             const wallet = this.findByAddress(address);
@@ -110,7 +110,9 @@ export class WalletManager implements Database.IWalletManager {
      * @param {Wallet} wallet
      */
     public setByAddress(address: string, wallet: Wallet): void {
-        this.byAddress[address] = wallet;
+        if (address && wallet) {
+            this.byAddress[address] = wallet;
+        }
     }
 
     /**
@@ -119,7 +121,9 @@ export class WalletManager implements Database.IWalletManager {
      * @param {Wallet} wallet
      */
     public setByPublicKey(publicKey: string, wallet: Wallet): void {
-        this.byPublicKey[publicKey] = wallet;
+        if (publicKey && wallet) {
+            this.byPublicKey[publicKey] = wallet;
+        }
     }
 
     /**
@@ -128,7 +132,9 @@ export class WalletManager implements Database.IWalletManager {
      * @param {Wallet} wallet
      */
     public setByUsername(username: string, wallet: Wallet): void {
-        this.byUsername[username] = wallet;
+        if (username && wallet) {
+            this.byUsername[username] = wallet;
+        }
     }
 
     /**
@@ -198,7 +204,7 @@ export class WalletManager implements Database.IWalletManager {
      * @return {Array}
      */
     public loadActiveDelegateList(roundInfo: Shared.IRoundInfo): Database.IDelegateWallet[] {
-        const { round, maxDelegates } = roundInfo;
+        const { maxDelegates } = roundInfo;
         const delegatesWallets = this.allByUsername();
 
         if (delegatesWallets.length < maxDelegates) {
@@ -209,51 +215,7 @@ export class WalletManager implements Database.IWalletManager {
             );
         }
 
-        const equalVotesMap = new Map();
-        const delegates = delegatesWallets
-            .sort((a, b) => {
-                const diff = b.voteBalance.comparedTo(a.voteBalance);
-
-                if (diff === 0) {
-                    if (!equalVotesMap.has(a.voteBalance.toFixed())) {
-                        equalVotesMap.set(a.voteBalance.toFixed(), new Set());
-                    }
-
-                    const set = equalVotesMap.get(a.voteBalance.toFixed());
-                    set.add(a);
-                    set.add(b);
-
-                    if (a.publicKey === b.publicKey) {
-                        throw new Error(
-                            `The balance and public key of both delegates are identical! Delegate "${
-                                a.username
-                            }" appears twice in the list.`,
-                        );
-                    }
-
-                    return a.publicKey.localeCompare(b.publicKey, "en");
-                }
-
-                return diff;
-            })
-            .map((delegate, i) => {
-                const rate = i + 1;
-                this.byUsername[delegate.username].rate = rate;
-                return { round, ...delegate, rate };
-            })
-            .slice(0, maxDelegates);
-
-        for (const [voteBalance, set] of equalVotesMap.entries()) {
-            const values: any[] = Array.from(set.values());
-            if (delegates.includes(values[0])) {
-                const mapped = values.map(v => `${v.username} (${v.publicKey})`);
-                this.logger.warn(
-                    `Delegates ${JSON.stringify(mapped, null, 4)} have a matching vote balance of ${formatSatoshi(
-                        voteBalance,
-                    )}`,
-                );
-            }
-        }
+        const delegates = this.buildDelegateRanking(delegatesWallets, roundInfo);
 
         this.logger.debug(`Loaded ${delegates.length} active ${pluralize("delegate", delegates.length)}`);
 
@@ -494,6 +456,62 @@ export class WalletManager implements Database.IWalletManager {
         this.byAddress = {};
         this.byPublicKey = {};
         this.byUsername = {};
+    }
+
+    public buildDelegateRanking(
+        delegates: Database.IWallet[],
+        roundInfo?: Shared.IRoundInfo,
+    ): Database.IDelegateWallet[] {
+        const equalVotesMap = new Map();
+        let delegateWallets = delegates
+            .sort((a, b) => {
+                const diff = b.voteBalance.comparedTo(a.voteBalance);
+
+                if (diff === 0) {
+                    if (!equalVotesMap.has(a.voteBalance.toFixed())) {
+                        equalVotesMap.set(a.voteBalance.toFixed(), new Set());
+                    }
+
+                    const set = equalVotesMap.get(a.voteBalance.toFixed());
+                    set.add(a);
+                    set.add(b);
+
+                    if (a.publicKey === b.publicKey) {
+                        throw new Error(
+                            `The balance and public key of both delegates are identical! Delegate "${
+                                a.username
+                            }" appears twice in the list.`,
+                        );
+                    }
+
+                    return a.publicKey.localeCompare(b.publicKey, "en");
+                }
+
+                return diff;
+            })
+            .map((delegate, i) => {
+                const rate = i + 1;
+                this.byUsername[delegate.username].rate = rate;
+                return { round: roundInfo ? roundInfo.round : 0, ...delegate, rate };
+            });
+
+        if (roundInfo) {
+            delegateWallets = delegateWallets.slice(0, roundInfo.maxDelegates);
+
+            for (const [voteBalance, set] of equalVotesMap.entries()) {
+                const values: any[] = Array.from(set.values());
+                if (delegateWallets.includes(values[0])) {
+                    const mapped = values.map(v => `${v.username} (${v.publicKey})`);
+                    this.logger.warn(
+                        `Delegates ${JSON.stringify(mapped, null, 4)} have a matching vote balance of ${formatSatoshi(
+                            voteBalance,
+                        )}`,
+                    );
+                }
+            }
+        }
+
+        return delegateWallets;
     }
 
     /**

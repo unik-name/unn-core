@@ -53,12 +53,12 @@ export class NFTManager implements _NFT_.INFTManager {
         switch (transaction.type) {
             case TransactionTypes.NftTransfer:
                 if (!transaction.recipientId) {
-                    logger.debug(`[NFT Manager] register new token with id '${transaction.asset.nft.tokenId}'`);
+                    logger.debug(`[💎] register new token with id '${transaction.asset.nft.tokenId}'`);
                     this.register(new NFT(transaction.asset.nft.tokenId));
                 }
                 break;
             case TransactionTypes.NftUpdate:
-                logger.debug(`[NFT Manager] update token with id '${transaction.asset.nft.tokenId}' properties`);
+                logger.debug(`[💎] update token with id '${transaction.asset.nft.tokenId}' properties`);
                 this.findById(transaction.asset.nft.tokenId).updateProperties(transaction.asset.nft.properties);
                 break;
             default:
@@ -69,7 +69,7 @@ export class NFTManager implements _NFT_.INFTManager {
         switch (transaction.type) {
             case TransactionTypes.NftTransfer:
                 if (!transaction.recipientId) {
-                    logger.debug(`[NFT Manager] unregister token with id '${transaction.asset.nft.tokenId}'`);
+                    logger.debug(`[💎] unregister token with id '${transaction.asset.nft.tokenId}'`);
                     this.delete(transaction.asset.nft.tokenId);
                 }
                 break;

@@ -94,8 +94,16 @@ export class Storage {
         const rows = this.db.prepare(`SELECT sequence, lower(HEX(serialized)) AS serialized FROM ${this.table};`).all();
 
         return rows
-            .map(r => ({ tx: Transaction.fromHex(r.serialized), ...r }))
-            .filter(r => r.tx.verified)
+            .reduce((rows, r) => {
+                try {
+                    const tx = Transaction.fromHex(r.serialized);
+                    if (tx.verified) {
+                        rows.push({ tx, ...r });
+                    }
+                } catch (e) {
+                    /* ignore */
+                }
+            }, [])
             .map(r => new MemPoolTransaction(r.tx, r.sequence));
     }
 

@@ -15,7 +15,35 @@ For information about the non fungible token feature of Ark framework look at [d
 
 ### How to test
 
-In order to test the NFT feature, you must run a [test network](https://docs.ark.io/guidebook/developer/setup-dev-environment.html#spinning-up-your-first-testnet).
+In order to test the NFT feature, you must run a test network.
+
+#### Setup environment
+
+```
+yarn
+yarn setup
+```
+
+#### Run
+
+##### Database
+
+```
+yarn docker ark
+cd docker/development/testnet
+docker-compose up -d postgres
+```
+
+##### Launch
+
+Go to `packages/core` and launch testnet
+
+```
+cd ../../../packages/core
+yarn full:testnet
+```
+
+Your testnet ark is launched!
 
 Once your test network is up, you can use the `core-tester-cli` package to create NFT transactions.
 
@@ -37,7 +65,7 @@ It will create a new empty wallet and store its information into `$(pwd)/wallets
 
 _Note 1: `$TOKEN_ID` is the token identifier you want to mint_
 _Note 2: `$PASSPHRASE` is the one in `$(pwd)/wallets.json`, the token owner_
-_Note 3: instead, you can use option `--unikname $UNIKNAME` to use unikname as token identifier_
+_Note 3: instead of `--id`, you can use option `--unikname $UNIKNAME` to use unikname as token identifier_
 
 This command will create a transaction minting the token identified by given number.
 Then, it'll broadcast the transaction to your local node, which should forge a new block.
@@ -67,6 +95,26 @@ You can run `curl 127.0.0.1:4003/api/v2/wallets/${recipient_address}` to manuall
 #### Update a token:
 
 _Coming soon_
+
+### Clean for safe restart
+
+Clean dependencies in each package: [Lerna/clean](https://github.com/lerna/lerna/tree/master/commands/clean#readme)
+
+```
+yarn clean
+```
+
+Remove docker containers and volumes:
+
+```
+docker stop ark-testnet-postgres && docker system prune -a && docker volume remove testnet_core testnet_postgres
+```
+
+Remove ark testnet caches:
+
+```
+rm -rf ~/.local/state/ark-core/testnet && rm -rf ~/.local/share/ark-core/testnet && rm -rf ~/.cache/ark-core/testnet
+```
 
 ## TODOs
 

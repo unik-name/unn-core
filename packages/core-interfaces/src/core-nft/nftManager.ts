@@ -2,7 +2,9 @@ import { Bignum } from "@arkecosystem/crypto";
 
 export interface INFT {
     id: Bignum;
+    owner: string;
     properties: { [_: string]: string };
+    updateOwner(owner: string);
     updateProperty(key: string, value: string);
     updateProperties(properties: Array<[string, string]>);
 }

@@ -1,6 +1,6 @@
 import { app } from "@arkecosystem/core-container";
 import { EventEmitter, Logger, NFT as _NFT_ } from "@arkecosystem/core-interfaces";
-import { Bignum, constants, ITransactionData, models } from "@arkecosystem/crypto";
+import { Address, Bignum, constants, ITransactionData, models } from "@arkecosystem/crypto";
 import { NFT } from "./nft";
 import { isNftTransaction } from "./utils";
 
@@ -53,8 +53,16 @@ export class NFTManager implements _NFT_.INFTManager {
         switch (transaction.type) {
             case TransactionTypes.NftTransfer:
                 if (!transaction.recipientId) {
-                    logger.debug(`[💎] register new token with id '${transaction.asset.nft.tokenId}'`);
-                    this.register(new NFT(transaction.asset.nft.tokenId));
+                    const sender = Address.fromPublicKey(transaction.senderPublicKey);
+                    logger.debug(
+                        `[💎] register new token with id '${transaction.asset.nft.tokenId}' and owner ${sender}`,
+                    );
+                    this.register(new NFT(transaction.asset.nft.tokenId, sender));
+                } else {
+                    logger.debug(
+                        `[💎] transfer token with id '${transaction.asset.nft.tokenId}' to ${transaction.recipientId}`,
+                    );
+                    this.findById(transaction.asset.nft.tokenId).updateOwner(transaction.recipientId);
                 }
                 break;
             case TransactionTypes.NftUpdate:
@@ -71,6 +79,10 @@ export class NFTManager implements _NFT_.INFTManager {
                 if (!transaction.recipientId) {
                     logger.debug(`[💎] unregister token with id '${transaction.asset.nft.tokenId}'`);
                     this.delete(transaction.asset.nft.tokenId);
+                } else {
+                    const sender = Address.fromPublicKey(transaction.senderPublicKey);
+                    logger.debug(`[💎] give token with id '${transaction.asset.nft.tokenId}' back to previous owner`);
+                    this.findById(transaction.asset.nft.tokenId).updateOwner(sender);
                 }
                 break;
             case TransactionTypes.NftUpdate:

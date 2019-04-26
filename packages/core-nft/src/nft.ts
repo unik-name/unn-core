@@ -3,11 +3,17 @@ import { Bignum } from "@arkecosystem/crypto";
 
 export class NFT implements _NFT_.INFT {
     public id: Bignum;
+    public owner: string;
     public properties: { [_: string]: string };
 
-    constructor(id: Bignum) {
+    constructor(id: Bignum, owner: string) {
         this.id = id;
+        this.owner = owner;
         this.properties = {};
+    }
+
+    public updateOwner(owner: string) {
+        this.owner = owner;
     }
 
     public updateProperty(key: string, value: string) {

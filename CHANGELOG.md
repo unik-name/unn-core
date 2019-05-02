@@ -7,6 +7,58 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [2.3.22] - 2019-05-02
+
+### Changed
+
+-   Return transaction timestamp instead of block timestamp for `/v2/*` endpoints in `core-api` ([#2513])
+    -   **Note that the transaction timestamp can be misleading as a transaction can be signed hours or days before it gets forged which is why you should rely on the block timestamp because that is the point in time when the blockchain becomes aware of a transaction.**
+
+## [2.3.21] - 2019-04-30
+
+### Fixed
+
+-   Avoid getting stuck on a peer by picking a random one each time _(JSON-RPC)_ ([#2491])
+-   Fix the asset import and include `rounds` in the snapshot to avoid issues with the peer verifier ([#2502])
+-   Accept requests to /transactions regardless of suspension _(only caused issues for nodes that are completely locked down behind a firewall with no incoming connections)_ ([#2503])
+
+## [2.3.18] - 2019-04-26
+
+### Fixed
+
+-   Reset unfinished round after importing a snapshot ([#2486])
+-   Update the height of the crypto config manager for milestones in the forger _(only caused an issue for split setups)_ ([#2487])
+
+## [2.3.16] - 2019-04-25
+
+### Fixed
+
+-   Initialise the crypto config manager with the latest height on boot ([#2482])
+
+## [2.3.15] - 2019-04-25
+
+Fix release of `2.3.14` due to npm connectivity issues.
+
+## [2.3.14] - 2019-04-25
+
+### Fixed
+
+-   Added missing mainnet exceptions for transactions with invalid recipients ([#2471])
+-   Remove support for old release channels from the 2.2 development period ([#2476])
+
+## [2.3.12] - 2019-04-24
+
+### Fixed
+
+-   Use correct genesis block instead to verify snapshots ([#2462])
+-   Don't pass suffix flag to bip38 and bip39 commands ([#2464])
+
+## [2.3.1] - 2019-04-23
+
+### Fixed
+
+-   Deserialize type > 0 with vendor field instead of skipping it ([#2459])
+
 ## [2.3.0] - 2019-04-23
 
 ### Breaking Changes
@@ -30,7 +82,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 -   Implemented the `ark reinstall` command in `core` ([#2192])
 -   Added the `--force` flag to the `ark update` command in `core` ([#2190])
 -   Added more parameters for delegate searches in `core-api` ([#2184])
--   Add the `/v2/delegates/active` endpoint to `core-api` ([#2205])
 -   Added restart flags to the `ark update` command in `core` ([#2218])
 -   Added the `make:block` command to `core-tester-cli` to create blocks ([#2221])
 -   Added the `core-error-tracker-rollbar` package ([#2287])
@@ -49,6 +100,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 -   Validate that a transaction recipient is on the same network ([#2394])
 -   Handle empty `rows` in `mapBlocksToTransactions` ([#2404])
 -   Prevent indexing/creating of ghost wallets ([#2405])
+-   Refuse transactions from senders with pending second signature registrations and do not rollback when refusing a block ([#2458])
 
 ### Changed
 
@@ -284,7 +336,15 @@ Closed security vulnerabilities:
 
 -   Initial Release
 
-[unreleased]: https://github.com/ARKEcosystem/core/compare/2.3.0...develop
+[unreleased]: https://github.com/ARKEcosystem/core/compare/master...develop
+[2.3.22]: https://github.com/ARKEcosystem/core/compare/2.3.21...2.3.22
+[2.3.21]: https://github.com/ARKEcosystem/core/compare/2.3.18...2.3.21
+[2.3.18]: https://github.com/ARKEcosystem/core/compare/2.3.16...2.3.18
+[2.3.16]: https://github.com/ARKEcosystem/core/compare/2.3.15...2.3.16
+[2.3.15]: https://github.com/ARKEcosystem/core/compare/2.3.14...2.3.15
+[2.3.14]: https://github.com/ARKEcosystem/core/compare/2.3.12...2.3.14
+[2.3.12]: https://github.com/ARKEcosystem/core/compare/2.3.1...2.3.12
+[2.3.1]: https://github.com/ARKEcosystem/core/compare/2.3.0...2.3.1
 [2.3.0]: https://github.com/ARKEcosystem/core/compare/2.2.2...2.3.0
 [2.2.2]: https://github.com/ARKEcosystem/core/compare/2.2.1...2.2.2
 [2.2.1]: https://github.com/ARKEcosystem/core/compare/2.2.0...2.2.1
@@ -436,3 +496,16 @@ Closed security vulnerabilities:
 [#2394]: https://github.com/ARKEcosystem/core/pull/2394
 [#2404]: https://github.com/ARKEcosystem/core/pull/2404
 [#2405]: https://github.com/ARKEcosystem/core/pull/2405
+[#2458]: https://github.com/ARKEcosystem/core/pull/2458
+[#2459]: https://github.com/ARKEcosystem/core/pull/2459
+[#2462]: https://github.com/ARKEcosystem/core/pull/2462
+[#2464]: https://github.com/ARKEcosystem/core/pull/2464
+[#2471]: https://github.com/ARKEcosystem/core/pull/2471
+[#2476]: https://github.com/ARKEcosystem/core/pull/2476
+[#2482]: https://github.com/ARKEcosystem/core/pull/2482
+[#2486]: https://github.com/ARKEcosystem/core/pull/2486
+[#2487]: https://github.com/ARKEcosystem/core/pull/2487
+[#2491]: https://github.com/ARKEcosystem/core/pull/2491
+[#2502]: https://github.com/ARKEcosystem/core/pull/2502
+[#2503]: https://github.com/ARKEcosystem/core/pull/2503
+[#2513]: https://github.com/ARKEcosystem/core/pull/2513

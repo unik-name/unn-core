@@ -1,12 +1,13 @@
 {
-    "name": "@arkecosystem/core-interfaces",
-    "description": "Interface types for essential ARK Core modules",
+    "name": "@uns/core-interfaces",
+    "description": "Interface types for essential UNS Core modules",
     "version": "2.3.22-1",
     "contributors": [
         "François-Xavier Thoorens <fx@ark.io>",
         "Kristjan Košič <kristjan@ark.io>",
         "Brian Faust <brian@ark.io>",
-        "Alex Barnsley <alex@ark.io>"
+        "Alex Barnsley <alex@ark.io>",
+        "Guillaume Nicolas <guillaume@spacelephant.org>"
     ],
     "license": "MIT",
     "main": "dist/index",
@@ -23,7 +24,7 @@
         "clean": "del dist"
     },
     "dependencies": {
-        "@arkecosystem/crypto": "^2.3.22-1",
+        "@uns/crypto": "^2.3.22-1",
         "@faustbrian/dato": "^0.2.0",
         "awilix": "^4.2.1"
     },

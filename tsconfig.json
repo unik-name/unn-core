@@ -10,7 +10,11 @@
         "strict": false,
         "noUnusedLocals": false,
         "noUnusedParameters": false,
-        "resolveJsonModule": true
+        "resolveJsonModule": true,
+        "baseUrl": ".",
+        "paths": {
+            "@arkecosystem/*": ["./packages/*"]
+        }
     },
     "exclude": ["node_modules", "**/*.spec.ts", "**/*.test.ts"]
 }

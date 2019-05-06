@@ -1,9 +1,10 @@
 {
-    "name": "@arkecosystem/core-http-utils",
-    "description": "Http Utilities for ARK Core",
+    "name": "@uns/core-http-utils",
+    "description": "Http Utilities for UNS Core",
     "version": "2.3.22-1",
     "contributors": [
-        "Brian Faust <brian@ark.io>"
+        "Brian Faust <brian@ark.io>",
+        "Guillaume Nicolas <guillaume@spacelephant.org>"
     ],
     "license": "MIT",
     "main": "dist/index.js",
@@ -18,9 +19,9 @@
         "clean": "del dist"
     },
     "dependencies": {
-        "@arkecosystem/core-container": "^2.3.22-1",
-        "@arkecosystem/core-utils": "^2.3.22-1",
-        "@arkecosystem/crypto": "^2.3.22-1",
+        "@uns/core-container": "^2.3.22-1",
+        "@uns/core-utils": "^2.3.22-1",
+        "@uns/crypto": "^2.3.22-1",
         "boom": "^7.3.0",
         "expand-home-dir": "^0.0.3",
         "good": "^8.1.2",

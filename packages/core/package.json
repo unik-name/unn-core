@@ -1,12 +1,13 @@
 {
-    "name": "@arkecosystem/core",
-    "description": "Core of the ARK Blockchain",
+    "name": "@uns/core",
+    "description": "Core of the UNS Blockchain",
     "version": "2.3.22-1",
     "contributors": [
         "François-Xavier Thoorens <fx@ark.io>",
         "Kristjan Košič <kristjan@ark.io>",
         "Brian Faust <brian@ark.io>",
-        "Alex Barnsley <alex@ark.io>"
+        "Alex Barnsley <alex@ark.io>",
+        "Guillaume Nicolas <guillaume@spacelephant.org>"
     ],
     "license": "MIT",
     "main": "dist/index",
@@ -17,7 +18,7 @@
         "/oclif.manifest.json"
     ],
     "bin": {
-        "ark": "./bin/run"
+        "uns": "./bin/run"
     },
     "scripts": {
         "prepublishOnly": "yarn build",
@@ -28,36 +29,36 @@
         "build:watch": "yarn clean && yarn copy && yarn compile -w",
         "clean": "del dist",
         "copy": "cd ./src && cpy './config' '../dist/' --parents && cd ..",
-        "debug:start": "node --inspect-brk yarn ark core:run",
-        "debug:relay": "node --inspect-brk yarn ark relay:run",
-        "debug:forger": "node --inspect-brk yarn ark forger:run",
-        "ark": "./bin/run",
-        "start:mainnet": "cross-env CORE_PATH_CONFIG=./bin/config/mainnet yarn ark core:run",
-        "start:devnet": "cross-env CORE_PATH_CONFIG=./bin/config/devnet yarn ark core:run",
-        "start:testnet": "cross-env CORE_PATH_CONFIG=./bin/config/testnet CORE_ENV=test yarn ark core:run",
-        "relay:mainnet": "cross-env CORE_PATH_CONFIG=./bin/config/mainnet yarn ark relay:run",
-        "relay:devnet": "cross-env CORE_PATH_CONFIG=./bin/config/devnet yarn ark relay:run",
-        "relay:testnet": "cross-env CORE_PATH_CONFIG=./bin/config/testnet CORE_ENV=test yarn ark relay:run",
-        "forger:mainnet": "cross-env CORE_PATH_CONFIG=./bin/config/mainnet yarn ark forger:run",
-        "forger:devnet": "cross-env CORE_PATH_CONFIG=./bin/config/devnet yarn ark forger:run",
-        "forger:testnet": "cross-env CORE_PATH_CONFIG=./bin/config/testnet CORE_ENV=test yarn ark forger:run",
-        "full:testnet": "cross-env CORE_PATH_CONFIG=./bin/config/testnet CORE_ENV=test yarn ark core:run --networkStart"
+        "debug:start": "node --inspect-brk yarn uns core:run",
+        "debug:relay": "node --inspect-brk yarn uns relay:run",
+        "debug:forger": "node --inspect-brk yarn uns forger:run",
+        "start:mainnet": "cross-env CORE_PATH_CONFIG=./bin/config/mainnet yarn uns core:run",
+        "start:devnet": "cross-env CORE_PATH_CONFIG=./bin/config/devnet yarn uns core:run",
+        "start:testnet": "cross-env CORE_PATH_CONFIG=./bin/config/testnet CORE_ENV=test yarn uns core:run",
+        "relay:mainnet": "cross-env CORE_PATH_CONFIG=./bin/config/mainnet yarn uns relay:run",
+        "relay:devnet": "cross-env CORE_PATH_CONFIG=./bin/config/devnet yarn uns relay:run",
+        "relay:testnet": "cross-env CORE_PATH_CONFIG=./bin/config/testnet CORE_ENV=test yarn uns relay:run",
+        "forger:mainnet": "cross-env CORE_PATH_CONFIG=./bin/config/mainnet yarn uns forger:run",
+        "forger:devnet": "cross-env CORE_PATH_CONFIG=./bin/config/devnet yarn uns forger:run",
+        "forger:testnet": "cross-env CORE_PATH_CONFIG=./bin/config/testnet CORE_ENV=test yarn uns forger:run",
+        "full:testnet": "cross-env CORE_PATH_CONFIG=./bin/config/testnet CORE_ENV=test yarn uns core:run --networkStart",
+        "uns": "./bin/run"
     },
     "dependencies": {
-        "@arkecosystem/core-api": "^2.3.22-1",
-        "@arkecosystem/core-blockchain": "^2.3.22-1",
-        "@arkecosystem/core-container": "^2.3.22-1",
-        "@arkecosystem/core-database-postgres": "^2.3.22-1",
-        "@arkecosystem/core-event-emitter": "^2.3.22-1",
-        "@arkecosystem/core-forger": "^2.3.22-1",
-        "@arkecosystem/core-json-rpc": "^2.3.22-1",
-        "@arkecosystem/core-logger-pino": "^2.3.22-1",
-        "@arkecosystem/core-p2p": "^2.3.22-1",
-        "@arkecosystem/core-snapshots": "^2.3.22-1",
-        "@arkecosystem/core-transaction-pool": "^2.3.22-1",
-        "@arkecosystem/core-utils": "^2.3.22-1",
-        "@arkecosystem/core-webhooks": "^2.3.22-1",
-        "@arkecosystem/crypto": "^2.3.22-1",
+        "@uns/core-api": "^2.3.22-1",
+        "@uns/core-blockchain": "^2.3.22-1",
+        "@uns/core-container": "^2.3.22-1",
+        "@uns/core-database-postgres": "^2.3.22-1",
+        "@uns/core-event-emitter": "^2.3.22-1",
+        "@uns/core-forger": "^2.3.22-1",
+        "@uns/core-json-rpc": "^2.3.22-1",
+        "@uns/core-logger-pino": "^2.3.22-1",
+        "@uns/core-p2p": "^2.3.22-1",
+        "@uns/core-snapshots": "^2.3.22-1",
+        "@uns/core-transaction-pool": "^2.3.22-1",
+        "@uns/core-utils": "^2.3.22-1",
+        "@uns/core-webhooks": "^2.3.22-1",
+        "@uns/crypto": "^2.3.22-1",
         "@faustbrian/dato": "^0.2.0",
         "@oclif/command": "^1.5.11",
         "@oclif/config": "^1.12.9",
@@ -124,7 +125,7 @@
                 "./dist/hooks/command_not_found/suggest"
             ]
         },
-        "bin": "ark",
+        "bin": "uns",
         "topics": {
             "config": {
                 "description": "manage core config variables"

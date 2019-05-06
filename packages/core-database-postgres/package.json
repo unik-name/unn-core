@@ -1,9 +1,10 @@
 {
-    "name": "@arkecosystem/core-database-postgres",
-    "description": "PostgreSQL integration for ARK Core",
+    "name": "@uns/core-database-postgres",
+    "description": "PostgreSQL integration for UNS Core",
     "version": "2.3.22-1",
     "contributors": [
-        "Brian Faust <brian@ark.io>"
+        "Brian Faust <brian@ark.io>",
+        "Guillaume Nicolas <guillaume@spacelephant.org>"
     ],
     "license": "MIT",
     "main": "dist/index",
@@ -21,11 +22,11 @@
         "copy": "cd src/ && cpy './**/*.sql' --parents ../dist/ && cd ../"
     },
     "dependencies": {
-        "@arkecosystem/core-container": "^2.3.22-1",
-        "@arkecosystem/core-database": "^2.3.22-1",
-        "@arkecosystem/core-interfaces": "^2.3.22-1",
-        "@arkecosystem/core-utils": "^2.3.22-1",
-        "@arkecosystem/crypto": "^2.3.22-1",
+        "@uns/core-container": "^2.3.22-1",
+        "@uns/core-database": "^2.3.22-1",
+        "@uns/core-interfaces": "^2.3.22-1",
+        "@uns/core-utils": "^2.3.22-1",
+        "@uns/crypto": "^2.3.22-1",
         "@arkecosystem/utils": "^0.3.0",
         "@faustbrian/dato": "^0.2.0",
         "@types/bluebird": "^3.5.26",

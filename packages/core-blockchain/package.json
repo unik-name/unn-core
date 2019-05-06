@@ -1,11 +1,12 @@
 {
-    "name": "@arkecosystem/core-blockchain",
-    "description": "Blockchain Manager for ARK Core",
+    "name": "@uns/core-blockchain",
+    "description": "Blockchain Manager for UNS Core",
     "version": "2.3.22-1",
     "contributors": [
         "François-Xavier Thoorens <fx@ark.io>",
         "Kristjan Košič <kristjan@ark.io>",
-        "Brian Faust <brian@ark.io>"
+        "Brian Faust <brian@ark.io>",
+        "Guillaume Nicolas <guillaume@spacelephant.org>"
     ],
     "license": "MIT",
     "main": "dist/index",
@@ -22,10 +23,10 @@
         "clean": "del dist"
     },
     "dependencies": {
-        "@arkecosystem/core-container": "^2.3.22-1",
-        "@arkecosystem/core-interfaces": "^2.3.22-1",
-        "@arkecosystem/core-utils": "^2.3.22-1",
-        "@arkecosystem/crypto": "^2.3.22-1",
+        "@uns/core-container": "^2.3.22-1",
+        "@uns/core-interfaces": "^2.3.22-1",
+        "@uns/core-utils": "^2.3.22-1",
+        "@uns/crypto": "^2.3.22-1",
         "async": "^2.6.2",
         "awilix": "^4.2.1",
         "delay": "^4.1.0",

@@ -1,10 +1,11 @@
 {
-    "name": "@arkecosystem/core-api",
-    "description": "Public API for ARK Core",
+    "name": "@uns/core-api",
+    "description": "Public API for UNS Core",
     "version": "2.3.22-1",
     "contributors": [
         "Kristjan Košič <kristjan@ark.io>",
-        "Brian Faust <brian@ark.io>"
+        "Brian Faust <brian@ark.io>",
+        "Guillaume Nicolas <guillaume@spacelephant.org>"
     ],
     "license": "MIT",
     "main": "dist/index",
@@ -21,12 +22,12 @@
         "clean": "del dist"
     },
     "dependencies": {
-        "@arkecosystem/core-container": "^2.3.22-1",
-        "@arkecosystem/core-http-utils": "^2.3.22-1",
-        "@arkecosystem/core-interfaces": "^2.3.22-1",
-        "@arkecosystem/core-transaction-pool": "^2.3.22-1",
-        "@arkecosystem/core-utils": "^2.3.22-1",
-        "@arkecosystem/crypto": "^2.3.22-1",
+        "@uns/core-container": "^2.3.22-1",
+        "@uns/core-http-utils": "^2.3.22-1",
+        "@uns/core-interfaces": "^2.3.22-1",
+        "@uns/core-transaction-pool": "^2.3.22-1",
+        "@uns/core-utils": "^2.3.22-1",
+        "@uns/crypto": "^2.3.22-1",
         "@arkecosystem/utils": "^0.3.0",
         "@faustbrian/dato": "^0.2.0",
         "@faustbrian/hapi-version": "^0.2.11",

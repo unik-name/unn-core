@@ -1,10 +1,11 @@
 {
-    "name": "@arkecosystem/core-json-rpc",
-    "description": "A JSON-RPC 2.0 Specification compliant server to interact with the ARK Blockchain.",
+    "name": "@uns/core-json-rpc",
+    "description": "A JSON-RPC 2.0 Specification compliant server to interact with the UNS Blockchain.",
     "version": "2.3.22-1",
     "contributors": [
         "François-Xavier Thoorens <fx@ark.io>",
-        "Brian Faust <brian@ark.io>"
+        "Brian Faust <brian@ark.io>",
+        "Guillaume Nicolas <guillaume@spacelephant.org>"
     ],
     "license": "MIT",
     "main": "dist/index.js",
@@ -20,11 +21,11 @@
         "clean": "del dist"
     },
     "dependencies": {
-        "@arkecosystem/core-container": "^2.3.22-1",
-        "@arkecosystem/core-http-utils": "^2.3.22-1",
-        "@arkecosystem/core-interfaces": "^2.3.22-1",
-        "@arkecosystem/core-utils": "^2.3.22-1",
-        "@arkecosystem/crypto": "^2.3.22-1",
+        "@uns/core-container": "^2.3.22-1",
+        "@uns/core-http-utils": "^2.3.22-1",
+        "@uns/core-interfaces": "^2.3.22-1",
+        "@uns/core-utils": "^2.3.22-1",
+        "@uns/crypto": "^2.3.22-1",
         "@keyv/sqlite": "^2.0.0",
         "bip39": "^2.5.0",
         "boom": "^7.3.0",

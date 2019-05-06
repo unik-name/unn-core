@@ -1,6 +1,6 @@
 {
-    "name": "@arkecosystem/crypto",
-    "description": "Crypto utilities for the ARK Blockchain",
+    "name": "@uns/crypto",
+    "description": "Crypto utilities for the UNS Blockchain",
     "version": "2.3.22-1",
     "contributors": [
         "François-Xavier Thoorens <fx.thoorens@ark.io>",
@@ -8,7 +8,8 @@
         "Alex Barnsley <alex@ark.io>",
         "Lúcio Rubens <lucio@ark.io>",
         "Juan A. Martín <juan@ark.io>",
-        "Joshua Noack <joshua@ark.io>"
+        "Joshua Noack <joshua@ark.io>",
+        "Guillaume Nicolas <guillaume@spacelephant.org>"
     ],
     "license": "MIT",
     "main": "dist/index",

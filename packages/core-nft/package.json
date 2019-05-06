@@ -1,7 +1,7 @@
 {
     "name": "@arkecosystem/core-nft",
     "description": "NFT for Ark Core",
-    "version": "2.3.0-next.6",
+    "version": "2.3.22-1",
     "contributors": [
         "Guillaume Nicolas <guillaume@spacelephant.org>"
     ],
@@ -27,9 +27,9 @@
         "updates": "../../node_modules/npm-check-updates/bin/npm-check-updates -a"
     },
     "dependencies": {
-        "@arkecosystem/core-container": "^2.3.0-next.6",
-        "@arkecosystem/core-interfaces": "^2.3.0-next.6",
-        "@arkecosystem/crypto": "^2.3.0-next.6"
+        "@arkecosystem/core-container": "^2.3.22-1",
+        "@arkecosystem/core-interfaces": "^2.3.22-1",
+        "@arkecosystem/crypto": "^2.3.22-1"
     },
     "publishConfig": {
         "access": "public"

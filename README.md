@@ -125,3 +125,65 @@ rm -rf ~/.local/state/ark-core/testnet && rm -rf ~/.local/share/ark-core/testnet
 -   [ ] estimate and set default fees amount.
 -   [x] rename `/nft` API to `/nfts`
 -   [ ] fix old tests.
+
+## Upgrade from upstream
+
+1. Merge upstream into `feat/nft`
+
+_NB: merge a release tag (from upstream/master)_
+
+```
+> git merge 2.3.22 feat/nft
+```
+
+2. Checkout to private/develop
+
+```
+> git checkout private/develop
+```
+
+3. Revert commit tagged with `rebrand`
+
+```
+> git revert rebrand
+```
+
+4. Merge `feat/nft`
+
+```
+> git merge feat/nft
+```
+
+5. Customize version
+
+_NB: naming is UPSTREAM_VERSION-LOCAL_INCREMENT (e.g 2.3.22 -> 2.3.22-1)_
+
+```
+> yarn lerna version 2.3.22-1
+```
+
+6. Rebrand project
+
+```
+> yarn rebrand
+```
+
+7. Commit
+
+```
+> git add . && git commit -m "auto: release new UNS version 2.3.22-1"
+```
+
+8. Move tag `rebrand` and new version tag
+
+```
+> git tag -d rebrand
+> git push private :rebrand
+> git tag rebrand 2.3.22-1
+```
+
+9. Push
+
+```
+> git push private private/develop 2.3.22-1 rebrand
+```

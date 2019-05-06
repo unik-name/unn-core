@@ -1,11 +1,12 @@
 {
-    "name": "@arkecosystem/core-forger",
-    "description": "Forger for ARK Core",
-    "version": "2.3.22",
+    "name": "@uns/core-forger",
+    "description": "Forger for UNS Core",
+    "version": "2.3.22-1",
     "contributors": [
         "François-Xavier Thoorens <fx@ark.io>",
         "Kristjan Košič <kristjan@ark.io>",
-        "Brian Faust <brian@ark.io>"
+        "Brian Faust <brian@ark.io>",
+        "Guillaume Nicolas <guillaume@spacelephant.org>"
     ],
     "license": "MIT",
     "main": "dist/index.js",
@@ -21,11 +22,11 @@
         "clean": "del dist"
     },
     "dependencies": {
-        "@arkecosystem/core-container": "^2.3.22",
-        "@arkecosystem/core-interfaces": "^2.3.22",
-        "@arkecosystem/core-p2p": "^2.3.22",
-        "@arkecosystem/core-utils": "^2.3.22",
-        "@arkecosystem/crypto": "^2.3.22",
+        "@uns/core-container": "^2.3.22-1",
+        "@uns/core-interfaces": "^2.3.22-1",
+        "@uns/core-p2p": "^2.3.22-1",
+        "@uns/core-utils": "^2.3.22-1",
+        "@uns/crypto": "^2.3.22-1",
         "lodash.isempty": "^4.4.0",
         "lodash.uniq": "^4.5.0",
         "pluralize": "^7.0.0"

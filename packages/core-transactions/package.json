@@ -1,9 +1,10 @@
 {
-    "name": "@arkecosystem/core-transactions",
-    "description": "Transaction Services for ARK Core",
-    "version": "2.3.22",
+    "name": "@uns/core-transactions",
+    "description": "Transaction Services for UNS Core",
+    "version": "2.3.22-1",
     "contributors": [
-        "Joshua Noack <joshua@ark.io>"
+        "Joshua Noack <joshua@ark.io>",
+        "Guillaume Nicolas <guillaume@spacelephant.org>"
     ],
     "license": "MIT",
     "main": "dist/index.js",
@@ -19,8 +20,8 @@
         "clean": "del dist"
     },
     "dependencies": {
-        "@arkecosystem/core-interfaces": "^2.3.22",
-        "@arkecosystem/crypto": "^2.3.22",
+        "@uns/core-interfaces": "^2.3.22-1",
+        "@uns/crypto": "^2.3.22-1",
         "bs58check": "^2.1.2"
     },
     "publishConfig": {

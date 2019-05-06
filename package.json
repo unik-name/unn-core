@@ -45,7 +45,8 @@
         "version": "cross-env-shell ./scripts/version.sh",
         "deps": "cross-env-shell ./scripts/deps.sh",
         "docker": "node ./scripts/docker/generate-docker.js",
-        "bench": "node benchmark/index.js"
+        "bench": "node benchmark/index.js",
+        "rebrand": "node ./scripts/rebrand/index.js"
     },
     "devDependencies": {
         "@babel/core": "^7.3.4",

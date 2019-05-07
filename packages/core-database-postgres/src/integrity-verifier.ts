@@ -2,11 +2,13 @@ import { Bignum } from "@arkecosystem/crypto";
 import { sortBy } from "@arkecosystem/utils";
 
 import { app } from "@arkecosystem/core-container";
-import { Database, Logger } from "@arkecosystem/core-interfaces";
+import { Database, Logger, NFT as _NFT_ } from "@arkecosystem/core-interfaces";
+import { NFT } from "@arkecosystem/core-nft";
 import { queries } from "./queries";
 import { QueryExecutor } from "./sql/query-executor";
 
 const logger = app.resolvePlugin<Logger.ILogger>("logger");
+const nftManager: _NFT_.INFTManager = app.resolvePlugin<_NFT_.INFTManager>("nft");
 const config = app.getConfig();
 
 const genesisWallets = config.get("genesisBlock.transactions").map(tx => tx.senderId);
@@ -19,29 +21,32 @@ export class IntegrityVerifier {
      * @return {Boolean}
      */
     public async run() {
-        logger.info("Integrity Verification - Step 1 of 8: Received Transactions");
+        logger.info("Integrity Verification - Step 1 of 9: Received Transactions");
         await this.buildReceivedTransactions();
 
-        logger.info("Integrity Verification - Step 2 of 8: Block Rewards");
+        logger.info("Integrity Verification - Step 2 of 9: Block Rewards");
         await this.buildBlockRewards();
 
-        logger.info("Integrity Verification - Step 3 of 8: Last Forged Blocks");
+        logger.info("Integrity Verification - Step 3 of 9: Last Forged Blocks");
         await this.buildLastForgedBlocks();
 
-        logger.info("Integrity Verification - Step 4 of 8: Sent Transactions");
+        logger.info("Integrity Verification - Step 4 of 9: Sent Transactions");
         await this.buildSentTransactions();
 
-        logger.info("Integrity Verification - Step 5 of 8: Second Signatures");
+        logger.info("Integrity Verification - Step 5 of 9: Second Signatures");
         await this.buildSecondSignatures();
 
-        logger.info("Integrity Verification - Step 6 of 8: Votes");
+        logger.info("Integrity Verification - Step 6 of 9: Votes");
         await this.buildVotes();
 
-        logger.info("Integrity Verification - Step 7 of 8: Delegates");
+        logger.info("Integrity Verification - Step 7 of 9: Delegates");
         await this.buildDelegates();
 
-        logger.info("Integrity Verification - Step 8 of 8: MultiSignatures");
+        logger.info("Integrity Verification - Step 8 of 9: MultiSignatures");
         await this.buildMultisignatures();
+
+        logger.info("Integrity Verification - Step 9 of 9: Nfts");
+        await this.buildNfts();
 
         logger.info(`Integrity verified! Wallets in memory: ${Object.keys(this.walletManager.allByAddress()).length}`);
         logger.info(`Number of registered delegates: ${Object.keys(this.walletManager.allByUsername()).length}`);
@@ -197,6 +202,29 @@ export class IntegrityVerifier {
             if (!wallet.multisignature) {
                 wallet.multisignature = transaction.asset.multisignature;
             }
+        }
+    }
+
+    private async buildNfts() {
+        const transactions = await this.query.manyOrNone(queries.integrityVerifier.nfts);
+
+        const builtTokens = []; // List of tokens already built
+
+        for (const transaction of transactions) {
+            const nftId = transaction.asset.nft.tokenId;
+
+            if (!builtTokens.includes(nftId)) {
+                let ownerWallet;
+                if (transaction.recipientId) {
+                    ownerWallet = this.walletManager.findByAddress(transaction.recipientId);
+                } else {
+                    ownerWallet = this.walletManager.findByPublicKey(transaction.senderPublicKey);
+                }
+                ownerWallet.tokens.push(nftId);
+                nftManager.register(new NFT(nftId, ownerWallet.address));
+            }
+
+            builtTokens.push(nftId);
         }
     }
 

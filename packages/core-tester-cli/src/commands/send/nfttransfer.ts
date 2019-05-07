@@ -129,9 +129,9 @@ export class NFTTransferCommand extends SendCommand {
     }
 
     private async knockNfts(expected: string): Promise<void> {
-        const actual = (await this.api.get(`nfts`)).result;
+        const actual = (await this.api.get(`nfts`)).data;
 
-        if (actual[expected]) {
+        if (actual.find(o => o.id === expected)) {
             logger.info(`[W] ${expected} still exists`);
         } else {
             logger.error(`[W] ${expected} has been destroyed`);

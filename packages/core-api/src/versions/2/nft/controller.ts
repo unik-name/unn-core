@@ -1,32 +1,27 @@
-import { app } from "@arkecosystem/core-container";
-import { NFT } from "@arkecosystem/core-interfaces";
-import { Bignum } from "@arkecosystem/crypto";
 import Boom from "boom";
 import Hapi from "hapi";
 import { Controller } from "../shared/controller";
 
 export class NftController extends Controller {
-    protected nftManager: NFT.INFTManager = app.resolvePlugin<NFT.INFTManager>("nft");
-
     public async index(request: Hapi.Request, h: Hapi.ResponseToolkit) {
-        const tokens = this.nftManager.tokens;
+        try {
+            // @ts-ignore
+            const data = await request.server.methods.v2.nft.index(request);
 
-        return {
-            result: tokens,
-            totalCount: tokens.length,
-        };
+            return super.respondWithCache(data, h);
+        } catch (error) {
+            return Boom.badImplementation(error);
+        }
     }
 
     public async show(request: Hapi.Request, h: Hapi.ResponseToolkit) {
-        const tokenId = request.params.id;
-        const token = this.nftManager.findById(Buffer.from(tokenId));
+        try {
+            // @ts-ignore
+            const data = await request.server.methods.v2.nft.show(request);
 
-        if (!token) {
-            return Boom.notFound(`Token ${request.params.id} not found`);
+            return super.respondWithCache(data, h);
+        } catch (error) {
+            return Boom.badImplementation(error);
         }
-
-        return {
-            data: token,
-        };
     }
 }

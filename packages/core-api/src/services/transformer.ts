@@ -9,6 +9,7 @@ import { transformTransactionLegacy } from "../versions/1/transactions/transform
 
 import { transformBlock } from "../versions/2/blocks/transformer";
 import { transformDelegate } from "../versions/2/delegates/transformer";
+import { transformNft } from "../versions/2/nft/transformer";
 import { transformPeer } from "../versions/2/peers/transformer";
 import { transformFeeStatistics } from "../versions/2/shared/transformers/fee-statistics";
 import { transformPorts } from "../versions/2/shared/transformers/ports";
@@ -38,6 +39,7 @@ class Transformer {
             ports: transformPorts,
             transaction: transformTransaction,
             wallet: transformWallet,
+            nft: transformNft,
         });
     }
 

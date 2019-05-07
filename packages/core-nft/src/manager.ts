@@ -40,13 +40,20 @@ export class NFTManager implements _NFT_.INFTManager {
     }
 
     public findById(id: Buffer): _NFT_.INFT {
-        const tokenIndex = id.toString();
-        return this.tokens[tokenIndex];
+        return this.tokens[this.computeIndex(id)];
     }
 
-    public isRegistered(tokenId: Buffer): boolean {
-        const tokenIndex = tokenId.toString();
-        return this.tokens.hasOwnProperty(tokenIndex);
+    public isRegistered(id: Buffer): boolean {
+        return this.tokens.hasOwnProperty(this.computeIndex(id));
+    }
+
+    public register(token: _NFT_.INFT): boolean {
+        const tokenIndex = this.computeIndex(token.id);
+        if (!this.isRegistered(token.id)) {
+            this.tokens[tokenIndex] = token;
+            return true;
+        }
+        return false;
     }
 
     private transactionApplied(transaction: ITransactionData) {
@@ -102,20 +109,14 @@ export class NFTManager implements _NFT_.INFTManager {
     }
 
     private delete(id: Buffer): boolean {
-        const tokenIndex = id.toString("utf8");
         if (this.isRegistered(id)) {
-            delete this.tokens[tokenIndex];
+            delete this.tokens[this.computeIndex(id)];
             return true;
         }
         return false;
     }
 
-    private register(token: _NFT_.INFT): boolean {
-        const tokenIndex = token.id.toString("utf8");
-        if (!this.isRegistered(token.id)) {
-            this.tokens[tokenIndex] = token;
-            return true;
-        }
-        return false;
+    private computeIndex(tokenId: Buffer): string {
+        return Buffer.from(tokenId).toString("utf8");
     }
 }

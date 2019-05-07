@@ -13,4 +13,5 @@ export interface INFTManager {
     stop(): void;
     isRegistered(tokenId: Buffer): boolean;
     findById(tokenId: Buffer): INFT;
+    register(token: INFT): boolean;
 }

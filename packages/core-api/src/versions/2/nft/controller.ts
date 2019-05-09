@@ -6,7 +6,7 @@ export class NftController extends Controller {
     public async index(request: Hapi.Request, h: Hapi.ResponseToolkit) {
         try {
             // @ts-ignore
-            const data = await request.server.methods.v2.nft.index(request);
+            const data = await request.server.methods.v2.nfts.index(request);
 
             return super.respondWithCache(data, h);
         } catch (error) {
@@ -17,7 +17,7 @@ export class NftController extends Controller {
     public async show(request: Hapi.Request, h: Hapi.ResponseToolkit) {
         try {
             // @ts-ignore
-            const data = await request.server.methods.v2.nft.show(request);
+            const data = await request.server.methods.v2.nfts.show(request);
 
             return super.respondWithCache(data, h);
         } catch (error) {

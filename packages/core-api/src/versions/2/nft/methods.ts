@@ -24,9 +24,9 @@ const show = async request => {
 
 export function registerMethods(server) {
     ServerCache.make(server)
-        .method("v2.nft.index", index, 8, request => ({
+        .method("v2.nfts.index", index, 8, request => ({
             ...request.query,
             ...paginate(request),
         }))
-        .method("v2.nft.show", show, 8, request => ({ id: request.params.id }));
+        .method("v2.nfts.show", show, 8, request => ({ id: request.params.id }));
 }

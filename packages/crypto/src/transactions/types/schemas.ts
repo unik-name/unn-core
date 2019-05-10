@@ -144,11 +144,7 @@ export const nftTransfer = extend(transactionBaseSchema, {
                     required: ["tokenId"],
                     properties: {
                         tokenId: {
-                            oneOf: [
-                                { buffer: { minimum: Buffer.from("1"), bypassGenesis: true } },
-                                { type: "integer", minimum: 1 },
-                                { type: "string", pattern: "[0-9]+" },
-                            ],
+                            allOf: [{ $ref: "hex" }, { minLength: 1, maxLength: 64 }],
                         },
                     },
                 },
@@ -156,6 +152,8 @@ export const nftTransfer = extend(transactionBaseSchema, {
         },
     },
 });
+
+// TODO: merge nft schemes
 
 export const nftUpdate = extend(transactionBaseSchema, {
     $id: "nftUpdate",
@@ -172,11 +170,7 @@ export const nftUpdate = extend(transactionBaseSchema, {
                     required: ["tokenId", "props"],
                     properties: {
                         tokenId: {
-                            oneOf: [
-                                { buffer: { minimum: Buffer.from("1"), bypassGenesis: true } },
-                                { type: "integer", minimum: 1 },
-                                { type: "string", pattern: "[0-9]+" },
-                            ],
+                            allOf: [{ $ref: "hex" }, { minLength: 1, maxLength: 64 }],
                         },
                         props: {
                             type: "array",

@@ -1,5 +1,5 @@
 export interface INFT {
-    id: Buffer;
+    id: string;
     owner: string;
     properties: { [_: string]: string };
     updateOwner(owner: string);
@@ -11,6 +11,7 @@ export interface INFTManager {
     readonly tokens: { [id: string]: INFT };
     start(): INFTManager;
     stop(): void;
-    isRegistered(tokenId: Buffer): boolean;
-    findById(tokenId: Buffer): INFT;
+    isRegistered(tokenId: string): boolean;
+    findById(tokenId: string): INFT;
+    register(token: INFT): boolean;
 }

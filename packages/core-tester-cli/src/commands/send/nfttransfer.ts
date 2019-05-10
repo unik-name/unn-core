@@ -1,4 +1,4 @@
-import { Address, unicodeToBignumBuffer } from "@arkecosystem/crypto";
+import { Address } from "@arkecosystem/crypto";
 import { flags } from "@oclif/command";
 import { satoshiFlag } from "../../flags";
 import { logger } from "../../logger";
@@ -60,7 +60,7 @@ export class NFTTransferCommand extends SendCommand {
         let id = flags.id;
 
         if (flags.unikname) {
-            id = unicodeToBignumBuffer(flags.unikname).toString();
+            id = Buffer.from(flags.unikname, "utf8").toString("hex");
         } else if (!flags.recipient && !id) {
             id = this.getRandomInt(1, 10000);
         }
@@ -108,10 +108,7 @@ export class NFTTransferCommand extends SendCommand {
     }
 
     private async knockWallet(address: string, expected: string, mustContain: boolean = false): Promise<void> {
-        const tokens: string[] = (await this.api.get(`wallets/${address}`)).data.tokens.map(token =>
-            Buffer.from(token).toString(),
-        );
-        const contained: boolean = tokens.includes(expected);
+        const contained: boolean = (await this.api.get(`wallets/${address}`)).data.tokens.includes(expected);
 
         if (mustContain) {
             if (contained) {
@@ -129,9 +126,9 @@ export class NFTTransferCommand extends SendCommand {
     }
 
     private async knockNfts(expected: string): Promise<void> {
-        const actual = (await this.api.get(`nfts`)).result;
+        const actual = (await this.api.get(`nfts`)).data;
 
-        if (actual[expected]) {
+        if (actual.find(o => o.id === expected)) {
             logger.info(`[W] ${expected} still exists`);
         } else {
             logger.error(`[W] ${expected} has been destroyed`);

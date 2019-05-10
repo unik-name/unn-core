@@ -1,9 +1,14 @@
 import * as Joi from "joi";
 
-export const show: object = {
-    params: {
-        id: Joi.number()
-            .integer()
-            .min(1),
+export const index: object = {
+    query: {
+        kpub: Joi.alternatives(
+            Joi.string()
+                .alphanum()
+                .length(34),
+            Joi.string()
+                .hex()
+                .length(66),
+        ),
     },
 };

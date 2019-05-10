@@ -20,7 +20,7 @@
         "dist"
     ],
     "scripts": {
-        "prepublishOnly": "yarn build",
+        "prepublishOnly": "yarn build && yarn bundle",
         "compile": "../../node_modules/typescript/bin/tsc",
         "build": "yarn clean && tsc",
         "build:watch": "yarn clean && yarn compile -w",

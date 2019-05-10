@@ -77,14 +77,14 @@ export class TransactionBuilderFactory {
     /**
      * Create a new nft transaction type.
      */
-    public nftTransfer(tokenId: Buffer): NFTTransferBuilder {
+    public nftTransfer(tokenId: string): NFTTransferBuilder {
         return new NFTTransferBuilder(tokenId);
     }
 
     /**
      * Create a new nft transaction type.
      */
-    public nftUpdate(tokenId: Buffer): NFTUpdateBuilder {
+    public nftUpdate(tokenId: string): NFTUpdateBuilder {
         return new NFTUpdateBuilder(tokenId);
     }
 }

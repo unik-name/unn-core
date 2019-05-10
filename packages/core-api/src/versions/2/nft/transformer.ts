@@ -1,6 +1,6 @@
 export function transformNft(model) {
     return {
-        id: Buffer.from(model.id).toString("utf8"),
+        id: model.id,
         owner: model.owner,
         properties: model.properties,
     };

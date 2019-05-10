@@ -9,6 +9,9 @@ export const index: object = {
 
 export const show: object = {
     params: {
-        id: Joi.string(),
+        id: Joi.string()
+            .hex()
+            .min(1)
+            .max(64),
     },
 };

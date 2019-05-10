@@ -58,32 +58,6 @@ export function sortTransactions(transactions: ITransactionData[]): ITransaction
     });
 }
 
-export function chunk(value: string, size: number): string[] {
-    return value.match(new RegExp(`.{1,${size}}`, "g"));
-}
-
-export function bignumToUnicode(identifier: Buffer): string {
-    return chunk(new BigNumber(identifier.toString()).toString(16), 2)
-        .map(charCodeHex => parseInt(charCodeHex, 16))
-        .map(charCode => String.fromCharCode(charCode))
-        .join("");
-}
-
-// CHANGE FOR HASH
-export function unicodeToBignumBuffer(unicode: string): Buffer {
-    return Buffer.from(
-        new Bignum(
-            unicode
-                .split("")
-                .map(char => char.charCodeAt(0))
-                .map(charCode => charCode.toString(16))
-                .map(charCodeHex => charCodeHex.padStart(2, "0"))
-                .join(""),
-            16,
-        ).toString(),
-    );
-}
-
 let genesisTransactions: { [key: string]: boolean };
 let currentNetwork: number;
 

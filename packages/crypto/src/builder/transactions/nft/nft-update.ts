@@ -2,7 +2,7 @@ import { TransactionTypes } from "../../../constants";
 import { NFTBuilder } from "./nft";
 
 export class NFTUpdateBuilder extends NFTBuilder {
-    constructor(tokenId: Buffer) {
+    constructor(tokenId: string) {
         super(TransactionTypes.NftUpdate, tokenId);
     }
 

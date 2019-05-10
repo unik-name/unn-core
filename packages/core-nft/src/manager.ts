@@ -1,6 +1,6 @@
 import { app } from "@arkecosystem/core-container";
 import { EventEmitter, Logger, NFT as _NFT_ } from "@arkecosystem/core-interfaces";
-import { Address, Bignum, constants, ITransactionData, models } from "@arkecosystem/crypto";
+import { Address, constants, ITransactionData, models } from "@arkecosystem/crypto";
 import { NFT } from "./nft";
 import { isNftTransaction } from "./utils";
 
@@ -39,18 +39,17 @@ export class NFTManager implements _NFT_.INFTManager {
         this.eventActions.map(({ event, action }) => emitter.off(event, action.bind(this)));
     }
 
-    public findById(id: Buffer): _NFT_.INFT {
-        return this.tokens[this.computeIndex(id)];
+    public findById(id: string): _NFT_.INFT {
+        return this.tokens[id];
     }
 
-    public isRegistered(id: Buffer): boolean {
-        return this.tokens.hasOwnProperty(this.computeIndex(id));
+    public isRegistered(id: string): boolean {
+        return this.tokens.hasOwnProperty(id);
     }
 
     public register(token: _NFT_.INFT): boolean {
-        const tokenIndex = this.computeIndex(token.id);
         if (!this.isRegistered(token.id)) {
-            this.tokens[tokenIndex] = token;
+            this.tokens[token.id] = token;
             return true;
         }
         return false;
@@ -108,15 +107,11 @@ export class NFTManager implements _NFT_.INFTManager {
         }
     }
 
-    private delete(id: Buffer): boolean {
+    private delete(id: string): boolean {
         if (this.isRegistered(id)) {
-            delete this.tokens[this.computeIndex(id)];
+            delete this.tokens[id];
             return true;
         }
         return false;
-    }
-
-    private computeIndex(tokenId: Buffer): string {
-        return Buffer.from(tokenId).toString("utf8");
     }
 }

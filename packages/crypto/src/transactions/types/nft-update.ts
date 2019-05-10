@@ -14,10 +14,10 @@ export class NFTUpdateTransaction extends Transaction {
     public serialize(): ByteBuffer {
         const { data } = this;
         const properties = data.asset.nft.properties;
-        const bufferSize = this.computePropertiesSize(properties) + 33;
+        const bufferSize = 32 + 1 + this.computePropertiesSize(properties);
         const buffer = new ByteBuffer(bufferSize, true);
 
-        buffer.append(data.asset.nft.tokenId, "hex");
+        buffer.append(Buffer.from(data.asset.nft.tokenId.padStart(64, "0")), "hex");
         buffer.writeByte(data.asset.nft.properties.length);
         properties.map(([key, value]) => {
             const keyBytes = Buffer.from(key, "utf8");
@@ -33,7 +33,10 @@ export class NFTUpdateTransaction extends Transaction {
         const { data } = this;
         data.asset = {
             nft: {
-                tokenId: Buffer.from(buf.readBytes(16).toHex()),
+                tokenId: buf
+                    .readBytes(32)
+                    .toString("hex")
+                    .replace(/^0+|\[^0\]+$/g, ""),
             },
         };
         const properties = [];

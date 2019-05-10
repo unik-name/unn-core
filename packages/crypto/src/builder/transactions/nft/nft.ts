@@ -4,7 +4,7 @@ import { ITransactionData } from "../../../transactions";
 import { TransactionBuilder } from "../transaction";
 
 export abstract class NFTBuilder extends TransactionBuilder<NFTBuilder> {
-    constructor(type: TransactionTypes, tokenId: Buffer) {
+    constructor(type: TransactionTypes, tokenId: string) {
         super();
 
         this.data.amount = 0;

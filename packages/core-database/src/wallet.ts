@@ -26,7 +26,7 @@ export class Wallet implements Database.IWallet {
     public producedBlocks: number;
     public forgedFees: Bignum;
     public forgedRewards: Bignum;
-    public tokens: Buffer[];
+    public tokens: string[];
     public rate?: number;
 
     constructor(address: string) {

@@ -16,11 +16,11 @@ export class NftTransferTransactionHandler extends TransactionHandler {
     ): boolean {
         const { data } = transaction;
         if (data.recipientId) {
-            if (!wallet.tokens.find(tokenId => Buffer.from(tokenId).equals(Buffer.from(data.asset.nft.tokenId)))) {
-                throw new NftOwnerError(wallet.publicKey, data.asset.nft.tokenId.toString());
+            if (!wallet.tokens.includes(data.asset.nft.tokenId)) {
+                throw new NftOwnerError(wallet.publicKey, data.asset.nft.tokenId);
             }
         } else if (walletManager.isTokenOwned(data.asset.nft.tokenId)) {
-            throw new NftOwnedError(data.asset.nft.tokenId.toString());
+            throw new NftOwnedError(data.asset.nft.tokenId);
         }
         return super.canBeApplied(transaction, wallet, walletManager);
     }
@@ -63,9 +63,7 @@ export class NftTransferTransactionHandler extends TransactionHandler {
     }
 
     private removeTokenFromWallet(wallet: Database.IWallet, transaction: ITransactionData): void {
-        const transferredTokenIndex = wallet.tokens.findIndex(tokenId =>
-            Buffer.from(tokenId).equals(Buffer.from(transaction.asset.nft.tokenId)),
-        );
+        const transferredTokenIndex = wallet.tokens.indexOf(transaction.asset.nft.tokenId);
         if (transferredTokenIndex === -1) {
             throw new Error(`wallet ${wallet.address} does not own token`);
         }
@@ -73,7 +71,7 @@ export class NftTransferTransactionHandler extends TransactionHandler {
         copy.splice(transferredTokenIndex, 1);
         wallet.tokens = copy;
     }
-    private addTokenToWallet(wallet: Database.IWallet, tokenId: Buffer): void {
+    private addTokenToWallet(wallet: Database.IWallet, tokenId: string): void {
         const copy = wallet.tokens.slice();
         copy.push(tokenId);
         wallet.tokens = copy;

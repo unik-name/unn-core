@@ -1,4 +1,4 @@
-import { Address } from "@arkecosystem/crypto";
+import { Address, HashAlgorithms } from "@arkecosystem/crypto";
 import { flags } from "@oclif/command";
 import { satoshiFlag } from "../../flags";
 import { logger } from "../../logger";
@@ -60,7 +60,7 @@ export class NFTTransferCommand extends SendCommand {
         let id = flags.id;
 
         if (flags.unikname) {
-            id = Buffer.from(flags.unikname, "utf8").toString("hex");
+            id = HashAlgorithms.sha256(flags.unikname).toString("hex");
         } else if (!flags.recipient && !id) {
             id = this.getRandomInt(1, 10000);
         }

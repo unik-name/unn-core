@@ -1,7 +1,7 @@
 {
     "name": "@uns/core-blockchain",
     "description": "Blockchain Manager for UNS Core",
-    "version": "2.3.22-2",
+    "version": "2.3.22-3",
     "contributors": [
         "François-Xavier Thoorens <fx@ark.io>",
         "Kristjan Košič <kristjan@ark.io>",
@@ -23,10 +23,10 @@
         "clean": "del dist"
     },
     "dependencies": {
-        "@uns/core-container": "^2.3.22-2",
-        "@uns/core-interfaces": "^2.3.22-2",
-        "@uns/core-utils": "^2.3.22-2",
-        "@uns/crypto": "^2.3.22-2",
+        "@uns/core-container": "^2.3.22-3",
+        "@uns/core-interfaces": "^2.3.22-3",
+        "@uns/core-utils": "^2.3.22-3",
+        "@uns/crypto": "^2.3.22-3",
         "async": "^2.6.2",
         "awilix": "^4.2.1",
         "delay": "^4.1.0",

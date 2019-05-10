@@ -1,7 +1,7 @@
 {
     "name": "@uns/core-jest-matchers",
     "description": "Jest matchers for UNS Core",
-    "version": "2.3.22-2",
+    "version": "2.3.22-3",
     "contributors": [
         "Brian Faust <brian@ark.io>",
         "Erwann Gentric <erwann@ark.io>",
@@ -22,8 +22,8 @@
     },
     "dependencies": {
         "@arkecosystem/utils": "^0.3.0",
-        "@uns/core-container": "^2.3.22-2",
-        "@uns/crypto": "^2.3.22-2",
+        "@uns/core-container": "^2.3.22-3",
+        "@uns/crypto": "^2.3.22-3",
         "bip39": "^2.5.0",
         "jest-extended": "^0.11.1",
         "lodash.get": "^4.4.2",

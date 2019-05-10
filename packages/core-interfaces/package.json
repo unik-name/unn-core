@@ -1,7 +1,7 @@
 {
     "name": "@uns/core-interfaces",
     "description": "Interface types for essential UNS Core modules",
-    "version": "2.3.22-2",
+    "version": "2.3.22-3",
     "contributors": [
         "François-Xavier Thoorens <fx@ark.io>",
         "Kristjan Košič <kristjan@ark.io>",
@@ -25,7 +25,7 @@
     },
     "dependencies": {
         "@faustbrian/dato": "^0.2.0",
-        "@uns/crypto": "^2.3.22-2",
+        "@uns/crypto": "^2.3.22-3",
         "awilix": "^4.2.1"
     },
     "publishConfig": {

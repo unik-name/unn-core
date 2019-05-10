@@ -1,7 +1,7 @@
 {
     "name": "@uns/core-json-rpc",
     "description": "A JSON-RPC 2.0 Specification compliant server to interact with the UNS Blockchain.",
-    "version": "2.3.22-2",
+    "version": "2.3.22-3",
     "contributors": [
         "François-Xavier Thoorens <fx@ark.io>",
         "Brian Faust <brian@ark.io>",
@@ -22,11 +22,11 @@
     },
     "dependencies": {
         "@keyv/sqlite": "^2.0.0",
-        "@uns/core-container": "^2.3.22-2",
-        "@uns/core-http-utils": "^2.3.22-2",
-        "@uns/core-interfaces": "^2.3.22-2",
-        "@uns/core-utils": "^2.3.22-2",
-        "@uns/crypto": "^2.3.22-2",
+        "@uns/core-container": "^2.3.22-3",
+        "@uns/core-http-utils": "^2.3.22-3",
+        "@uns/core-interfaces": "^2.3.22-3",
+        "@uns/core-utils": "^2.3.22-3",
+        "@uns/crypto": "^2.3.22-3",
         "bip39": "^2.5.0",
         "boom": "^7.3.0",
         "is-reachable": "^3.0.0",

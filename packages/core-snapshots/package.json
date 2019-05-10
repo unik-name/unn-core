@@ -1,7 +1,7 @@
 {
     "name": "@uns/core-snapshots",
     "description": "Provides live local streamed snapshots functionality for UNS Core",
-    "version": "2.3.22-2",
+    "version": "2.3.22-3",
     "contributors": [
         "Kristjan Košič <chris@ark.io>",
         "Guillaume Nicolas <guillaume@spacelephant.org>"
@@ -21,11 +21,11 @@
         "copy": "cd src/ && cpy './**/*.sql' --parents ../dist/ && cd ../"
     },
     "dependencies": {
-        "@uns/core-container": "^2.3.22-2",
-        "@uns/core-database-postgres": "^2.3.22-2",
-        "@uns/core-interfaces": "^2.3.22-2",
-        "@uns/core-utils": "^2.3.22-2",
-        "@uns/crypto": "^2.3.22-2",
+        "@uns/core-container": "^2.3.22-3",
+        "@uns/core-database-postgres": "^2.3.22-3",
+        "@uns/core-interfaces": "^2.3.22-3",
+        "@uns/core-utils": "^2.3.22-3",
+        "@uns/crypto": "^2.3.22-3",
         "JSONStream": "^1.3.5",
         "cpy-cli": "^2.0.0",
         "create-hash": "^1.2.0",

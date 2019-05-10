@@ -1,7 +1,7 @@
 {
     "name": "@uns/core-error-tracker-sentry",
     "description": "Sentry error tracker integration for UNS Core.",
-    "version": "2.3.22-1",
+    "version": "2.3.22-2",
     "contributors": [
         "Brian Faust <brian@ark.io>",
         "Guillaume Nicolas <guillaume@spacelephant.org>"
@@ -19,8 +19,8 @@
         "clean": "del dist"
     },
     "dependencies": {
-        "@uns/core-container": "^2.3.22-1",
-        "@sentry/node": "^4.6.4"
+        "@sentry/node": "^4.6.4",
+        "@uns/core-container": "^2.3.22-2"
     },
     "publishConfig": {
         "access": "public"

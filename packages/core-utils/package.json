@@ -1,7 +1,7 @@
 {
     "name": "@uns/core-utils",
     "description": "Utilities for UNS Core",
-    "version": "2.3.22-1",
+    "version": "2.3.22-2",
     "contributors": [
         "Brian Faust <brian@ark.io>",
         "Guillaume Nicolas <guillaume@spacelephant.org>"
@@ -19,10 +19,10 @@
         "clean": "del dist"
     },
     "dependencies": {
-        "@uns/core-container": "^2.3.22-1",
-        "@uns/core-interfaces": "^2.3.22-1",
-        "@uns/crypto": "^2.3.22-1",
         "@faustbrian/dato": "^0.2.0",
+        "@uns/core-container": "^2.3.22-2",
+        "@uns/core-interfaces": "^2.3.22-2",
+        "@uns/crypto": "^2.3.22-2",
         "cli-table3": "^0.5.1",
         "fast-json-parse": "^1.0.3",
         "got": "^9.6.0"

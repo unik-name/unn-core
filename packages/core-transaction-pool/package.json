@@ -1,7 +1,7 @@
 {
     "name": "@uns/core-transaction-pool",
     "description": "Transaction Pool Manager for UNS Core",
-    "version": "2.3.22-1",
+    "version": "2.3.22-2",
     "contributors": [
         "Kristjan Košič <kristjan@ark.io>",
         "Brian Faust <brian@ark.io>",
@@ -25,15 +25,15 @@
         "clean": "del dist"
     },
     "dependencies": {
-        "@uns/core-container": "^2.3.22-1",
-        "@uns/core-database": "^2.3.22-1",
-        "@uns/core-interfaces": "^2.3.22-1",
-        "@uns/core-transactions": "^2.3.22-1",
-        "@uns/crypto": "^2.3.22-1",
         "@faustbrian/dato": "^0.2.0",
         "@types/better-sqlite3": "^5.2.2",
         "@types/fs-extra": "^5.0.5",
         "@types/pluralize": "^0.0.29",
+        "@uns/core-container": "^2.3.22-2",
+        "@uns/core-database": "^2.3.22-2",
+        "@uns/core-interfaces": "^2.3.22-2",
+        "@uns/core-transactions": "^2.3.22-2",
+        "@uns/crypto": "^2.3.22-2",
         "better-sqlite3": "^5.4.0",
         "bs58check": "^2.1.2",
         "delay": "^4.1.0",

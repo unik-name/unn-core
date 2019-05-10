@@ -1,7 +1,7 @@
 {
     "name": "@uns/core-vote-report",
     "description": "Vote Report for UNS Core",
-    "version": "2.3.22-1",
+    "version": "2.3.22-2",
     "contributors": [
         "Brian Faust <brian@ark.io>",
         "Guillaume Nicolas <guillaume@spacelephant.org>"
@@ -19,10 +19,10 @@
         "clean": "del dist"
     },
     "dependencies": {
-        "@uns/core-container": "^2.3.22-1",
-        "@uns/core-http-utils": "^2.3.22-1",
-        "@uns/core-utils": "^2.3.22-1",
-        "@uns/crypto": "^2.3.22-1",
+        "@uns/core-container": "^2.3.22-2",
+        "@uns/core-http-utils": "^2.3.22-2",
+        "@uns/core-utils": "^2.3.22-2",
+        "@uns/crypto": "^2.3.22-2",
         "handlebars": "^4.1.0",
         "lodash.sumby": "^4.6.0",
         "vision": "^5.4.4"

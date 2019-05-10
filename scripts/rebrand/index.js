@@ -96,15 +96,4 @@ function save(path,object){
         save(jsonFilePath,json)
 
     }
-
-    let tsconfigFilePath = path.join(WORKDIR,"tsconfig.json");
-    let tsconfig = require(tsconfigFilePath);
-        
-    tsconfig.compilerOptions.baseUrl = "."
-
-    tsconfig.compilerOptions.paths = {}
-    tsconfig.compilerOptions.paths[`${ARK_NAME}*`] = ["./packages/*"]
-
-    save(tsconfigFilePath,tsconfig);
-
 })()

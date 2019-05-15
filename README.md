@@ -6,6 +6,7 @@ This repository is forked from [ArkEcosystem/core](https://github.com/ArkEcosyst
 It adds non fungible token management to Ark framework.
 
 :warning: **_this project is experimental, do not use it in production_** :warning:
+:warning: **_@arkecosystem dependencies paths are overridden to use @uns modules in packages core and core-tester-cli (module-aliases) for run step. Same thing in .tsconfig files for build step_** :warning:
 
 ## Documentation
 
@@ -29,7 +30,7 @@ yarn setup
 ##### Database
 
 ```
-yarn docker ark
+yarn docker uns
 cd docker/development/testnet
 docker-compose up -d postgres
 ```
@@ -107,13 +108,13 @@ yarn clean
 Remove docker containers and volumes:
 
 ```
-docker stop ark-testnet-postgres && docker system prune -a && docker volume remove testnet_core testnet_postgres
+docker stop uns-testnet-postgres && docker system prune -a && docker volume remove testnet_core testnet_postgres
 ```
 
 Remove ark testnet caches:
 
 ```
-rm -rf ~/.local/state/ark-core/testnet && rm -rf ~/.local/share/ark-core/testnet && rm -rf ~/.cache/ark-core/testnet
+rm -rf ~/.local/state/uns-core/testnet && rm -rf ~/.local/share/uns-core/testnet && rm -rf ~/.cache/uns-core/testnet
 ```
 
 ## TODOs

@@ -13,7 +13,8 @@
         "resolveJsonModule": true,
         "baseUrl": ".",
         "paths": {
-            "@arkecosystem/*": ["./packages/*"]
+            "@arkecosystem/*": ["./packages/*"],
+            "@arkecosystem/utils": ["@arkecosystem/utils"]
         }
     },
     "exclude": ["node_modules", "**/*.spec.ts", "**/*.test.ts"]

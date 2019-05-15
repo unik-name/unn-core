@@ -43,7 +43,7 @@ function save(path,object){
         let jsonFilePath = path.join(packagesPath,package,"package.json");
         let json = require(jsonFilePath);
 
-        let { name, description,contributors,dependencies, bin, scripts, oclif } = json;
+        let { name, description,contributors,dependencies, devDependencies, bin, scripts, oclif } = json;
         
         // NAME
         json.name = name.replace(ARK_NAME,UNS_NAME)
@@ -51,16 +51,24 @@ function save(path,object){
         // DESCRIPTION
         json.description = description.replace(ARK,UNS);
         
+
+        let rebrandDeps = (list) => Object.entries(list).reduce((res,[key,value])=>{
+            let newKey = key;
+            if( !DEPENDENCY_TO_EXCLUDE.includes(newKey) ){
+                newKey = key.replace(ARK_NAME,UNS_NAME)
+            }
+            res[newKey] = value;
+            return res;
+        },{})
+
         // DEPENDENCIES
         if( dependencies ){
-            json.dependencies = Object.entries(dependencies).reduce((res,[key,value])=>{
-                let newKey = key;
-                if( !DEPENDENCY_TO_EXCLUDE.includes(newKey) ){
-                    newKey = key.replace(ARK_NAME,UNS_NAME)
-                }
-                res[newKey] = value;
-                return res;
-            },{})
+            json.dependencies = rebrandDeps(dependencies)
+        }
+
+        // DEVDEPENDENCIES
+        if( devDependencies ){
+            json.devDependencies = rebrandDeps(devDependencies);
         }
 
         // CONTRIBUTORS

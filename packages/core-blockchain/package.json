@@ -37,7 +37,7 @@
         "xstate": "^4.3.3"
     },
     "devDependencies": {
-        "@arkecosystem/core-p2p": "^2.3.22-1",
+        "@uns/core-p2p": "^2.3.22-1",
         "@types/async": "^2.4.1",
         "@types/lodash.get": "^4.4.6",
         "@types/pluralize": "^0.0.29",

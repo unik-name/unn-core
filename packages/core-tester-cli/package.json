@@ -41,7 +41,8 @@
         "pino": "^5.11.2",
         "pino-pretty": "^2.5.0",
         "pluralize": "^7.0.0",
-        "pokemon": "^1.2.3"
+        "pokemon": "^1.2.3",
+        "module-alias": "^2.2.0"
     },
     "devDependencies": {
         "@types/bip39": "^2.4.2",

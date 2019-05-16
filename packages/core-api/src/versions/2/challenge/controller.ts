@@ -1,10 +1,9 @@
 import { app } from "@arkecosystem/core-container";
-import { Database, NFT } from "@arkecosystem/core-interfaces";
+import { Database } from "@arkecosystem/core-interfaces";
 import Hapi from "hapi";
 import { Controller } from "../shared/controller";
 
 export class ChallengeController extends Controller {
-    protected nftManager: NFT.INFTManager = app.resolvePlugin<NFT.INFTManager>("nft");
     protected databaseService = app.resolvePlugin<Database.IDatabaseService>("database");
 
     public async index(request: Hapi.Request, h: Hapi.ResponseToolkit) {

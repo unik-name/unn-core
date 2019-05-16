@@ -2,6 +2,7 @@ import { IBlocksRepository } from "./database-repository";
 import { IRoundsRepository } from "./database-repository";
 import { ITransactionsRepository } from "./database-repository";
 import { IWalletsRepository } from "./database-repository";
+import { INftsRepository } from "./database-repository";
 
 import { models } from "@arkecosystem/crypto";
 
@@ -12,6 +13,7 @@ export interface IConnection {
     walletsRepository: IWalletsRepository;
     roundsRepository: IRoundsRepository;
     transactionsRepository: ITransactionsRepository;
+    nftsRepository: INftsRepository;
 
     make(): Promise<IConnection>;
 

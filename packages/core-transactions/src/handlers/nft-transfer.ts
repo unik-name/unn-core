@@ -63,17 +63,12 @@ export class NftTransferTransactionHandler extends TransactionHandler {
     }
 
     private removeTokenFromWallet(wallet: Database.IWallet, transaction: ITransactionData): void {
-        const transferredTokenIndex = wallet.tokens.indexOf(transaction.asset.nft.tokenId);
-        if (transferredTokenIndex === -1) {
-            throw new Error(`wallet ${wallet.address} does not own token`);
+        if (!wallet.tokens.includes(transaction.asset.nft.tokenId)) {
+            throw new NftOwnerError(wallet.address, transaction.asset.nft.tokenId); // TODO change message ?
         }
-        const copy = wallet.tokens.slice();
-        copy.splice(transferredTokenIndex, 1);
-        wallet.tokens = copy;
+        wallet.tokens = wallet.tokens.filter(t => t !== transaction.asset.nft.tokenId);
     }
     private addTokenToWallet(wallet: Database.IWallet, tokenId: string): void {
-        const copy = wallet.tokens.slice();
-        copy.push(tokenId);
-        wallet.tokens = copy;
+        wallet.tokens = wallet.tokens.concat([tokenId]);
     }
 }

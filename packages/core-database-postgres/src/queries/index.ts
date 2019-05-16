@@ -44,4 +44,9 @@ export const queries = {
         findById: loadQueryFile(__dirname, "./transactions/find-by-id.sql"),
         deleteByBlock: loadQueryFile(__dirname, "./transactions/delete-by-block.sql"),
     },
+    nfts: {
+        findById: loadQueryFile(__dirname, "./nfts/find-by-id.sql"),
+        delete: loadQueryFile(__dirname, "./nfts/delete.sql"),
+        updateOwnerId: loadQueryFile(__dirname, "./nfts/update-owner-id.sql"),
+    },
 };

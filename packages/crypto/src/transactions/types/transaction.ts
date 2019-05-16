@@ -119,7 +119,7 @@ export abstract class Transaction {
             return true;
         }
 
-        if (data.type !== 9 && data.type !== 10 && data.type >= 4 && data.type <= 99) {
+        if (data.type !== 9 && data.type >= 4 && data.type <= 99) {
             return false;
         }
 

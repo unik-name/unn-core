@@ -4,6 +4,7 @@ import { IRoundInfo } from "../shared";
 import {
     IBlocksBusinessRepository,
     IDelegatesBusinessRepository,
+    INftsBusinessRepository,
     ITransactionsBusinessRepository,
     IWalletsBusinessRepository,
 } from "./business-repository";
@@ -18,6 +19,8 @@ export interface IDatabaseService {
     delegates: IDelegatesBusinessRepository;
 
     blocksBusinessRepository: IBlocksBusinessRepository;
+
+    nftsBusinessRepository: INftsBusinessRepository;
 
     transactionsBusinessRepository: ITransactionsBusinessRepository;
 

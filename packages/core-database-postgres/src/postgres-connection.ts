@@ -21,6 +21,7 @@ export class PostgresConnection implements Database.IConnection {
     public blocksRepository: Database.IBlocksRepository;
     public roundsRepository: Database.IRoundsRepository;
     public transactionsRepository: Database.ITransactionsRepository;
+    public nftsRepository: Database.INftsRepository;
     public walletsRepository: Database.IWalletsRepository;
     public pgp: IMain;
     private emitter = app.resolvePlugin<EventEmitter.EventEmitter>("event-emitter");
@@ -288,5 +289,6 @@ export class PostgresConnection implements Database.IConnection {
         this.roundsRepository = this.db.rounds;
         this.walletsRepository = this.db.wallets;
         this.migrationsRepository = this.db.migrations;
+        this.nftsRepository = this.db.nfts;
     }
 }

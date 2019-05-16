@@ -1,5 +1,5 @@
 import { app } from "@arkecosystem/core-container";
-import { Database, Logger, NFT, Shared } from "@arkecosystem/core-interfaces";
+import { Database, Logger, Shared } from "@arkecosystem/core-interfaces";
 import { TransactionHandlerRegistry } from "@arkecosystem/core-transactions";
 import { roundCalculator } from "@arkecosystem/core-utils";
 import {
@@ -20,7 +20,6 @@ const { TransactionTypes } = constants;
 
 export class WalletManager implements Database.IWalletManager {
     public logger = app.resolvePlugin<Logger.ILogger>("logger");
-    public nftManager: NFT.INFTManager = app.resolvePlugin<NFT.INFTManager>("nft");
     public config = app.getConfig();
 
     public byAddress: { [key: string]: Wallet };
@@ -435,8 +434,8 @@ export class WalletManager implements Database.IWalletManager {
         return false;
     }
 
-    public isTokenOwned(tokenId: string) {
-        return this.nftManager.isRegistered(tokenId);
+    public isTokenOwned(tokenId: string): boolean {
+        return !!this.allByAddress().find(wallet => wallet.tokens.includes(tokenId));
     }
 
     /**
@@ -445,7 +444,13 @@ export class WalletManager implements Database.IWalletManager {
      * @return {Boolean}
      */
     public canBePurged(wallet): boolean {
-        return wallet.balance.isZero() && !wallet.secondPublicKey && !wallet.multisignature && !wallet.username;
+        return (
+            wallet.balance.isZero() &&
+            !wallet.secondPublicKey &&
+            !wallet.multisignature &&
+            !wallet.username &&
+            !wallet.tokens.length
+        );
     }
 
     /**

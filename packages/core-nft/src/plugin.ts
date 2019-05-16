@@ -7,11 +7,11 @@ export const plugin: Container.PluginDescriptor = {
     defaults,
     alias: "nft",
     async register(container: Container.IContainer, options) {
-        container.resolvePlugin<Logger.ILogger>("logger").info("Starting NFT Manager 💎");
-        return new NFTManager(options).start();
+        container.resolvePlugin<Logger.ILogger>("logger").info("[💎] Starting NFT Manager");
+        return new NFTManager().start();
     },
     async deregister(container: Container.IContainer, options) {
-        container.resolvePlugin<Logger.ILogger>("logger").info("Stopping NFT Manager 💎");
+        container.resolvePlugin<Logger.ILogger>("logger").info("[💎] Stopping NFT Manager");
         return container.resolvePlugin("nft").stop();
     },
 };

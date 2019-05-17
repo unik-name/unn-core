@@ -1,7 +1,13 @@
-import { Database, TransactionPool } from "@arkecosystem/core-interfaces";
-import { ITransactionData, NFTTransferTransaction, Transaction, TransactionConstructor } from "@arkecosystem/crypto";
+import { ApplicationEvents } from "@arkecosystem/core-event-emitter";
+import { Database, EventEmitter, TransactionPool } from "@arkecosystem/core-interfaces";
+import {
+    Address,
+    ITransactionData,
+    NFTTransferTransaction,
+    Transaction,
+    TransactionConstructor,
+} from "@arkecosystem/crypto";
 import { NftOwnedError, NftOwnerError } from "../errors";
-
 import { TransactionHandler } from "./transaction";
 
 export class NftTransferTransactionHandler extends TransactionHandler {
@@ -60,6 +66,18 @@ export class NftTransferTransactionHandler extends TransactionHandler {
 
     public canEnterTransactionPool(data: ITransactionData, guard: TransactionPool.IGuard): boolean {
         return !this.typeFromSenderAlreadyInPool(data, guard);
+    }
+
+    public emitEvents(transaction: Transaction, emitter: EventEmitter.EventEmitter): void {
+        const recipient = transaction.data.recipientId;
+        const sender = Address.fromPublicKey(transaction.data.senderPublicKey);
+        const isNftOwnershipTransfer = !!recipient;
+        const data = {
+            id: transaction.data.asset.nft.tokenId,
+            owner: isNftOwnershipTransfer ? transaction.data.recipientId : sender,
+            previousOwner: isNftOwnershipTransfer ? transaction.data.senderPublicKey : undefined,
+        };
+        emitter.emit(isNftOwnershipTransfer ? ApplicationEvents.NftTransferred : ApplicationEvents.NftCreated, data);
     }
 
     private removeTokenFromWallet(wallet: Database.IWallet, transaction: ITransactionData): void {

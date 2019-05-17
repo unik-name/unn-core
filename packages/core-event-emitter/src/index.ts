@@ -33,4 +33,6 @@ export enum ApplicationEvents {
     TransactionReverted = "transaction.reverted",
     WalletColdCreated = "wallet.created.cold",
     WalletSaved = "wallet.saved",
+    NftCreated = "nft.created",
+    NftTransferred = "nft.transferred",
 }

@@ -1,8 +1,8 @@
 import { app } from "@arkecosystem/core-container";
 import { Database, Logger, NFT, Shared } from "@arkecosystem/core-interfaces";
 import { TransactionHandlerRegistry } from "@arkecosystem/core-transactions";
-import { roundCalculator } from "@arkecosystem/core-utils";
 import {
+    ActorType,
     Bignum,
     constants,
     crypto,
@@ -282,7 +282,7 @@ export class WalletManager implements Database.IWalletManager {
 
         try {
             block.transactions.forEach(transaction => {
-                this.applyTransaction(transaction);
+                this.applyTransaction(transaction, delegate);
                 appliedTransactions.push(transaction);
             });
 
@@ -300,7 +300,7 @@ export class WalletManager implements Database.IWalletManager {
             this.logger.error("Failed to apply all transactions in block - reverting previous transactions");
             // Revert the applied transactions from last to first
             for (let i = appliedTransactions.length - 1; i >= 0; i--) {
-                this.revertTransaction(appliedTransactions[i]);
+                this.revertTransaction(appliedTransactions[i], delegate);
             }
 
             // TODO: should revert the delegate applyBlock ?
@@ -328,7 +328,7 @@ export class WalletManager implements Database.IWalletManager {
             // Revert the transactions from last to first
             for (let i = block.transactions.length - 1; i >= 0; i--) {
                 const transaction = block.transactions[i];
-                this.revertTransaction(transaction);
+                this.revertTransaction(transaction, delegate);
                 revertedTransactions.push(transaction);
             }
 
@@ -345,7 +345,7 @@ export class WalletManager implements Database.IWalletManager {
         } catch (error) {
             this.logger.error(error.stack);
 
-            revertedTransactions.reverse().forEach(transaction => this.applyTransaction(transaction));
+            revertedTransactions.reverse().forEach(transaction => this.applyTransaction(transaction, delegate));
 
             throw error;
         }
@@ -354,7 +354,7 @@ export class WalletManager implements Database.IWalletManager {
     /**
      * Apply the given transaction to a delegate.
      */
-    public applyTransaction(transaction: Transaction): void {
+    public applyTransaction(transaction: Transaction, delegateWallet?: Database.IWallet): void {
         const { data } = transaction;
         const { type, recipientId, senderPublicKey } = data;
 
@@ -383,14 +383,18 @@ export class WalletManager implements Database.IWalletManager {
             }
         }
 
-        transactionHandler.applyToSender(transaction, sender);
+        transactionHandler.applyToSender(transaction, sender, delegateWallet);
+        this.applyTransactionRewards(transaction, delegateWallet);
 
         if (type === TransactionTypes.DelegateRegistration) {
             this.reindex(sender);
         }
 
         // TODO: make more generic
-        if (recipient && (type === TransactionTypes.Transfer || type === TransactionTypes.NftTransfer)) {
+        if (
+            recipient &&
+            [TransactionTypes.Transfer, TransactionTypes.NftTransfer, TransactionTypes.NftMint].includes(type)
+        ) {
             transactionHandler.applyToRecipient(transaction, recipient);
         }
 
@@ -400,13 +404,14 @@ export class WalletManager implements Database.IWalletManager {
     /**
      * Remove the given transaction from a delegate.
      */
-    public revertTransaction(transaction: Transaction): void {
+    public revertTransaction(transaction: Transaction, delegateWallet?: Database.IWallet): void {
         const { type, data } = transaction;
         const transactionHandler = TransactionHandlerRegistry.get(transaction.type);
         const sender = this.findByPublicKey(data.senderPublicKey); // Should exist
         const recipient = this.byAddress[data.recipientId];
 
         transactionHandler.revertForSender(transaction, sender);
+        this.revertTransactionRewards(transaction, delegateWallet);
 
         // removing the wallet from the delegates index
         if (type === TransactionTypes.DelegateRegistration) {
@@ -512,6 +517,53 @@ export class WalletManager implements Database.IWalletManager {
         }
 
         return delegateWallets;
+    }
+
+    // TODO: Move to specific handler with wallet-manager instance as parameter
+    private applyTransactionRewards(transaction: Transaction, delegateWallet?: Database.IWallet) {
+        if (transaction.type === TransactionTypes.NftMint) {
+            const { data } = transaction;
+            const delegateReward = new Bignum(5); // TODO: Aller chercher le montant du reward
+
+            // NFT Delegate Reward
+            delegateWallet.balance = delegateWallet.balance.plus(delegateReward);
+            delegateWallet.forgedRewards = delegateWallet.forgedRewards.plus(delegateReward);
+
+            // Other rewards
+            if (data.payments) {
+                data.payments.forEach(payment => {
+                    const recipientPublicKey =
+                        payment.actorType === ActorType.CREATOR ? data.senderPublicKey : payment.publicKey;
+                    // Get wallet with walletManager and update balance
+                    const wallet = this.findByPublicKey(recipientPublicKey);
+                    wallet.balance = wallet.balance.plus(new Bignum(2)); // TODO : aller chercher le reward pour l'acteur
+                    this.reindex(wallet);
+                });
+            }
+        }
+    }
+
+    private revertTransactionRewards(transaction: Transaction, delegateWallet?: Database.IWallet) {
+        if (transaction.type === TransactionTypes.NftMint) {
+            const { data } = transaction;
+            const delegateReward = new Bignum(5); // TODO: Aller chercher le montant du reward
+
+            // NFT Delegate Reward
+            delegateWallet.balance = delegateWallet.balance.minus(delegateReward);
+            delegateWallet.forgedRewards = delegateWallet.forgedRewards.minus(delegateReward);
+
+            // Other rewards
+            if (data.payments) {
+                data.payments.forEach(payment => {
+                    const recipientPublicKey =
+                        payment.actorType === ActorType.CREATOR ? data.senderPublicKey : payment.publicKey;
+                    // Get wallet with walletManager and update balance
+                    const wallet = this.findByPublicKey(recipientPublicKey);
+                    wallet.balance = wallet.balance.minus(new Bignum(2)); // TODO : aller chercher le reward pour l'acteur
+                    this.reindex(wallet);
+                });
+            }
+        }
     }
 
     /**

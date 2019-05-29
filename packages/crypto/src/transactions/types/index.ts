@@ -10,6 +10,8 @@ export * from "./multi-payment";
 export * from "./delegate-resignation";
 export * from "./nft-transfer";
 export * from "./nft-update";
+export * from "./nft-mint";
+export * from "./nft-actor-type";
 
 import * as schemas from "./schemas";
 export { schemas };

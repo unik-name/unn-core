@@ -1,0 +1,3 @@
+#!/bin/sh
+
+*/30 7-9,12-16 * * MON-FRI unikname /home/unikname/unikname-core/scripts/upstream/update-upstream.sh >> /home/unikname/cron-node-update.log

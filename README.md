@@ -118,10 +118,10 @@ rm -rf ~/.local/state/ark-core/testnet && rm -rf ~/.local/share/ark-core/testnet
 
 ## TODOs
 
--   [ ] fix double transaction execution (in the pool **and** in the block processor). The branch `debug/nft` trace execution to visualize the bug.
--   [ ] persist in database. Currently, when you restart node, all tokens are erased.
+-   [x] fix double transaction execution (in the pool **and** in the block processor). The branch `debug/nft` trace execution to visualize the bug.
+-   [doing] persist in database. Currently, when you restart node, all tokens are erased.
 -   [ ] implement a way to revert `update` transactions.
--   [ ] update token id to `Buffer` to fit with specifications
+-   ~[x] update token id to `Buffer` to fit with specifications~ abandoned, the AIP70 must be updated, `Buffer` type is irrelevant to be used as token identifier
 -   [ ] estimate and set default fees amount.
 -   [x] rename `/nft` API to `/nfts`
--   [ ] fix old tests.
+-   [x] fix old tests.

@@ -11,8 +11,8 @@
     "slip44": 1,
     "aip20": 0,
     "client": {
-        "token": "TARK",
-        "symbol": "TѦ",
+        "token": "TUNS",
+        "symbol": "T₪",
         "explorer": "http://texplorer.ark.io"
     }
 }

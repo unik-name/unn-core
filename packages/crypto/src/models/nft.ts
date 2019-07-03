@@ -1,17 +1,16 @@
-import { NFT as _NFT_ } from "@arkecosystem/core-interfaces";
-export class NFT implements _NFT_.INFT {
+export class Nft {
     public id: string;
-    public owner: string;
+    public ownerId: string;
     public properties: { [_: string]: string };
 
-    constructor(id: string, owner: string) {
+    constructor(id: string, ownerId: string) {
         this.id = id;
-        this.owner = owner;
+        this.ownerId = ownerId;
         this.properties = {};
     }
 
-    public updateOwner(owner: string) {
-        this.owner = owner;
+    public updateOwnerId(ownerId: string) {
+        this.ownerId = ownerId;
     }
 
     public updateProperty(key: string, value: string) {

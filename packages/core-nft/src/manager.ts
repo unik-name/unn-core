@@ -1,35 +1,29 @@
 import { app } from "@arkecosystem/core-container";
-import { EventEmitter, Logger, NFT as _NFT_ } from "@arkecosystem/core-interfaces";
+import { ApplicationEvents } from "@arkecosystem/core-event-emitter";
+import { Database, EventEmitter, Logger, NFT } from "@arkecosystem/core-interfaces";
 import { Address, constants, ITransactionData, models } from "@arkecosystem/crypto";
-import { NFT } from "./nft";
 import { isNftTransaction } from "./utils";
 
 const { TransactionTypes } = constants;
 const emitter: EventEmitter.EventEmitter = app.resolvePlugin<EventEmitter.EventEmitter>("event-emitter");
 const logger: Logger.ILogger = app.resolvePlugin<Logger.ILogger>("logger");
+const database: Database.IDatabaseService = app.resolvePlugin<Database.IDatabaseService>("database");
 
-export class NFTManager implements _NFT_.INFTManager {
-    get tokens() {
-        return this.registeredTokens;
-    }
-    public registeredTokens: { [id: string]: _NFT_.INFT };
+const nftRepository = database.connection.nftsRepository;
 
+export class NFTManager implements NFT.INFTManager {
     private eventActions = [
         {
-            event: "transaction.applied",
+            event: ApplicationEvents.TransactionApplied,
             action: this.transactionApplied,
         },
         {
-            event: "block.reverted",
+            event: ApplicationEvents.BlockReverted,
             action: this.blockReverted,
         },
     ];
 
-    constructor(options) {
-        this.registeredTokens = {};
-    }
-
-    public start(): _NFT_.INFTManager {
+    public start(): NFT.INFTManager {
         // start all event listeners
         this.eventActions.map(({ event, action }) => emitter.on(event, action.bind(this)));
         return this;
@@ -39,41 +33,25 @@ export class NFTManager implements _NFT_.INFTManager {
         this.eventActions.map(({ event, action }) => emitter.off(event, action.bind(this)));
     }
 
-    public findById(id: string): _NFT_.INFT {
-        return this.tokens[id];
-    }
-
-    public isRegistered(id: string): boolean {
-        return this.tokens.hasOwnProperty(id);
-    }
-
-    public register(token: _NFT_.INFT): boolean {
-        if (!this.isRegistered(token.id)) {
-            this.tokens[token.id] = token;
-            return true;
-        }
-        return false;
-    }
-
     private transactionApplied(transaction: ITransactionData) {
         switch (transaction.type) {
             case TransactionTypes.NftTransfer:
+                const sender = Address.fromPublicKey(transaction.senderPublicKey);
                 if (!transaction.recipientId) {
-                    const sender = Address.fromPublicKey(transaction.senderPublicKey);
-                    logger.debug(
-                        `[💎] register new token with id '${transaction.asset.nft.tokenId}' and owner ${sender}`,
-                    );
-                    this.register(new NFT(transaction.asset.nft.tokenId, sender));
+                    nftRepository.insert(new models.Nft(transaction.asset.nft.tokenId, sender));
+                    logger.debug(`[💎] New token (id:${transaction.asset.nft.tokenId}, owner:${sender})`);
                 } else {
+                    nftRepository.updateOwnerId(transaction.asset.nft.tokenId, transaction.recipientId);
                     logger.debug(
-                        `[💎] transfer token with id '${transaction.asset.nft.tokenId}' to ${transaction.recipientId}`,
+                        `[💎] Token transferred (id:'${transaction.asset.nft.tokenId}', from:${sender} ,to:${
+                            transaction.recipientId
+                        })`,
                     );
-                    this.findById(transaction.asset.nft.tokenId).updateOwner(transaction.recipientId);
                 }
                 break;
             case TransactionTypes.NftUpdate:
-                logger.debug(`[💎] update token with id '${transaction.asset.nft.tokenId}' properties`);
-                this.findById(transaction.asset.nft.tokenId).updateProperties(transaction.asset.nft.properties);
+                logger.debug(`[💎] Token updated (id:${transaction.asset.nft.tokenId})`);
+                // TODO update in db
                 break;
             default:
         }
@@ -83,12 +61,14 @@ export class NFTManager implements _NFT_.INFTManager {
         switch (transaction.type) {
             case TransactionTypes.NftTransfer:
                 if (!transaction.recipientId) {
-                    logger.debug(`[💎] unregister token with id '${transaction.asset.nft.tokenId}'`);
-                    this.delete(transaction.asset.nft.tokenId);
+                    nftRepository.delete(transaction.asset.nft.tokenId);
+                    logger.debug(`[💎] Token deleted (id:${transaction.asset.nft.tokenId})`);
                 } else {
                     const sender = Address.fromPublicKey(transaction.senderPublicKey);
-                    logger.debug(`[💎] give token with id '${transaction.asset.nft.tokenId}' back to previous owner`);
-                    this.findById(transaction.asset.nft.tokenId).updateOwner(sender);
+                    nftRepository.update(new models.Nft(transaction.asset.nft.tokenId, sender));
+                    logger.debug(
+                        `[💎] Token backs to its previous owner (id:${transaction.asset.nft.tokenId}, to:${sender})`,
+                    );
                 }
                 break;
             case TransactionTypes.NftUpdate:
@@ -105,13 +85,5 @@ export class NFTManager implements _NFT_.INFTManager {
         if (block.transactions && block.transactions.length > 0) {
             block.transactions.filter(isNftTransaction).map(this.transactionReverted);
         }
-    }
-
-    private delete(id: string): boolean {
-        if (this.isRegistered(id)) {
-            delete this.tokens[id];
-            return true;
-        }
-        return false;
     }
 }

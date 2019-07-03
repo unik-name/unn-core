@@ -1,25 +1,38 @@
 import { app } from "@arkecosystem/core-container";
-import { NFT } from "@arkecosystem/core-interfaces";
+import { Database } from "@arkecosystem/core-interfaces";
 import Boom from "boom";
 import { ServerCache } from "../../../services";
 import { paginate, respondWithResource, toPagination } from "../utils";
 
-const nftManager: NFT.INFTManager = app.resolvePlugin<NFT.INFTManager>("nft");
+const databaseService = app.resolvePlugin<Database.IDatabaseService>("database");
+const nftsRepository = databaseService.nftsBusinessRepository;
 
 const index = async request => {
-    const tokens = Object.values(nftManager.tokens);
-    const data = { rows: tokens, count: tokens.length }; // Tweak to fit with repository query (see other api endpoints)
-    return toPagination(request, data, "nft");
+    const nfts = await nftsRepository.search({
+        ...request.query,
+        ...paginate(request),
+    });
+    return toPagination(request, nfts, "nft");
 };
 
 const show = async request => {
-    const token = nftManager.findById(request.params.id);
+    const nft = await nftsRepository.findById(request.params.id);
 
-    if (!token) {
-        return Boom.notFound(`Token ${request.params.id} not found`);
+    if (!nft) {
+        return Boom.notFound(`Non fungible token ${request.params.id} not found`);
     }
 
-    return respondWithResource(request, token, "nft");
+    return respondWithResource(request, nft, "nft");
+};
+
+const search = async request => {
+    const nfts = await nftsRepository.search({
+        ...request.payload,
+        ...request.query,
+        ...paginate(request),
+    });
+
+    return toPagination(request, nfts, "nft");
 };
 
 export function registerMethods(server) {
@@ -28,5 +41,10 @@ export function registerMethods(server) {
             ...request.query,
             ...paginate(request),
         }))
-        .method("v2.nfts.show", show, 8, request => ({ id: request.params.id }));
+        .method("v2.nfts.show", show, 8, request => ({ id: request.params.id }))
+        .method("v2.nfts.search", search, 30, request => ({
+            ...request.payload,
+            ...request.query,
+            ...paginate(request),
+        }));
 }

@@ -2,13 +2,11 @@ import { Bignum } from "@arkecosystem/crypto";
 import { sortBy } from "@arkecosystem/utils";
 
 import { app } from "@arkecosystem/core-container";
-import { Database, Logger, NFT as _NFT_ } from "@arkecosystem/core-interfaces";
-import { NFT } from "@arkecosystem/core-nft";
+import { Database, Logger } from "@arkecosystem/core-interfaces";
 import { queries } from "./queries";
 import { QueryExecutor } from "./sql/query-executor";
 
 const logger = app.resolvePlugin<Logger.ILogger>("logger");
-const nftManager: _NFT_.INFTManager = app.resolvePlugin<_NFT_.INFTManager>("nft");
 const config = app.getConfig();
 
 const genesisWallets = config.get("genesisBlock.transactions").map(tx => tx.senderId);
@@ -221,7 +219,6 @@ export class IntegrityVerifier {
                     ownerWallet = this.walletManager.findByPublicKey(transaction.senderPublicKey);
                 }
                 ownerWallet.tokens.push(nftId);
-                nftManager.register(new NFT(nftId, ownerWallet.address));
             }
 
             builtTokens.push(nftId);

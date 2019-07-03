@@ -1,7 +1,13 @@
-import { Database, TransactionPool } from "@arkecosystem/core-interfaces";
-import { ITransactionData, NFTTransferTransaction, Transaction, TransactionConstructor } from "@arkecosystem/crypto";
+import { ApplicationEvents } from "@arkecosystem/core-event-emitter";
+import { Database, EventEmitter, TransactionPool } from "@arkecosystem/core-interfaces";
+import {
+    Address,
+    ITransactionData,
+    NFTTransferTransaction,
+    Transaction,
+    TransactionConstructor,
+} from "@arkecosystem/crypto";
 import { NftOwnedError, NftOwnerError } from "../errors";
-
 import { TransactionHandler } from "./transaction";
 
 export class NftTransferTransactionHandler extends TransactionHandler {
@@ -62,18 +68,25 @@ export class NftTransferTransactionHandler extends TransactionHandler {
         return !this.typeFromSenderAlreadyInPool(data, guard);
     }
 
+    public emitEvents(transaction: Transaction, emitter: EventEmitter.EventEmitter): void {
+        const recipient = transaction.data.recipientId;
+        const sender = Address.fromPublicKey(transaction.data.senderPublicKey);
+        const isNftOwnershipTransfer = !!recipient;
+        const data = {
+            id: transaction.data.asset.nft.tokenId,
+            owner: isNftOwnershipTransfer ? transaction.data.recipientId : sender,
+            previousOwner: isNftOwnershipTransfer ? transaction.data.senderPublicKey : undefined,
+        };
+        emitter.emit(isNftOwnershipTransfer ? ApplicationEvents.NftTransferred : ApplicationEvents.NftCreated, data);
+    }
+
     private removeTokenFromWallet(wallet: Database.IWallet, transaction: ITransactionData): void {
-        const transferredTokenIndex = wallet.tokens.indexOf(transaction.asset.nft.tokenId);
-        if (transferredTokenIndex === -1) {
-            throw new Error(`wallet ${wallet.address} does not own token`);
+        if (!wallet.tokens.includes(transaction.asset.nft.tokenId)) {
+            throw new NftOwnerError(wallet.address, transaction.asset.nft.tokenId); // TODO change message ?
         }
-        const copy = wallet.tokens.slice();
-        copy.splice(transferredTokenIndex, 1);
-        wallet.tokens = copy;
+        wallet.tokens = wallet.tokens.filter(t => t !== transaction.asset.nft.tokenId);
     }
     private addTokenToWallet(wallet: Database.IWallet, tokenId: string): void {
-        const copy = wallet.tokens.slice();
-        copy.push(tokenId);
-        wallet.tokens = copy;
+        wallet.tokens = wallet.tokens.concat([tokenId]);
     }
 }

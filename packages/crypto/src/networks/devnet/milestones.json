@@ -1,15 +1,15 @@
 [
     {
         "height": 1,
-        "reward": 200000000,
-        "activeDelegates": 2,
+        "reward": 0,
+        "activeDelegates": 51,
         "blocktime": 8,
         "block": {
             "version": 0,
             "maxTransactions": 50,
             "maxPayload": 2097152
         },
-        "epoch": "2019-02-19T15:14:14.000Z",
+        "epoch": "2017-03-21T13:00:00.000Z",
         "fees": {
             "staticFees": {
                 "transfer": 10000000,
@@ -20,7 +20,9 @@
                 "ipfs": 0,
                 "timelockTransfer": 0,
                 "multiPayment": 0,
-                "delegateResignation": 0
+                "delegateResignation": 0,
+                "nftTransfer": 1,
+                "nftUpdate": 1
             }
         },
         "ignoreInvalidSecondSignatureField": true,

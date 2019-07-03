@@ -144,7 +144,7 @@ export const nftTransfer = extend(transactionBaseSchema, {
                     required: ["tokenId"],
                     properties: {
                         tokenId: {
-                            allOf: [{ $ref: "hex" }, { minLength: 1, maxLength: 64 }],
+                            allOf: [{ $ref: "hex" }, { minLength: 64, maxLength: 64 }],
                         },
                     },
                 },
@@ -170,7 +170,7 @@ export const nftUpdate = extend(transactionBaseSchema, {
                     required: ["tokenId", "props"],
                     properties: {
                         tokenId: {
-                            allOf: [{ $ref: "hex" }, { minLength: 1, maxLength: 64 }],
+                            allOf: [{ $ref: "hex" }, { minLength: 64, maxLength: 64 }],
                         },
                         props: {
                             type: "array",

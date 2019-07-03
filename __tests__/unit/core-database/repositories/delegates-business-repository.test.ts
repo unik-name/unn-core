@@ -19,7 +19,7 @@ beforeEach(async () => {
 
     repository = new DelegatesBusinessRepository(() => databaseService);
     walletsRepository = new WalletsBusinessRepository(() => databaseService);
-    databaseService = new DatabaseService(null, null, walletManager, walletsRepository, repository, null, null);
+    databaseService = new DatabaseService(null, null, walletManager, walletsRepository, repository, null, null, null);
 });
 
 function generateWallets(): Wallet[] {

@@ -28,10 +28,7 @@ export class NFTTransferTransaction extends Transaction {
         const { data } = this;
         data.asset = {
             nft: {
-                tokenId: buf
-                    .readBytes(32)
-                    .toString("hex")
-                    .replace(/^0+|\[^0\]+$/g, ""),
+                tokenId: buf.readBytes(32).toString("hex"),
             },
         };
         data.recipientId = buf.readUint8() ? bs58check.encode(buf.readBytes(21).toBuffer()) : undefined;

@@ -188,14 +188,7 @@ export class ForgerManager {
     public async getTransactionsForForging(): Promise<ITransactionData[]> {
         const response = await this.client.getTransactions();
         const transactions = response.transactions
-            ? response.transactions.reduce((transactions, serializedTx) => {
-                  try {
-                      transactions.push(Transaction.fromHex(serializedTx).data);
-                  } catch (error) {
-                      /* ignore */
-                  }
-                  return transactions;
-              }, [])
+            ? response.transactions.map(serializedTx => Transaction.fromHex(serializedTx).data)
             : [];
 
         if (isEmpty(response)) {

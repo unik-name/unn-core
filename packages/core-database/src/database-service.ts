@@ -19,6 +19,7 @@ export class DatabaseService implements Database.IDatabaseService {
     public delegates: Database.IDelegatesBusinessRepository;
     public blocksBusinessRepository: Database.IBlocksBusinessRepository;
     public transactionsBusinessRepository: Database.ITransactionsBusinessRepository;
+    public nftsBusinessRepository: Database.INftsBusinessRepository;
     public blocksInCurrentRound: models.Block[] = null;
     public stateStarted: boolean = false;
     public restoredDatabaseIntegrity: boolean = false;
@@ -33,6 +34,7 @@ export class DatabaseService implements Database.IDatabaseService {
         delegatesBusinessRepository: Database.IDelegatesBusinessRepository,
         transactionsBusinessRepository: Database.ITransactionsBusinessRepository,
         blocksBusinessRepository: Database.IBlocksBusinessRepository,
+        nftsBusinessRepository: Database.INftsBusinessRepository,
     ) {
         this.connection = connection;
         this.walletManager = walletManager;
@@ -41,6 +43,7 @@ export class DatabaseService implements Database.IDatabaseService {
         this.delegates = delegatesBusinessRepository;
         this.blocksBusinessRepository = blocksBusinessRepository;
         this.transactionsBusinessRepository = transactionsBusinessRepository;
+        this.nftsBusinessRepository = nftsBusinessRepository;
 
         this.registerListeners();
     }
@@ -63,6 +66,7 @@ export class DatabaseService implements Database.IDatabaseService {
         await this.connection.blocksRepository.truncate();
         await this.connection.roundsRepository.truncate();
         await this.connection.transactionsRepository.truncate();
+        await this.connection.nftsRepository.truncate();
 
         await this.saveBlock(new Block(configManager.get("genesisBlock")));
     }

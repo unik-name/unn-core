@@ -1,4 +1,4 @@
-import { Address } from "@arkecosystem/crypto";
+import { Address, HashAlgorithms } from "@arkecosystem/crypto";
 import { flags } from "@oclif/command";
 import { satoshiFlag } from "../../flags";
 import { logger } from "../../logger";
@@ -60,7 +60,7 @@ export class NFTTransferCommand extends SendCommand {
         let id = flags.id;
 
         if (flags.unikname) {
-            id = Buffer.from(flags.unikname, "utf8").toString("hex");
+            id = HashAlgorithms.sha256(flags.unikname).toString("hex");
         } else if (!flags.recipient && !id) {
             id = this.getRandomInt(1, 10000);
         }
@@ -98,7 +98,7 @@ export class NFTTransferCommand extends SendCommand {
 
                 await this.knockBalance(senderId, wallets[senderId].expectedBalance);
                 await this.knockWallet(senderId, tokenId, !recipient);
-                await this.knockNfts(tokenId);
+                await this.knockNft(tokenId);
 
                 if (recipient) {
                     await this.knockWallet(transaction.recipientId, tokenId, true);
@@ -125,14 +125,9 @@ export class NFTTransferCommand extends SendCommand {
         }
     }
 
-    private async knockNfts(expected: string): Promise<void> {
-        const actual = (await this.api.get(`nfts`)).data;
-
-        if (actual.find(o => o.id === expected)) {
-            logger.info(`[W] ${expected} still exists`);
-        } else {
-            logger.error(`[W] ${expected} has been destroyed`);
-        }
+    private async knockNft(expected: string): Promise<void> {
+        const actual = await this.api.get(`nfts/${expected}`);
+        logger.info(actual ? `[W] ${expected} still exists` : `[W] ${expected} has been destroyed`);
     }
 
     private getRandomInt(min, max) {

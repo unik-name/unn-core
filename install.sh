@@ -199,7 +199,7 @@ fi
 
 success "Installed system updates!"
 
-heading "Installing ARK Core..."
+heading "Installing UNS Core..."
 
 cd "$HOME"
 
@@ -208,12 +208,12 @@ if [ -d "core" ]; then
    rm -rf core
 fi
 
-git clone https://github.com/spacelephantlabs/ark-core_non-fungible-token.git ~/core
+git clone https://github.com/spacelephant/uns-core.git ~/core
 cd core
 yarn setup
 
-echo 'alias ark="$HOME/core/packages/core/bin/run"' >> ~/.bashrc
-alias ark='$HOME/core/packages/core/bin/run'
+echo 'alias uns="$HOME/core/packages/core/bin/run"' >> ~/.bashrc
+alias uns='$HOME/core/packages/core/bin/run'
 
 
 # yarn global add @arkecosystem/core
@@ -221,7 +221,7 @@ alias ark='$HOME/core/packages/core/bin/run'
 # export PATH=$(yarn global bin):$PATH
 # ark config:publish
 
-success "Installed ARK Core!"
+success "Installed UNS Core!"
 
 # setup postgres username, password and database
 read -p "Would you like to configure the database? [y/N]: " choice
@@ -231,9 +231,9 @@ if [[ "$choice" =~ ^(yes|y|Y) ]]; then
     read -p "Enter the database password: " databasePassword
     read -p "Enter the database name: " databaseName
 
-    ark env:set CORE_DB_USERNAME $databaseUsername
-    ark env:set CORE_DB_PASSWORD $databasePassword
-    ark env:set CORE_DB_DATABASE $databaseName
+    uns env:set CORE_DB_USERNAME $databaseUsername
+    uns env:set CORE_DB_PASSWORD $databasePassword
+    uns env:set CORE_DB_DATABASE $databaseName
 
     userExists=$(sudo -i -u postgres psql -c "SELECT * FROM pg_user WHERE usename = '${databaseUsername}'" | grep -c "1 row")
     databaseExists=$(sudo -i -u postgres psql -tAc "SELECT 1 FROM pg_database WHERE datname = '${databaseName}'")

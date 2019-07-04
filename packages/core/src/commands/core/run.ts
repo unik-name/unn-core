@@ -42,11 +42,11 @@ $ ark core:run --launchMode=seed
 
         await this.buildApplication(app, flags, {
             options: {
-                "@arkecosystem/core-p2p": this.buildPeerOptions(flags),
-                "@arkecosystem/core-blockchain": {
+                "@uns/core-p2p": this.buildPeerOptions(flags),
+                "@uns/core-blockchain": {
                     networkStart: flags.networkStart,
                 },
-                "@arkecosystem/core-forger": await this.buildBIP38(flags),
+                "@uns/core-forger": await this.buildBIP38(flags),
             },
         });
     }

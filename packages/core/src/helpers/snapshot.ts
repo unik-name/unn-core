@@ -7,10 +7,10 @@ const { version } = require("../../package.json");
 export async function setUpLite(options): Promise<Container.IContainer> {
     await app.setUp(version, options, {
         include: [
-            "@arkecosystem/core-event-emitter",
-            "@arkecosystem/core-logger-pino",
-            "@arkecosystem/core-database-postgres",
-            "@arkecosystem/core-snapshots",
+            "@uns/core-event-emitter",
+            "@uns/core-logger-pino",
+            "@uns/core-database-postgres",
+            "@uns/core-snapshots",
         ],
     });
 

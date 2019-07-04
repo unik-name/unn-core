@@ -24,7 +24,7 @@ export class VerifyCommand extends BaseCommand {
         await setUpLite(flags);
 
         if (!app.has("snapshots")) {
-            this.error("The @arkecosystem/core-snapshots plugin is not installed.");
+            this.error("The @uns/core-snapshots plugin is not installed.");
         }
 
         await app.resolvePlugin<SnapshotManager>("snapshots").verify(flags);

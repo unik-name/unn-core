@@ -33,7 +33,7 @@ export class RestoreCommand extends BaseCommand {
         await setUpLite(flags);
 
         if (!app.has("snapshots")) {
-            this.error("The @arkecosystem/core-snapshots plugin is not installed.");
+            this.error("The @uns/core-snapshots plugin is not installed.");
         }
 
         const emitter = app.resolvePlugin<EventEmitter.EventEmitter>("event-emitter");

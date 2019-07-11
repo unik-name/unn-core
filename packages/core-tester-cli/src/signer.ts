@@ -89,6 +89,22 @@ export class Signer {
         return transaction.getStruct();
     }
 
+    public makeNftUpdate(opts: Record<string, any>): any {
+        const transaction = client
+            .getBuilder()
+            .nftUpdate(opts.id)
+            .properties(opts.properties)
+            .fee(this.toSatoshi(opts.nftFee))
+            .network(this.network.version)
+            .sign(opts.passphrase);
+
+        if (opts.secondPassphrase) {
+            transaction.secondSign(opts.secondPassphrase);
+        }
+
+        return transaction.getStruct();
+    }
+
     private toSatoshi(value) {
         return bignumify(value)
             .times(1e8)

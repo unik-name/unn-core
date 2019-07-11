@@ -2,6 +2,7 @@ import "jest-extended";
 
 import { Wallet } from "@arkecosystem/core-database";
 import { Bignum, configManager, constants, crypto, ITransactionData, Transaction } from "@arkecosystem/crypto";
+import { TransactionTypes } from "@arkecosystem/crypto/dist/constants";
 import {
     AlreadyVotedError,
     InsufficientBalanceError,
@@ -10,6 +11,7 @@ import {
     MultiSignatureAlreadyRegisteredError,
     MultiSignatureKeyCountMismatchError,
     MultiSignatureMinimumKeysError,
+    NftOwnerError,
     NoVoteError,
     SecondSignatureAlreadyRegisteredError,
     SenderWalletMismatchError,
@@ -43,7 +45,7 @@ beforeEach(() => {
         signature:
             "304402206974568da7c363155decbc20ddc17746a2e7e663901c426f5a41411374cc6d18022052f4353ec93227713f9907f2bb2549e6bc42584b736aa5f9ff36e2c239154648",
         timestamp: 54836734,
-        type: 0,
+        type: TransactionTypes.Transfer,
         fee: new Bignum(10000000),
         senderPublicKey: "02a47a2f594635737d2ce9898680812ff7fa6aaa64ddea1360474c110e9985a087",
         amount: new Bignum(10000000),
@@ -57,7 +59,7 @@ beforeEach(() => {
         secondSignature:
             "304402202d0ae57c6a0afb225443b56c6e049cb08df48b5813362f7e11574b96f225738f0220055b5a941cc70100404a7788c57b37e2e806acf58c4284c567dc53477f546540",
         timestamp: 54836734,
-        type: 0,
+        type: TransactionTypes.Transfer,
         fee: new Bignum(10000000),
         senderPublicKey: "02a47a2f594635737d2ce9898680812ff7fa6aaa64ddea1360474c110e9985a087",
         amount: new Bignum(10000000),
@@ -233,7 +235,7 @@ describe("SecondSignatureRegistrationTransaction", () => {
         transaction = {
             version: 1,
             network: 30,
-            type: 1,
+            type: TransactionTypes.SecondSignature,
             timestamp: 53995738,
             senderPublicKey: "03cba4fd60f856ad034ee0a9146432757ae35956b640c26fb6674061924b05a5c9",
             fee: new Bignum(500000000),
@@ -310,7 +312,7 @@ describe("DelegateRegistrationTransaction", () => {
         transaction = {
             version: 1,
             id: "943c220691e711c39c79d437ce185748a0018940e1a4144293af9d05627d2eb4",
-            type: 2,
+            type: TransactionTypes.DelegateRegistration,
             timestamp: 36482198,
             amount: Bignum.ZERO,
             fee: new Bignum(10000000),
@@ -381,7 +383,7 @@ describe("VoteTransaction", () => {
             signature:
                 "3045022100f53da6eb18ca7954bb7c620ceeaf5cb3433685d173401146aea35ee8e5f5c95002204ea57f573745c8f5c57b256e38397d3e1977bdbfac295128320401c6117bb2f3",
             timestamp: 54833694,
-            type: 3,
+            type: TransactionTypes.Vote,
             fee: new Bignum(100000000),
             senderPublicKey: "02a47a2f594635737d2ce9898680812ff7fa6aaa64ddea1360474c110e9985a087",
             amount: Bignum.ZERO,
@@ -396,7 +398,7 @@ describe("VoteTransaction", () => {
             signature:
                 "3045022100957106a924eb40df6ff530cff80fede0195c30284fdb5671e736c7d0b57696f6022072b0fd80af235d79701e9aea74ef48366ef9f5aecedbb5d502e6392569c059c8",
             timestamp: 54833718,
-            type: 3,
+            type: TransactionTypes.Vote,
             fee: new Bignum(100000000),
             senderPublicKey: "02a47a2f594635737d2ce9898680812ff7fa6aaa64ddea1360474c110e9985a087",
             amount: Bignum.ZERO,
@@ -516,7 +518,7 @@ describe.skip("MultiSignatureRegistrationTransaction", () => {
         transaction = {
             version: 1,
             id: "e22ddd7385b42c00f79b9c6ecd253333ddef6e0bf955341ace2e63dad1f4bd70",
-            type: 4,
+            type: TransactionTypes.MultiSignature,
             timestamp: 48059808,
             amount: Bignum.ZERO,
             fee: new Bignum(8000000000),
@@ -727,7 +729,7 @@ describe.skip("MultiPaymentTransaction", () => {
         transaction = {
             version: 1,
             id: "943c220691e711c39c79d437ce185748a0018940e1a4144293af9d05627d2eb4",
-            type: 7,
+            type: TransactionTypes.MultiPayment,
             timestamp: 36482198,
             amount: new Bignum(0),
             fee: new Bignum(10000000),
@@ -807,6 +809,52 @@ describe.skip("DelegateResignationTransaction", () => {
         it("should be false if wallet has insufficient funds", () => {
             wallet.balance = Bignum.ZERO;
             expect(() => handler.canBeApplied(instance, wallet)).toThrow(InsufficientBalanceError);
+        });
+    });
+});
+
+describe("NFTUpdateTransaction", () => {
+    beforeEach(() => {
+        transaction = {
+            version: 1,
+            id: "d4d1d42ad186bccfa112217d28d7f42240c99f58aec378e743237bf2b23db739",
+            type: TransactionTypes.NftUpdate,
+            timestamp: 36482198,
+            amount: new Bignum(0),
+            fee: new Bignum(10000000),
+            senderPublicKey: "03287bfebba4c7881a0509717e71b34b63f31e40021c321f89ae04f84be6d6ac37",
+            signature:
+                "304402202816cfd3d9b8a5a29fb0572b0f54c4803da65cc308b1d06b72a085e7ead5a27702206de6423e23acf006fb00d49cc3b8b82ce6255c27a37a3b3549b719b76423d560",
+            asset: {
+                nft: {
+                    tokenId: "6f35a40470021425558f5cbb7b5f056e51b694db5cc6c336abdc6b777fc9d051",
+                    properties: {"myProperty": "myPropertyValue"},
+                },
+            },
+        };
+
+        wallet = {
+            address: "ANBkoGqWeTSiaEVgVzSKZd3jS7UWzv9PSo",
+            publicKey: "03287bfebba4c7881a0509717e71b34b63f31e40021c321f89ae04f84be6d6ac37",
+            secondPublicKey: null,
+            balance: new Bignum(245096190000000),
+            tokens: [],
+        } as Wallet;
+
+        handler = TransactionHandlerRegistry.get(transaction.type);
+        instance = Transaction.fromData(transaction);
+    });
+
+    describe("canBeApply", () => {
+        it("should pass, the wallet owns the token", () => {
+            wallet.tokens = ["6f35a40470021425558f5cbb7b5f056e51b694db5cc6c336abdc6b777fc9d051"];
+            expect(handler.canBeApplied(instance, wallet)).toBeTrue();
+        });
+    });
+
+    describe("canBeApply", () => {
+        it("should throw NftOwnerError, wallet doesn't own the token", () => {
+            expect(() => handler.canBeApplied(instance, wallet)).toThrow(NftOwnerError);
         });
     });
 });

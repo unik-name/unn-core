@@ -1,4 +1,4 @@
 export interface INFTManager {
-    start(): INFTManager;
-    stop(): void;
+    startListening(): INFTManager;
+    stopListening(): INFTManager;
 }

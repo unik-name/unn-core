@@ -6,7 +6,7 @@ export class NFTUpdateBuilder extends NFTBuilder {
         super(TransactionTypes.NftUpdate, tokenId);
     }
 
-    public properties(properties: Array<[string, string]>) {
+    public properties(properties: { [_: string]: string }) {
         this.data.asset.nft.properties = properties;
         return this.instance();
     }

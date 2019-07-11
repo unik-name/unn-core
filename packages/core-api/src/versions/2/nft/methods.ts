@@ -7,6 +7,8 @@ import { paginate, respondWithResource, toPagination } from "../utils";
 const databaseService = app.resolvePlugin<Database.IDatabaseService>("database");
 const nftsRepository = databaseService.nftsBusinessRepository;
 
+// TODO créer et utiliser nftPropertiesBusinessRepository pour remonter les propriétés du nft ?
+
 const index = async request => {
     const nfts = await nftsRepository.search({
         ...request.query,

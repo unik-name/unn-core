@@ -1,4 +1,4 @@
-import { Container, Logger } from "@arkecosystem/core-interfaces";
+import { Container, Logger, NFT } from "@arkecosystem/core-interfaces";
 import { defaults } from "./defaults";
 import { NFTManager } from "./manager";
 
@@ -8,10 +8,11 @@ export const plugin: Container.PluginDescriptor = {
     alias: "nft",
     async register(container: Container.IContainer, options) {
         container.resolvePlugin<Logger.ILogger>("logger").info("[💎] Starting NFT Manager");
-        return new NFTManager().start();
+        return new NFTManager().startListening();
     },
     async deregister(container: Container.IContainer, options) {
         container.resolvePlugin<Logger.ILogger>("logger").info("[💎] Stopping NFT Manager");
-        return container.resolvePlugin("nft").stop();
+        container.resolvePlugin<NFT.INFTManager>("nft").stopListening();
+        return;
     },
 };

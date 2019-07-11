@@ -167,20 +167,19 @@ export const nftUpdate = extend(transactionBaseSchema, {
             properties: {
                 nft: {
                     type: "object",
-                    required: ["tokenId", "props"],
+                    required: ["tokenId", "properties"],
                     properties: {
                         tokenId: {
                             allOf: [{ $ref: "hex" }, { minLength: 64, maxLength: 64 }],
                         },
-                        props: {
-                            type: "array",
-                            minItems: 1,
-                            items: {
-                                type: "array",
-                                minItems: 2,
-                                maxItems: 2,
-                                items: { type: "string" },
+                        properties: {
+                            type: "object",
+                            minProperties: 1,
+                            maxProperties: 255,
+                            patternProperties: {
+                                "^.*$": { maxLength: 255 },
                             },
+                            propertyNames: { maxLength: 255 },
                         },
                     },
                 },

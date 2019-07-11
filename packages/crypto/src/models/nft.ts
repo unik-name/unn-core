@@ -18,8 +18,12 @@ export class Nft {
         return this;
     }
 
-    public updateProperties(properties: Array<[string, string]>) {
-        properties.map(property => this.updateProperty(property[0], property[1]));
+    public updateProperties(properties: { [_: string]: string }) {
+        const propertyKeys = Object.keys(properties);
+        propertyKeys.forEach(propertyKey => {
+            const propertyValue = properties[propertyKey];
+            this.updateProperty(propertyKey, propertyValue);
+        });
         return this;
     }
 }

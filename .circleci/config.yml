@@ -5,6 +5,15 @@ jobs:
     docker:
       - image: 'circleci/node:11-browsers'
     steps:
+      - run:
+          name: Check if commit must be built
+          command: |-
+            if [[ -z $CIRCLE_PULL_REQUEST && 
+                                      $CIRCLE_BRANCH != "private/develop" && 
+                                      $CIRCLE_BRANCH != "feat/nft" ]] ; then 
+                                        echo "Cancel job" && 
+                                        circleci-agent step halt; 
+                            fi
       - checkout
       - run:
           name: Apt update
@@ -92,6 +101,15 @@ jobs:
           POSTGRES_DB: core_unitnet
           POSTGRES_USER: core
     steps:
+      - run:
+          name: Check if commit must be built
+          command: |-
+            if [[ -z $CIRCLE_PULL_REQUEST && 
+                                      $CIRCLE_BRANCH != "private/develop" && 
+                                      $CIRCLE_BRANCH != "feat/nft" ]] ; then 
+                                        echo "Cancel job" && 
+                                        circleci-agent step halt; 
+                            fi
       - checkout
       - run:
           name: Apt update
@@ -179,6 +197,15 @@ jobs:
           POSTGRES_DB: core_unitnet
           POSTGRES_USER: core
     steps:
+      - run:
+          name: Check if commit must be built
+          command: |-
+            if [[ -z $CIRCLE_PULL_REQUEST && 
+                                      $CIRCLE_BRANCH != "private/develop" && 
+                                      $CIRCLE_BRANCH != "feat/nft" ]] ; then 
+                                        echo "Cancel job" && 
+                                        circleci-agent step halt; 
+                            fi
       - checkout
       - run:
           name: Apt update
@@ -266,6 +293,15 @@ jobs:
           POSTGRES_DB: core_unitnet
           POSTGRES_USER: core
     steps:
+      - run:
+          name: Check if commit must be built
+          command: |-
+            if [[ -z $CIRCLE_PULL_REQUEST && 
+                                      $CIRCLE_BRANCH != "private/develop" && 
+                                      $CIRCLE_BRANCH != "feat/nft" ]] ; then 
+                                        echo "Cancel job" && 
+                                        circleci-agent step halt; 
+                            fi
       - checkout
       - run:
           name: Apt update
@@ -378,6 +414,15 @@ jobs:
           POSTGRES_DB: core_unitnet
           POSTGRES_USER: core
     steps:
+      - run:
+          name: Check if commit must be built
+          command: |-
+            if [[ -z $CIRCLE_PULL_REQUEST && 
+                                      $CIRCLE_BRANCH != "private/develop" && 
+                                      $CIRCLE_BRANCH != "feat/nft" ]] ; then 
+                                        echo "Cancel job" && 
+                                        circleci-agent step halt; 
+                            fi
       - checkout
       - run:
           name: Apt update

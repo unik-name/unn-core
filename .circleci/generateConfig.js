@@ -5,9 +5,7 @@ const path = require("path");
 const config = require("./configTemplate.json");
 
 const fixedJobs = [
-    "test-node10-unit",
     "test-node11-unit",
-    "test-node10-functional",
     "test-node11-functional",
 ]
 
@@ -59,6 +57,26 @@ fs.readdir("./packages", (_, packages) => {
             config.workflows.build_and_test.jobs.push(name.slice(0, -1) + (index + 1));
         });
     }
+
+    // Add step on all jobs to filter commits
+    Object.keys(config.jobs).forEach(jobKey=>{
+        const STEP = {
+            "run":{
+                "name":"Check if commit must be built",
+                "command":
+                `if [[ -z $CIRCLE_PULL_REQUEST && 
+                          $CIRCLE_BRANCH != \"private/develop\" && 
+                          $CIRCLE_BRANCH != \"feat/nft\" ]] ; then 
+                            echo \"Cancel job\" && 
+                            circleci-agent step halt; 
+                fi`
+            }
+        };
+        let job = config.jobs[jobKey];
+        job.steps = [STEP].concat(job.steps);
+
+        config.jobs[jobKey] = job;
+    });
 
     config.workflows.build_and_test.jobs = fixedJobs.concat(config.workflows.build_and_test.jobs)
 

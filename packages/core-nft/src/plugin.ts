@@ -1,6 +1,6 @@
 import { Container, Logger, NFT } from "@arkecosystem/core-interfaces";
 import { defaults } from "./defaults";
-import { NFTManager } from "./manager";
+import { NFTManager } from "./managers";
 
 export const plugin: Container.PluginDescriptor = {
     pkg: require("../package.json"),

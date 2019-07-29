@@ -30,13 +30,13 @@ export class TransactionGuard implements TransactionPool.IGuard {
 
         if (this.transactions.length > 0) {
             // Filter transactions and create Transaction instances from accepted ones
-            this.__filterAndTransformTransactions(this.transactions);
+            await this.__filterAndTransformTransactions(this.transactions);
 
             // Remove already forged tx... Not optimal here
             await this.__removeForgedTransactions();
 
             // Add transactions to the pool
-            this.__addTransactionsToPool();
+            await this.__addTransactionsToPool();
 
             this.__printStats();
         }
@@ -84,8 +84,8 @@ export class TransactionGuard implements TransactionPool.IGuard {
      * - transactions based on type specific restrictions
      * - not valid crypto transactions
      */
-    public __filterAndTransformTransactions(transactions: ITransactionData[]): void {
-        transactions.forEach(transaction => {
+    public async __filterAndTransformTransactions(transactions: ITransactionData[]): Promise<void> {
+        for (const transaction of transactions) {
             const exists = this.pool.transactionExists(transaction.id);
 
             if (exists) {
@@ -110,7 +110,7 @@ export class TransactionGuard implements TransactionPool.IGuard {
                     const trx = Transaction.fromData(transaction);
                     if (trx.verified) {
                         const applyErrors = [];
-                        if (this.pool.walletManager.canApply(trx, applyErrors)) {
+                        if (await this.pool.walletManager.canApply(trx, applyErrors)) {
                             const dynamicFee = dynamicFeeMatcher(trx);
                             if (!dynamicFee.enterPool && !dynamicFee.broadcast) {
                                 this.pushError(
@@ -146,7 +146,7 @@ export class TransactionGuard implements TransactionPool.IGuard {
                     }
                 }
             }
-        });
+        }
     }
 
     /**
@@ -222,9 +222,9 @@ export class TransactionGuard implements TransactionPool.IGuard {
     /**
      * Add accepted transactions to the pool and filter rejected ones.
      */
-    public __addTransactionsToPool() {
+    public async __addTransactionsToPool() {
         // Add transactions to the transaction pool
-        const { notAdded } = this.pool.addTransactions(Array.from(this.accept.values()));
+        const { notAdded } = await this.pool.addTransactions(Array.from(this.accept.values()));
 
         // Exclude transactions which were refused from the pool
         notAdded.forEach(item => {

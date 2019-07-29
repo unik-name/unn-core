@@ -16,11 +16,11 @@ export class DelegateRegistrationTransactionHandler extends TransactionHandler {
         return DelegateRegistrationTransaction;
     }
 
-    public canBeApplied(
+    public async canBeApplied(
         transaction: Transaction,
         wallet: Database.IWallet,
         walletManager?: Database.IWalletManager,
-    ): boolean {
+    ): Promise<boolean> {
         const { data } = transaction;
         const { username } = data.asset.delegate;
         if (!username) {

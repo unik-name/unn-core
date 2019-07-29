@@ -15,11 +15,11 @@ export class NftTransferTransactionHandler extends TransactionHandler {
         return NFTTransferTransaction;
     }
 
-    public canBeApplied(
+    public async canBeApplied(
         transaction: Transaction,
         wallet: Database.IWallet,
         walletManager?: Database.IWalletManager,
-    ): boolean {
+    ): Promise<boolean> {
         const { data } = transaction;
         if (data.recipientId) {
             if (!wallet.tokens.includes(data.asset.nft.tokenId)) {

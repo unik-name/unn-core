@@ -28,14 +28,14 @@ afterAll(async () => {
 });
 
 describe("canApply", () => {
-    it("should add an error for delegate registration when username is already taken", () => {
+    it("should add an error for delegate registration when username is already taken", async () => {
         const delegateReg = TransactionFactory.delegateRegistration("genesis_11")
             .withNetwork("unitnet")
             .withPassphrase(wallets[11].passphrase)
             .build()[0];
         const errors = [];
 
-        expect(poolWalletManager.canApply(delegateReg, errors)).toBeFalse();
+        await expect(poolWalletManager.canApply(delegateReg, errors)).resolves.toBeFalse();
         expect(errors).toEqual([
             `Failed to apply transaction, because the username '${
                 delegateReg.data.asset.delegate.username
@@ -43,14 +43,14 @@ describe("canApply", () => {
         ]);
     });
 
-    it("should add an error when voting for a delegate that doesn't exist", () => {
+    it("should add an error when voting for a delegate that doesn't exist", async () => {
         const vote = TransactionFactory.vote(wallets[12].keys.publicKey)
             .withNetwork("unitnet")
             .withPassphrase(wallets[11].passphrase)
             .build()[0];
         const errors = [];
 
-        expect(poolWalletManager.canApply(vote, errors)).toBeFalse();
+        await expect(poolWalletManager.canApply(vote, errors)).resolves.toBeFalse();
         expect(errors).toEqual([`Failed to apply transaction, because only delegates can be voted.`]);
     });
 });
@@ -134,7 +134,7 @@ describe("applyPoolTransactionToSender", () => {
                 },
             ];
 
-            transfers.forEach(t => {
+            for (const t of transfers) {
                 const transfer = TransactionFactory.transfer(t.to.address, t.amount)
                     .withNetwork("unitnet")
                     .withPassphrase(t.from.passphrase)
@@ -148,7 +148,7 @@ describe("applyPoolTransactionToSender", () => {
                     .walletManager.findByPublicKey(transfer.data.senderPublicKey);
 
                 const errors = [];
-                if (poolWalletManager.canApply(transfer, errors)) {
+                if (await poolWalletManager.canApply(transfer, errors)) {
                     const senderWallet = poolWalletManager.findByPublicKey(transfer.data.senderPublicKey);
                     transactionHandler.applyToSender(transfer, senderWallet);
 
@@ -161,7 +161,7 @@ describe("applyPoolTransactionToSender", () => {
                 (container.resolvePlugin<Database.IDatabaseService>("database").walletManager as any).forgetByPublicKey(
                     transfer.data.senderPublicKey,
                 );
-            });
+            }
 
             expect(+delegateWallet.balance).toBe(delegate.balance - (100 + 0.1) * satoshi);
             expect(poolWallets[0].balance.isZero()).toBeTrue();

@@ -118,12 +118,12 @@ export class Connection implements TransactionPool.IConnection {
      *   notAdded: [ { transaction: Transaction, type: String, message: String }, ... ]
      * }
      */
-    public addTransactions(transactions: Transaction[]) {
+    public async addTransactions(transactions: Transaction[]) {
         const added = [];
         const notAdded = [];
 
         for (const transaction of transactions) {
-            const result = this.addTransaction(transaction);
+            const result = await this.addTransaction(transaction);
 
             if (result.success) {
                 added.push(transaction);
@@ -150,7 +150,7 @@ export class Connection implements TransactionPool.IConnection {
      * and applied to the pool or not. In case it was not successful, the type and message
      * property yield information about the error.
      */
-    public addTransaction(transaction: Transaction): TransactionPool.IAddTransactionResponse {
+    public async addTransaction(transaction: Transaction): Promise<TransactionPool.IAddTransactionResponse> {
         if (this.transactionExists(transaction.id)) {
             this.logger.debug(
                 "Transaction pool: ignoring attempt to add a transaction that is already " +
@@ -192,7 +192,7 @@ export class Connection implements TransactionPool.IConnection {
 
         // TODO: rework error handling
         const errors = [];
-        if (this.walletManager.canApply(transaction, errors)) {
+        if (await this.walletManager.canApply(transaction, errors)) {
             const transactionHandler = TransactionHandlerRegistry.get(transaction.type);
             transactionHandler.applyToSender(transaction, senderWallet);
         } else {
@@ -385,7 +385,7 @@ export class Connection implements TransactionPool.IConnection {
      * It removes block transaction from the pool and adjusts
      * pool wallets for non existing transactions.
      */
-    public acceptChainedBlock(block: models.Block) {
+    public async acceptChainedBlock(block: models.Block) {
         for (const transaction of block.transactions) {
             const { data } = transaction;
             const exists = this.transactionExists(data.id);
@@ -409,7 +409,7 @@ export class Connection implements TransactionPool.IConnection {
             } else if (senderWallet) {
                 // TODO: rework error handling
                 try {
-                    transactionHandler.canBeApplied(transaction, senderWallet);
+                    await transactionHandler.canBeApplied(transaction, senderWallet);
                 } catch (error) {
                     this.purgeByPublicKey(data.senderPublicKey);
                     this.blockSender(data.senderPublicKey);
@@ -456,7 +456,7 @@ export class Connection implements TransactionPool.IConnection {
 
         app.resolve<Blockchain.IStateStorage>("state").removeCachedTransactionIds(poolTransactionIds);
 
-        poolTransactionIds.forEach(transactionId => {
+        for (const transactionId of poolTransactionIds) {
             const transaction = this.getTransaction(transactionId);
             if (!transaction) {
                 return;
@@ -467,13 +467,13 @@ export class Connection implements TransactionPool.IConnection {
 
             // TODO: rework error handling
             try {
-                transactionHandler.canBeApplied(transaction, senderWallet);
+                await transactionHandler.canBeApplied(transaction, senderWallet);
                 transactionHandler.applyToSender(transaction, senderWallet);
             } catch (error) {
                 this.logger.error(`BuildWallets from pool: ${error.message}`);
                 this.purgeByPublicKey(transaction.data.senderPublicKey);
             }
-        });
+        }
         this.logger.info("Transaction Pool Manager build wallets complete");
     }
 

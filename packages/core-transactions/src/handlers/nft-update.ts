@@ -11,11 +11,11 @@ export class NftUpdateTransactionHandler extends TransactionHandler {
     /**
      * Check if the transaction can be applied to the wallet.
      */
-    public canBeApplied(
+    public async canBeApplied(
         transaction: Transaction,
         wallet: Database.IWallet,
         walletManager?: Database.IWalletManager,
-    ): boolean {
+    ): Promise<boolean> {
         if (!wallet.tokens.includes(transaction.data.asset.nft.tokenId)) {
             throw new NftOwnerError(wallet.address, transaction.data.asset.nft.tokenId);
         }

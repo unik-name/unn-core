@@ -468,7 +468,7 @@ describe("Transaction Guard", () => {
             expect(guard.broadcast.size).toBe(4);
         });
 
-        it("should delete from accept and broadcast transactions that were not added to the pool", () => {
+        it("should delete from accept and broadcast transactions that were not added to the pool", async () => {
             const added = TransactionFactory.transfer(delegates[0].address)
                 .withNetwork("unitnet")
                 .withPassphrase(delegates[0].secret)
@@ -492,8 +492,8 @@ describe("Transaction Guard", () => {
                 guard.broadcast.set(tx.transaction.id, tx);
             });
 
-            jest.spyOn(guard.pool, "addTransactions").mockReturnValueOnce({ added, notAdded });
-            guard.__addTransactionsToPool();
+            jest.spyOn(guard.pool, "addTransactions").mockReturnValueOnce(Promise.resolve({ added, notAdded }));
+            await guard.__addTransactionsToPool();
 
             expect(guard.accept.size).toBe(2);
             expect(guard.broadcast.size).toBe(2);
@@ -502,7 +502,7 @@ describe("Transaction Guard", () => {
             expect(guard.errors[notAdded[1].transaction.id]).toEqual([notAddedError]);
         });
 
-        it("should delete from accept but keep in broadcast transactions that were not added to the pool because of ERR_POOL_FULL", () => {
+        it("should delete from accept but keep in broadcast transactions that were not added to the pool because of ERR_POOL_FULL", async () => {
             const added = TransactionFactory.transfer(delegates[0].address)
                 .withNetwork("unitnet")
                 .withPassphrase(delegates[0].secret)
@@ -527,8 +527,8 @@ describe("Transaction Guard", () => {
                 guard.broadcast.set(tx.transaction.id, tx);
             });
 
-            jest.spyOn(guard.pool, "addTransactions").mockReturnValueOnce({ added, notAdded });
-            guard.__addTransactionsToPool();
+            jest.spyOn(guard.pool, "addTransactions").mockReturnValueOnce(Promise.resolve({ added, notAdded }));
+            await guard.__addTransactionsToPool();
 
             expect(guard.accept.size).toBe(2);
             expect(guard.broadcast.size).toBe(4);

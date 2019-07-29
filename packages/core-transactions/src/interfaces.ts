@@ -4,7 +4,11 @@ import { ITransactionData, Transaction, TransactionConstructor } from "@arkecosy
 export interface ITransactionHandler {
     getConstructor(): TransactionConstructor;
 
-    canBeApplied(transaction: Transaction, wallet: Database.IWallet, walletManager?: Database.IWalletManager): boolean;
+    canBeApplied(
+        transaction: Transaction,
+        wallet: Database.IWallet,
+        walletManager?: Database.IWalletManager,
+    ): Promise<boolean>;
     applyToSender(transaction: Transaction, wallet: Database.IWallet): void;
     applyToRecipient(transaction: Transaction, wallet: Database.IWallet): void;
     revertForSender(transaction: Transaction, wallet: Database.IWallet): void;

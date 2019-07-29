@@ -253,7 +253,7 @@ export class WalletManager implements Database.IWalletManager {
      * @param  {Block} block
      * @return {void}
      */
-    public applyBlock(block: models.Block): void {
+    public async applyBlock(block: models.Block): Promise<void> {
         const generatorPublicKey = block.data.generatorPublicKey;
 
         let delegate = this.byPublicKey[block.data.generatorPublicKey];
@@ -280,12 +280,12 @@ export class WalletManager implements Database.IWalletManager {
         const appliedTransactions = [];
 
         try {
-            block.transactions.forEach(transaction => {
-                this.applyTransaction(transaction);
+            for (const transaction of block.transactions) {
+                await this.applyTransaction(transaction);
                 appliedTransactions.push(transaction);
-            });
+            }
 
-            const applied = delegate.applyBlock(block.data);
+            const applied = await delegate.applyBlock(block.data);
 
             // If the block has been applied to the delegate, the balance is increased
             // by reward + totalFee. In which case the vote balance of the
@@ -314,7 +314,7 @@ export class WalletManager implements Database.IWalletManager {
      * @param  {Block} block
      * @return {void}
      */
-    public revertBlock(block: models.Block): void {
+    public async revertBlock(block: models.Block): Promise<void> {
         const delegate = this.byPublicKey[block.data.generatorPublicKey];
 
         if (!delegate) {
@@ -331,7 +331,7 @@ export class WalletManager implements Database.IWalletManager {
                 revertedTransactions.push(transaction);
             }
 
-            const reverted = delegate.revertBlock(block.data);
+            const reverted = await delegate.revertBlock(block.data);
 
             // If the block has been reverted, the balance is decreased
             // by reward + totalFee. In which case the vote balance of the
@@ -344,7 +344,9 @@ export class WalletManager implements Database.IWalletManager {
         } catch (error) {
             this.logger.error(error.stack);
 
-            revertedTransactions.reverse().forEach(transaction => this.applyTransaction(transaction));
+            for (const transaction of revertedTransactions.reverse()) {
+                await this.applyTransaction(transaction);
+            }
 
             throw error;
         }
@@ -353,7 +355,7 @@ export class WalletManager implements Database.IWalletManager {
     /**
      * Apply the given transaction to a delegate.
      */
-    public applyTransaction(transaction: Transaction): void {
+    public async applyTransaction(transaction: Transaction): Promise<void> {
         const { data } = transaction;
         const { type, recipientId, senderPublicKey } = data;
 
@@ -372,7 +374,7 @@ export class WalletManager implements Database.IWalletManager {
             this.logger.warn(`Transaction ${data.id} forcibly applied because it has been added as an exception.`);
         } else {
             try {
-                transactionHandler.canBeApplied(transaction, sender, this);
+                await transactionHandler.canBeApplied(transaction, sender, this);
             } catch (error) {
                 this.logger.error(
                     `Can't apply transaction id:${data.id} from sender:${sender.address} due to ${error.message}`,

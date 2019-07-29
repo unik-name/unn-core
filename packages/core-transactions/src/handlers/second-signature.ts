@@ -13,11 +13,11 @@ export class SecondSignatureTransactionHandler extends TransactionHandler {
         return SecondSignatureRegistrationTransaction;
     }
 
-    public canBeApplied(
+    public async canBeApplied(
         transaction: Transaction,
         wallet: Database.IWallet,
         walletManager?: Database.IWalletManager,
-    ): boolean {
+    ): Promise<boolean> {
         if (wallet.secondPublicKey) {
             throw new SecondSignatureAlreadyRegisteredError();
         }

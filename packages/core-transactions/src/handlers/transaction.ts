@@ -27,11 +27,11 @@ export abstract class TransactionHandler implements ITransactionHandler {
     /**
      * Wallet logic
      */
-    public canBeApplied(
+    public async canBeApplied(
         transaction: Transaction,
         wallet: Database.IWallet,
         walletManager?: Database.IWalletManager,
-    ): boolean {
+    ): Promise<boolean> {
         // NOTE: Checks if it can be applied based on sender wallet
         // could be merged with `apply` so they are coupled together :thinking_face:
 

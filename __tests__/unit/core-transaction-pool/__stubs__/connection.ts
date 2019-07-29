@@ -30,15 +30,15 @@ export class Connection implements TransactionPool.IConnection {
 
     public addTransactions(
         transactions: Transaction[],
-    ): {
+    ): Promise<{
         added: Transaction[];
         notAdded: TransactionPool.IAddTransactionErrorResponse[];
-    } {
-        return { added: [], notAdded: [] };
+    }> {
+        return Promise.resolve({ added: [], notAdded: [] });
     }
 
-    public addTransaction(transaction: Transaction): TransactionPool.IAddTransactionResponse {
-        return null;
+    public addTransaction(transaction: Transaction): Promise<TransactionPool.IAddTransactionResponse> {
+        return Promise.resolve(null);
     }
 
     public removeTransaction(transaction: Transaction): void {
@@ -97,8 +97,8 @@ export class Connection implements TransactionPool.IConnection {
         return null;
     }
 
-    public acceptChainedBlock(block: models.Block): void {
-        return;
+    public acceptChainedBlock(block: models.Block): Promise<void> {
+        return Promise.resolve();
     }
 
     public async buildWallets(): Promise<void> {

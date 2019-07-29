@@ -7,11 +7,11 @@ export class DelegateResignationTransactionHandler extends TransactionHandler {
         return DelegateResignationTransaction;
     }
 
-    public canBeApplied(
+    public async canBeApplied(
         transaction: Transaction,
         wallet: Database.IWallet,
         walletManager?: Database.IWalletManager,
-    ): boolean {
+    ): Promise<boolean> {
         return super.canBeApplied(transaction, wallet, walletManager);
     }
 

@@ -52,15 +52,15 @@ export interface IConnection {
      */
     addTransactions(
         transactions: Transaction[],
-    ): {
+    ): Promise<{
         added: Transaction[];
         notAdded: IAddTransactionErrorResponse[];
-    };
+    }>;
 
     /**
      * Add a transaction to the pool.
      */
-    addTransaction(transaction: Transaction): IAddTransactionResponse;
+    addTransaction(transaction: Transaction): Promise<IAddTransactionResponse>;
 
     /**
      * Remove a transaction from the pool by transaction object.
@@ -148,7 +148,7 @@ export interface IConnection {
      * @param  {Object} block
      * @return {void}
      */
-    acceptChainedBlock(block: models.Block): void;
+    acceptChainedBlock(block: models.Block): Promise<void>;
 
     /**
      * Rebuild pool manager wallets

@@ -67,6 +67,7 @@ export const defaults = {
             "/api/v2/delegates/search",
             "/api/v2/nfts",
             "/api/v2/nfts/search",
+            "/api/v2/nfts/{id}/properties",
             "/api/v2/peers",
             "/api/v2/transactions",
             "/api/v2/transactions/search",

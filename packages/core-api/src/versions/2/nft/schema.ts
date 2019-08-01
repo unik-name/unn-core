@@ -20,6 +20,13 @@ export const show: object = {
     },
 };
 
+export const properties: object = {
+    params: {
+        id: nftId,
+    },
+    query: pagination,
+};
+
 export const search: object = {
     query: pagination,
     payload: {

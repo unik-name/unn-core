@@ -5,3 +5,7 @@ export function transformNft(model) {
         properties: model.properties,
     };
 }
+
+export function transformNftProperties(model) {
+    return model;
+}

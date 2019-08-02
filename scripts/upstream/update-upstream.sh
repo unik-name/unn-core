@@ -8,7 +8,7 @@ echo -e "\n["$(date +%F_%H-%M-%S)"]"
 
 echo -e "\nFetching sources"
 git fetch
-DIFF=$(git diff origin/private/develop --summary)
+DIFF=$(git diff private/develop origin/private/develop --shortstat)
 
 if [ -z $DIFF ]
 then

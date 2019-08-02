@@ -12,7 +12,7 @@
     "aip20": 1,
     "client": {
         "token": "DUNS",
-        "symbol": "D₪",
+        "symbol": "DUNS",
         "explorer": "https://explorer.devnet.uns.network"
     }
 }

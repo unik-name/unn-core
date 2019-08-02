@@ -12,7 +12,7 @@
     "aip20": 0,
     "client": {
         "token": "TUNS",
-        "symbol": "T₪",
+        "symbol": "TUNS",
         "explorer": "http://texplorer.ark.io"
     }
 }

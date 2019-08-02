@@ -20,8 +20,8 @@ else
 fi
 
 echo -e "\nStopping node"
-uns relay:stop 
-uns forger:stop
+./packages/core/bin/run relay:stop 
+./packages/core/bin/run forger:stop
 echo "--> Node stopped"
 
 echo -e "\nBuilding sources"
@@ -30,7 +30,7 @@ yarn && yarn setup:clean
 echo "--> sources built"
 
 echo -e "\nStarting node"
-uns relay:start --network=devnet --ignoreMinimumNetworkReach
-uns forger:start --network=devnet
+./packages/core/bin/run relay:start --network=devnet --ignoreMinimumNetworkReach
+./packages/core/bin/run forger:start --network=devnet
 
 exit 0

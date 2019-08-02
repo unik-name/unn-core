@@ -19,8 +19,6 @@ else
     echo "--> source updated"
 fi
 
-cp ./scripts/upstream/check-uns-update /etc/cron.d/
-
 echo -e "\nStopping node"
 uns relay:stop 
 uns forger:stop

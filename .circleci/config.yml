@@ -1,9 +1,9 @@
 version: 2
 jobs:
-  test-node11-unit:
+  test-node10-unit:
     working_directory: ~/core
     docker:
-      - image: 'circleci/node:11-browsers'
+      - image: 'circleci/node:10-browsers'
     steps:
       - run:
           name: Check if commit must be built
@@ -29,12 +29,12 @@ jobs:
             find ./packages/ -name package.json -print0 | sort -z | xargs -r0
             echo ./package.json | xargs md5sum | md5sum - > checksum.txt
       - restore_cache:
-          key: 'core-node11-{{ checksum "checksum.txt" }}-unit'
+          key: 'core-node10-{{ checksum "checksum.txt" }}-unit'
       - run:
           name: Install and build packages
           command: yarn setup
       - save_cache:
-          key: 'core-node11-{{ checksum "checksum.txt" }}-unit'
+          key: 'core-node10-{{ checksum "checksum.txt" }}-unit'
           paths:
             - ./packages/core/node_modules
             - ./packages/core-api/node_modules
@@ -88,13 +88,13 @@ jobs:
       - run:
           name: Codecov
           command: ./node_modules/.bin/codecov
-  test-node11-functional:
+  test-node10-functional:
     working_directory: ~/core
     environment:
       CORE_DB_DATABASE: core_unitnet
       CORE_DB_USERNAME: core
     docker:
-      - image: 'circleci/node:11-browsers'
+      - image: 'circleci/node:10-browsers'
       - image: 'postgres:alpine'
         environment:
           POSTGRES_PASSWORD: password
@@ -125,12 +125,12 @@ jobs:
             find ./packages/ -name package.json -print0 | sort -z | xargs -r0
             echo ./package.json | xargs md5sum | md5sum - > checksum.txt
       - restore_cache:
-          key: 'core-node11-{{ checksum "checksum.txt" }}-functional'
+          key: 'core-node10-{{ checksum "checksum.txt" }}-functional'
       - run:
           name: Install and build packages
           command: yarn setup
       - save_cache:
-          key: 'core-node11-{{ checksum "checksum.txt" }}-functional'
+          key: 'core-node10-{{ checksum "checksum.txt" }}-functional'
           paths:
             - ./packages/core/node_modules
             - ./packages/core-api/node_modules
@@ -184,13 +184,13 @@ jobs:
       - run:
           name: Codecov
           command: ./node_modules/.bin/codecov
-  test-node11-integration-0:
+  test-node10-integration-0:
     working_directory: ~/core
     environment:
       CORE_DB_DATABASE: core_unitnet
       CORE_DB_USERNAME: core
     docker:
-      - image: 'circleci/node:11-browsers'
+      - image: 'circleci/node:10-browsers'
       - image: 'postgres:alpine'
         environment:
           POSTGRES_PASSWORD: password
@@ -221,12 +221,12 @@ jobs:
             find ./packages/ -name package.json -print0 | sort -z | xargs -r0
             echo ./package.json | xargs md5sum | md5sum - > checksum.txt
       - restore_cache:
-          key: 'core-node11-{{ checksum "checksum.txt" }}-1'
+          key: 'core-node10-{{ checksum "checksum.txt" }}-1'
       - run:
           name: Install and build packages
           command: yarn setup
       - save_cache:
-          key: 'core-node11-{{ checksum "checksum.txt" }}-1'
+          key: 'core-node10-{{ checksum "checksum.txt" }}-1'
           paths:
             - ./packages/core/node_modules
             - ./packages/core-api/node_modules
@@ -280,13 +280,13 @@ jobs:
       - run:
           name: Codecov
           command: ./node_modules/.bin/codecov
-  test-node11-integration-1:
+  test-node10-integration-1:
     working_directory: ~/core
     environment:
       CORE_DB_DATABASE: core_unitnet
       CORE_DB_USERNAME: core
     docker:
-      - image: 'circleci/node:11-browsers'
+      - image: 'circleci/node:10-browsers'
       - image: 'postgres:alpine'
         environment:
           POSTGRES_PASSWORD: password
@@ -317,12 +317,12 @@ jobs:
             find ./packages/ -name package.json -print0 | sort -z | xargs -r0
             echo ./package.json | xargs md5sum | md5sum - > checksum.txt
       - restore_cache:
-          key: 'core-node11-{{ checksum "checksum.txt" }}-1'
+          key: 'core-node10-{{ checksum "checksum.txt" }}-1'
       - run:
           name: Install and build packages
           command: yarn setup
       - save_cache:
-          key: 'core-node11-{{ checksum "checksum.txt" }}-1'
+          key: 'core-node10-{{ checksum "checksum.txt" }}-1'
           paths:
             - ./packages/core/node_modules
             - ./packages/core-api/node_modules
@@ -401,13 +401,13 @@ jobs:
       - run:
           name: Codecov
           command: ./node_modules/.bin/codecov
-  test-node11-integration-2:
+  test-node10-integration-2:
     working_directory: ~/core
     environment:
       CORE_DB_DATABASE: core_unitnet
       CORE_DB_USERNAME: core
     docker:
-      - image: 'circleci/node:11-browsers'
+      - image: 'circleci/node:10-browsers'
       - image: 'postgres:alpine'
         environment:
           POSTGRES_PASSWORD: password
@@ -438,12 +438,12 @@ jobs:
             find ./packages/ -name package.json -print0 | sort -z | xargs -r0
             echo ./package.json | xargs md5sum | md5sum - > checksum.txt
       - restore_cache:
-          key: 'core-node11-{{ checksum "checksum.txt" }}-1'
+          key: 'core-node10-{{ checksum "checksum.txt" }}-1'
       - run:
           name: Install and build packages
           command: yarn setup
       - save_cache:
-          key: 'core-node11-{{ checksum "checksum.txt" }}-1'
+          key: 'core-node10-{{ checksum "checksum.txt" }}-1'
           paths:
             - ./packages/core/node_modules
             - ./packages/core-api/node_modules
@@ -520,8 +520,8 @@ workflows:
   version: 2
   build_and_test:
     jobs:
-      - test-node11-unit
-      - test-node11-functional
-      - test-node11-integration-0
-      - test-node11-integration-1
-      - test-node11-integration-2
+      - test-node10-unit
+      - test-node10-functional
+      - test-node10-integration-0
+      - test-node10-integration-1
+      - test-node10-integration-2

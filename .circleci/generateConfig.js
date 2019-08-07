@@ -5,8 +5,8 @@ const path = require("path");
 const config = require("./configTemplate.json");
 
 const fixedJobs = [
-    "test-node11-unit",
-    "test-node11-functional",
+    "test-node10-unit",
+    "test-node10-functional",
 ]
 
 function jason(value) {

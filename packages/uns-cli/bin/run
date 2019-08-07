@@ -1,0 +1,12 @@
+#!/usr/bin/env node
+const moduleAlias = require('module-alias')
+
+// Register aliases
+moduleAlias.addAliases({
+    "@arkecosystem": "@uns/",
+    "@arkecosystem/utils": "@arkecosystem/utils"
+});
+
+require('@oclif/command').run()
+.then(require('@oclif/command/flush'))
+.catch(require('@oclif/errors/handle'))

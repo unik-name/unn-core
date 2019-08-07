@@ -53,6 +53,48 @@ export class NftsRepository extends Repository implements Database.INftsReposito
     }
 
     /**
+     * Add property on nft token
+     * @param nftid
+     * @param propertyKey
+     * @param propertyValue
+     */
+    public insertProperty(nftid: string, propertyKey: string, propertyValue: string): Promise<any> {
+        return this.db.none(sql.insertKey, { nftid, key: propertyKey, value: propertyValue });
+    }
+
+    /**
+     * Remove property from nft token
+     * @param nftid
+     * @param propertyKey
+     */
+    public deletePropertyByKey(nftid: string, propertyKey): Promise<void> {
+        return this.db.none(sql.deleteByKey, { nftid, key: propertyKey });
+    }
+
+    /**
+     * Update nft token property
+     * @param nftid
+     * @param propertyKey
+     * @param propertyValue
+     */
+    public updateProperty(nftid: string, propertyKey: string, propertyValue: string): Promise<void> {
+        return this.db.none(sql.updateProperty, { nftid, key: propertyKey, value: propertyValue });
+    }
+
+    /**
+     * Find nft token property by key
+     * @param nftid
+     * @param propertyKey
+     */
+    public findPropertyByKey(nftid: string, propertyKey: string): Promise<any> {
+        return this.db.oneOrNone(sql.findByKey, { nftid, key: propertyKey });
+    }
+
+    public findProperties(nftid: string): Promise<any> {
+        return this.db.any(sql.findProperties, { nftid });
+    }
+
+    /**
      * Get the model related to this repository.
      * @return {Nft}
      */

@@ -14,4 +14,5 @@ export const migrations = [
     loadQueryFile(__dirname, "./20190307000000-drop-wallets-table.sql"),
     loadQueryFile(__dirname, "./20190313000000-add-asset-column-to-transactions-table.sql"),
     loadQueryFile(__dirname, "./20190516100000-create-nfts-table.sql"),
+    loadQueryFile(__dirname, "./20190710100000-create-nftproperties-table.sql"),
 ];

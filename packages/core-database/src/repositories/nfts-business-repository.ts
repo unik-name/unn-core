@@ -1,4 +1,5 @@
 import { Database } from "@arkecosystem/core-interfaces";
+import limitRows = require("./utils/limit-rows");
 import { SearchParameterConverter } from "./utils/search-parameter-converter";
 
 export class NftsBusinessRepository implements Database.INftsBusinessRepository {
@@ -6,6 +7,14 @@ export class NftsBusinessRepository implements Database.INftsBusinessRepository 
 
     public async findById(id: string) {
         return await this.databaseServiceProvider().connection.nftsRepository.findById(id);
+    }
+
+    public async findProperties(id: string, params: Database.IParameters = {}) {
+        const properties = await this.databaseServiceProvider().connection.nftsRepository.findProperties(id);
+        return {
+            rows: limitRows(properties, params),
+            count: properties.length,
+        };
     }
 
     public async search(params: Database.IParameters) {

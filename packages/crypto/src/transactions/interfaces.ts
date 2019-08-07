@@ -17,7 +17,7 @@ export interface ITransactionAsset {
     payments?: any;
     nft?: {
         tokenId: string;
-        properties?: Array<[string, string]>;
+        properties?: { [_: string]: string };
     };
     [custom: string]: any;
 }

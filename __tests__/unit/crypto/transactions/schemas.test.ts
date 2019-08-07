@@ -1,9 +1,10 @@
 import { configManager, constants, crypto } from "../../../../packages/crypto/src";
 import { transactionBuilder } from "../../../../packages/crypto/src/builder";
-import { TransactionRegistry } from "../../../../packages/crypto/src/transactions";
+import { ITransactionData, TransactionRegistry } from "../../../../packages/crypto/src/transactions";
 import { TransactionSchema } from "../../../../packages/crypto/src/transactions/types/schemas";
 import { AjvWrapper as Ajv } from "../../../../packages/crypto/src/validation";
 
+const ajvInstance = Ajv.instance();
 const { TransactionTypes } = constants;
 
 let transaction;
@@ -695,5 +696,53 @@ describe.skip("Multi Signature Transaction", () => {
 
         const { error } = Ajv.validate(transactionSchema.$id, transaction.getStruct());
         expect(error).not.toBeNull();
+    });
+});
+
+describe("Transactions schemas", () => {
+    const TOKEN_ID = "ee16f4b75f38f6e3d16635f72a8445e0ff8fbacfdfa8f05df077e73de79d6e4f";
+    const SENDER_PK = "03287bfebba4c7881a0509717e71b34b63f31e40021c321f89ae04f84be6d6ac37";
+    const OWNER_PASSPHRASE = "clay harbor enemy utility margin pretty hub comic piece aerobic umbrella acquire";
+    const MAX_UPDATE_PROPERTIES = 255;
+
+    const schema = TransactionRegistry.get(TransactionTypes.NftUpdate).getSchema();
+    const validate = ajvInstance.compile(schema);
+    let transaction: ITransactionData;
+
+    const nftupdateTransctionStruct = (properties: any): ITransactionData => {
+        return transactionBuilder
+            .nftUpdate(TOKEN_ID)
+            .properties(properties)
+            .senderPublicKey(SENDER_PK)
+            .sign(OWNER_PASSPHRASE)
+            .getStruct();
+    };
+
+    const getProperties = (nbProperties: number): any => {
+        const properties = {};
+        for (let i = 0; i < nbProperties; i++) {
+            properties[`prop${i}`] = i;
+        }
+        return properties;
+    };
+
+    it("Validate nftupdate schema fails without properties ", () => {
+        transaction = nftupdateTransctionStruct({});
+        expect(validate(transaction)).toBeFalsy();
+    });
+
+    it("Validate nftupdate schema succeed with only one property ", () => {
+        transaction = nftupdateTransctionStruct(getProperties(1));
+        expect(validate(transaction)).toBeTruthy();
+    });
+
+    it("Validate nftupdate schema succeed with 255 properties to update", () => {
+        transaction = nftupdateTransctionStruct(getProperties(MAX_UPDATE_PROPERTIES));
+        expect(validate(transaction)).toBeTruthy();
+    });
+
+    it("Validate nftupdate schema fails with 256 properties to update", () => {
+        transaction = nftupdateTransctionStruct(getProperties(MAX_UPDATE_PROPERTIES + 1));
+        expect(validate(transaction)).toBeFalsy();
     });
 });

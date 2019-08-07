@@ -1,5 +1,6 @@
 import { Database, TransactionPool } from "@arkecosystem/core-interfaces";
 import { ITransactionData, NFTUpdateTransaction, Transaction, TransactionConstructor } from "@arkecosystem/crypto";
+import { NftOwnerError } from "../errors";
 import { TransactionHandler } from "./transaction";
 
 export class NftUpdateTransactionHandler extends TransactionHandler {
@@ -15,10 +16,10 @@ export class NftUpdateTransactionHandler extends TransactionHandler {
         wallet: Database.IWallet,
         walletManager?: Database.IWalletManager,
     ): boolean {
-        return (
-            wallet.tokens.includes(transaction.data.asset.nft.tokenId) &&
-            super.canBeApplied(transaction, wallet, walletManager)
-        );
+        if (!wallet.tokens.includes(transaction.data.asset.nft.tokenId)) {
+            throw new NftOwnerError(wallet.address, transaction.data.asset.nft.tokenId);
+        }
+        return super.canBeApplied(transaction, wallet, walletManager);
     }
 
     /**

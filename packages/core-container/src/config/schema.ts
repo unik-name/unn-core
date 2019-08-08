@@ -16,7 +16,14 @@ const numberTypeConstraint = nftAdvancedConstraint(
     }),
 );
 
-const nftParameterConstraints = [numberTypeConstraint];
+const enumerationConstraint = nftAdvancedConstraint(
+    "enumeration",
+    Joi.object({
+        values: Joi.array().items(Joi.string()),
+    }),
+);
+
+const nftParameterConstraints = [numberTypeConstraint, enumerationConstraint];
 
 export const schemaNetwork = Joi.object({
     milestones: Joi.array()

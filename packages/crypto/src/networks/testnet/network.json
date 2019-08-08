@@ -14,5 +14,21 @@
         "token": "TUNS",
         "symbol": "TUNS",
         "explorer": "http://texplorer.ark.io"
+    },
+    "nft": {
+        "name": "UNIK",
+        "properties": {
+            "type": {
+                "constraints": [
+                    "immutable",
+                    {
+                        "name": "enumeration",
+                        "parameters": {
+                            "values": ["1", "2"]
+                        }
+                    }
+                ]
+            }
+        }
     }
 }

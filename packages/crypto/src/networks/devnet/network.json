@@ -14,5 +14,21 @@
         "token": "DUNS",
         "symbol": "DUNS",
         "explorer": "https://explorer.devnet.uns.network"
+    },
+    "nft": {
+        "name": "UNIK",
+        "properties": {
+            "type": {
+                "constraints": [
+                    "immutable",
+                    {
+                        "name": "enumeration",
+                        "parameters": {
+                            "values": ["1", "2"]
+                        }
+                    }
+                ]
+            }
+        }
     }
 }

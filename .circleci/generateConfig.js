@@ -65,7 +65,6 @@ fs.readdir("./packages", (_, packages) => {
                 "name":"Check if commit must be built",
                 "command":
                 `if [[ -z $CIRCLE_PULL_REQUEST && 
-                          $CIRCLE_BRANCH != \"private/develop\" && 
                           $CIRCLE_BRANCH != \"feat/nft\" ]] ; then 
                             echo \"Cancel job\" && 
                             circleci-agent step halt; 

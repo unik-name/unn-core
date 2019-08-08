@@ -2,6 +2,7 @@
 
 ##########
 # Warning: If you update this file, you must copy to crond.d manually 
+# pm2 must be installed globally by unikname user.
 ##########
 
-*/30 7-9,12-16 * * MON-FRI unikname /home/unikname/core/scripts/upstream/update-upstream.sh >> /home/unikname/cron-uns-core-update.log 2>&1
+*/30 7-9,12-16 * * MON-FRI unikname export PATH=$HOME/.yarn/bin:$PATH ; /home/unikname/core/scripts/upstream/update-upstream.sh >> /home/unikname/cron-uns-core-update.log 2>&1

@@ -4,29 +4,31 @@ import { satoshiFlag } from "../../flags";
 import { logger } from "../../logger";
 import { SendCommand } from "../../shared/send";
 
+export const NFTUPDATE_FLAGS = {
+    ...SendCommand.flagsSend,
+    id: flags.string({
+        description: "token identifier",
+        required: true,
+    }),
+    owner: flags.string({
+        description: "NFT owner passphrase",
+        required: true,
+    }),
+    // --props has to be a json string
+    props: flags.string({
+        description: "NFT properties to update key/value",
+        required: true,
+    }),
+    nftFee: satoshiFlag({
+        description: "nft fee",
+        default: 1,
+    }),
+};
+
 export class NFTUpdateCommand extends SendCommand {
     public static description: string = "update a non-fungible token properties from A to B";
 
-    public static flags = {
-        ...SendCommand.flagsSend,
-        id: flags.string({
-            description: "token identifier",
-            required: true,
-        }),
-        owner: flags.string({
-            description: "NFT owner passphrase",
-            required: true,
-        }),
-        // --props has to be a json string
-        props: flags.string({
-            description: "NFT properties to update key/value",
-            required: true,
-        }),
-        nftFee: satoshiFlag({
-            description: "nft fee",
-            default: 1,
-        }),
-    };
+    public static flags = NFTUPDATE_FLAGS;
 
     protected getCommand(): any {
         return NFTUpdateCommand;
@@ -63,7 +65,7 @@ export class NFTUpdateCommand extends SendCommand {
         const id = flags.id;
 
         const properties: { [_: string]: string } = this.getPropertiesFromFlag(flags.props);
-        const transaction = this.signer.makeNftUpdate({
+        const transaction = this.getSigner({
             ...flags,
             ...{
                 id,
@@ -71,6 +73,7 @@ export class NFTUpdateCommand extends SendCommand {
                 properties,
             },
         });
+
         wallets[address].expectedNft = id;
         return [transaction];
     }
@@ -96,6 +99,10 @@ export class NFTUpdateCommand extends SendCommand {
                 await this.knockNft(tokenId, transaction.properties);
             }
         }
+    }
+
+    protected getSigner(opts) {
+        return this.signer.makeNftUpdate(opts);
     }
 
     private async knockNft(nftId: string, properties: { [_: string]: string }): Promise<void> {

@@ -4,14 +4,14 @@ import { ITransactionData } from "../../../transactions";
 import { TransactionBuilder } from "../transaction";
 
 export abstract class NFTBuilder extends TransactionBuilder<NFTBuilder> {
-    constructor(type: TransactionTypes, tokenId: string) {
+    constructor(tokenId: string) {
         super();
 
         this.data.amount = 0;
         this.data.senderPublicKey = null;
 
-        this.data.type = type;
-        this.data.fee = feeManager.get(type);
+        this.data.type = this.type();
+        this.data.fee = feeManager.get(this.data.type);
 
         this.data.asset = {
             nft: {
@@ -29,4 +29,5 @@ export abstract class NFTBuilder extends TransactionBuilder<NFTBuilder> {
     }
 
     protected abstract instance();
+    protected abstract type(): TransactionTypes;
 }

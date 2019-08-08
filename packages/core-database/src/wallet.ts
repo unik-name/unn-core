@@ -188,6 +188,10 @@ export class Wallet implements Database.IWallet {
             audit.push({ NftUpdate: true });
         }
 
+        if (transaction.type === TransactionTypes.NftMint) {
+            audit.push({ NftMint: true });
+        }
+
         if (transaction.type === TransactionTypes.TimelockTransfer) {
             audit.push({ Timelock: true });
         }

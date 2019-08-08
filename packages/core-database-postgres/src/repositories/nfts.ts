@@ -45,7 +45,10 @@ export class NftsRepository extends Repository implements Database.INftsReposito
     }
 
     public delete(id: string) {
-        return this.db.none(sql.delete, { id });
+        this.db.tx(t => {
+            t.batch([t.none(sql.delete, { id }), t.none(sql.deleteProperties, { id })]);
+        });
+        return this.db;
     }
 
     public updateOwnerId(id: string, newOwnerId: string): Promise<any> {

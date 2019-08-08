@@ -28,6 +28,7 @@ export const defaults = {
             delegateResignation: 400000,
             nftTransfer: 1,
             nftUpdate: 1,
+            nftMint: 1,
         },
     },
 };

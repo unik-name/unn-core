@@ -1,17 +1,12 @@
 import { TransactionTypes } from "../../../constants";
-import { NFTBuilder } from "./nft";
+import { AbstractNFTUpdateBuilder } from "./abstract-nft-update";
 
-export class NFTUpdateBuilder extends NFTBuilder {
-    constructor(tokenId: string) {
-        super(TransactionTypes.NftUpdate, tokenId);
-    }
-
-    public properties(properties: { [_: string]: string }) {
-        this.data.asset.nft.properties = properties;
-        return this.instance();
-    }
-
+export class NFTUpdateBuilder extends AbstractNFTUpdateBuilder {
     protected instance(): NFTUpdateBuilder {
         return this;
+    }
+
+    protected type() {
+        return TransactionTypes.NftUpdate;
     }
 }

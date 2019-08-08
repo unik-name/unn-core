@@ -1,5 +1,5 @@
 import { Address, ITransactionData } from "@arkecosystem/crypto";
-import { NFTModifier } from "../modifier";
+import { NFTModifier } from "../../modifier";
 
 export abstract class NFTTransferHandler {
     public static async onApplied(transaction: ITransactionData) {

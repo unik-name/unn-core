@@ -1,7 +1,7 @@
 import { app } from "@arkecosystem/core-container";
 import { Logger } from "@arkecosystem/core-interfaces";
 import { ITransactionData } from "@arkecosystem/crypto";
-import { NFTModifier } from "../modifier";
+import { NFTModifier } from "../../modifier";
 
 const logger: Logger.ILogger = app.resolvePlugin<Logger.ILogger>("logger");
 

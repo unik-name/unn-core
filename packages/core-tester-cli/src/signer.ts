@@ -1,5 +1,5 @@
 import { bignumify } from "@arkecosystem/core-utils";
-import { Bignum, client, Transaction } from "@arkecosystem/crypto";
+import { client } from "@arkecosystem/crypto";
 
 export class Signer {
     protected network: Record<string, any>;
@@ -90,9 +90,15 @@ export class Signer {
     }
 
     public makeNftUpdate(opts: Record<string, any>): any {
-        const transaction = client
-            .getBuilder()
-            .nftUpdate(opts.id)
+        return this.makeAbstractNftUpdate(opts, client.getBuilder().nftUpdate);
+    }
+
+    public makeNftMint(opts: Record<string, any>): any {
+        return this.makeAbstractNftUpdate(opts, client.getBuilder().nftMint);
+    }
+
+    private makeAbstractNftUpdate(opts: Record<string, any>, builder): any {
+        const transaction = builder(opts.id)
             .properties(opts.properties)
             .fee(this.toSatoshi(opts.nftFee))
             .network(this.network.version)

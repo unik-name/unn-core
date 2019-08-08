@@ -188,6 +188,13 @@ export const nftUpdate = extend(transactionBaseSchema, {
     },
 });
 
+export const nftMint = extend(nftUpdate, {
+    $id: "nftMint",
+    properties: {
+        type: { transactionType: TransactionTypes.NftMint },
+    },
+});
+
 export const multiSignature = extend(transactionBaseSchema, {
     $id: "multiSignature",
     properties: {

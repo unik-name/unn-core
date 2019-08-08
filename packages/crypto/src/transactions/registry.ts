@@ -16,6 +16,7 @@ import {
     IpfsTransaction,
     MultiPaymentTransaction,
     MultiSignatureRegistrationTransaction,
+    NFTMintTransaction,
     NFTTransferTransaction,
     NFTUpdateTransaction,
     SecondSignatureRegistrationTransaction,
@@ -43,6 +44,7 @@ class TransactionRegistry {
         this.registerCoreType(DelegateResignationTransaction);
         this.registerCoreType(NFTTransferTransaction);
         this.registerCoreType(NFTUpdateTransaction);
+        this.registerCoreType(NFTMintTransaction);
     }
 
     public create(data: ITransactionData): Transaction {

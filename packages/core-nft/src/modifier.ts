@@ -20,7 +20,7 @@ export abstract class NFTModifier {
 
     public static async delete(tokenId: string) {
         return nftRepository.delete(tokenId).then(_ => {
-            logger.debug(`[💎] Token deleted (id:${tokenId})`);
+            logger.debug(`[💎] Token deleted (id:${tokenId}) and its properties`);
         });
     }
 

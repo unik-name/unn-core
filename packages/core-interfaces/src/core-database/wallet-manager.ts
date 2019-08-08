@@ -58,11 +58,11 @@ export interface IWalletManager {
 
     buildDelegateRanking(delegates: IWallet[], roundInfo?: Shared.IRoundInfo): IDelegateWallet[];
 
-    applyBlock(block: models.Block): void;
+    applyBlock(block: models.Block): Promise<void>;
 
-    revertBlock(block: models.Block): void;
+    revertBlock(block: models.Block): Promise<void>;
 
-    applyTransaction(transaction: Transaction): void;
+    applyTransaction(transaction: Transaction): Promise<void>;
 
     revertTransaction(transaction: Transaction): void;
 

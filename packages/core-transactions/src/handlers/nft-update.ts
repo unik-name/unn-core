@@ -1,4 +1,5 @@
-import { Database, TransactionPool } from "@arkecosystem/core-interfaces";
+import { app } from "@arkecosystem/core-container";
+import { Database, NFT, TransactionPool } from "@arkecosystem/core-interfaces";
 import { ITransactionData, NFTUpdateTransaction, Transaction, TransactionConstructor } from "@arkecosystem/crypto";
 import { NftOwnerError } from "../errors";
 import { TransactionHandler } from "./transaction";
@@ -11,14 +12,17 @@ export class NftUpdateTransactionHandler extends TransactionHandler {
     /**
      * Check if the transaction can be applied to the wallet.
      */
-    public canBeApplied(
+    public async canBeApplied(
         transaction: Transaction,
         wallet: Database.IWallet,
         walletManager?: Database.IWalletManager,
-    ): boolean {
+    ): Promise<boolean> {
         if (!wallet.tokens.includes(transaction.data.asset.nft.tokenId)) {
             throw new NftOwnerError(wallet.address, transaction.data.asset.nft.tokenId);
         }
+
+        await app.resolvePlugin<NFT.INFTManager>("nft").applyConstraints(transaction.data);
+
         return super.canBeApplied(transaction, wallet, walletManager);
     }
 

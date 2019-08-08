@@ -34,7 +34,7 @@ export class PoolWalletManager extends WalletManager {
     /**
      * Checks if the transaction can be applied.
      */
-    public canApply(transaction: Transaction, errors): boolean {
+    public async canApply(transaction: Transaction, errors): Promise<boolean> {
         // Edge case if sender is unknown and has no balance.
         // NOTE: Check is performed against the database wallet manager.
         if (!this.databaseService.walletManager.exists(transaction.data.senderPublicKey)) {
@@ -56,7 +56,7 @@ export class PoolWalletManager extends WalletManager {
         } else {
             try {
                 const transactionHandler = TransactionHandlerRegistry.get(transaction.type);
-                transactionHandler.canBeApplied(transaction, sender, this.databaseService.walletManager);
+                await transactionHandler.canBeApplied(transaction, sender, this.databaseService.walletManager);
             } catch (error) {
                 const message = `[PoolWalletManager] Can't apply transaction ${transaction.id} from ${sender.address}`;
                 this.logger.error(`${message} due to ${JSON.stringify(error.message)}`);

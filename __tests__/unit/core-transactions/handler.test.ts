@@ -1,8 +1,10 @@
 import "jest-extended";
+import "./mocks/core-container";
 
 import { Wallet } from "@arkecosystem/core-database";
 import { Bignum, configManager, constants, crypto, ITransactionData, Transaction } from "@arkecosystem/crypto";
 import { TransactionTypes } from "@arkecosystem/crypto/dist/constants";
+import { ConstraintError } from "../../../packages/core-nft";
 import {
     AlreadyVotedError,
     InsufficientBalanceError,
@@ -31,7 +33,7 @@ let wallet: Wallet;
 let transaction: ITransactionData;
 let transactionWithSecondSignature: ITransactionData;
 let handler: TransactionHandler;
-let instance: any;
+let instance: Transaction;
 
 beforeEach(() => {
     wallet = {
@@ -74,43 +76,43 @@ describe("General Tests", () => {
     });
 
     describe("canBeApplied", () => {
-        it("should be true", () => {
-            expect(handler.canBeApplied(instance, wallet)).toBeTrue();
+        it("should be true", async () => {
+            await expect(handler.canBeApplied(instance, wallet)).resolves.toBeTrue();
         });
 
-        it("should be true if the transaction has a second signature but wallet does not, when ignoreInvalidSecondSignatureField=true", () => {
+        it("should be true if the transaction has a second signature but wallet does not, when ignoreInvalidSecondSignatureField=true", async () => {
             configManager.getMilestone().ignoreInvalidSecondSignatureField = true;
             instance = Transaction.fromData(transactionWithSecondSignature);
-            expect(handler.canBeApplied(instance, wallet)).toBeTrue();
+            await expect(handler.canBeApplied(instance, wallet)).resolves.toBeTrue();
         });
 
-        it("should be false if wallet publicKey does not match tx senderPublicKey", () => {
+        it("should be false if wallet publicKey does not match tx senderPublicKey", async () => {
             instance.data.senderPublicKey = "a".repeat(66);
-            expect(() => handler.canBeApplied(instance, wallet)).toThrow(SenderWalletMismatchError);
+            await expect(handler.canBeApplied(instance, wallet)).rejects.toThrow(SenderWalletMismatchError);
         });
 
-        it("should be false if the transaction has a second signature but wallet does not", () => {
+        it("should be false if the transaction has a second signature but wallet does not", async () => {
             delete configManager.getMilestone().ignoreInvalidSecondSignatureField;
             instance = Transaction.fromData(transactionWithSecondSignature);
-            expect(() => handler.canBeApplied(instance, wallet)).toThrow(UnexpectedSecondSignatureError);
+            await expect(handler.canBeApplied(instance, wallet)).rejects.toThrow(UnexpectedSecondSignatureError);
         });
 
-        it("should be false if the wallet has a second public key but the transaction second signature does not match", () => {
+        it("should be false if the wallet has a second public key but the transaction second signature does not match", async () => {
             wallet.secondPublicKey = "invalid-public-key";
-            expect(() => handler.canBeApplied(instance, wallet)).toThrow(InvalidSecondSignatureError);
+            await expect(handler.canBeApplied(instance, wallet)).rejects.toThrow(InvalidSecondSignatureError);
         });
 
-        it("should be false if wallet has not enough balance", () => {
+        it("should be false if wallet has not enough balance", async () => {
             // 1 arktoshi short
             wallet.balance = new Bignum(transaction.amount).plus(transaction.fee).minus(1);
-            expect(() => handler.canBeApplied(instance, wallet)).toThrow(InsufficientBalanceError);
+            await expect(handler.canBeApplied(instance, wallet)).rejects.toThrow(InsufficientBalanceError);
         });
 
-        it("should be true even with publicKey case mismatch", () => {
+        it("should be true even with publicKey case mismatch", async () => {
             transaction.senderPublicKey = transaction.senderPublicKey.toUpperCase();
             wallet.publicKey = wallet.publicKey.toLowerCase();
             instance = Transaction.fromData(transaction);
-            expect(handler.canBeApplied(instance, wallet)).toBeTrue();
+            await expect(handler.canBeApplied(instance, wallet)).resolves.toBeTrue();
         });
     });
 
@@ -212,13 +214,13 @@ describe("TransferTransaction", () => {
     });
 
     describe("canApply", () => {
-        it("should be true", () => {
-            expect(handler.canBeApplied(instance, wallet)).toBeTrue();
+        it("should be true", async () => {
+            await expect(handler.canBeApplied(instance, wallet)).resolves.toBeTrue();
         });
 
-        it("should be false", () => {
+        it("should be false", async () => {
             instance.data.senderPublicKey = "a".repeat(66);
-            expect(() => handler.canBeApplied(instance, wallet)).toThrow(SenderWalletMismatchError);
+            await expect(handler.canBeApplied(instance, wallet)).rejects.toThrow(SenderWalletMismatchError);
         });
     });
 });
@@ -256,45 +258,45 @@ describe("SecondSignatureRegistrationTransaction", () => {
     });
 
     describe("canApply", () => {
-        it("should be true", () => {
-            expect(handler.canBeApplied(instance, wallet)).toBeTrue();
+        it("should be true", async () => {
+            await expect(handler.canBeApplied(instance, wallet)).resolves.toBeTrue();
         });
 
-        it("should be false if wallet already has a second signature", () => {
+        it("should be false if wallet already has a second signature", async () => {
             wallet.secondPublicKey = "02d5cfcbc4920d041d2a54b29e1f69173536796fd50f62af0f88ad6adc6df07cb8";
 
-            expect(() => handler.canBeApplied(instance, wallet)).toThrow(SecondSignatureAlreadyRegisteredError);
+            await expect(handler.canBeApplied(instance, wallet)).rejects.toThrow(SecondSignatureAlreadyRegisteredError);
         });
 
-        it("should be false if wallet has insufficient funds", () => {
+        it("should be false if wallet has insufficient funds", async () => {
             wallet.balance = Bignum.ZERO;
 
-            expect(() => handler.canBeApplied(instance, wallet)).toThrow(InsufficientBalanceError);
+            await expect(handler.canBeApplied(instance, wallet)).rejects.toThrow(InsufficientBalanceError);
         });
     });
 
     describe("apply", () => {
-        it("should apply second signature registration", () => {
-            expect(handler.canBeApplied(instance, wallet)).toBeTrue();
+        it("should apply second signature registration", async () => {
+            await expect(handler.canBeApplied(instance, wallet)).resolves.toBeTrue();
 
             handler.applyToSender(instance, wallet);
             expect(wallet.secondPublicKey).toBe("02d5cfcbc4920d041d2a54b29e1f69173536796fd50f62af0f88ad6adc6df07cb8");
         });
 
-        it("should be invalid to apply a second signature registration twice", () => {
-            expect(handler.canBeApplied(instance, wallet)).toBeTrue();
+        it("should be invalid to apply a second signature registration twice", async () => {
+            await expect(handler.canBeApplied(instance, wallet)).resolves.toBeTrue();
 
             handler.applyToSender(instance, wallet);
             expect(wallet.secondPublicKey).toBe("02d5cfcbc4920d041d2a54b29e1f69173536796fd50f62af0f88ad6adc6df07cb8");
 
-            expect(() => handler.canBeApplied(instance, wallet)).toThrow(SecondSignatureAlreadyRegisteredError);
+            await expect(handler.canBeApplied(instance, wallet)).rejects.toThrow(SecondSignatureAlreadyRegisteredError);
         });
     });
 
     describe("revert", () => {
-        it("should be ok", () => {
+        it("should be ok", async () => {
             expect(wallet.secondPublicKey).toBeNull();
-            expect(handler.canBeApplied(instance, wallet)).toBeTrue();
+            await expect(handler.canBeApplied(instance, wallet)).resolves.toBeTrue();
 
             handler.applyToSender(instance, wallet);
             expect(wallet.secondPublicKey).toBe("02d5cfcbc4920d041d2a54b29e1f69173536796fd50f62af0f88ad6adc6df07cb8");
@@ -333,21 +335,21 @@ describe("DelegateRegistrationTransaction", () => {
     });
 
     describe("canApply", () => {
-        it("should be true", () => {
-            expect(handler.canBeApplied(instance, wallet)).toBeTrue();
+        it("should be true", async () => {
+            await expect(handler.canBeApplied(instance, wallet)).resolves.toBeTrue();
         });
 
-        it("should be false if wallet already registered a username", () => {
+        it("should be false if wallet already registered a username", async () => {
             wallet.username = "dummy";
 
-            expect(() => handler.canBeApplied(instance, wallet)).toThrow(WalletUsernameNotEmptyError);
+            await expect(handler.canBeApplied(instance, wallet)).rejects.toThrow(WalletUsernameNotEmptyError);
         });
 
-        it("should be false if wallet has insufficient funds", () => {
+        it("should be false if wallet has insufficient funds", async () => {
             wallet.username = "";
             wallet.balance = Bignum.ZERO;
 
-            expect(() => handler.canBeApplied(instance, wallet)).toThrow(InsufficientBalanceError);
+            await expect(handler.canBeApplied(instance, wallet)).rejects.toThrow(InsufficientBalanceError);
         });
     });
 
@@ -413,35 +415,35 @@ describe("VoteTransaction", () => {
     });
 
     describe("canApply", () => {
-        it("should be true if the vote is valid and the wallet has not voted", () => {
-            expect(handler.canBeApplied(instance, wallet)).toBeTrue();
+        it("should be true if the vote is valid and the wallet has not voted", async () => {
+            await expect(handler.canBeApplied(instance, wallet)).resolves.toBeTrue();
         });
 
-        it("should be true if the unvote is valid and the wallet has voted", () => {
+        it("should be true if the unvote is valid and the wallet has voted", async () => {
             wallet.vote = "02d0d835266297f15c192be2636eb3fbc30b39b87fc583ff112062ef8ae1a1f2af";
             instance = Transaction.fromData(unvoteTransaction);
-            expect(handler.canBeApplied(instance, wallet)).toBeTrue();
+            await expect(handler.canBeApplied(instance, wallet)).resolves.toBeTrue();
         });
 
-        it("should be false if wallet has already voted", () => {
+        it("should be false if wallet has already voted", async () => {
             wallet.vote = "02d0d835266297f15c192be2636eb3fbc30b39b87fc583ff112062ef8ae1a1f2af";
-            expect(() => handler.canBeApplied(instance, wallet)).toThrow(AlreadyVotedError);
+            await expect(handler.canBeApplied(instance, wallet)).rejects.toThrow(AlreadyVotedError);
         });
 
-        it("should be false if the asset public key differs from the currently voted one", () => {
+        it("should be false if the asset public key differs from the currently voted one", async () => {
             wallet.vote = "a310ad026647eed112d1a46145eed58b8c19c67c505a67f1199361a511ce7860c0";
             instance = Transaction.fromData(unvoteTransaction);
-            expect(() => handler.canBeApplied(instance, wallet)).toThrow(UnvoteMismatchError);
+            await expect(handler.canBeApplied(instance, wallet)).rejects.toThrow(UnvoteMismatchError);
         });
 
-        it("should be false if unvoting a non-voted wallet", () => {
+        it("should be false if unvoting a non-voted wallet", async () => {
             instance = Transaction.fromData(unvoteTransaction);
-            expect(() => handler.canBeApplied(instance, wallet)).toThrow(NoVoteError);
+            await expect(handler.canBeApplied(instance, wallet)).rejects.toThrow(NoVoteError);
         });
 
-        it("should be false if wallet has insufficient funds", () => {
+        it("should be false if wallet has insufficient funds", async () => {
             wallet.balance = Bignum.ZERO;
-            expect(() => handler.canBeApplied(instance, wallet)).toThrow(InsufficientBalanceError);
+            await expect(handler.canBeApplied(instance, wallet)).rejects.toThrow(InsufficientBalanceError);
         });
     });
 
@@ -597,57 +599,57 @@ describe.skip("MultiSignatureRegistrationTransaction", () => {
     });
 
     describe("canApply", () => {
-        it("should be true", () => {
+        it("should be true", async () => {
             delete wallet.multisignature;
-            expect(handler.canBeApplied(instance, wallet)).toBeTrue();
+            await expect(handler.canBeApplied(instance, wallet)).resolves.toBeTrue();
         });
 
-        it("should be false if the wallet already has multisignatures", () => {
+        it("should be false if the wallet already has multisignatures", async () => {
             wallet.verifySignatures = jest.fn(() => true);
             wallet.multisignature = multisignatureTest;
 
-            expect(() => handler.canBeApplied(instance, wallet)).toThrow(MultiSignatureAlreadyRegisteredError);
+            await expect(handler.canBeApplied(instance, wallet)).rejects.toThrow(MultiSignatureAlreadyRegisteredError);
         });
 
-        it("should be false if failure to verify signatures", () => {
+        it("should be false if failure to verify signatures", async () => {
             wallet.verifySignatures = jest.fn(() => false);
             delete wallet.multisignature;
 
-            expect(() => handler.canBeApplied(instance, wallet)).toThrow(InvalidMultiSignatureError);
+            await expect(handler.canBeApplied(instance, wallet)).rejects.toThrow(InvalidMultiSignatureError);
         });
 
-        it("should be false if failure to verify signatures in asset", () => {
+        it("should be false if failure to verify signatures in asset", async () => {
             wallet.verifySignatures = jest.fn(() => false);
             delete wallet.multisignature;
 
-            expect(() => handler.canBeApplied(instance, wallet)).toThrow(InvalidMultiSignatureError);
+            await expect(handler.canBeApplied(instance, wallet)).rejects.toThrow(InvalidMultiSignatureError);
         });
 
-        it("should be false if the number of keys is less than minimum", () => {
+        it("should be false if the number of keys is less than minimum", async () => {
             delete wallet.multisignature;
 
             wallet.verifySignatures = jest.fn(() => true);
             crypto.verifySecondSignature = jest.fn(() => true);
 
             instance.data.asset.multisignature.keysgroup.splice(0, 5);
-            expect(() => handler.canBeApplied(instance, wallet)).toThrow(MultiSignatureMinimumKeysError);
+            await expect(handler.canBeApplied(instance, wallet)).rejects.toThrow(MultiSignatureMinimumKeysError);
         });
 
-        it("should be false if the number of keys does not equal the signature count", () => {
+        it("should be false if the number of keys does not equal the signature count", async () => {
             delete wallet.multisignature;
 
             wallet.verifySignatures = jest.fn(() => true);
             crypto.verifySecondSignature = jest.fn(() => true);
 
             instance.data.signatures.splice(0, 5);
-            expect(() => handler.canBeApplied(instance, wallet)).toThrow(MultiSignatureKeyCountMismatchError);
+            await expect(handler.canBeApplied(instance, wallet)).rejects.toThrow(MultiSignatureKeyCountMismatchError);
         });
 
-        it("should be false if wallet has insufficient funds", () => {
+        it("should be false if wallet has insufficient funds", async () => {
             delete wallet.multisignature;
             wallet.balance = Bignum.ZERO;
 
-            expect(() => handler.canBeApplied(instance, wallet)).toThrow(InsufficientBalanceError);
+            await expect(handler.canBeApplied(instance, wallet)).rejects.toThrow(InsufficientBalanceError);
         });
     });
 
@@ -682,18 +684,18 @@ describe.skip("IpfsTransaction", () => {
     });
 
     describe("canApply", () => {
-        it("should be true", () => {
-            expect(handler.canBeApplied(instance, wallet)).toBeTrue();
+        it("should be true", async () => {
+            await expect(handler.canBeApplied(instance, wallet)).resolves.toBeTrue();
         });
 
-        it("should be false", () => {
+        it("should be false", async () => {
             instance.data.senderPublicKey = "a".repeat(66);
-            expect(() => handler.canBeApplied(instance, wallet)).toThrow(SenderWalletMismatchError);
+            await expect(handler.canBeApplied(instance, wallet)).rejects.toThrow(SenderWalletMismatchError);
         });
 
-        it("should be false if wallet has insufficient funds", () => {
+        it("should be false if wallet has insufficient funds", async () => {
             wallet.balance = Bignum.ZERO;
-            expect(() => handler.canBeApplied(instance, wallet)).toThrow(InsufficientBalanceError);
+            await expect(handler.canBeApplied(instance, wallet)).rejects.toThrow(InsufficientBalanceError);
         });
     });
 });
@@ -708,18 +710,18 @@ describe.skip("TimelockTransferTransaction", () => {
     });
 
     describe("canApply", () => {
-        it("should be true", () => {
-            expect(handler.canBeApplied(instance, wallet)).toBeTrue();
+        it("should be true", async () => {
+            await expect(handler.canBeApplied(instance, wallet)).resolves.toBeTrue();
         });
 
-        it("should be false", () => {
+        it("should be false", async () => {
             instance.data.senderPublicKey = "a".repeat(66);
-            expect(() => handler.canBeApplied(instance, wallet)).toThrow(SenderWalletMismatchError);
+            await expect(handler.canBeApplied(instance, wallet)).rejects.toThrow(SenderWalletMismatchError);
         });
 
-        it("should be false if wallet has insufficient funds", () => {
+        it("should be false if wallet has insufficient funds", async () => {
             wallet.balance = Bignum.ZERO;
-            expect(() => handler.canBeApplied(instance, wallet)).toThrow(InsufficientBalanceError);
+            await expect(handler.canBeApplied(instance, wallet)).rejects.toThrow(InsufficientBalanceError);
         });
     });
 });
@@ -770,18 +772,18 @@ describe.skip("MultiPaymentTransaction", () => {
     });
 
     describe("canApply", () => {
-        it("should be true", () => {
-            expect(handler.canBeApplied(instance, wallet)).toBeTrue();
+        it("should be true", async () => {
+            await expect(handler.canBeApplied(instance, wallet)).resolves.toBeTrue();
         });
 
-        it("should be false if wallet has insufficient funds", () => {
+        it("should be false if wallet has insufficient funds", async () => {
             wallet.balance = Bignum.ZERO;
-            expect(() => handler.canBeApplied(instance, wallet)).toThrow(InsufficientBalanceError);
+            await expect(handler.canBeApplied(instance, wallet)).rejects.toThrow(InsufficientBalanceError);
         });
 
-        it("should be false if wallet has insufficient funds send all payouts", () => {
+        it("should be false if wallet has insufficient funds send all payouts", async () => {
             wallet.balance = Bignum.ZERO;
-            expect(() => handler.canBeApplied(instance, wallet)).toThrow(InsufficientBalanceError);
+            await expect(handler.canBeApplied(instance, wallet)).rejects.toThrow(InsufficientBalanceError);
         });
     });
 });
@@ -796,19 +798,19 @@ describe.skip("DelegateResignationTransaction", () => {
     });
 
     describe("canApply", () => {
-        it("should be truth", () => {
+        it("should be truth", async () => {
             wallet.username = "dummy";
-            expect(handler.canBeApplied(instance, wallet)).toBeTrue();
+            await expect(handler.canBeApplied(instance, wallet)).resolves.toBeTrue();
         });
 
-        it.skip("should be false if wallet has no registered username", () => {
+        it.skip("should be false if wallet has no registered username", async () => {
             wallet.username = null;
-            expect(() => handler.canBeApplied(instance, wallet)).toThrow(WalletNoUsernameError);
+            await expect(handler.canBeApplied(instance, wallet)).rejects.toThrow(WalletNoUsernameError);
         });
 
-        it("should be false if wallet has insufficient funds", () => {
+        it("should be false if wallet has insufficient funds", async () => {
             wallet.balance = Bignum.ZERO;
-            expect(() => handler.canBeApplied(instance, wallet)).toThrow(InsufficientBalanceError);
+            await expect(handler.canBeApplied(instance, wallet)).rejects.toThrow(InsufficientBalanceError);
         });
     });
 });
@@ -828,7 +830,7 @@ describe("NFTUpdateTransaction", () => {
             asset: {
                 nft: {
                     tokenId: "6f35a40470021425558f5cbb7b5f056e51b694db5cc6c336abdc6b777fc9d051",
-                    properties: {"myProperty": "myPropertyValue"},
+                    properties: { myProperty: "myPropertyValue" },
                 },
             },
         };
@@ -838,7 +840,7 @@ describe("NFTUpdateTransaction", () => {
             publicKey: "03287bfebba4c7881a0509717e71b34b63f31e40021c321f89ae04f84be6d6ac37",
             secondPublicKey: null,
             balance: new Bignum(245096190000000),
-            tokens: [],
+            tokens: ["6f35a40470021425558f5cbb7b5f056e51b694db5cc6c336abdc6b777fc9d051"],
         } as Wallet;
 
         handler = TransactionHandlerRegistry.get(transaction.type);
@@ -846,15 +848,56 @@ describe("NFTUpdateTransaction", () => {
     });
 
     describe("canBeApply", () => {
-        it("should pass, the wallet owns the token", () => {
-            wallet.tokens = ["6f35a40470021425558f5cbb7b5f056e51b694db5cc6c336abdc6b777fc9d051"];
-            expect(handler.canBeApplied(instance, wallet)).toBeTrue();
+        it("should pass, the wallet owns the token", async () => {
+            await expect(handler.canBeApplied(instance, wallet)).resolves.toBeTrue();
         });
     });
 
     describe("canBeApply", () => {
-        it("should throw NftOwnerError, wallet doesn't own the token", () => {
-            expect(() => handler.canBeApplied(instance, wallet)).toThrow(NftOwnerError);
+        it("should throw NftOwnerError, wallet doesn't own the token", async () => {
+            wallet.tokens = [];
+            await expect(handler.canBeApplied(instance, wallet)).rejects.toThrow(NftOwnerError);
+        });
+    });
+
+    describe("immutableProperty", () => {
+        it("should pass, immutable property not set yet", async () => {
+            (instance.data.asset.nft.properties as any).blankImmutableProp = "value";
+            await expect(handler.canBeApplied(instance, wallet)).resolves.toBeTrue();
+        });
+        it("should throw ConstraintError, property already set", async () => {
+            (instance.data.asset.nft.properties as any).immutableProp = 2;
+            await expect(handler.canBeApplied(instance, wallet)).rejects.toThrow(ConstraintError);
+        });
+    });
+
+    describe("number type constraint", () => {
+        it("should pass, new value is in-bound", async () => {
+            (instance.data.asset.nft.properties as any).boundedNumberProp = 4;
+            await expect(handler.canBeApplied(instance, wallet)).resolves.toBeTrue();
+        });
+        it("should throw ConstraintError, new value is lower bound", async () => {
+            (instance.data.asset.nft.properties as any).boundedNumberProp = 0;
+            await expect(handler.canBeApplied(instance, wallet)).rejects.toThrow(ConstraintError);
+        });
+        it("should throw ConstraintError, new value is upper bound", async () => {
+            (instance.data.asset.nft.properties as any).boundedNumberProp = 6;
+            await expect(handler.canBeApplied(instance, wallet)).rejects.toThrow(ConstraintError);
+        });
+        it("should throw ConstraintError, new value is not a number", async () => {
+            (instance.data.asset.nft.properties as any).boundedNumberProp = "hello";
+            await expect(handler.canBeApplied(instance, wallet)).rejects.toThrow(ConstraintError);
+        });
+    });
+
+    describe("enumeration type constraint", () => {
+        it("should pass, new value is a possible value", async () => {
+            (instance.data.asset.nft.properties as any).enumerationProp = "2";
+            await expect(handler.canBeApplied(instance, wallet)).resolves.toBeTrue();
+        });
+        it("should throw ConstraintError, new value is not in possible values", async () => {
+            (instance.data.asset.nft.properties as any).enumerationProp = "0";
+            await expect(handler.canBeApplied(instance, wallet)).rejects.toThrow(ConstraintError);
         });
     });
 });

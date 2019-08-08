@@ -14,11 +14,11 @@ export class MultiSignatureTransactionHandler extends TransactionHandler {
     }
 
     // TODO: AIP18
-    public canBeApplied(
+    public async canBeApplied(
         transaction: Transaction,
         wallet: Database.IWallet,
         walletManager?: Database.IWalletManager,
-    ): boolean {
+    ): Promise<boolean> {
         const { data } = transaction;
         if (wallet.multisignature) {
             throw new MultiSignatureAlreadyRegisteredError();

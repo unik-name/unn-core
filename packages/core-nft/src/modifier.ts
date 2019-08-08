@@ -6,9 +6,9 @@ const database: Database.IDatabaseService = app.resolvePlugin<Database.IDatabase
 const nftRepository = database.connection.nftsRepository;
 const logger: Logger.ILogger = app.resolvePlugin<Logger.ILogger>("logger");
 
-export class NFTModifier {
+export abstract class NFTModifier {
     public static async exists(tokenId: string) {
-        const token = nftRepository.findById(tokenId);
+        const token = await nftRepository.findById(tokenId);
         return token && token !== null;
     }
 
@@ -30,8 +30,12 @@ export class NFTModifier {
         });
     }
 
+    public static async getProperty(tokenId: string, propertyKey: string) {
+        return nftRepository.findPropertyByKey(tokenId, propertyKey);
+    }
+
     public static async hasProperty(tokenId: string, propertyKey: string): Promise<boolean> {
-        const property = await nftRepository.findPropertyByKey(tokenId, propertyKey);
+        const property = await NFTModifier.getProperty(tokenId, propertyKey);
         return property && property !== null;
     }
 

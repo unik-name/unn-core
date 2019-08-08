@@ -1,11 +1,11 @@
 {
     "version": 2,
     "jobs": {
-        "test-node11-unit": {
+        "test-node10-unit": {
             "working_directory": "~/core",
             "docker": [
                 {
-                    "image": "circleci/node:11-browsers"
+                    "image": "circleci/node:10-browsers"
                 }
             ],
             "steps": [
@@ -30,7 +30,7 @@
                 },
                 {
                     "restore_cache": {
-                        "key": "core-node11-{{ checksum \"checksum.txt\" }}-unit"
+                        "key": "core-node10-{{ checksum \"checksum.txt\" }}-unit"
                     }
                 },
                 {
@@ -41,7 +41,7 @@
                 },
                 {
                     "save_cache": {
-                        "key": "core-node11-{{ checksum \"checksum.txt\" }}-unit",
+                        "key": "core-node10-{{ checksum \"checksum.txt\" }}-unit",
                         "paths": []
                     }
                 },
@@ -78,7 +78,7 @@
                 }
             ]
         },
-        "test-node11-functional": {
+        "test-node10-functional": {
             "working_directory": "~/core",
             "environment": {
                 "CORE_DB_DATABASE": "core_unitnet",
@@ -86,7 +86,7 @@
             },
             "docker": [
                 {
-                    "image": "circleci/node:11-browsers"
+                    "image": "circleci/node:10-browsers"
                 },
                 {
                     "image": "postgres:alpine",
@@ -119,7 +119,7 @@
                 },
                 {
                     "restore_cache": {
-                        "key": "core-node11-{{ checksum \"checksum.txt\" }}-functional"
+                        "key": "core-node10-{{ checksum \"checksum.txt\" }}-functional"
                     }
                 },
                 {
@@ -130,7 +130,7 @@
                 },
                 {
                     "save_cache": {
-                        "key": "core-node11-{{ checksum \"checksum.txt\" }}-functional",
+                        "key": "core-node10-{{ checksum \"checksum.txt\" }}-functional",
                         "paths": []
                     }
                 },
@@ -167,7 +167,7 @@
                 }
             ]
         },
-        "test-node11-integration-0": {
+        "test-node10-integration-0": {
             "working_directory": "~/core",
             "environment": {
                 "CORE_DB_DATABASE": "core_unitnet",
@@ -175,7 +175,7 @@
             },
             "docker": [
                 {
-                    "image": "circleci/node:11-browsers"
+                    "image": "circleci/node:10-browsers"
                 },
                 {
                     "image": "postgres:alpine",
@@ -208,7 +208,7 @@
                 },
                 {
                     "restore_cache": {
-                        "key": "core-node11-{{ checksum \"checksum.txt\" }}-1"
+                        "key": "core-node10-{{ checksum \"checksum.txt\" }}-1"
                     }
                 },
                 {
@@ -219,7 +219,7 @@
                 },
                 {
                     "save_cache": {
-                        "key": "core-node11-{{ checksum \"checksum.txt\" }}-1",
+                        "key": "core-node10-{{ checksum \"checksum.txt\" }}-1",
                         "paths": []
                     }
                 },
@@ -260,7 +260,7 @@
     "workflows": {
         "version": 2,
         "build_and_test": {
-            "jobs": ["test-node11-integration-0"]
+            "jobs": ["test-node10-integration-0"]
         }
     }
 }

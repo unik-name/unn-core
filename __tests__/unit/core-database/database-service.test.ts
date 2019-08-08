@@ -53,7 +53,7 @@ describe("Database Service", () => {
 
     describe("applyBlock", () => {
         it("should applyBlock", async () => {
-            jest.spyOn(walletManager, "applyBlock").mockImplementation(block => block);
+            jest.spyOn(walletManager, "applyBlock").mockImplementation(() => Promise.resolve());
             jest.spyOn(emitter, "emit");
 
             databaseService = createService();
@@ -212,7 +212,7 @@ describe("Database Service", () => {
             // Prepare sender wallet
             const transactionHandler = TransactionHandlerRegistry.get(TransactionTypes.Transfer);
             const originalApply = transactionHandler.canBeApplied;
-            transactionHandler.canBeApplied = jest.fn(() => true);
+            transactionHandler.canBeApplied = jest.fn(() => Promise.resolve(true));
 
             const sender = new Wallet(keys.address);
             sender.publicKey = keys.publicKey;
@@ -250,7 +250,7 @@ describe("Database Service", () => {
                 );
 
                 block.data.generatorPublicKey = keys.publicKey;
-                walletManager.applyBlock(block);
+                await walletManager.applyBlock(block);
 
                 blocksInRound.push(block);
             }

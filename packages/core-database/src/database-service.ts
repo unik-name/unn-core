@@ -72,7 +72,7 @@ export class DatabaseService implements Database.IDatabaseService {
     }
 
     public async applyBlock(block: models.Block) {
-        this.walletManager.applyBlock(block);
+        await this.walletManager.applyBlock(block);
 
         if (this.blocksInCurrentRound) {
             this.blocksInCurrentRound.push(block);
@@ -528,8 +528,9 @@ export class DatabaseService implements Database.IDatabaseService {
 
         const dbTransaction = await this.getTransaction(transaction.data.id);
 
+        const canBeApplied = await transactionHandler.canBeApplied(transaction, sender);
         try {
-            return transactionHandler.canBeApplied(transaction, sender) && !dbTransaction;
+            return canBeApplied && !dbTransaction;
         } catch {
             return false;
         }
@@ -568,7 +569,7 @@ export class DatabaseService implements Database.IDatabaseService {
                 break;
             }
 
-            tempWalletManager.revertBlock(blocks[i]);
+            await tempWalletManager.revertBlock(blocks[i]);
         }
 
         // Now retrieve the active delegate list from the temporary wallet manager.

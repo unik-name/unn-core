@@ -1,5 +1,23 @@
 import Joi from "joi";
 
+function nftAdvancedConstraint(name: string, parameters: Joi.ObjectSchema): Joi.ObjectSchema {
+    return Joi.object({
+        name: Joi.string().only(name),
+        parameters,
+    });
+}
+
+const numberTypeConstraint = nftAdvancedConstraint(
+    "type",
+    Joi.object({
+        type: Joi.string().only("number"),
+        min: Joi.number(),
+        max: Joi.number(),
+    }),
+);
+
+const nftParameterConstraints = [numberTypeConstraint];
+
 export const schemaNetwork = Joi.object({
     milestones: Joi.array()
         .items(Joi.object())
@@ -38,6 +56,15 @@ export const schemaNetwork = Joi.object({
             symbol: Joi.string().required(),
             explorer: Joi.string().required(),
         }),
+        nft: Joi.object({
+            name: Joi.string().required(),
+            properties: Joi.object().pattern(
+                Joi.string(), // TODO add constraint on property length
+                Joi.object({
+                    constraints: Joi.array().items(Joi.string(), ...nftParameterConstraints),
+                }),
+            ),
+        }).optional(),
     }).required(),
 });
 

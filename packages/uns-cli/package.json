@@ -1,7 +1,7 @@
 {
     "name": "@uns/uns-cli",
     "description": "uns CLI",
-    "version": "0.0.1",
+    "version": "0.0.13",
     "author": "Space Elephant",
     "contributors": [
         "Fabien Tréguer <fabien@spacelephant.org>"
@@ -10,16 +10,23 @@
         "uns": "./bin/run"
     },
     "dependencies": {
+        "@oclif/color": "^0.0.0",
         "@oclif/command": "^1.5.11",
         "@oclif/config": "^1.12.9",
         "@oclif/plugin-help": "^2.1.6",
-        "tslib": "^1.10.0",
-        "module-alias": "^2.2.0"
+        "@uns/crypto": "^2.3.22-3",
+        "cli-ux": "^5.3.1",
+        "delay": "^4.1.0",
+        "request": "^2.88.0",
+        "request-promise": "^4.2.4",
+        "tslib": "^1.10.0"
     },
     "devDependencies": {
         "@oclif/dev-cli": "^1.21.3",
         "@types/node": "^11.10.5",
+        "@types/request-promise": "^4.1.44",
         "globby": "^10.0.1",
+        "javascript-obfuscator": "^0.18.1",
         "ts-node": "^8.3.0",
         "typescript": "^3.3.3333"
     },
@@ -29,7 +36,6 @@
     "files": [
         "/bin",
         "/dist",
-        "/npm-shrinkwrap.json",
         "/oclif.manifest.json"
     ],
     "keywords": [
@@ -46,16 +52,17 @@
     },
     "scripts": {
         "uns": "./bin/run",
-        "prepublishOnly": "yarn build",
+        "prepublishOnly": "yarn build && yarn uglify",
         "pretest": "bash ../../scripts/pre-test.sh",
         "prepack": "../../node_modules/.bin/oclif-dev manifest && npm shrinkwrap",
         "postpack": "rm -f oclif.manifest.json",
         "compile": "../../node_modules/typescript/bin/tsc",
         "build": "yarn clean && yarn compile",
         "build:watch": "yarn clean && yarn compile -w",
-        "clean": "del dist"
+        "clean": "del dist",
+        "uglify": "../../node_modules/javascript-obfuscator/bin/javascript-obfuscator ./dist --output ./lib && del dist && mv ./lib/dist ./dist && del lib",
+        "publishLib": "npm login && npm publish"
     },
-    "types": "dist/index.d.ts",
     "publishConfig": {
         "access": "public"
     }

@@ -1,7 +1,3 @@
 tsconfig.json
-tslint.json
-.circleci/
-.npmrc
-.gitignore
 .gitattributes
 /src

@@ -58,7 +58,7 @@ const moduleConfig = {
         }),
     ],
     output: {
-        ...format(pkg.module),
+        ...format(pkg.main),
         libraryTarget: "commonjs2",
     },
     optimization: {

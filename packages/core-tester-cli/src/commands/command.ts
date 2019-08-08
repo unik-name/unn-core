@@ -116,7 +116,6 @@ export abstract class BaseCommand extends Command {
                 )})`,
             );
         }
-
         return this.api.post("transactions", { transactions });
     }
 
@@ -158,7 +157,6 @@ export abstract class BaseCommand extends Command {
 
     protected async broadcastTransactions(transactions) {
         await this.sendTransaction(transactions);
-
         return this.awaitConfirmations(transactions);
     }
 

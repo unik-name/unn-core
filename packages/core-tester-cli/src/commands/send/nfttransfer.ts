@@ -12,7 +12,7 @@ export class NFTTransferCommand extends SendCommand {
         ...SendCommand.flagsSend,
         id: flags.string({
             description: "token identifier",
-            exclusive: ["unikname"],
+            required: true,
         }),
         owner: flags.string({
             description: "NFT owner passphrase",
@@ -20,14 +20,11 @@ export class NFTTransferCommand extends SendCommand {
         }),
         recipient: flags.string({
             description: "new NFT owner",
+            required: true,
         }),
         nftFee: satoshiFlag({
             description: "nft fee",
             default: 1,
-        }),
-        unikname: flags.string({
-            description: "unikname NFT",
-            exclusive: ["id"],
         }),
     };
 
@@ -36,15 +33,7 @@ export class NFTTransferCommand extends SendCommand {
     }
 
     protected async createWalletsWithBalance(flags: Record<string, any>): Promise<any[]> {
-        if (flags.recipientId && !flags.id && !flags.unikname) {
-            throw new Error("[send:nfttransfer] no NFT identifier (--id or --unikname)");
-        }
-
         const ownerAddress = Address.fromPassphrase(flags.owner);
-
-        await TransferCommand.run(
-            [`--amount=${flags.nftFee}`, `--recipient=${ownerAddress}`, "--skipProbing"].concat(this.castFlags(flags)),
-        );
 
         const wallets = [];
         wallets[ownerAddress] = {
@@ -57,13 +46,7 @@ export class NFTTransferCommand extends SendCommand {
     protected async signTransactions(flags: Record<string, any>, wallets: Record<string, any>): Promise<any[]> {
         const [address, wallet] = Object.entries(wallets)[0];
 
-        let id = flags.id;
-
-        if (flags.unikname) {
-            id = HashAlgorithms.sha256(flags.unikname).toString("hex");
-        } else if (!flags.recipient && !id) {
-            id = this.getRandomInt(1, 10000);
-        }
+        const id = flags.id;
 
         const transaction = this.signer.makeNftTransfer({
             ...flags,
@@ -94,15 +77,11 @@ export class NFTTransferCommand extends SendCommand {
             if (wasCreated) {
                 const senderId = Address.fromPublicKey(transaction.senderPublicKey, this.network.version);
                 const tokenId = wallets[senderId].expectedNft;
-                const recipient = transaction.recipientId;
 
                 await this.knockBalance(senderId, wallets[senderId].expectedBalance);
-                await this.knockWallet(senderId, tokenId, !recipient);
+                await this.knockWallet(senderId, tokenId);
+                await this.knockWallet(transaction.recipientId, tokenId, true);
                 await this.knockNft(tokenId);
-
-                if (recipient) {
-                    await this.knockWallet(transaction.recipientId, tokenId, true);
-                }
             }
         }
     }
@@ -128,11 +107,5 @@ export class NFTTransferCommand extends SendCommand {
     private async knockNft(expected: string): Promise<void> {
         const actual = await this.api.get(`nfts/${expected}`);
         logger.info(actual ? `[W] ${expected} still exists` : `[W] ${expected} has been destroyed`);
-    }
-
-    private getRandomInt(min, max) {
-        min = Math.ceil(min);
-        max = Math.floor(max);
-        return Math.floor(Math.random() * (max - min)) + min; // The maximum is exclusive and the minimum is inclusive
     }
 }

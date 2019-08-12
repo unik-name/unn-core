@@ -128,63 +128,62 @@ export const vote = extend(transactionBaseSchema, {
     },
 });
 
-export const nftTransfer = extend(transactionBaseSchema, {
-    $id: "nftTransfer",
-    required: ["asset"],
-    properties: {
-        type: { transactionType: TransactionTypes.NftTransfer },
-        amount: { bignumber: { minimum: 0, maximum: 0 } },
-        recipientId: { $ref: "address" },
-        asset: {
-            type: "object",
-            required: ["nft"],
-            properties: {
-                nft: {
-                    type: "object",
-                    required: ["tokenId"],
-                    properties: {
-                        tokenId: {
-                            allOf: [{ $ref: "hex" }, { minLength: 64, maxLength: 64 }],
-                        },
+const nft = {
+    amount: { bignumber: { minimum: 0, maximum: 0 } },
+    asset: {
+        type: "object",
+        required: ["nft"],
+        properties: {
+            nft: {
+                type: "object",
+                required: ["tokenId"],
+                properties: {
+                    tokenId: {
+                        allOf: [{ $ref: "hex" }, { minLength: 64, maxLength: 64 }],
                     },
                 },
             },
         },
     },
-});
+};
 
-// TODO: merge nft schemes
+const nftProperties = {
+    asset: {
+        properties: {
+            nft: {
+                required: ["properties"],
+                properties: {
+                    properties: {
+                        type: "object",
+                        minProperties: 1,
+                        maxProperties: 255,
+                        patternProperties: {
+                            "^.*$": { maxLength: 255 },
+                        },
+                        propertyNames: { maxLength: 255 },
+                    },
+                },
+            },
+        },
+    },
+};
+
+export const nftTransfer = extend(transactionBaseSchema, {
+    $id: "nftTransfer",
+    required: ["asset", "recipientId"],
+    properties: {
+        type: { transactionType: TransactionTypes.NftTransfer },
+        recipientId: { $ref: "address" },
+        ...nft,
+    },
+});
 
 export const nftUpdate = extend(transactionBaseSchema, {
     $id: "nftUpdate",
     required: ["asset"],
     properties: {
         type: { transactionType: TransactionTypes.NftUpdate },
-        amount: { bignumber: { minimum: 0, maximum: 0 } },
-        asset: {
-            type: "object",
-            required: ["nft"],
-            properties: {
-                nft: {
-                    type: "object",
-                    required: ["tokenId", "properties"],
-                    properties: {
-                        tokenId: {
-                            allOf: [{ $ref: "hex" }, { minLength: 64, maxLength: 64 }],
-                        },
-                        properties: {
-                            type: "object",
-                            minProperties: 1,
-                            maxProperties: 255,
-                            patternProperties: {
-                                "^.*$": { maxLength: 255 },
-                            },
-                            propertyNames: { maxLength: 255 },
-                        },
-                    },
-                },
-            },
-        },
+        ...extend(nft, nftProperties),
     },
 });
 

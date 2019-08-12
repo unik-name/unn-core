@@ -35,20 +35,6 @@ export class NFTUpdateCommand extends SendCommand {
     }
 
     protected async createWalletsWithBalance(flags: Record<string, any>): Promise<any[]> {
-        if (!flags.id) {
-            throw new Error("[send:nftupdate] no NFT identifier (--id)");
-        }
-
-        if (!flags.props) {
-            throw new Error("[send:nftupdate] no properties (--props)");
-        }
-
-        const actual = await this.api.get(`nfts/${flags.id}`);
-
-        if (!actual) {
-            throw new Error(`[send:nftupdate] no NFT with id ${flags.id}`);
-        }
-
         const ownerAddress = Address.fromPassphrase(flags.owner);
 
         const wallets = [];

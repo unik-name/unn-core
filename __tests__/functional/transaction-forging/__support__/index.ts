@@ -16,6 +16,7 @@ export async function setUp() {
             "@arkecosystem/core-event-emitter",
             "@arkecosystem/core-logger-pino",
             "@arkecosystem/core-database-postgres",
+            "@arkecosystem/core-nft",
             "@arkecosystem/core-transaction-pool",
             "@arkecosystem/core-p2p",
             "@arkecosystem/core-blockchain",
@@ -56,6 +57,18 @@ export async function expectAcceptAndBroadcast(transactions, id): Promise<void> 
 
     expect(body.data.accept).toContain(id);
     expect(body.data.broadcast).toContain(id);
+}
+
+export async function expectInvalid(transactions, id): Promise<void> {
+    const { body } = await RestClient.broadcast(transactions);
+
+    if (body.data.invalid.length) {
+        console.log(body.errors);
+    }
+
+    expect(body.data.accept).not.toContain(id);
+    expect(body.data.broadcast).not.toContain(id);
+    expect(body.data.invalid).toContain(id);
 }
 
 export async function expectTransactionForged(id): Promise<void> {

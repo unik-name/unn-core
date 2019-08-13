@@ -4,31 +4,33 @@ import { satoshiFlag } from "../../flags";
 import { logger } from "../../logger";
 import { SendCommand } from "../../shared/send";
 
-export const NFTUPDATE_FLAGS = {
-    ...SendCommand.flagsSend,
-    id: flags.string({
-        description: "token identifier",
-        required: true,
-    }),
-    owner: flags.string({
-        description: "NFT owner passphrase",
-        required: true,
-    }),
-    // --props has to be a json string
-    props: flags.string({
-        description: "NFT properties to update key/value",
-        required: true,
-    }),
-    nftFee: satoshiFlag({
-        description: "nft fee",
-        default: 1,
-    }),
-};
+export function getNftUpdateFlags(propsRequired: boolean = true) {
+    return {
+        ...SendCommand.flagsSend,
+        id: flags.string({
+            description: "token identifier",
+            required: true,
+        }),
+        owner: flags.string({
+            description: "NFT owner passphrase",
+            required: true,
+        }),
+        // --props has to be a json string
+        props: flags.string({
+            description: "NFT properties to update key/value",
+            required: propsRequired,
+        }),
+        nftFee: satoshiFlag({
+            description: "nft fee",
+            default: 1,
+        }),
+    };
+}
 
 export class NFTUpdateCommand extends SendCommand {
     public static description: string = "update a non-fungible token properties from A to B";
 
-    public static flags = NFTUPDATE_FLAGS;
+    public static flags = getNftUpdateFlags();
 
     protected getCommand(): any {
         return NFTUpdateCommand;
@@ -50,14 +52,11 @@ export class NFTUpdateCommand extends SendCommand {
 
         const id = flags.id;
 
-        const properties: { [_: string]: string } = this.getPropertiesFromFlag(flags.props);
         const transaction = this.getSigner({
             ...flags,
-            ...{
-                id,
-                passphrase: wallet.passphrase,
-                properties,
-            },
+            id,
+            passphrase: wallet.passphrase,
+            properties: this.getPropertiesFromFlag(flags.props),
         });
 
         wallets[address].expectedNft = id;
@@ -92,24 +91,26 @@ export class NFTUpdateCommand extends SendCommand {
     }
 
     private async knockNftProperties(nftId: string, properties: { [_: string]: string }): Promise<void> {
-        for (const [key, value] of Object.entries(properties)) {
-            let result;
-            try {
-                const { data } = await this.api.get(`nfts/${nftId}/properties/${key}`, false);
-                result = data;
-            } catch (e) {
-                result = null;
-            }
+        if (properties) {
+            for (const [key, value] of Object.entries(properties)) {
+                let result;
+                try {
+                    const { data } = await this.api.get(`nfts/${nftId}/properties/${key}`, false);
+                    result = data;
+                } catch (e) {
+                    result = null;
+                }
 
-            if (result === value) {
-                logger.info(`[💎] property ${key} of ${nftId} is updated`);
-            } else {
-                logger.error(`[💎] property ${key} of ${nftId} is not updated`);
+                if (result === value) {
+                    logger.info(`[💎] property ${key} of ${nftId} is updated`);
+                } else {
+                    logger.error(`[💎] property ${key} of ${nftId} is not updated`);
+                }
             }
         }
     }
 
     private getPropertiesFromFlag(propsFlag: string): any {
-        return JSON.parse(propsFlag);
+        return propsFlag ? JSON.parse(propsFlag) : undefined;
     }
 }

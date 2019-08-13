@@ -151,7 +151,6 @@ const nftProperties = {
     asset: {
         properties: {
             nft: {
-                required: ["properties"],
                 properties: {
                     properties: {
                         type: "object",
@@ -183,14 +182,16 @@ export const nftUpdate = extend(transactionBaseSchema, {
     required: ["asset"],
     properties: {
         type: { transactionType: TransactionTypes.NftUpdate },
-        ...extend(nft, nftProperties),
+        ...extend(nft, extend(nftProperties, { asset: { properties: { nft: { required: ["properties"] } } } })), // nft.properties is required
     },
 });
 
-export const nftMint = extend(nftUpdate, {
+export const nftMint = extend(transactionBaseSchema, {
     $id: "nftMint",
+    required: ["asset"],
     properties: {
         type: { transactionType: TransactionTypes.NftMint },
+        ...extend(nft, nftProperties),
     },
 });
 

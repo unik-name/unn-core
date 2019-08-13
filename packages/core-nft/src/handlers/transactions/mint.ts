@@ -9,9 +9,11 @@ export abstract class NFTMintHandler {
 
         await NFTModifier.insert(tokenId, sender);
 
-        return Promise.all(
-            Object.entries(properties).map(async ([key, value]) => NFTModifier.insertProperty(key, value, tokenId)),
-        );
+        if (properties) {
+            await Promise.all(
+                Object.entries(properties).map(async ([key, value]) => NFTModifier.insertProperty(key, value, tokenId)),
+            );
+        }
     }
 
     public static async onReverted(transaction: ITransactionData) {

@@ -27,6 +27,13 @@ export const properties: object = {
     query: pagination,
 };
 
+export const property: object = {
+    params: {
+        id: nftId,
+        key: Joi.string().max(255),
+    },
+};
+
 export const search: object = {
     query: pagination,
     payload: {

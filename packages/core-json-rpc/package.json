@@ -1,7 +1,7 @@
 {
     "name": "@uns/core-json-rpc",
     "description": "A JSON-RPC 2.0 Specification compliant server to interact with the UNS Blockchain.",
-    "version": "2.3.22-3",
+    "version": "2.3.22-4",
     "contributors": [
         "François-Xavier Thoorens <fx@ark.io>",
         "Brian Faust <brian@ark.io>",
@@ -22,11 +22,11 @@
     },
     "dependencies": {
         "@keyv/sqlite": "^2.0.0",
-        "@uns/core-container": "^2.3.22-3",
-        "@uns/core-http-utils": "^2.3.22-3",
-        "@uns/core-interfaces": "^2.3.22-3",
-        "@uns/core-utils": "^2.3.22-3",
-        "@uns/crypto": "^2.3.22-3",
+        "@uns/core-container": "^2.3.22-4",
+        "@uns/core-http-utils": "^2.3.22-4",
+        "@uns/core-interfaces": "^2.3.22-4",
+        "@uns/core-utils": "^2.3.22-4",
+        "@uns/crypto": "^2.3.22-4",
         "bip39": "^2.5.0",
         "boom": "^7.3.0",
         "is-reachable": "^3.0.0",
@@ -37,7 +37,6 @@
         "wif": "^2.0.6"
     },
     "devDependencies": {
-        "@uns/core-p2p": "^2.3.22-1",
         "@types/bip39": "^2.4.2",
         "@types/boom": "^7.2.1",
         "@types/is-reachable": "^3.0.0",
@@ -46,7 +45,8 @@
         "@types/keyv__sqlite": "^2.0.0",
         "@types/lodash.get": "^4.4.6",
         "@types/uuid": "^3.4.4",
-        "@types/wif": "^2.0.1"
+        "@types/wif": "^2.0.1",
+        "@uns/core-p2p": "^2.3.22-4"
     },
     "publishConfig": {
         "access": "public"

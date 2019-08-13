@@ -17,6 +17,10 @@ export class NftsBusinessRepository implements Database.INftsBusinessRepository 
         };
     }
 
+    public async findProperty(id: string, key: string) {
+        return await this.databaseServiceProvider().connection.nftsRepository.findPropertyByKey(id, key);
+    }
+
     public async search(params: Database.IParameters) {
         return this.databaseServiceProvider().connection.nftsRepository.search(this.parseSearchParams(params));
     }

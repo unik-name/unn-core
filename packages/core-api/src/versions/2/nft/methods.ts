@@ -34,6 +34,12 @@ const properties = async request => {
     return toPagination(request, properties, "nftProperties");
 };
 
+const property = async request => {
+    const property = await nftsRepository.findProperty(request.params.id, request.params.key);
+
+    return respondWithResource(request, property, "nftProperty");
+};
+
 const search = async request => {
     const nfts = await nftsRepository.search({
         ...request.payload,
@@ -56,6 +62,7 @@ export function registerMethods(server) {
             ...request.query,
             ...paginate(request),
         }))
+        .method("v2.nfts.property", property, 8, request => ({ id: request.params.id, key: request.params.key }))
         .method("v2.nfts.search", search, 30, request => ({
             ...request.payload,
             ...request.query,

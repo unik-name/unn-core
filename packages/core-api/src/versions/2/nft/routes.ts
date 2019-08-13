@@ -34,6 +34,15 @@ export function registerRoutes(server: Hapi.Server): void {
     });
 
     server.route({
+        method: "GET",
+        path: "/nfts/{id}/properties/{key}",
+        handler: controller.property,
+        options: {
+            validate: Schema.property,
+        },
+    });
+
+    server.route({
         method: "POST",
         path: "/nfts/search",
         handler: controller.search,

@@ -28,12 +28,14 @@ export class NFTManager implements NFT.INFTManager {
 
     public async applyConstraints(transaction: ITransactionData) {
         const { properties } = transaction.asset.nft;
-        for (const [key, value] of Object.entries(properties)) {
-            await this.constraintsManager.getAndApplyConstraints({
-                propertyKey: key,
-                propertyNewValue: value,
-                transaction,
-            });
+        if (properties) {
+            for (const [key, value] of Object.entries(properties)) {
+                await this.constraintsManager.getAndApplyConstraints({
+                    propertyKey: key,
+                    propertyNewValue: value,
+                    transaction,
+                });
+            }
         }
     }
 }

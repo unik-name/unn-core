@@ -82,7 +82,7 @@ export class NFTUpdateCommand extends SendCommand {
                 const tokenId = wallets[senderId].expectedNft;
 
                 await this.knockBalance(senderId, wallets[senderId].expectedBalance);
-                await this.knockNft(tokenId, transaction.properties);
+                await this.knockNftProperties(tokenId, transaction.asset.nft.properties);
             }
         }
     }
@@ -91,25 +91,21 @@ export class NFTUpdateCommand extends SendCommand {
         return this.signer.makeNftUpdate(opts);
     }
 
-    private async knockNft(nftId: string, properties: { [_: string]: string }): Promise<void> {
-        const actual = await this.api.get(`nfts/${nftId}`);
-        const actualProperties = actual.data.properties;
-        if (properties) {
-            const notUpdated = [];
-            const propertyKeys = Object.keys(properties);
-            propertyKeys.forEach(propertyKey => {
-                const propertyValue = properties[propertyKey];
-                if (actualProperties[propertyKey] !== propertyValue) {
-                    notUpdated.push(propertyKey);
-                }
-            });
-            if (notUpdated.length === 0) {
-                logger.info(`[💎] properties of ${nftId} have been updated`);
-            } else {
-                logger.error(`[💎] properties (${notUpdated}) of ${nftId} have not been updated`);
+    private async knockNftProperties(nftId: string, properties: { [_: string]: string }): Promise<void> {
+        for (const [key, value] of Object.entries(properties)) {
+            let result;
+            try {
+                const { data } = await this.api.get(`nfts/${nftId}/properties/${key}`, false);
+                result = data;
+            } catch (e) {
+                result = null;
             }
-        } else {
-            logger.error(`[💎] no properties found on NFT ${nftId}`);
+
+            if (result === value) {
+                logger.info(`[💎] property ${key} of ${nftId} is updated`);
+            } else {
+                logger.error(`[💎] property ${key} of ${nftId} is not updated`);
+            }
         }
     }
 

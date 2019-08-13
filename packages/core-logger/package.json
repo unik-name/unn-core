@@ -1,7 +1,7 @@
 {
     "name": "@uns/core-logger",
     "description": "Logger Manager for UNS Core",
-    "version": "2.3.22-4",
+    "version": "2.3.22-5",
     "contributors": [
         "Brian Faust <brian@ark.io>",
         "Guillaume Nicolas <guillaume@spacelephant.org>"
@@ -20,8 +20,8 @@
         "clean": "del dist"
     },
     "dependencies": {
-        "@uns/core-container": "^2.3.22-4",
-        "@uns/core-interfaces": "^2.3.22-4",
+        "@uns/core-container": "^2.3.22-5",
+        "@uns/core-interfaces": "^2.3.22-5",
         "lodash.isempty": "^4.4.0"
     },
     "devDependencies": {

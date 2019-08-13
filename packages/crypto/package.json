@@ -1,7 +1,7 @@
 {
     "name": "@uns/crypto",
     "description": "Crypto utilities for the UNS Blockchain",
-    "version": "2.3.22-4",
+    "version": "2.3.22-5",
     "contributors": [
         "François-Xavier Thoorens <fx.thoorens@ark.io>",
         "Brian Faust <brian@ark.io>",

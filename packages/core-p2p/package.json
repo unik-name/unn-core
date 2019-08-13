@@ -1,7 +1,7 @@
 {
     "name": "@uns/core-p2p",
     "description": "P2P API for UNS Core",
-    "version": "2.3.22-4",
+    "version": "2.3.22-5",
     "contributors": [
         "François-Xavier Thoorens <fx@ark.io>",
         "Kristjan Košič <kristjan@ark.io>",
@@ -25,12 +25,12 @@
     },
     "dependencies": {
         "@faustbrian/dato": "^0.2.0",
-        "@uns/core-container": "^2.3.22-4",
-        "@uns/core-http-utils": "^2.3.22-4",
-        "@uns/core-interfaces": "^2.3.22-4",
-        "@uns/core-transaction-pool": "^2.3.22-4",
-        "@uns/core-utils": "^2.3.22-4",
-        "@uns/crypto": "^2.3.22-4",
+        "@uns/core-container": "^2.3.22-5",
+        "@uns/core-http-utils": "^2.3.22-5",
+        "@uns/core-interfaces": "^2.3.22-5",
+        "@uns/core-transaction-pool": "^2.3.22-5",
+        "@uns/core-utils": "^2.3.22-5",
+        "@uns/crypto": "^2.3.22-5",
         "ajv": "^6.10.0",
         "boom": "^7.3.0",
         "delay": "^4.1.0",

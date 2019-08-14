@@ -28,6 +28,7 @@ export class NFTManager implements NFT.INFTManager {
 
     public async applyConstraints(transaction: ITransactionData) {
         const { properties } = transaction.asset.nft;
+
         if (properties) {
             for (const [key, value] of Object.entries(properties)) {
                 await this.constraintsManager.getAndApplyConstraints({
@@ -37,5 +38,9 @@ export class NFTManager implements NFT.INFTManager {
                 });
             }
         }
+    }
+
+    public checkGenesisProperties(properties) {
+        this.constraintsManager.checkGenesisProperties(properties ? Object.keys(properties) : []);
     }
 }

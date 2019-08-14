@@ -14,11 +14,14 @@ export class NftMintTransactionHandler extends TransactionHandler {
         wallet: Database.IWallet,
         walletManager?: Database.IWalletManager,
     ): Promise<boolean> {
-        if (walletManager.isTokenOwned(transaction.data.asset.nft.tokenId)) {
-            throw new NftOwnedError(transaction.data.asset.nft.tokenId);
+        const { tokenId, properties } = transaction.data.asset.nft;
+        if (walletManager.isTokenOwned(tokenId)) {
+            throw new NftOwnedError(tokenId);
         }
 
-        await app.resolvePlugin<NFT.INFTManager>("nft").applyConstraints(transaction.data);
+        const nft = app.resolvePlugin<NFT.INFTManager>("nft");
+        nft.checkGenesisProperties(properties);
+        await nft.applyConstraints(transaction.data);
 
         return super.canBeApplied(transaction, wallet, walletManager);
     }

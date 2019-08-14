@@ -68,6 +68,7 @@ export const schemaNetwork = Joi.object({
             properties: Joi.object().pattern(
                 Joi.string(), // TODO add constraint on property length
                 Joi.object({
+                    genesis: Joi.boolean(),
                     constraints: Joi.array().items(Joi.string(), ...nftParameterConstraints),
                 }),
             ),

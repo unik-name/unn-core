@@ -8,6 +8,7 @@ interface INFTManager {
     startListening(): INFTManager;
     stopListening(): INFTManager;
     applyConstraints(transaction: ITransactionData): Promise<void>;
+    checkGenesisProperties(properties: { [_: string]: string }): void;
 }
 
 export { TransactionNFTAsset, INFTManager };

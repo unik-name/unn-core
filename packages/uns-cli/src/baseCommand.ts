@@ -7,8 +7,9 @@ export abstract class BaseCommand extends Command {
     public static baseFlags = {
         help: flags.help({ char: "h" }),
         network: flags.string({
-            description: "Network used to create UNIK nft token (testnet and local are for development only)",
-            options: ["mainnet", "devnet", "testnet", "local"],
+            description: "Network used to create UNIK nft token (local are for development only)",
+            required: true,
+            options: ["devnet", "local"],
         }),
     };
 
@@ -29,7 +30,7 @@ export abstract class BaseCommand extends Command {
         };
 
         this.client = new Client(configManager.getPreset(this.network.preset || this.network.name));
-        this.netWorkConfiguration = await this.getRemoteNeworkConfiguration(this.network.url);
+        this.netWorkConfiguration = await this.getRemoteNetworkConfiguration(this.network.url);
         this.network.explorer = this.netWorkConfiguration.explorer;
 
         if (this.netWorkConfiguration.errorMsg) {
@@ -51,7 +52,7 @@ export abstract class BaseCommand extends Command {
         this.exit(1);
     }
 
-    private getRemoteNeworkConfiguration(networkUrl: string) {
+    private getRemoteNetworkConfiguration(networkUrl: string) {
         return req
             .get(`${networkUrl}/api/v2/node/configuration`)
             .then(configResponse => {

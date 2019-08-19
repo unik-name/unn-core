@@ -1,15 +1,11 @@
 export const NETWORKS = {
     mainnet: {
-        url: "https://forger1.devnet.uns.network",
-        backend: "https://us-central1-unik-name-integration.cloudfunctions.net",
+        url: "",
+        backend: "",
     },
     devnet: {
         url: "https://forger1.devnet.uns.network",
-        backend: "https://us-central1-unik-name-integration.cloudfunctions.net",
-    },
-    testnet: {
-        url: "https://forger1.devnet.uns.network",
-        backend: "https://us-central1-unik-name-integration.cloudfunctions.net",
+        backend: "https://us-central1-unik-name.cloudfunctions.net",
     },
     local: {
         url: "http://localhost:4003",

@@ -7,7 +7,7 @@ import { BaseCommand } from "../baseCommand";
 export class CreateWalletCommand extends BaseCommand {
     public static description = "Create UNS wallet";
 
-    public static examples = [`$ uns create-wallet [--network [mainnet|devnet|testnet|local]]`];
+    public static examples = [`$ uns create-wallet --network [devnet|local]`];
 
     public static flags = {
         ...BaseCommand.baseFlags,

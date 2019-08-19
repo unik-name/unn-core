@@ -11,7 +11,7 @@ export class CreateUnikCommand extends BaseCommand {
     public static description = "Create UNIK token";
 
     public static examples = [
-        `$ uns create-unik --explicitValue {explicitValue} --type [individual|corporate] [--network [mainnet|devnet|testnet|local]]`,
+        `$ uns create-unik --explicitValue {explicitValue} --type [individual|corporate] --network [devnet|local]`,
     ];
 
     public static flags = {

@@ -1,12 +1,13 @@
 import { color } from "@oclif/color";
-import { Command, flags } from "@oclif/command";
-import { Client, configManager, constants, ITransactionData } from "@uns/crypto";
+import { flags } from "@oclif/command";
+import { Client, constants, ITransactionData } from "@uns/crypto";
 import cli from "cli-ux";
 import delay from "delay";
 import * as req from "request-promise";
-import { FINGERPRINT_API, NETWORKS } from "../config";
+import { BaseCommand } from "../baseCommand";
+import { FINGERPRINT_API } from "../config";
 
-export class CreateUnikCommand extends Command {
+export class CreateUnikCommand extends BaseCommand {
     public static description = "Create UNIK token";
 
     public static examples = [
@@ -14,41 +15,20 @@ export class CreateUnikCommand extends Command {
     ];
 
     public static flags = {
-        help: flags.help({ char: "h" }),
+        ...BaseCommand.baseFlags,
         explicitValue: flags.string({ description: "UNIK nft token explicit value", required: true }),
         type: flags.string({
             description: "UNIK nft type (individual/corporate)",
             required: true,
             options: ["individual", "corporate"],
         }),
-        network: flags.string({
-            description: "Network used to create UNIK nft token (testnet and local are for development only)",
-            options: ["mainnet", "devnet", "testnet", "local"],
-        }),
     };
-    private network: any;
 
-    public async run() {
-        const { flags } = this.parse(CreateUnikCommand);
+    protected getCommand(): any {
+        return CreateUnikCommand;
+    }
 
-        /**
-         * Configuration
-         */
-        const networkName: string = flags.network ? flags.network.toLowerCase() : "mainnet";
-
-        this.network = {
-            ...NETWORKS[networkName],
-            name: networkName,
-        };
-
-        const client: Client = new Client(configManager.getPreset(this.network.preset || this.network.name));
-        const netWorkConfiguration: any = await this.getRemoteNeworkConfiguration(this.network.url);
-        this.network.explorer = netWorkConfiguration.explorer;
-
-        if (netWorkConfiguration.errorMsg) {
-            this.promptErrAndExit(netWorkConfiguration.errorMsg);
-        }
-
+    protected async do(flags: Record<string, any>) {
         /**
          * Get passphrase
          */
@@ -70,10 +50,10 @@ export class CreateUnikCommand extends Command {
          */
         cli.action.start("Creating transaction");
         const transaction: ITransactionData = this.createTransaction(
-            client,
+            this.client,
             tokenId,
             passphrase,
-            netWorkConfiguration.version,
+            this.netWorkConfiguration.version,
         );
 
         cli.action.stop();
@@ -94,7 +74,7 @@ export class CreateUnikCommand extends Command {
          */
         cli.action.start("Waiting for transaction confirmation");
         const transactionFromNetwork = await this.waitTransactionFirstConfirmation(
-            netWorkConfiguration.constants.blocktime,
+            this.netWorkConfiguration.constants.blocktime,
             transaction,
             this.network,
         );
@@ -122,17 +102,6 @@ export class CreateUnikCommand extends Command {
                 `Transaction not found yet, the network can be slow. Check this url in a while: ${transactionUrl}`,
             );
         }
-    }
-
-    private getRemoteNeworkConfiguration(networkUrl: string) {
-        return req
-            .get(`${networkUrl}/api/v2/node/configuration`)
-            .then(configResponse => {
-                return JSON.parse(configResponse).data;
-            })
-            .catch(e => {
-                return { errorMsg: "[create-unik] Error fetching network configuration" };
-            });
     }
 
     /**
@@ -262,14 +231,5 @@ export class CreateUnikCommand extends Command {
      */
     private toSatoshi(value: number): string {
         return `${value * 100000000}`;
-    }
-
-    /**
-     *
-     * @param errorMsg Prompt error and exit command.
-     */
-    private promptErrAndExit(errorMsg: string): void {
-        this.error(errorMsg);
-        this.exit(1);
     }
 }

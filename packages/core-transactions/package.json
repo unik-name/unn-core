@@ -20,6 +20,7 @@
         "clean": "del dist"
     },
     "dependencies": {
+        "@uns/core-container": "^2.3.22-5",
         "@uns/core-interfaces": "^2.3.22-5",
         "@uns/crypto": "^2.3.22-5",
         "bs58check": "^2.1.2"

@@ -1,4 +1,4 @@
-version: 2
+version: 2.1
 jobs:
   test-node10-unit:
     working_directory: ~/core
@@ -88,6 +88,10 @@ jobs:
       - run:
           name: Codecov
           command: ./node_modules/.bin/codecov
+      - slack/status:
+          fail_only: true
+          only_for_branches: 'private/develop,feat/nft'
+          failure_message: "\U0001F62D build failed > $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH:$CIRCLE_SHA1 ( \U0001F916 $CIRCLE_WORKFLOW_ID/$CIRCLE_JOB)"
   test-node10-functional:
     working_directory: ~/core
     environment:
@@ -184,6 +188,10 @@ jobs:
       - run:
           name: Codecov
           command: ./node_modules/.bin/codecov
+      - slack/status:
+          fail_only: true
+          only_for_branches: 'private/develop,feat/nft'
+          failure_message: "\U0001F62D build failed > $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH:$CIRCLE_SHA1 ( \U0001F916 $CIRCLE_WORKFLOW_ID/$CIRCLE_JOB)"
   test-node10-integration-0:
     working_directory: ~/core
     environment:
@@ -280,6 +288,10 @@ jobs:
       - run:
           name: Codecov
           command: ./node_modules/.bin/codecov
+      - slack/status:
+          fail_only: true
+          only_for_branches: 'private/develop,feat/nft'
+          failure_message: "\U0001F62D build failed > $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH:$CIRCLE_SHA1 ( \U0001F916 $CIRCLE_WORKFLOW_ID/$CIRCLE_JOB)"
   test-node10-integration-1:
     working_directory: ~/core
     environment:
@@ -401,6 +413,10 @@ jobs:
       - run:
           name: Codecov
           command: ./node_modules/.bin/codecov
+      - slack/status:
+          fail_only: true
+          only_for_branches: 'private/develop,feat/nft'
+          failure_message: "\U0001F62D build failed > $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH:$CIRCLE_SHA1 ( \U0001F916 $CIRCLE_WORKFLOW_ID/$CIRCLE_JOB)"
   test-node10-integration-2:
     working_directory: ~/core
     environment:
@@ -516,8 +532,14 @@ jobs:
       - run:
           name: Codecov
           command: ./node_modules/.bin/codecov
+      - slack/status:
+          fail_only: true
+          only_for_branches: 'private/develop,feat/nft'
+          failure_message: "\U0001F62D build failed > $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH:$CIRCLE_SHA1 ( \U0001F916 $CIRCLE_WORKFLOW_ID/$CIRCLE_JOB)"
+orbs:
+  slack: circleci/slack@3.3.0
 workflows:
-  version: 2
+  version: 2.1
   build_and_test:
     jobs:
       - test-node10-unit

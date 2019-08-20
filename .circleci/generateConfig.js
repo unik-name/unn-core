@@ -58,9 +58,9 @@ fs.readdir("./packages", (_, packages) => {
         });
     }
 
-    // Add step on all jobs to filter commits
+    // Add step on all jobs to filter commits and slack notification
     Object.keys(config.jobs).forEach(jobKey=>{
-        const STEP = {
+        const FILTER_BRANCH = {
             "run":{
                 "name":"Check if commit must be built",
                 "command":
@@ -72,8 +72,17 @@ fs.readdir("./packages", (_, packages) => {
                 fi`
             }
         };
+
+        const SLACK_NOTIF = {
+            "slack/status": {
+                fail_only: true,
+                only_for_branches: "private/develop,feat/nft",
+                failure_message: "😭 build failed > $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH:$CIRCLE_SHA1 ( 🤖 $CIRCLE_WORKFLOW_ID/$CIRCLE_JOB)"
+            }
+        }
+        
         let job = config.jobs[jobKey];
-        job.steps = [STEP].concat(job.steps);
+        job.steps = [FILTER_BRANCH].concat(job.steps).concat(SLACK_NOTIF);
 
         config.jobs[jobKey] = job;
     });

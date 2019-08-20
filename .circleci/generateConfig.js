@@ -64,25 +64,27 @@ fs.readdir("./packages", (_, packages) => {
             "run":{
                 "name":"Check if commit must be built",
                 "command":
-                `if [[ ! $CIRCLE_BRANCH =~ ^(feat/nft*) ||
+                `if [[ ! $CIRCLE_BRANCH =~ ^feat/nft* ||
                         ( -z $CIRCLE_PULL_REQUEST && 
-                             $CIRCLE_BRANCH =~ ^(feat/nft*) ) ]] ; then 
+                             $CIRCLE_BRANCH =~ ^feat/nft* ) ]] ; then 
                         echo \"Cancel job\" && 
                         circleci-agent step halt; 
                 fi`
             }
         };
 
-        const SLACK_NOTIF = {
-            "slack/status": {
-                fail_only: true,
-                only_for_branches: "private/develop,feat/nft",
-                failure_message: "😭 build failed > $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH:$CIRCLE_SHA1 ( 🤖 $CIRCLE_WORKFLOW_ID/$CIRCLE_JOB)"
+        const FINAL_STEPS = [
+            {
+                "slack/status": {
+                    fail_only: true,
+                    only_for_branches: "private/develop,feat/nft",
+                    failure_message: "😭 build failed > $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH:$CIRCLE_SHA1 ( 🤖 $CIRCLE_WORKFLOW_ID/$CIRCLE_JOB)"
+                }
             }
-        }
+        ]
         
         let job = config.jobs[jobKey];
-        job.steps = pushAfter(job.steps,"save_cache",FILTER_BRANCH).concat(SLACK_NOTIF);
+        job.steps = pushAfter(job.steps,"save_cache",FILTER_BRANCH).concat(FINAL_STEPS);
 
         config.jobs[jobKey] = job;
     });

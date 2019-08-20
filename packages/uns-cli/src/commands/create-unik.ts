@@ -41,10 +41,6 @@ export class CreateUnikCommand extends BaseCommand {
         const tokenId = await this.computeTokenId(this.network.backend, flags.explicitValue, flags.type);
         cli.action.stop();
 
-        if (tokenId.errorMsg) {
-            this.promptErrAndExit(tokenId.errorMsg);
-        }
-
         /**
          * Transaction creation
          */
@@ -62,12 +58,8 @@ export class CreateUnikCommand extends BaseCommand {
          * Transaction broadcast
          */
         cli.action.start("Sending transaction");
-        const sendResult = await this.sendTransaction(transaction, this.network.url);
+        await this.sendTransaction(transaction, this.network.url);
         cli.action.stop();
-
-        if (sendResult.errorMsg) {
-            this.promptErrAndExit(sendResult.errorMsg);
-        }
 
         /**
          * Wait for the first transaction confirmation (2 blocktimes max)
@@ -79,10 +71,6 @@ export class CreateUnikCommand extends BaseCommand {
             this.network,
         );
         cli.action.stop();
-
-        if (transactionFromNetwork.errorMsg) {
-            this.promptErrAndExit(transactionFromNetwork.errorMsg);
-        }
 
         /**
          * Result prompt
@@ -132,7 +120,7 @@ export class CreateUnikCommand extends BaseCommand {
                 return unikFingerprintResponse.result;
             })
             .catch(e => {
-                return { errorMsg: `[create-unik] error computing  UNIK id. Caused by ${e.message}` };
+                throw new Error(`[create-unik] error computing  UNIK id. Caused by ${e.message}`);
             });
     }
 
@@ -187,7 +175,7 @@ export class CreateUnikCommand extends BaseCommand {
                 return result;
             })
             .catch(e => {
-                return { errorMsg: "[creat-unik] Technical error. Please retry" };
+                throw new Error("[creat-unik] Technical error. Please retry");
             });
     }
 
@@ -205,7 +193,7 @@ export class CreateUnikCommand extends BaseCommand {
                 return JSON.parse(transactionResponse).data;
             })
             .catch(e => {
-                return { errorMsg: `[create-unik] ${e.message}` };
+                throw new Error(`[create-unik] ${e.message}`);
             });
     }
 

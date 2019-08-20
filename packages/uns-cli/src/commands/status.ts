@@ -17,19 +17,10 @@ export class StatusCommand extends BaseCommand {
 
     protected async do(flags: Record<string, any>) {
         const unsSupply: any = await this.getSupply();
-        if (unsSupply.errorMsg) {
-            this.promptErrAndExit(unsSupply.errorMsg);
-        }
 
         const uniks: any = await this.getUniks();
-        if (uniks.errorMsg) {
-            this.promptErrAndExit(uniks.errorMsg);
-        }
 
         const lastBlockId = await this.getLastBlockId();
-        if (lastBlockId.errorMsg) {
-            this.promptErrAndExit(lastBlockId.errorMsg);
-        }
         const blockUrl = color.cyanBright(`${this.network.explorer}/block/${lastBlockId}`);
 
         this.log("Height: ", this.netWorkConfiguration.constants.height);
@@ -38,10 +29,6 @@ export class StatusCommand extends BaseCommand {
         this.log(`Supply UNIKs: `, `${uniks} UNIKs`);
         this.log("Active delegates: ", this.netWorkConfiguration.constants.activeDelegates);
         this.log("Last block: ", blockUrl);
-    }
-
-    protected getErrorObject(msg: string, exception?: any) {
-        return { errorMsg: `[status] ${msg}. ${exception ? `Caused by ${exception.message}` : ""}` };
     }
 
     /**
@@ -54,7 +41,7 @@ export class StatusCommand extends BaseCommand {
                 return JSON.parse(resp).supply;
             })
             .catch(e => {
-                return this.getErrorObject("Error fetching supply.", e);
+                throw new Error(`[status] Error fetching supply. Caused by ${e}`);
             });
     }
 
@@ -68,7 +55,7 @@ export class StatusCommand extends BaseCommand {
                 return JSON.parse(resp).meta.count;
             })
             .catch(e => {
-                return this.getErrorObject("Error fetching UNIKs.", e);
+                throw new Error(`[status] Error fetching UNIKs.. Caused by ${e}`);
             });
     }
 
@@ -80,12 +67,13 @@ export class StatusCommand extends BaseCommand {
             .get(`${this.network.url}/api/v2/blocks`)
             .then(resp => {
                 const blocks: any[] = JSON.parse(resp).data;
-                return blocks && blocks.length > 0
-                    ? JSON.parse(resp).data[0].id
-                    : this.getErrorObject("No block found.");
+                if (blocks.length === 0) {
+                    throw new Error("[status] No block found.");
+                }
+                return JSON.parse(resp).data[0].id;
             })
             .catch(e => {
-                return this.getErrorObject("Error fetching blocks.", e);
+                throw new Error(`[status] Error fetching blocks.. Caused by ${e}`);
             });
     }
 }

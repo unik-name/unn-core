@@ -37,7 +37,11 @@ export abstract class BaseCommand extends Command {
             this.promptErrAndExit(this.netWorkConfiguration.errorMsg);
         }
 
-        this.do(flags);
+        try {
+            await this.do(flags);
+        } catch (globalCatchException) {
+            this.promptErrAndExit(globalCatchException.message);
+        }
     }
 
     protected abstract do(flags: Record<string, any>): Promise<any>;
@@ -47,7 +51,7 @@ export abstract class BaseCommand extends Command {
      *
      * @param errorMsg Prompt error and exit command.
      */
-    protected promptErrAndExit(errorMsg: string): void {
+    private promptErrAndExit(errorMsg: string): void {
         this.error(errorMsg);
         this.exit(1);
     }

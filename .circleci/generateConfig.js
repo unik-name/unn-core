@@ -64,11 +64,11 @@ fs.readdir("./packages", (_, packages) => {
             "run":{
                 "name":"Check if commit must be built",
                 "command":
-                `if [[ -z $CIRCLE_PULL_REQUEST && 
-                          $CIRCLE_BRANCH != \"private/develop\" && 
-                          $CIRCLE_BRANCH != \"feat/nft\" ]] ; then 
-                            echo \"Cancel job\" && 
-                            circleci-agent step halt; 
+                `if [[ ! $CIRCLE_BRANCH =~ ^(feat/nft*) ||
+                        ( -z $CIRCLE_PULL_REQUEST && 
+                             $CIRCLE_BRANCH =~ ^(feat/nft*) ) ]] ; then 
+                        echo \"Cancel job\" && 
+                        circleci-agent step halt; 
                 fi`
             }
         };
@@ -82,7 +82,7 @@ fs.readdir("./packages", (_, packages) => {
         }
         
         let job = config.jobs[jobKey];
-        job.steps = [FILTER_BRANCH].concat(job.steps).concat(SLACK_NOTIF);
+        job.steps = pushAfter(job.steps,"save_cache",FILTER_BRANCH).concat(SLACK_NOTIF);
 
         config.jobs[jobKey] = job;
     });
@@ -91,6 +91,16 @@ fs.readdir("./packages", (_, packages) => {
 
     fs.writeFileSync(".circleci/config.yml", yaml.safeDump(config));
 });
+
+function pushAfter(inArray,afterKey,pushedValue){
+    return inArray.reduce((acc,val)=>{
+        acc.push(val);
+        if( val[afterKey] ){
+            acc.push(pushedValue)
+        }
+        return acc;
+    },[])
+}
 
 function splitPackages(packageNames) {
     // split packages in two for integration tests

@@ -3,9 +3,8 @@
 uns CLI
 
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
-[![Version](https://img.shields.io/npm/v/uns-cli.svg)](https://npmjs.org/package/uns-cli)
-[![Downloads/week](https://img.shields.io/npm/dw/uns-cli.svg)](https://npmjs.org/package/uns-cli)
-[![License](https://img.shields.io/npm/l/uns-cli.svg)](https://github.com/ftreguer/uns-cli/blob/master/package.json)
+[![Version](https://img.shields.io/npm/v/uns-cli.svg)](https://npmjs.org/package/@uns/uns-cli)
+[![Downloads/week](https://img.shields.io/npm/dw/uns-cli.svg)](https://npmjs.org/package/@uns/uns-cli)
 
 <!-- toc -->
 
@@ -13,14 +12,30 @@ uns CLI
 -   [Usage](#usage)
 -   [Commands](#commands)
 -   [Release publish](#release-publish)
-    <!-- tocstop -->
+
+<!-- tocstop -->
+
+# Install
+
+-   via npm
+
+```
+$ npm install -g @uns/uns-cli
+```
+
+-   via yarn
+
+```
+yarn global add @uns/uns-cli
+```
+
+🤖 _Tested with Ubuntu 18.04 and macOS Mojave_
 
 # Usage
 
 <!-- usage -->
 
 ```sh-session
-$ npm install -g @uns/uns-cli
 $ uns COMMAND
 running command...
 $ uns (-v|--version|version)

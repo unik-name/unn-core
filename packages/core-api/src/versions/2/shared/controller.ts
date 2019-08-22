@@ -1,5 +1,7 @@
 import { app } from "@arkecosystem/core-container";
 import { Blockchain, Database } from "@arkecosystem/core-interfaces";
+import { formatTimestamp } from "@arkecosystem/core-utils";
+import { slots } from "@arkecosystem/crypto";
 import Hapi from "hapi";
 import {
     paginate,
@@ -28,8 +30,11 @@ export class Controller {
         return respondWithCollection(request, data, transformer);
     }
 
-    protected respondWithCache(data, h) {
-        return respondWithCache(data, h);
+    protected respondWithCache(data, h, addChainMeta: boolean = false, keepChainMetaOnWithPagination: boolean = false) {
+        if (addChainMeta) {
+            this.addChainMeta(data);
+        }
+        return respondWithCache(data, h, keepChainMetaOnWithPagination);
     }
 
     protected toResource(request, data, transformer): object {
@@ -42,5 +47,16 @@ export class Controller {
 
     protected toPagination(request, data, transformer): object {
         return toPagination(request, data, transformer);
+    }
+
+    protected addChainMeta(data: any) {
+        data.value.chainmeta = this.getChainMeta();
+    }
+
+    private getChainMeta() {
+        return {
+            height: this.blockchain.getLastHeight(),
+            timestamp: formatTimestamp(slots.getTime()),
+        };
     }
 }

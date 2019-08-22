@@ -30,7 +30,7 @@ export class WalletsController extends Controller {
             // @ts-ignore
             const data = await request.server.methods.v2.wallets.show(request);
 
-            return super.respondWithCache(data, h);
+            return super.respondWithCache(data, h, true);
         } catch (error) {
             return Boom.badImplementation(error);
         }

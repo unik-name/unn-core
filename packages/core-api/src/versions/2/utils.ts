@@ -29,13 +29,30 @@ function respondWithCollection(request, data, transformer): object {
     };
 }
 
-function respondWithCache(data, h): any {
+function respondWithCache(data, h, keepChainMetaOnWithPagination: boolean = false): any {
     const { value, cached } = data;
     const lastModified = cached ? new Date(cached.stored) : new Date();
 
-    return value.isBoom
-        ? h.response(value.output.payload).code(value.output.statusCode)
-        : h.response(value).header("Last-modified", lastModified.toUTCString());
+    if (keepChainMetaOnWithPagination) {
+        // hapi-pagination plugin only keeps 'results' (transformed to data) and 'meta' keys. If we want to keep metachain key we have to use h.paginate instead of h.response
+        return value.isBoom
+            ? h
+                  .paginate(
+                      { results: value.output.payload.results, chainmeta: value.chainmeta },
+                      value.output.payload.totalCount,
+                      { key: "results" },
+                  )
+                  .code(value.output.statusCode)
+            : h
+                  .paginate({ results: value.results, chainmeta: value.chainmeta }, value.totalCount, {
+                      key: "results",
+                  })
+                  .header("Last-modified", lastModified.toUTCString());
+    } else {
+        return value.isBoom
+            ? h.response(value.output.payload).code(value.output.statusCode)
+            : h.response(value).header("Last-modified", lastModified.toUTCString());
+    }
 }
 
 function toResource(request, data, transformer): object {

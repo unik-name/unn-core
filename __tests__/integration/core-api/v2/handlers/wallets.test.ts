@@ -77,6 +77,8 @@ describe("API 2.0 - Wallets", () => {
                     const wallet = response.data.data;
                     utils.expectWallet(wallet);
                     expect(wallet.address).toBe(address);
+
+                    utils.expectChainMeta(response.data.chainmeta);
                 });
             },
         );

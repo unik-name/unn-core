@@ -25,7 +25,7 @@ export class RollbackCommand extends BaseCommand {
         await setUpLite(flags);
 
         if (!app.has("snapshots")) {
-            this.error("The @uns/core-snapshots plugin is not installed.");
+            this.error("The @arkecosystem/core-snapshots plugin is not installed.");
         }
 
         if (flags.height) {

@@ -24,14 +24,14 @@ $ ark forger:run --bip38="..." --password="..."
 
         await this.buildApplication(app, flags, {
             include: [
-                "@uns/core-event-emitter",
-                "@uns/core-config",
-                "@uns/core-logger",
-                "@uns/core-logger-pino",
-                "@uns/core-forger",
+                "@arkecosystem/core-event-emitter",
+                "@arkecosystem/core-config",
+                "@arkecosystem/core-logger",
+                "@arkecosystem/core-logger-pino",
+                "@arkecosystem/core-forger",
             ],
             options: {
-                "@uns/core-forger": await this.buildBIP38(flags),
+                "@arkecosystem/core-forger": await this.buildBIP38(flags),
             },
         });
     }

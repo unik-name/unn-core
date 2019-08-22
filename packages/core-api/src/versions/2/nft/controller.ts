@@ -18,8 +18,7 @@ export class NftController extends Controller {
         try {
             // @ts-ignore
             const data = await request.server.methods.v2.nfts.show(request);
-
-            return super.respondWithCache(data, h);
+            return super.respondWithCache(data, h, true);
         } catch (error) {
             return Boom.badImplementation(error);
         }
@@ -29,8 +28,7 @@ export class NftController extends Controller {
         try {
             // @ts-ignore
             const data = await request.server.methods.v2.nfts.properties(request);
-
-            return super.respondWithCache(data, h);
+            return super.respondWithCache(data, h, true, true);
         } catch (error) {
             return Boom.badImplementation(error);
         }

@@ -142,6 +142,15 @@ class Helpers {
         expect(wallet).toHaveProperty("vote");
     }
 
+    public expectChainMeta(chainmeta) {
+        expect(chainmeta).toBeDefined();
+        expect(chainmeta.height).toBeDefined();
+        expect(chainmeta.timestamp).toBeDefined();
+        expect(chainmeta.timestamp.epoch).toBeDefined();
+        expect(chainmeta.timestamp.unix).toBeDefined();
+        expect(chainmeta.timestamp.human).toBeDefined();
+    }
+
     public async createTransaction() {
         client.setConfig(NetworkManager.findByName("testnet"));
 

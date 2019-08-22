@@ -31,9 +31,11 @@ export class CreateWalletCommand extends BaseCommand {
 
         const jsonWallet = JSON.stringify(wallet, null, 2);
 
-        console.error(color.red(
-            "\n⚠️  WARNING: this information is not saved anywhere (wallet.json). You need to copy and save it by your own. ⚠️\n",
-        ));
+        console.error(
+            color.red(
+                "\n⚠️  WARNING: this information is not saved anywhere. You need to copy and save it by your own. ⚠️\n",
+            ),
+        );
 
         console.log(jsonWallet);
     }

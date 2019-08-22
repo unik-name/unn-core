@@ -68,6 +68,7 @@ jobs:
             - ./packages/core-vote-report/node_modules
             - ./packages/core-webhooks/node_modules
             - ./packages/crypto/node_modules
+            - ./packages/uns-cli/node_modules
             - ./node_modules
       - run:
           name: Create .core/database directory
@@ -163,6 +164,7 @@ jobs:
             - ./packages/core-vote-report/node_modules
             - ./packages/core-webhooks/node_modules
             - ./packages/crypto/node_modules
+            - ./packages/uns-cli/node_modules
             - ./node_modules
       - run:
           name: Create .core/database directory
@@ -258,6 +260,7 @@ jobs:
             - ./packages/core-vote-report/node_modules
             - ./packages/core-webhooks/node_modules
             - ./packages/crypto/node_modules
+            - ./packages/uns-cli/node_modules
             - ./node_modules
       - run:
           name: Create .core/database directory
@@ -353,6 +356,7 @@ jobs:
             - ./packages/core-vote-report/node_modules
             - ./packages/core-webhooks/node_modules
             - ./packages/crypto/node_modules
+            - ./packages/uns-cli/node_modules
             - ./node_modules
       - run:
           name: Create .core/database directory
@@ -473,6 +477,7 @@ jobs:
             - ./packages/core-vote-report/node_modules
             - ./packages/core-webhooks/node_modules
             - ./packages/crypto/node_modules
+            - ./packages/uns-cli/node_modules
             - ./node_modules
       - run:
           name: Create .core/database directory

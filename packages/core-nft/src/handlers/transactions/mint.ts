@@ -17,6 +17,6 @@ export abstract class NFTMintHandler {
     }
 
     public static async onReverted(transaction: ITransactionData) {
-        NFTModifier.delete(transaction.asset.nft.tokenId);
+        return NFTModifier.delete(transaction.asset.nft.tokenId);
     }
 }

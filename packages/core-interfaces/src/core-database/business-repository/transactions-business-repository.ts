@@ -13,6 +13,8 @@ export interface ITransactionsBusinessRepository {
 
     findAllByRecipient(recipientId, parameters?: IParameters): Promise<any>;
 
+    findAllByAsset(asset: any): Promise<any>;
+
     allVotesBySender(senderPublicKey, parameters?: IParameters): Promise<any>;
 
     findAllByBlock(blockId, parameters?: IParameters): Promise<any>;

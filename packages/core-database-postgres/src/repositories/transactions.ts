@@ -127,6 +127,10 @@ export class TransactionsRepository extends Repository implements Database.ITran
         return this.findMany(selectQuery);
     }
 
+    public async findAllByAsset(asset: any) {
+        return this.db.manyOrNone(sql.findAllByAsset, { asset: JSON.stringify(asset) });
+    }
+
     // TODO: Remove with v1
     public async findAll(parameters: Database.SearchParameters) {
         if (!parameters.paginate) {

@@ -6,6 +6,7 @@ import { paginate, respondWithResource, toPagination } from "../utils";
 
 const databaseService = app.resolvePlugin<Database.IDatabaseService>("database");
 const nftsRepository = databaseService.nftsBusinessRepository;
+const transactionsRepository = databaseService.transactionsBusinessRepository;
 
 const index = async request => {
     const nfts = await nftsRepository.search({
@@ -17,7 +18,22 @@ const index = async request => {
 
 const show = async request => {
     const nft = await nftsRepository.findById(request.params.id);
+    const transactions = await transactionsRepository.findAllByAsset({
+        nft: {
+            tokenId: `${request.params.id}`,
+        },
+    });
 
+    if (transactions && transactions.length > 0) {
+        nft.transactions = {
+            first: {
+                id: transactions[0].id,
+            },
+            last: {
+                id: transactions[transactions.length - 1].id,
+            },
+        };
+    }
     if (!nft) {
         return Boom.notFound(`Non fungible token ${request.params.id} not found`);
     }

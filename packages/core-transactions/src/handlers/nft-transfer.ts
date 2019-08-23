@@ -1,13 +1,7 @@
 import { ApplicationEvents } from "@arkecosystem/core-event-emitter";
 import { Database, EventEmitter, TransactionPool } from "@arkecosystem/core-interfaces";
-import {
-    Address,
-    ITransactionData,
-    NFTTransferTransaction,
-    Transaction,
-    TransactionConstructor,
-} from "@arkecosystem/crypto";
-import { NftOwnedError, NftOwnerError } from "../errors";
+import { ITransactionData, NFTTransferTransaction, Transaction, TransactionConstructor } from "@arkecosystem/crypto";
+import { NftOwnerError } from "../errors";
 import { TransactionHandler } from "./transaction";
 
 export class NftTransferTransactionHandler extends TransactionHandler {
@@ -20,14 +14,11 @@ export class NftTransferTransactionHandler extends TransactionHandler {
         wallet: Database.IWallet,
         walletManager?: Database.IWalletManager,
     ): Promise<boolean> {
-        const { data } = transaction;
-        if (data.recipientId) {
-            if (!wallet.tokens.includes(data.asset.nft.tokenId)) {
-                throw new NftOwnerError(wallet.publicKey, data.asset.nft.tokenId);
-            }
-        } else if (walletManager.isTokenOwned(data.asset.nft.tokenId)) {
-            throw new NftOwnedError(data.asset.nft.tokenId);
+        const tokenId = transaction.data.asset.nft.tokenId;
+        if (!wallet.tokens.includes(tokenId)) {
+            throw new NftOwnerError(wallet.publicKey, tokenId);
         }
+
         return super.canBeApplied(transaction, wallet, walletManager);
     }
 
@@ -43,25 +34,14 @@ export class NftTransferTransactionHandler extends TransactionHandler {
      * Apply the transaction to the sender wallet.
      */
     public apply(transaction: Transaction, wallet: Database.IWallet): void {
-        const { data } = transaction;
-        if (data.recipientId) {
-            this.removeTokenFromWallet(wallet, data);
-        } else {
-            this.addTokenToWallet(wallet, data.asset.nft.tokenId);
-        }
+        this.removeTokenFromWallet(wallet, transaction.data);
     }
 
     /**
      * Revert the transaction from the sender wallet.
      */
     public revert(transaction: Transaction, wallet: Database.IWallet): void {
-        const { data } = transaction;
-        if (data.recipientId) {
-            this.addTokenToWallet(wallet, data.asset.nft.tokenId);
-        } else {
-            // it was a token mint
-            this.removeTokenFromWallet(wallet, data);
-        }
+        this.addTokenToWallet(wallet, transaction.data.asset.nft.tokenId);
     }
 
     public canEnterTransactionPool(data: ITransactionData, guard: TransactionPool.IGuard): boolean {
@@ -69,15 +49,11 @@ export class NftTransferTransactionHandler extends TransactionHandler {
     }
 
     public emitEvents(transaction: Transaction, emitter: EventEmitter.EventEmitter): void {
-        const recipient = transaction.data.recipientId;
-        const sender = Address.fromPublicKey(transaction.data.senderPublicKey);
-        const isNftOwnershipTransfer = !!recipient;
-        const data = {
+        emitter.emit(ApplicationEvents.NftTransferred, {
             id: transaction.data.asset.nft.tokenId,
-            owner: isNftOwnershipTransfer ? transaction.data.recipientId : sender,
-            previousOwner: isNftOwnershipTransfer ? transaction.data.senderPublicKey : undefined,
-        };
-        emitter.emit(isNftOwnershipTransfer ? ApplicationEvents.NftTransferred : ApplicationEvents.NftCreated, data);
+            owner: transaction.data.recipientId,
+            previousOwner: transaction.data.senderPublicKey,
+        });
     }
 
     private removeTokenFromWallet(wallet: Database.IWallet, transaction: ITransactionData): void {

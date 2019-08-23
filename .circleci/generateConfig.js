@@ -58,21 +58,33 @@ fs.readdir("./packages", (_, packages) => {
         });
     }
 
-    // Add step on all jobs to filter commits
+    // Add step on all jobs to filter commits and slack notification
     Object.keys(config.jobs).forEach(jobKey=>{
-        const STEP = {
+        const FILTER_BRANCH = {
             "run":{
                 "name":"Check if commit must be built",
                 "command":
-                `if [[ -z $CIRCLE_PULL_REQUEST && 
-                          $CIRCLE_BRANCH != \"feat/nft\" ]] ; then 
-                            echo \"Cancel job\" && 
-                            circleci-agent step halt; 
+                `if [[ ! $CIRCLE_BRANCH =~ ^feat/nft* ||
+                        ( -z $CIRCLE_PULL_REQUEST && 
+                             $CIRCLE_BRANCH =~ ^feat/nft* ) ]] ; then 
+                        echo \"Cancel job\" && 
+                        circleci-agent step halt; 
                 fi`
             }
         };
+
+        const FINAL_STEPS = [
+            {
+                "slack/status": {
+                    fail_only: true,
+                    only_for_branches: "private/develop,feat/nft",
+                    failure_message: "😭 build failed > $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH:$CIRCLE_SHA1 ( 🤖 $CIRCLE_WORKFLOW_ID/$CIRCLE_JOB)"
+                }
+            }
+        ]
+        
         let job = config.jobs[jobKey];
-        job.steps = [STEP].concat(job.steps);
+        job.steps = pushAfter(job.steps,"save_cache",FILTER_BRANCH).concat(FINAL_STEPS);
 
         config.jobs[jobKey] = job;
     });
@@ -81,6 +93,16 @@ fs.readdir("./packages", (_, packages) => {
 
     fs.writeFileSync(".circleci/config.yml", yaml.safeDump(config));
 });
+
+function pushAfter(inArray,afterKey,pushedValue){
+    return inArray.reduce((acc,val)=>{
+        acc.push(val);
+        if( val[afterKey] ){
+            acc.push(pushedValue)
+        }
+        return acc;
+    },[])
+}
 
 function splitPackages(packageNames) {
     // split packages in two for integration tests

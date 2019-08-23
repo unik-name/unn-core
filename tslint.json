@@ -6,6 +6,23 @@
         "no-default-export": true,
         "no-shadowed-variable": false,
         "object-literal-sort-keys": false,
-        "radix": false
+        "radix": false,
+        "no-floating-promises": true
+    },
+    "linterOptions": {
+        "exclude": [
+            "packages/core-api/src/server.ts",
+            "packages/core-api/src/versions/2/transactions/controller.ts",
+            "packages/core-blockchain/src/blockchain.ts",
+            "packages/core-blockchain/src/processor/handlers/already-forged-handler.ts",
+            "packages/core-blockchain/src/processor/handlers/unchained-handler.ts",
+            "packages/core-forger/src/index.ts",
+            "packages/core-forger/src/manager.ts",
+            "packages/core-p2p/src/monitor.ts",
+            "packages/core-p2p/src/server/plugins/accept-request.ts",
+            "packages/core-p2p/src/server/versions/1/handlers.ts",
+            "packages/core/src/commands/config/cli.ts",
+            "packages/core/src/commands/update.ts"
+        ]
     }
 }

@@ -3,6 +3,7 @@ import { DelegateResignationTransactionHandler } from "./delegate-resignation";
 import { IpfsTransactionHandler } from "./ipfs";
 import { MultiPaymentTransactionHandler } from "./multi-payment";
 import { MultiSignatureTransactionHandler } from "./multi-signature";
+import { NftMintTransactionHandler } from "./nft-mint";
 import { NftTransferTransactionHandler } from "./nft-transfer";
 import { NftUpdateTransactionHandler } from "./nft-update";
 import { SecondSignatureTransactionHandler } from "./second-signature";
@@ -22,4 +23,5 @@ export const transactionHandlers = [
     DelegateResignationTransactionHandler,
     NftTransferTransactionHandler,
     NftUpdateTransactionHandler,
+    NftMintTransactionHandler,
 ];

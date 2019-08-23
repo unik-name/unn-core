@@ -8,7 +8,7 @@ export class HttpClient {
         this.baseUrl = baseUrl;
     }
 
-    public async get(path: string, query?: any, headers?: any): Promise<any> {
+    public async get(path: string, query?: any, headers?: any, logError: boolean = true): Promise<any> {
         const fullURL = `${this.baseUrl}${path}`;
 
         try {
@@ -16,11 +16,13 @@ export class HttpClient {
 
             return body;
         } catch (error) {
-            logger.error(`${fullURL}: ${error.message}`);
+            if (logError) {
+                logger.error(`${fullURL}: ${error.message}`);
+            }
         }
     }
 
-    public async post(path: string, payload: any): Promise<any> {
+    public async post(path: string, payload: any, logError: boolean = true): Promise<any> {
         const fullURL = `${this.baseUrl}${path}`;
 
         try {
@@ -28,7 +30,9 @@ export class HttpClient {
 
             return body;
         } catch (error) {
-            logger.error(`${fullURL}: ${error.message}`);
+            if (logError) {
+                logger.error(`${fullURL}: ${error.message}`);
+            }
         }
     }
 }

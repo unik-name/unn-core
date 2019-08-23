@@ -46,6 +46,10 @@ export class TransactionFactory {
         );
     }
 
+    public static nftMint(tokenId: string): TransactionFactory {
+        return new TransactionFactory(transactionBuilder.nftMint(tokenId));
+    }
+
     private builder: any;
     private network: NetworkName = "testnet";
     private fee: number;

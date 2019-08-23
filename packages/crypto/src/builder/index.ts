@@ -4,7 +4,7 @@ import { DelegateResignationBuilder } from "./transactions/delegate-resignation"
 import { IPFSBuilder } from "./transactions/ipfs";
 import { MultiPaymentBuilder } from "./transactions/multi-payment";
 import { MultiSignatureBuilder } from "./transactions/multi-signature";
-import { NFTTransferBuilder, NFTUpdateBuilder } from "./transactions/nft";
+import { NFTMintBuilder, NFTTransferBuilder, NFTUpdateBuilder } from "./transactions/nft";
 import { SecondSignatureBuilder } from "./transactions/second-signature";
 import { TimelockTransferBuilder } from "./transactions/timelock-transfer";
 import { TransferBuilder } from "./transactions/transfer";
@@ -75,17 +75,24 @@ export class TransactionBuilderFactory {
     }
 
     /**
-     * Create a new nft transaction type.
+     * Create a new nft transfer transaction type.
      */
     public nftTransfer(tokenId: string): NFTTransferBuilder {
         return new NFTTransferBuilder(tokenId);
     }
 
     /**
-     * Create a new nft transaction type.
+     * Create a new nft update transaction type.
      */
     public nftUpdate(tokenId: string): NFTUpdateBuilder {
         return new NFTUpdateBuilder(tokenId);
+    }
+
+    /**
+     * Create a new nft mint transaction type.
+     */
+    public nftMint(tokenId: string): NFTMintBuilder {
+        return new NFTMintBuilder(tokenId);
     }
 }
 

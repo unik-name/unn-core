@@ -1,5 +1,5 @@
 {
-    "version": 2,
+    "version": 2.1,
     "jobs": {
         "test-node10-unit": {
             "working_directory": "~/core",
@@ -257,8 +257,11 @@
             ]
         }
     },
+    "orbs": {
+        "slack": "circleci/slack@3.3.0"
+    },
     "workflows": {
-        "version": 2,
+        "version": 2.1,
         "build_and_test": {
             "jobs": ["test-node10-integration-0"]
         }

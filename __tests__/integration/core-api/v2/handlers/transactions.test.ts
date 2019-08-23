@@ -144,6 +144,7 @@ describe("API 2.0 - Transactions", () => {
                         DelegateResignation: 8,
                         NftTransfer: 9,
                         NftUpdate: 10,
+                        NftMint: 11,
                     });
                 });
             },

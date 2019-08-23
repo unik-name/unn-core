@@ -214,8 +214,10 @@ export class IntegrityVerifier {
             if (!builtTokens.includes(nftId)) {
                 let ownerWallet;
                 if (transaction.recipientId) {
+                    // it's nft-transfer
                     ownerWallet = this.walletManager.findByAddress(transaction.recipientId);
                 } else {
+                    // it's nft-mint
                     ownerWallet = this.walletManager.findByPublicKey(transaction.senderPublicKey);
                 }
                 ownerWallet.tokens.push(nftId);

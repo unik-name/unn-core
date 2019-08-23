@@ -53,7 +53,7 @@ export class TransactionsController extends Controller {
             // @ts-ignore
             const data = await request.server.methods.v2.transactions.show(request);
 
-            return super.respondWithCache(data, h);
+            return super.respondWithCache(data, h, true);
         } catch (error) {
             return Boom.badImplementation(error);
         }

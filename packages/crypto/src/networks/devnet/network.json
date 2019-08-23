@@ -19,6 +19,7 @@
         "name": "UNIK",
         "properties": {
             "type": {
+                "genesis": true,
                 "constraints": [
                     "immutable",
                     {

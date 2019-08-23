@@ -8,7 +8,9 @@ export function transformNft(model) {
 }
 
 export function transformNftProperties(model) {
-    return model;
+    return {
+        [model.key]: model.value,
+    };
 }
 
 export function transformNftProperty(model) {

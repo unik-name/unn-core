@@ -46,6 +46,8 @@ export interface ITransactionsRepository extends IRepository {
 
     findAllByWallet(wallet: any, paginate?: SearchPaginate, orderBy?: SearchOrderBy[]): Promise<any>;
 
+    findAllByAsset(asset: any): Promise<any>;
+
     findWithVendorField(): Promise<any>;
 
     /* TODO: Remove with v1 */

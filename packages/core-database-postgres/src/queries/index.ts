@@ -43,6 +43,7 @@ export const queries = {
         forged: loadQueryFile(__dirname, "./transactions/forged.sql"),
         findById: loadQueryFile(__dirname, "./transactions/find-by-id.sql"),
         deleteByBlock: loadQueryFile(__dirname, "./transactions/delete-by-block.sql"),
+        findAllByAsset: loadQueryFile(__dirname, "./transactions/find-by-asset.sql"),
     },
     nfts: {
         findById: loadQueryFile(__dirname, "./nfts/find-by-id.sql"),

@@ -54,6 +54,11 @@ export class TransactionsBusinessRepository implements Database.ITransactionsBus
         return this.mapBlocksToTransactions(result.rows);
     }
 
+    public async findAllByAsset(asset: any) {
+        const transactionsRepository = this.databaseServiceProvider().connection.transactionsRepository;
+        return transactionsRepository.findAllByAsset(asset);
+    }
+
     public async findAllLegacy(parameters: any) {
         throw new Error("This is deprecated in v2");
     }

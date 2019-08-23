@@ -66,7 +66,7 @@ fs.readdir("./packages", (_, packages) => {
                 "command":
                 `if [[ ! $CIRCLE_BRANCH =~ ^feat/nft* ||
                         ( -z $CIRCLE_PULL_REQUEST && 
-                             $CIRCLE_BRANCH =~ ^feat/nft* ) ]] ; then 
+                            ! $CIRCLE_BRANCH =~ ^feat/nft$ ) ]] ; then 
                         echo \"Cancel job\" && 
                         circleci-agent step halt; 
                 fi`

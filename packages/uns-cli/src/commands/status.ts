@@ -15,6 +15,10 @@ export class StatusCommand extends BaseCommand {
         return StatusCommand;
     }
 
+    protected getCommandTechnicalName(): string {
+        return "status";
+    }
+
     protected async do(flags: Record<string, any>) {
         const unsSupply: any = await this.getSupply();
 
@@ -41,7 +45,7 @@ export class StatusCommand extends BaseCommand {
                 return JSON.parse(resp).supply;
             })
             .catch(e => {
-                throw new Error(`[status] Error fetching supply. Caused by ${e}`);
+                throw new Error(`Error fetching supply. Caused by ${e}`);
             });
     }
 
@@ -55,7 +59,7 @@ export class StatusCommand extends BaseCommand {
                 return JSON.parse(resp).meta.count;
             })
             .catch(e => {
-                throw new Error(`[status] Error fetching UNIKs.. Caused by ${e}`);
+                throw new Error(`Error fetching UNIKs.. Caused by ${e}`);
             });
     }
 
@@ -68,12 +72,12 @@ export class StatusCommand extends BaseCommand {
             .then(resp => {
                 const blocks: any[] = JSON.parse(resp).data;
                 if (blocks.length === 0) {
-                    throw new Error("[status] No block found.");
+                    throw new Error("No block found.");
                 }
                 return JSON.parse(resp).data[0].id;
             })
             .catch(e => {
-                throw new Error(`[status] Error fetching blocks.. Caused by ${e}`);
+                throw new Error(`Error fetching blocks.. Caused by ${e}`);
             });
     }
 }

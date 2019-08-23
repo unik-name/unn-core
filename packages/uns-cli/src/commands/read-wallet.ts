@@ -1,9 +1,9 @@
 import { flags } from "@oclif/command";
 import { crypto } from "@uns/crypto";
 import * as req from "request-promise";
-import { BaseCommand } from "../baseCommand";
+import { ReadCommand } from "../readCommand";
 
-export class ReadWalletCommand extends BaseCommand {
+export class ReadWalletCommand extends ReadCommand {
     public static description = "Display UNS wallet informations";
 
     public static examples = [
@@ -11,7 +11,7 @@ export class ReadWalletCommand extends BaseCommand {
     ];
 
     public static flags = {
-        ...BaseCommand.baseFlags,
+        ...ReadCommand.baseFlags,
         publicKey: flags.string({ description: "TODO", exclusive: ["address"] }),
         address: flags.string({ description: "TODO", exclusive: ["publicKey"] }),
         listunik: flags.boolean({ description: "TODO" }),
@@ -21,11 +21,15 @@ export class ReadWalletCommand extends BaseCommand {
         return ReadWalletCommand;
     }
 
+    protected getCommandTechnicalName(): string {
+        return "read-wallet";
+    }
+
     protected async do(flags: Record<string, any>) {
         // Flags exclusivity in controlled by "exclusive" flags attributes, but we can't control requirement on these two flags by design
         if (!flags.publicKey && !flags.address) {
             throw new Error(
-                "[read-wallet] missing required flag. You must at least specify on of these parameters: ['--publicKey', '--address']",
+                "Missing required flag. You must at least specify on of these parameters: ['--publicKey', '--address']",
             );
         }
 
@@ -46,14 +50,7 @@ export class ReadWalletCommand extends BaseCommand {
         this.logAttribute("vote", wallet.vote);
         this.logAttribute("numberOfUNIK", wallet.tokens.length);
 
-        /**
-         * CONTEXT
-         */
-        this.log("\nCONTEXT:");
-        this.logAttribute("network", this.network.name);
-        this.logAttribute("node", this.getCurrentNode());
-        this.logAttribute("readDateTime", wallet.chainmeta.timestamp.human);
-        this.logAttribute("height", wallet.chainmeta.height);
+        this.showContext(wallet.chainmeta);
 
         if (flags.listunik) {
             /**
@@ -85,17 +82,9 @@ export class ReadWalletCommand extends BaseCommand {
             .catch(e => {
                 const error =
                     e.statusCode === 404
-                        ? `[read-wallet] No wallet found with address ${address}.`
-                        : `[read-wallet] Error fetching wallet ${address}. Caused by ${e.message}`;
+                        ? `No wallet found with address ${address}.`
+                        : `Error fetching wallet ${address}. Caused by ${e.message}`;
                 throw new Error(error);
             });
-    }
-
-    private getCurrentNode() {
-        return this.network.url;
-    }
-
-    private logAttribute(label: string, value: string) {
-        this.log(`\t${label}: ${value}`);
     }
 }

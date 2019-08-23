@@ -52,8 +52,8 @@ export class ReadWalletCommand extends BaseCommand {
         this.log("\nCONTEXT:");
         this.logAttribute("network", this.network.name);
         this.logAttribute("node", this.getCurrentNode());
-        this.logAttribute("readDateTime", "TODO");
-        this.logAttribute("height", "TODO");
+        this.logAttribute("readDateTime", wallet.chainmeta.timestamp.human);
+        this.logAttribute("height", wallet.chainmeta.height);
 
         if (flags.listunik) {
             /**
@@ -76,7 +76,11 @@ export class ReadWalletCommand extends BaseCommand {
         return req
             .get(`${this.network.url}/api/v2/wallets/${address}`)
             .then(res => {
-                return JSON.parse(res).data;
+                const walletResponse = JSON.parse(res);
+                return {
+                    ...walletResponse.data,
+                    chainmeta: walletResponse.chainmeta,
+                };
             })
             .catch(e => {
                 const error =

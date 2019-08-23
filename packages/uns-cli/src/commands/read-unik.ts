@@ -42,8 +42,8 @@ export class ReadUnikCommand extends ReadCommand {
         this.logAttribute("creation transaction", creationTransaction.id);
         this.logAttribute("creation date", creationTransaction.timestamp.human);
         this.logAttribute("properties", "");
-        for (const { key, value } of properties.data) {
-            this.logAttribute(`\t${key}`, `${value}`);
+        for (const prop of properties.data) {
+            this.log("\t\t", prop);
         }
 
         this.showContext(unik.chainmeta);

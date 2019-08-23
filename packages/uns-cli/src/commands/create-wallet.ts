@@ -17,6 +17,10 @@ export class CreateWalletCommand extends BaseCommand {
         return CreateWalletCommand;
     }
 
+    protected getCommandTechnicalName(): string {
+        return "create-wallet";
+    }
+
     protected async do(flags: Record<string, any>) {
         const passphrase = generateMnemonic();
         const keys = crypto.getKeys(passphrase);

@@ -1,5 +1,6 @@
 import { Command, flags } from "@oclif/command";
 import { Client, configManager } from "@uns/crypto";
+import delay from "delay";
 import * as req from "request-promise";
 import { NETWORKS } from "./config";
 
@@ -46,13 +47,39 @@ export abstract class BaseCommand extends Command {
 
     protected abstract do(flags: Record<string, any>): Promise<any>;
     protected abstract getCommand(): any;
+    protected abstract getCommandTechnicalName(): string;
+
+    protected logAttribute(label: string, value: string) {
+        this.log(`\t${label}: ${value}`);
+    }
+
+    /**
+     * Tries to get transaction after delay and returns it.
+     * @param transactionId
+     * @param msdelay
+     */
+    protected async getTransaction(transactionId: string, msdelay: number = 0): Promise<any> {
+        await delay(msdelay);
+        return req
+            .get(`${this.network.url}/api/v2/transactions/${transactionId}`)
+            .then(transactionResponse => {
+                const transactionResp = JSON.parse(transactionResponse);
+                return {
+                    ...transactionResp.data,
+                    chainmeta: transactionResp.chainmeta,
+                };
+            })
+            .catch(e => {
+                throw new Error(`[${this.getCommandTechnicalName()}] ${e.message}`);
+            });
+    }
 
     /**
      *
      * @param errorMsg Prompt error and exit command.
      */
     private promptErrAndExit(errorMsg: string): void {
-        this.error(errorMsg);
+        this.error(`[${this.getCommandTechnicalName()}] ${errorMsg}`);
         this.exit(1);
     }
 
@@ -63,7 +90,7 @@ export abstract class BaseCommand extends Command {
                 return JSON.parse(configResponse).data;
             })
             .catch(e => {
-                return { errorMsg: `[create-unik] Error fetching network configuration. Caused by ${e.message}` };
+                return { errorMsg: `Error fetching network configuration. Caused by ${e.message}` };
             });
     }
 }

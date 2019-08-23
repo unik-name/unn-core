@@ -2,7 +2,6 @@ import { color } from "@oclif/color";
 import { flags } from "@oclif/command";
 import { Client, constants, ITransactionData } from "@uns/crypto";
 import cli from "cli-ux";
-import delay from "delay";
 import * as req from "request-promise";
 import { BaseCommand } from "../baseCommand";
 import { FINGERPRINT_API } from "../config";
@@ -26,6 +25,10 @@ export class CreateUnikCommand extends BaseCommand {
 
     protected getCommand(): any {
         return CreateUnikCommand;
+    }
+
+    protected getCommandTechnicalName(): string {
+        return "create-unik";
     }
 
     protected async do(flags: Record<string, any>) {
@@ -120,7 +123,7 @@ export class CreateUnikCommand extends BaseCommand {
                 return unikFingerprintResponse.result;
             })
             .catch(e => {
-                throw new Error(`[create-unik] error computing  UNIK id. Caused by ${e.message}`);
+                throw new Error(`Error computing  UNIK id. Caused by ${e.message}`);
             });
     }
 
@@ -167,33 +170,14 @@ export class CreateUnikCommand extends BaseCommand {
             .post(`${networkUrl}/api/v2/transactions`, requestOptions)
             .then(resp => {
                 const result: any = {};
+                console.log(resp);
                 if (resp.errors) {
-                    result.errorMsg = `[creat-unik] Transaction not accepted. Caused by: ${JSON.stringify(
-                        resp.errors,
-                    )}`;
+                    result.errorMsg = `Transaction not accepted. Caused by: ${JSON.stringify(resp.errors)}`;
                 }
                 return result;
             })
             .catch(e => {
-                throw new Error("[creat-unik] Technical error. Please retry");
-            });
-    }
-
-    /**
-     * Tries to get transaction after delay and returns it.
-     * @param networkUrl
-     * @param transactionId
-     * @param msdelay
-     */
-    private async getTransactionAfterDelay(networkUrl: string, transactionId: string, msdelay: number): Promise<any> {
-        await delay(msdelay);
-        return req
-            .get(`${networkUrl}/api/v2/transactions/${transactionId}`)
-            .then(transactionResponse => {
-                return JSON.parse(transactionResponse).data;
-            })
-            .catch(e => {
-                throw new Error(`[create-unik] ${e.message}`);
+                throw new Error("Technical error. Please retry");
             });
     }
 
@@ -204,9 +188,9 @@ export class CreateUnikCommand extends BaseCommand {
      * @param networkUrl
      */
     private async waitTransactionFirstConfirmation(blockTime: number, transaction: ITransactionData, network: any) {
-        let transactionFromNetwork = await this.getTransactionAfterDelay(network.url, transaction.id, blockTime * 1000);
+        let transactionFromNetwork = await this.getTransaction(transaction.id, blockTime * 1000);
         if (!transactionFromNetwork || transactionFromNetwork.confirmations === 0) {
-            transactionFromNetwork = await this.getTransactionAfterDelay(network.url, transaction.id, blockTime * 1000);
+            transactionFromNetwork = await this.getTransaction(transaction.id, blockTime * 1000);
         }
         return transactionFromNetwork;
     }

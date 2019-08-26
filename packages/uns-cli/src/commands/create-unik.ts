@@ -1,25 +1,27 @@
 import { color } from "@oclif/color";
 import { flags } from "@oclif/command";
-import { Client, constants, ITransactionData } from "@uns/crypto";
+import { ITransactionData } from "@uns/crypto";
 import cli from "cli-ux";
-import * as req from "request-promise";
 import { BaseCommand } from "../baseCommand";
-import { FINGERPRINT_API } from "../config";
+import { getUnikTypesList, UNIK_TYPES } from "../types";
+import { createNFTMintTransaction, getNetworksListListForDescription } from "../utils";
 
 export class CreateUnikCommand extends BaseCommand {
     public static description = "Create UNIK token";
 
     public static examples = [
-        `$ uns create-unik --explicitValue {explicitValue} --type [individual|corporate] --network [devnet|local]`,
+        `$ uns create-unik --explicitValue {explicitValue} --type [${getUnikTypesList().join(
+            "|",
+        )}] --network ${getNetworksListListForDescription()}`,
     ];
 
     public static flags = {
         ...BaseCommand.baseFlags,
         explicitValue: flags.string({ description: "UNIK nft token explicit value", required: true }),
         type: flags.string({
-            description: "UNIK nft type (individual/corporate)",
+            description: "UNIK nft type",
             required: true,
-            options: ["individual", "corporate"],
+            options: getUnikTypesList(),
         }),
     };
 
@@ -41,18 +43,19 @@ export class CreateUnikCommand extends BaseCommand {
          * Compute Fingerprint
          */
         cli.action.start("Computing UNIK fingerprint");
-        const tokenId = await this.computeTokenId(this.network.backend, flags.explicitValue, flags.type);
+        const tokenId = await this.api.computeTokenId(this.api.network.backend, flags.explicitValue, flags.type);
         cli.action.stop();
 
         /**
          * Transaction creation
          */
         cli.action.start("Creating transaction");
-        const transaction: ITransactionData = this.createTransaction(
+        const transaction: ITransactionData = createNFTMintTransaction(
             this.client,
             tokenId,
+            this.getTypeValue(flags.type),
             passphrase,
-            this.netWorkConfiguration.version,
+            this.api.getVersion(),
         );
 
         cli.action.stop();
@@ -61,7 +64,7 @@ export class CreateUnikCommand extends BaseCommand {
          * Transaction broadcast
          */
         cli.action.start("Sending transaction");
-        await this.sendTransaction(transaction, this.network.url);
+        await this.api.sendTransaction(transaction);
         cli.action.stop();
 
         /**
@@ -69,24 +72,20 @@ export class CreateUnikCommand extends BaseCommand {
          */
         cli.action.start("Waiting for transaction confirmation");
         const transactionFromNetwork = await this.waitTransactionFirstConfirmation(
-            this.netWorkConfiguration.constants.blocktime,
+            this.api.getBlockTime(),
             transaction,
-            this.network,
+            this.api.network,
         );
         cli.action.stop();
 
         /**
          * Result prompt
          */
-        const transactionUrl = color.cyanBright(`${this.network.explorer}/transaction/${transaction.id}`);
+        const transactionUrl = color.cyanBright(`${this.api.getExplorerUrl()}/transaction/${transaction.id}`);
         if (transactionFromNetwork) {
-            const tokenUrl = color.cyanBright(
-                `${this.network.explorer}/uniks/${transactionFromNetwork.asset.nft.tokenId}`,
-            );
+            const tokenUrl = color.cyanBright(`${this.api.getExplorerUrl()}/uniks/${tokenId}`);
             const confirmations = color.green(`${transactionFromNetwork.confirmations} confirmation(s)`);
-            this.log(
-                `UNIK nft created (${confirmations}): ${transactionFromNetwork.asset.nft.tokenId} [ ${tokenUrl} ]`,
-            );
+            this.log(`UNIK nft created (${confirmations}): ${tokenId} [ ${tokenUrl} ]`);
             this.log(`See transaction in explorer: ${transactionUrl}`);
         } else {
             this.log(
@@ -96,112 +95,20 @@ export class CreateUnikCommand extends BaseCommand {
     }
 
     /**
-     * Provides UNIK nft fingerprint from type and explicit value
-     * @param networkName
-     * @param explicitValue
-     * @param type
-     */
-    private computeTokenId(backendUrl: string, explicitValue: string, type: string) {
-        const fingerprintUrl = backendUrl + FINGERPRINT_API;
-        const fingerPrintBody = {
-            type,
-            explicitIdentifier: explicitValue,
-        };
-
-        const requestOptions = {
-            body: fingerPrintBody,
-            headers: {
-                "Content-Type": "application/json",
-                "api-version": 2,
-            },
-            json: true,
-        };
-
-        return req
-            .post(fingerprintUrl, requestOptions)
-            .then(unikFingerprintResponse => {
-                return unikFingerprintResponse.result;
-            })
-            .catch(e => {
-                throw new Error(`Error computing  UNIK id. Caused by ${e.message}`);
-            });
-    }
-
-    /**
-     * Create transaction structure
-     * @param client
-     * @param tokenId
-     * @param passphrase
-     * @param networkVerion
-     */
-    private createTransaction(
-        client: Client,
-        tokenId: string,
-        passphrase: string,
-        networkVerion: number,
-    ): ITransactionData {
-        return client
-            .getBuilder()
-            .nftTransfer(tokenId)
-            .fee(this.toSatoshi(client.getFeeManager().get(constants.TransactionTypes.NftTransfer)))
-            .network(networkVerion)
-            .sign(passphrase)
-            .getStruct();
-    }
-
-    /**
-     * Broadcast transaction
-     * @param transaction
-     * @param networkUrl
-     */
-    private async sendTransaction(transaction: ITransactionData, networkUrl: string): Promise<any> {
-        const requestOptions = {
-            body: {
-                transactions: [transaction],
-            },
-            headers: {
-                "api-version": 2,
-                "Content-Type": "application/json",
-            },
-            json: true,
-        };
-
-        return req
-            .post(`${networkUrl}/api/v2/transactions`, requestOptions)
-            .then(resp => {
-                const result: any = {};
-                console.log(resp);
-                if (resp.errors) {
-                    result.errorMsg = `Transaction not accepted. Caused by: ${JSON.stringify(resp.errors)}`;
-                }
-                return result;
-            })
-            .catch(e => {
-                throw new Error("Technical error. Please retry");
-            });
-    }
-
-    /**
      *
      * @param blockTime Wait until transaction has at least 1 confirmation
      * @param transactionId
      * @param networkUrl
      */
     private async waitTransactionFirstConfirmation(blockTime: number, transaction: ITransactionData, network: any) {
-        let transactionFromNetwork = await this.getTransaction(transaction.id, blockTime * 1000);
+        let transactionFromNetwork = await this.api.getTransaction(transaction.id, blockTime * 1000);
         if (!transactionFromNetwork || transactionFromNetwork.confirmations === 0) {
-            transactionFromNetwork = await this.getTransaction(transaction.id, blockTime * 1000);
+            transactionFromNetwork = await this.api.getTransaction(transaction.id, blockTime * 1000);
         }
         return transactionFromNetwork;
     }
 
-    // UTILS
-
-    /**
-     *
-     * @param value Transform value to satoshi number
-     */
-    private toSatoshi(value: number): string {
-        return `${value * 100000000}`;
+    private getTypeValue(tokenType): string {
+        return `${UNIK_TYPES[tokenType].code}`;
     }
 }

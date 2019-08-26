@@ -14,7 +14,7 @@
         "@oclif/command": "^1.5.11",
         "@oclif/config": "^1.12.9",
         "@oclif/plugin-help": "^2.1.6",
-        "@uns/crypto": "^2.3.22-5",
+        "@uns/crypto": "^2.3.22-6",
         "cli-ux": "^5.3.1",
         "delay": "^4.1.0",
         "promised-entropy": "^0.1.0",

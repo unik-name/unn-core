@@ -1,7 +1,7 @@
 {
     "name": "@uns/core-logger-signale",
     "description": "Signale integration for UNS Core",
-    "version": "2.3.22-5",
+    "version": "2.3.22-6",
     "contributors": [
         "Brian Faust <brian@ark.io>",
         "Guillaume Nicolas <guillaume@spacelephant.org>"
@@ -20,8 +20,8 @@
         "clean": "del dist"
     },
     "dependencies": {
-        "@uns/core-interfaces": "^2.3.22-5",
-        "@uns/core-logger": "^2.3.22-5",
+        "@uns/core-interfaces": "^2.3.22-6",
+        "@uns/core-logger": "^2.3.22-6",
         "signale": "^1.4.0"
     },
     "publishConfig": {

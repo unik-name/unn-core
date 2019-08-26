@@ -7,13 +7,9 @@ export abstract class ReadCommand extends BaseCommand {
          * CONTEXT
          */
         this.log("\nCONTEXT:");
-        this.logAttribute("network", this.network.name);
-        this.logAttribute("node", this.getCurrentNode());
+        this.logAttribute("network", this.api.network.name);
+        this.logAttribute("node", this.api.getCurrentNode());
         this.logAttribute("readDateTime", chainmeta.timestamp.human);
         this.logAttribute("height", chainmeta.height);
-    }
-
-    private getCurrentNode() {
-        return this.network.url;
     }
 }

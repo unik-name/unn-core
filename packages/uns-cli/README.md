@@ -92,11 +92,28 @@ _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.2.0
 
 <!-- commandsstop -->
 
-# Release publish
+# Developers
+
+## Build
 
 ```bash
-npm version (major|minor|patch) # bumps version, updates README, adds git tag
-npm publish
-npm install -g @uns/uns-cli
-uns
+yarn build
+```
+
+## Uglify
+
+```bash
+yarn uglify
+```
+
+## Run locally
+
+```bash
+./bin/run COMMAND ...
+```
+
+# Release & publish UNS CLI on npm registry
+
+```bash
+yarn publishLib
 ```

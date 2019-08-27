@@ -1,6 +1,8 @@
 import { color } from "@oclif/color";
 import { crypto } from "@uns/crypto";
 import { generateMnemonic } from "bip39";
+import { createHash, randomBytes } from "crypto";
+import * as MoreEntropy from "promised-entropy";
 import { BaseCommand } from "../baseCommand";
 import { getNetworksListListForDescription } from "../utils";
 
@@ -22,7 +24,7 @@ export class CreateWalletCommand extends BaseCommand {
     }
 
     protected async do(flags: Record<string, any>) {
-        const passphrase = generateMnemonic();
+        const passphrase = await this.randomMnemonicSeed(128);
         const keys = crypto.getKeys(passphrase);
         const address = crypto.getAddress(keys.publicKey, this.api.network.version);
         const wallet = {
@@ -43,5 +45,17 @@ export class CreateWalletCommand extends BaseCommand {
         );
 
         this.log(jsonWallet);
+    }
+
+    private async randomMnemonicSeed(nbBits: number) {
+        const bytes = Math.ceil(nbBits / 8);
+        const hudgeEntropy: number[] = await MoreEntropy.promisedEntropy(nbBits);
+        const seed = randomBytes(bytes);
+        const entropy = createHash("sha256")
+            .update(Buffer.from(new Int32Array(hudgeEntropy).buffer))
+            .update(seed)
+            .digest()
+            .slice(0, bytes);
+        return generateMnemonic(nbBits, rgn => entropy);
     }
 }

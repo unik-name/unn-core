@@ -22,6 +22,10 @@ export class RollbackCommand extends BaseCommand {
     public async run(): Promise<void> {
         const { flags } = await this.parseWithNetwork(RollbackCommand);
 
+        if (flags.height !== 1) {
+            this.error("You can't rollback to another height than 1");
+        }
+
         await setUpLite(flags);
 
         if (!app.has("snapshots")) {

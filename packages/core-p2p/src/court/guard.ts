@@ -163,9 +163,11 @@ export class Guard {
             return false;
         }
 
-        return this.config
-            .get("minimumVersions")
-            .some((minimumVersion: string) => semver.satisfies(version, minimumVersion));
+        const minimumVersions = this.config.get("minimumVersions");
+
+        return minimumVersions.length > 0
+            ? minimumVersions.some((minimumVersion: string) => semver.satisfies(version, minimumVersion))
+            : true;
     }
 
     /**

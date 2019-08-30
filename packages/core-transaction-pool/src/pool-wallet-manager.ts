@@ -59,7 +59,7 @@ export class PoolWalletManager extends WalletManager {
                 await transactionHandler.canBeApplied(transaction, sender, this.databaseService.walletManager);
             } catch (error) {
                 const message = `[PoolWalletManager] Can't apply transaction ${transaction.id} from ${sender.address}`;
-                this.logger.error(`${message} due to ${JSON.stringify(error.message)}`);
+                this.logger.debug(`${message} due to ${JSON.stringify(error.message)}`);
                 errors.unshift(error.message);
             }
         }

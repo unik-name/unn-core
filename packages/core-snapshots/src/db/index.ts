@@ -64,6 +64,8 @@ export class Database {
                         height: lastRemainingBlock.height,
                     }),
                     this.db.none(queries.rounds.deleteFromRound, { round }),
+                    this.db.none(queries.truncate("nfts")),
+                    this.db.none(queries.truncate("nftproperties")),
                 ]);
             }
         } catch (error) {

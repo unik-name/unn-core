@@ -2643,6 +2643,36 @@
   resolved "https://registry.yarnpkg.com/@tyriar/fibonacci-heap/-/fibonacci-heap-2.0.9.tgz#df3dcbdb1b9182168601f6318366157ee16666e9"
   integrity sha512-bYuSNomfn4hu2tPiDN+JZtnzCpSpbJ/PNeulmocDy3xN2X5OkJL65zo6rPZp65cPPhLF9vfT/dgE+RtFRCSxOA==
 
+"@uns/crypto@^2.3.22-6":
+  version "2.3.22-6"
+  resolved "https://registry.yarnpkg.com/@uns/crypto/-/crypto-2.3.22-6.tgz#e28daadc086bbdc269af5306adf52ef098d5c472"
+  integrity sha512-2t5FEwkXU85YCf/Q/s8mzl6o4hwTNKwkk/ede9c0E9AlmWDJeebYumT/TZDhkwKqNzPhNrfYtxNX9DgBW6LLJA==
+  dependencies:
+    "@faustbrian/dato" "^0.2.0"
+    ajv "^6.10.0"
+    ajv-keywords "^3.4.0"
+    bcrypto "^3.0.2"
+    bignumber.js "^8.1.1"
+    bip32 "^1.0.2"
+    bip39 "^2.5.0"
+    browserify-aes "^1.2.0"
+    bs58check "^2.1.2"
+    buffer-xor "^2.0.2"
+    bytebuffer "^5.0.1"
+    create-hash "^1.2.0"
+    deepmerge "^3.2.0"
+    joi "^14.3.1"
+    lodash.camelcase "^4.3.0"
+    lodash.get "^4.4.2"
+    lodash.set "^4.3.2"
+    lodash.sumby "^4.6.0"
+    node-forge "^0.8.1"
+    otplib "^10.0.1"
+    pluralize "^7.0.0"
+    secp256k1 "^3.6.2"
+    tiny-glob "^0.2.6"
+    wif "^2.0.6"
+
 "@webassemblyjs/ast@1.8.5":
   version "1.8.5"
   resolved "https://registry.yarnpkg.com/@webassemblyjs/ast/-/ast-1.8.5.tgz#51b1c5fe6576a34953bf4b253df9f0d490d9e359"

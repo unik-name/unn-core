@@ -1,7 +1,7 @@
 import { TransactionTypes } from "../../../constants";
 import { AbstractNFTUpdateBuilder } from "./abstract-nft-update";
 
-export class NFTUpdateBuilder extends AbstractNFTUpdateBuilder {
+export class NFTUpdateBuilder extends AbstractNFTUpdateBuilder<NFTUpdateBuilder> {
     protected instance(): NFTUpdateBuilder {
         return this;
     }

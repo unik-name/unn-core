@@ -60,19 +60,6 @@ fs.readdir("./packages", (_, packages) => {
 
     // Add step on all jobs to filter commits and slack notification
     Object.keys(config.jobs).forEach(jobKey=>{
-        const FILTER_BRANCH = {
-            "run":{
-                "name":"Check if commit must be built",
-                "command":
-                `if [[ ! $CIRCLE_BRANCH =~ ^feat/nft* ||
-                        ( -z $CIRCLE_PULL_REQUEST && 
-                             $CIRCLE_BRANCH =~ ^feat/nft* ) ]] ; then 
-                        echo \"Cancel job\" && 
-                        circleci-agent step halt; 
-                fi`
-            }
-        };
-
         const FINAL_STEPS = [
             {
                 "slack/status": {
@@ -84,7 +71,7 @@ fs.readdir("./packages", (_, packages) => {
         ]
         
         let job = config.jobs[jobKey];
-        job.steps = pushAfter(job.steps,"save_cache",FILTER_BRANCH).concat(FINAL_STEPS);
+        job.steps = job.steps.concat(FINAL_STEPS);
 
         config.jobs[jobKey] = job;
     });

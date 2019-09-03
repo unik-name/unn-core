@@ -46,8 +46,8 @@ export class TransactionFactory {
         );
     }
 
-    public static nftMint(tokenId: string): TransactionFactory {
-        return new TransactionFactory(transactionBuilder.nftMint(tokenId));
+    public static nftMint(tokenId: string, properties: { [_: string]: string } = { type: "1" }): TransactionFactory {
+        return new TransactionFactory(transactionBuilder.nftMint(tokenId).properties(properties));
     }
 
     private builder: any;

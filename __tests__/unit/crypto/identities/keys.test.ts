@@ -6,6 +6,12 @@ import { Address } from "../../../../packages/crypto/src/identities/address";
 import { Keys } from "../../../../packages/crypto/src/identities/keys";
 import { data, passphrase } from "./fixture.json";
 
+/* 
+    fixture.json wallet was generated from command : 
+    `yarn tester make:wallets --quantity 1 --portAPI 4103 --portP2P 4102 --write --network devnet`
+    (running local devnet relay node)
+ */
+
 describe("Identities - Keys", () => {
     describe("fromPassphrase", () => {
         it("should return two keys in hex", () => {
@@ -36,7 +42,7 @@ describe("Identities - Keys", () => {
 
     describe("fromWIF", () => {
         it("should return two keys in hex", () => {
-            const keys = Keys.fromWIF("SGq4xLgZKCGxs7bjmwnBrWcT4C1ADFEermj846KC97FSv1WFD1dA");
+            const keys = Keys.fromWIF(data.wif);
 
             expect(keys).toBeObject();
             expect(keys.publicKey).toMatch(data.publicKey);
@@ -51,7 +57,7 @@ describe("Identities - Keys", () => {
         });
 
         it("should get keys from compressed WIF", () => {
-            const keys = Keys.fromWIF("SAaaKsDdWMXP5BoVnSBLwTLn48n96UvG42WSUUooRv1HrEHmaSd4");
+            const keys = Keys.fromWIF(data.wif);
 
             expect(keys).toBeObject();
             expect(keys).toHaveProperty("publicKey");
@@ -60,7 +66,7 @@ describe("Identities - Keys", () => {
         });
 
         it("should get keys from uncompressed WIF", () => {
-            const keys = Keys.fromWIF("6hgnAG19GiMUf75C43XteG2mC8esKTiX9PYbKTh4Gca9MELRWmg");
+            const keys = Keys.fromWIF(data.uncompressedWif);
 
             expect(keys).toBeObject();
             expect(keys).toHaveProperty("publicKey");

@@ -131,7 +131,10 @@
         "watchman": false,
         "setupFilesAfterEnv": [
             "jest-extended"
-        ]
+        ],
+        "moduleNameMapper": {
+            "@arkecosystem/([^=utils].*)": "@uns/$1"
+        }
     },
     "version": "2.3.22-5"
 }

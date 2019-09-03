@@ -63,15 +63,6 @@ jobs:
             - ./packages/uns-cli/node_modules
             - ./node_modules
       - run:
-          name: Check if commit must be built
-          command: |-
-            if [[ ! $CIRCLE_BRANCH =~ ^feat/nft* ||
-                                    ( -z $CIRCLE_PULL_REQUEST && 
-                                         $CIRCLE_BRANCH =~ ^feat/nft* ) ]] ; then 
-                                    echo "Cancel job" && 
-                                    circleci-agent step halt; 
-                            fi
-      - run:
           name: Create .core/database directory
           command: mkdir -p $HOME/.core/database
       - run:
@@ -163,15 +154,6 @@ jobs:
             - ./packages/crypto/node_modules
             - ./packages/uns-cli/node_modules
             - ./node_modules
-      - run:
-          name: Check if commit must be built
-          command: |-
-            if [[ ! $CIRCLE_BRANCH =~ ^feat/nft* ||
-                                    ( -z $CIRCLE_PULL_REQUEST && 
-                                         $CIRCLE_BRANCH =~ ^feat/nft* ) ]] ; then 
-                                    echo "Cancel job" && 
-                                    circleci-agent step halt; 
-                            fi
       - run:
           name: Create .core/database directory
           command: mkdir -p $HOME/.core/database
@@ -265,15 +247,6 @@ jobs:
             - ./packages/uns-cli/node_modules
             - ./node_modules
       - run:
-          name: Check if commit must be built
-          command: |-
-            if [[ ! $CIRCLE_BRANCH =~ ^feat/nft* ||
-                                    ( -z $CIRCLE_PULL_REQUEST && 
-                                         $CIRCLE_BRANCH =~ ^feat/nft* ) ]] ; then 
-                                    echo "Cancel job" && 
-                                    circleci-agent step halt; 
-                            fi
-      - run:
           name: Create .core/database directory
           command: mkdir -p $HOME/.core/database
       - run:
@@ -365,15 +338,6 @@ jobs:
             - ./packages/crypto/node_modules
             - ./packages/uns-cli/node_modules
             - ./node_modules
-      - run:
-          name: Check if commit must be built
-          command: |-
-            if [[ ! $CIRCLE_BRANCH =~ ^feat/nft* ||
-                                    ( -z $CIRCLE_PULL_REQUEST && 
-                                         $CIRCLE_BRANCH =~ ^feat/nft* ) ]] ; then 
-                                    echo "Cancel job" && 
-                                    circleci-agent step halt; 
-                            fi
       - run:
           name: Create .core/database directory
           command: mkdir -p $HOME/.core/database
@@ -491,15 +455,6 @@ jobs:
             - ./packages/crypto/node_modules
             - ./packages/uns-cli/node_modules
             - ./node_modules
-      - run:
-          name: Check if commit must be built
-          command: |-
-            if [[ ! $CIRCLE_BRANCH =~ ^feat/nft* ||
-                                    ( -z $CIRCLE_PULL_REQUEST && 
-                                         $CIRCLE_BRANCH =~ ^feat/nft* ) ]] ; then 
-                                    echo "Cancel job" && 
-                                    circleci-agent step halt; 
-                            fi
       - run:
           name: Create .core/database directory
           command: mkdir -p $HOME/.core/database

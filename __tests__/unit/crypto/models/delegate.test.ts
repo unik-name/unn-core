@@ -2,6 +2,7 @@ import "jest-extended";
 
 import { Delegate } from "../../../../packages/crypto/src/models/delegate";
 import { INetwork, testnet } from "../../../../packages/crypto/src/networks";
+import { configManager } from "../../../../packages/crypto/src/managers/config";
 import { ITransactionData } from "../../../../packages/crypto/src/transactions";
 import { Bignum } from "../../../../packages/crypto/src/utils";
 import { sortTransactions } from "../../../../packages/crypto/src/utils";
@@ -169,6 +170,8 @@ describe("Models - Delegate", () => {
             totalFee: new Bignum(transactions[0].fee),
             reward: new Bignum(optionsDefault.reward),
         };
+
+        configManager.setFromPreset("testnet");
 
         it("should forge a block", () => {
             const delegate = new Delegate(dummy.plainPassphrase, testnet.network);

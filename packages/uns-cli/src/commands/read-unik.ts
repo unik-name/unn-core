@@ -1,4 +1,6 @@
 import { flags } from "@oclif/command";
+import { BaseCommand } from "../baseCommand";
+import { CommandOutput } from "../formater";
 import { ReadCommand } from "../readCommand";
 import { getNetworksListListForDescription } from "../utils";
 
@@ -12,7 +14,7 @@ export class ReadUnikCommand extends ReadCommand {
         unikid: flags.string({ description: "Token id to read", required: true }),
     };
 
-    protected getCommand() {
+    protected getCommand(): typeof BaseCommand {
         return ReadUnikCommand;
     }
 
@@ -20,7 +22,7 @@ export class ReadUnikCommand extends ReadCommand {
         return "read-unik";
     }
 
-    protected async do(flags: Record<string, any>) {
+    protected async do(flags: Record<string, any>): Promise<CommandOutput> {
         const unik: any = await this.api.getUnikById(flags.unikid);
         const properties: any = await this.api.getUnikProperties(flags.unikid);
         const creationTransaction = await this.api.getTransaction(unik.transactions.first.id);
@@ -46,5 +48,6 @@ export class ReadUnikCommand extends ReadCommand {
         }
 
         this.showContext(unik.chainmeta);
+        return {};
     }
 }

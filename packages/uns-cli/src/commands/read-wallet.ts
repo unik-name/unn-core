@@ -1,4 +1,6 @@
 import { flags } from "@oclif/command";
+import { BaseCommand } from "../baseCommand";
+import { CommandOutput } from "../formater";
 import { ReadCommand } from "../readCommand";
 import { getNetworksListListForDescription } from "../utils";
 
@@ -18,7 +20,7 @@ export class ReadWalletCommand extends ReadCommand {
         listunik: flags.boolean({ description: "List UNIK tokens owned by the wallet, if any." }),
     };
 
-    protected getCommand() {
+    protected getCommand(): typeof BaseCommand {
         return ReadWalletCommand;
     }
 
@@ -26,7 +28,7 @@ export class ReadWalletCommand extends ReadCommand {
         return "read-wallet";
     }
 
-    protected async do(flags: Record<string, any>) {
+    protected async do(flags: Record<string, any>): Promise<CommandOutput> {
         const wallet: any = await this.api.getWallet(flags.idwallet);
 
         /**
@@ -55,5 +57,6 @@ export class ReadWalletCommand extends ReadCommand {
                 });
             }
         }
+        return {};
     }
 }

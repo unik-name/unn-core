@@ -1,5 +1,6 @@
 import { flags } from "@oclif/command";
 import { BaseCommand } from "../baseCommand";
+import { CommandOutput } from "../formater";
 import { getNetworksListListForDescription } from "../utils";
 
 export class GetPropertiesCommand extends BaseCommand {
@@ -22,7 +23,7 @@ export class GetPropertiesCommand extends BaseCommand {
         }),
     };
 
-    protected getCommand() {
+    protected getCommand(): typeof BaseCommand {
         return GetPropertiesCommand;
     }
 
@@ -30,7 +31,7 @@ export class GetPropertiesCommand extends BaseCommand {
         return "get-properties";
     }
 
-    protected async do(flags: Record<string, any>) {
+    protected async do(flags: Record<string, any>): Promise<CommandOutput> {
         const unik = await this.api.getUnikById(flags.unikid);
         const lastTransaction = await this.api.getTransaction(unik.transactions.last.id);
         const properties: any = await this.api.getUnikProperties(flags.unikid);
@@ -51,5 +52,6 @@ export class GetPropertiesCommand extends BaseCommand {
             this.log("\t\t", prop);
         }
         this.logAttribute("confirmations", lastTransaction.confirmations);
+        return {};
     }
 }

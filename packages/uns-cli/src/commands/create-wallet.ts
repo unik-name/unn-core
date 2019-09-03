@@ -1,9 +1,11 @@
 import { color } from "@oclif/color";
+import Command from "@oclif/command";
 import { crypto } from "@uns/crypto";
 import { generateMnemonic } from "bip39";
 import { createHash, randomBytes } from "crypto";
 import * as MoreEntropy from "promised-entropy";
 import { BaseCommand } from "../baseCommand";
+import { CommandOutput } from "../formater";
 import { getNetworksListListForDescription } from "../utils";
 
 export class CreateWalletCommand extends BaseCommand {
@@ -15,7 +17,7 @@ export class CreateWalletCommand extends BaseCommand {
         ...BaseCommand.baseFlags,
     };
 
-    protected getCommand() {
+    protected getCommand(): typeof BaseCommand {
         return CreateWalletCommand;
     }
 
@@ -23,7 +25,7 @@ export class CreateWalletCommand extends BaseCommand {
         return "create-wallet";
     }
 
-    protected async do(flags: Record<string, any>) {
+    protected async do(flags: Record<string, any>): Promise<CommandOutput> {
         const passphrase = await this.randomMnemonicSeed(128);
         const keys = crypto.getKeys(passphrase);
         const address = crypto.getAddress(keys.publicKey, this.api.network.version);
@@ -45,6 +47,7 @@ export class CreateWalletCommand extends BaseCommand {
         );
 
         this.log(jsonWallet);
+        return {};
     }
 
     private async randomMnemonicSeed(nbBits: number) {

@@ -3,6 +3,7 @@ import { flags } from "@oclif/command";
 import { ITransactionData } from "@uns/crypto";
 import cli from "cli-ux";
 import { BaseCommand } from "../baseCommand";
+import { CommandOutput } from "../formater";
 import { getUnikTypesList, UNIK_TYPES } from "../types";
 import {
     createNFTMintTransaction,
@@ -31,7 +32,7 @@ export class CreateUnikCommand extends BaseCommand {
         ...passphraseFlag,
     };
 
-    protected getCommand(): any {
+    protected getCommand(): typeof BaseCommand {
         return CreateUnikCommand;
     }
 
@@ -39,7 +40,7 @@ export class CreateUnikCommand extends BaseCommand {
         return "create-unik";
     }
 
-    protected async do(flags: Record<string, any>) {
+    protected async do(flags: Record<string, any>): Promise<CommandOutput> {
         /**
          * Get passphrase
          */
@@ -105,6 +106,7 @@ export class CreateUnikCommand extends BaseCommand {
                 `Transaction not found yet, the network can be slow. Check this url in a while: ${transactionUrl}`,
             );
         }
+        return {};
     }
 
     private getTypeValue(tokenType): string {

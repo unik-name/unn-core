@@ -1,5 +1,6 @@
 import { flags } from "@oclif/parser";
 import { BaseCommand } from "../baseCommand";
+import { CommandOutput } from "../formater";
 import {
     checkPassphraseFormat,
     checkUnikIdFormat,
@@ -46,7 +47,7 @@ export class SetPropertiesCommand extends BaseCommand {
         }),
     };
 
-    protected getCommand() {
+    protected getCommand(): typeof BaseCommand {
         return SetPropertiesCommand;
     }
 
@@ -54,7 +55,7 @@ export class SetPropertiesCommand extends BaseCommand {
         return "set-properties";
     }
 
-    protected async do(flags: Record<string, any>) {
+    protected async do(flags: Record<string, any>): Promise<CommandOutput> {
         // Check flags consistency
         if (flags.await <= flags.confirmations) {
             throw new Error(
@@ -103,6 +104,8 @@ export class SetPropertiesCommand extends BaseCommand {
         this.log("\nunikid: ", flags.unikid);
         this.log("transaction: ", finalTransaction.id);
         this.log("confirmations: ", finalTransaction.confirmations);
+
+        return {};
     }
 
     private parseProperties(props: string[]): { [_: string]: string } {

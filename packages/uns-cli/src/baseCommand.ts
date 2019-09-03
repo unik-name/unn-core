@@ -1,13 +1,14 @@
-import { Command, flags } from "@oclif/command";
+import { Command, flags as oFlags } from "@oclif/command";
 import { Client, configManager } from "@uns/crypto";
 import { UNSCLIAPI } from "./api";
+import { CommandOutput, Formater, getFormatFlag, OUTPUT_FORMAT } from "./formater";
 import * as UTILS from "./utils";
 
 export abstract class BaseCommand extends Command {
     public static baseFlags = {
-        help: flags.help({ char: "h" }),
-        network: flags.string({
-            description: "Network on which to run the command.",
+        help: oFlags.help({ char: "h" }),
+        network: oFlags.string({
+            description: "Network used to create UNIK nft token (local are for development only)",
             required: true,
             options: UTILS.getNetworksList(),
         }),
@@ -16,8 +17,17 @@ export abstract class BaseCommand extends Command {
     protected client: Client;
     protected api;
 
+    private formater;
+
     public async run() {
+        // Add dynamic format flag
+        Object.assign(this.getCommand().flags, getFormatFlag(this.getDefaultFormat(), this.getAvailableFormats()));
+
         const { flags } = this.parse(this.getCommand());
+
+        // Set formater
+        this.formater = OUTPUT_FORMAT[flags.format];
+
         /**
          * Configuration
          */
@@ -32,14 +42,24 @@ export abstract class BaseCommand extends Command {
         this.client = new Client(networkPreset);
 
         try {
-            await this.do(flags);
+            const result = await this.do(flags);
+            if (result && Object.keys(result).length > 0) {
+                this.log(this.formater && this.formater.action ? this.formater.action(result) : result);
+            }
         } catch (globalCatchException) {
             this.promptErrAndExit(globalCatchException.message);
         }
     }
 
-    protected abstract do(flags: Record<string, any>): Promise<any>;
-    protected abstract getCommand(): any;
+    protected getAvailableFormats(): Formater[] {
+        return [OUTPUT_FORMAT.json];
+    }
+
+    protected getDefaultFormat(): Formater {
+        return OUTPUT_FORMAT.json;
+    }
+    protected abstract do(flags: Record<string, any>): Promise<CommandOutput>;
+    protected abstract getCommand(): typeof BaseCommand;
     protected abstract getCommandTechnicalName(): string;
 
     protected logAttribute(label: string, value: string) {

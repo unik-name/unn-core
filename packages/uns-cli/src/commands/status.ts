@@ -1,5 +1,5 @@
-import { color } from "@oclif/color";
 import { BaseCommand } from "../baseCommand";
+import { CommandOutput, Formater, OUTPUT_FORMAT } from "../formater";
 
 export class StatusCommand extends BaseCommand {
     public static description = "Display blockchain status";
@@ -10,7 +10,15 @@ export class StatusCommand extends BaseCommand {
         ...BaseCommand.baseFlags,
     };
 
-    protected getCommand(): any {
+    protected getAvailableFormats(): Formater[] {
+        return [OUTPUT_FORMAT.json, OUTPUT_FORMAT.yaml, OUTPUT_FORMAT.table];
+    }
+
+    protected getDefaultFormat(): Formater {
+        return OUTPUT_FORMAT.json;
+    }
+
+    protected getCommand(): typeof BaseCommand {
         return StatusCommand;
     }
 
@@ -18,19 +26,23 @@ export class StatusCommand extends BaseCommand {
         return "status";
     }
 
-    protected async do(flags: Record<string, any>) {
+    protected async do(flags: Record<string, any>): Promise<CommandOutput> {
         const unsSupply: any = await this.api.getSupply();
 
         const uniks: any = await this.api.getUniks();
 
         const currentHeight = await this.api.getCurrentHeight();
-        const blockUrl = color.cyanBright(`${this.api.getExplorerUrl()}/block/${currentHeight}`);
+        const blockUrl = `${this.api.getExplorerUrl()}/block/${currentHeight}`;
 
-        this.log("Height: ", currentHeight);
-        this.log("Network: ", flags.network);
-        this.log(`Supply ${this.api.getToken()}: `, `${this.fromSatoshi(unsSupply)} ${this.api.getToken()}`);
-        this.log(`Supply UNIKs: `, `${uniks} UNIKs`);
-        this.log("Active delegates: ", this.api.getActiveDelegates());
-        this.log("Last block: ", blockUrl);
+        const result = {
+            Height: currentHeight,
+            Network: flags.network,
+        };
+        result[`Supply ${this.api.getToken()}`] = `${this.fromSatoshi(unsSupply)} ${this.api.getToken()}`;
+        result["Supply UNIKs"] = `${uniks} UNIKs`;
+        result["Active delegates"] = this.api.getActiveDelegates();
+        result["Last block"] = blockUrl;
+
+        return result;
     }
 }

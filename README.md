@@ -1,4 +1,7 @@
-# Ark Core - with Non fungible tokens
+# UNS core
+
+[![CircleCI](https://circleci.com/gh/spacelephant/uns-core.svg?style=svg)](https://circleci.com/gh/spacelephant/uns-core)
+[![codecov](https://codecov.io/gh/spacelephant/uns-core/branch/private%2Fdevelop/graph/badge.svg?token=bjar5IflF0)](https://codecov.io/gh/spacelephant/uns-core)
 
 ## Introduction
 

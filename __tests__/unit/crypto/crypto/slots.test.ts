@@ -41,17 +41,17 @@ describe("Slots", () => {
 
     describe("beginEpochTime", () => {
         it("return epoch datetime", () => {
-            expect(slots.beginEpochTime().toISO()).toBe("2017-03-21T13:00:00.000Z");
+            expect(slots.beginEpochTime().toISO()).toBe("2019-02-19T15:14:14.000Z");
         });
 
         it("return epoch unix", () => {
-            expect(slots.beginEpochTime().toUnix()).toBe(1490101200);
+            expect(slots.beginEpochTime().toUnix()).toBe(1550589254);
         });
     });
 
     describe("getTime", () => {
         it("return epoch time as number", () => {
-            const result = slots.getTime(1490101210000);
+            const result = slots.getTime(1550589264000);
 
             expect(result).toBeNumber();
             expect(result).toEqual(10);
@@ -60,7 +60,7 @@ describe("Slots", () => {
 
     describe("getRealTime", () => {
         it("return real time", () => {
-            expect(slots.getRealTime(10)).toBe(1490101210000);
+            expect(slots.getRealTime(10)).toBe(1550589264000);
         });
 
         it("should call this.getTime when called without time", () => {

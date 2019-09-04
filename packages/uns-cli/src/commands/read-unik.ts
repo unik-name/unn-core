@@ -25,12 +25,11 @@ export class ReadUnikCommand extends ReadCommand {
         const properties: any = await this.api.getUnikProperties(flags.unikid);
         const creationTransaction = await this.api.getTransaction(unik.transactions.first.id);
 
-        if (
-            unik.chainmeta.height !== properties.chainmeta.height ||
-            unik.chainmeta.height !== creationTransaction.chainmeta.height
-        ) {
-            throw new Error("Data consistency error. Please retry.");
-        }
+        this.checkDataConsistency(
+            unik.chainmeta.height,
+            properties.chainmeta.height,
+            creationTransaction.chainmeta.height,
+        );
 
         /**
          * WALLET

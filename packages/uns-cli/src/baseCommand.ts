@@ -7,7 +7,7 @@ export abstract class BaseCommand extends Command {
     public static baseFlags = {
         help: flags.help({ char: "h" }),
         network: flags.string({
-            description: "Network used to create UNIK nft token (local are for development only)",
+            description: "Network on which to run the command.",
             required: true,
             options: UTILS.getNetworksList(),
         }),
@@ -56,6 +56,16 @@ export abstract class BaseCommand extends Command {
 
     protected fromSatoshi(value: number): string {
         return `${value / 100000000}`;
+    }
+
+    /**
+     * Checks that all heights passed in parameter are equals
+     * @param heights
+     */
+    protected checkDataConsistency(...heights: number[]) {
+        if (!heights.every(v => v === heights[0])) {
+            throw new Error("Data consistency error. Please retry.");
+        }
     }
 
     /**

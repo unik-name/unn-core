@@ -35,11 +35,7 @@ export class UNSCLIAPI {
         return req
             .post(`${this.network.url}/api/v2/transactions`, requestOptions)
             .then(resp => {
-                const result: any = {};
-                if (resp.errors) {
-                    result.errorMsg = `Transaction not accepted. Caused by: ${JSON.stringify(resp.errors)}`;
-                }
-                return result;
+                return resp;
             })
             .catch(e => {
                 throw new Error("Technical error. Please retry");

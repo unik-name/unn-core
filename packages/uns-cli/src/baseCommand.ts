@@ -69,6 +69,32 @@ export abstract class BaseCommand extends Command {
     }
 
     /**
+     * Check transaction api util retrieved transaction has {expectedConfirmations} confirmations during {retry} block times maximum
+     * @param blockTime
+     * @param transactionId
+     * @param numberOfRetry
+     * @param expectedConfirmations
+     */
+    protected async waitTransactionConfirmations(
+        blockTime: number,
+        transactionId: string,
+        numberOfRetry: number = 0,
+        expectedConfirmations: number = 0,
+    ) {
+        const transactionFromNetwork = await this.api.getTransaction(transactionId, blockTime * 1000);
+        const confirmations = transactionFromNetwork.confirmations;
+        if (confirmations < expectedConfirmations && numberOfRetry > 0) {
+            return await this.waitTransactionConfirmations(
+                blockTime,
+                transactionId,
+                numberOfRetry - 1,
+                expectedConfirmations,
+            );
+        }
+        return transactionFromNetwork;
+    }
+
+    /**
      *
      * @param errorMsg Prompt error and exit command.
      */

@@ -4,7 +4,12 @@ import { ITransactionData } from "@uns/crypto";
 import cli from "cli-ux";
 import { BaseCommand } from "../baseCommand";
 import { getUnikTypesList, UNIK_TYPES } from "../types";
-import { createNFTMintTransaction, getNetworksListListForDescription } from "../utils";
+import {
+    createNFTMintTransaction,
+    getNetworksListListForDescription,
+    getPassphraseFromUser,
+    passphraseFlag,
+} from "../utils";
 
 export class CreateUnikCommand extends BaseCommand {
     public static description = "Create UNIK token";
@@ -23,6 +28,7 @@ export class CreateUnikCommand extends BaseCommand {
             required: true,
             options: getUnikTypesList(),
         }),
+        ...passphraseFlag,
     };
 
     protected getCommand(): any {
@@ -37,7 +43,10 @@ export class CreateUnikCommand extends BaseCommand {
         /**
          * Get passphrase
          */
-        const passphrase = await cli.prompt("Enter your wallet passphrase (12 words phrase)", { type: "mask" });
+        let passphrase = flags.passphrase;
+        if (!passphrase) {
+            passphrase = await getPassphraseFromUser();
+        }
 
         /**
          * Compute Fingerprint
@@ -64,17 +73,21 @@ export class CreateUnikCommand extends BaseCommand {
          * Transaction broadcast
          */
         cli.action.start("Sending transaction");
-        await this.api.sendTransaction(transaction);
+        const sendResult = await this.api.sendTransaction(transaction);
         cli.action.stop();
+        if (sendResult.errors) {
+            throw new Error(`Transaction not accepted. Caused by: ${JSON.stringify(sendResult.errors)}`);
+        }
 
         /**
          * Wait for the first transaction confirmation (2 blocktimes max)
          */
         cli.action.start("Waiting for transaction confirmation");
-        const transactionFromNetwork = await this.waitTransactionFirstConfirmation(
+        const transactionFromNetwork = await this.waitTransactionConfirmations(
             this.api.getBlockTime(),
-            transaction,
-            this.api.network,
+            transaction.id,
+            1,
+            1,
         );
         cli.action.stop();
 
@@ -92,20 +105,6 @@ export class CreateUnikCommand extends BaseCommand {
                 `Transaction not found yet, the network can be slow. Check this url in a while: ${transactionUrl}`,
             );
         }
-    }
-
-    /**
-     *
-     * @param blockTime Wait until transaction has at least 1 confirmation
-     * @param transactionId
-     * @param networkUrl
-     */
-    private async waitTransactionFirstConfirmation(blockTime: number, transaction: ITransactionData, network: any) {
-        let transactionFromNetwork = await this.api.getTransaction(transaction.id, blockTime * 1000);
-        if (!transactionFromNetwork || transactionFromNetwork.confirmations === 0) {
-            transactionFromNetwork = await this.api.getTransaction(transaction.id, blockTime * 1000);
-        }
-        return transactionFromNetwork;
     }
 
     private getTypeValue(tokenType): string {

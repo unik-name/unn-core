@@ -1,0 +1,58 @@
+version: '2'
+services:
+  postgres:
+    image: "postgres:12-alpine"
+    container_name: postgres-devnet
+    restart: always
+    ports:
+      - '127.0.0.1:5432:5432'
+    volumes:
+      - 'postgres:/var/lib/postgresql/data'
+    networks:
+      - core 
+    environment:
+     POSTGRES_PASSWORD: password
+     POSTGRES_DB: uns_devnet
+     POSTGRES_USER: uns
+
+  uns:
+    build:   
+      context: ../..
+      dockerfile: docker/uns/Dockerfile
+    image: uns
+    container_name: uns
+    restart: always
+    environment:
+     UNS_NET: devnet
+     FORGER_SECRET: "door argue snake afraid demise detect brass oyster little resource slice fiber"
+     DB_HOST: postgres
+     DB_PORT: 5432
+     DB_PASSWORD: password
+     DB_DATABASE: uns_devnet
+     DB_USER: uns
+    ports:
+     - "4002:4002"
+     - "4003:4003"
+     - "127.0.0.1:4004:4004"
+     - "127.0.0.1:4005:4005"
+     - "127.0.0.1:8080:8080" 
+    cap_add:
+      - SYS_NICE
+      - SYS_RESOURCE
+      - SYS_TIME
+    volumes:
+     - /tmp/uns-data/cfg:/etc/uns
+     - /tmp/uns-data/log:/var/log/uns
+     - /tmp/uns-data/key:/run/secrets
+    networks:
+      - core 
+    tty: true
+    links:
+     - postgres
+    depends_on:
+      - postgres
+volumes:
+  postgres:
+  core:
+networks:
+  core:

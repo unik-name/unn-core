@@ -1,5 +1,6 @@
 import { Command, flags as oFlags } from "@oclif/command";
 import { Client, configManager } from "@uns/crypto";
+import { cli } from "cli-ux";
 import { UNSCLIAPI } from "./api";
 import { CommandOutput, Formater, getFormatFlag, OUTPUT_FORMAT } from "./formater";
 import * as UTILS from "./utils";
@@ -12,10 +13,14 @@ export abstract class BaseCommand extends Command {
             required: true,
             options: UTILS.getNetworksList(),
         }),
+        verbose: oFlags.boolean({
+            description: "Detailed logs",
+        }),
     };
 
     protected client: Client;
     protected api;
+    protected verbose: boolean;
 
     private formater;
 
@@ -27,6 +32,7 @@ export abstract class BaseCommand extends Command {
 
         // Set formater
         this.formater = OUTPUT_FORMAT[flags.format];
+        this.verbose = flags.verbose;
 
         /**
          * Configuration
@@ -42,9 +48,10 @@ export abstract class BaseCommand extends Command {
         this.client = new Client(networkPreset);
 
         try {
-            const result = await this.do(flags);
-            if (result && Object.keys(result).length > 0) {
-                this.log(this.formater && this.formater.action ? this.formater.action(result) : result);
+            const commandResult = await this.do(flags);
+            if (commandResult && Object.keys(commandResult).length > 0) {
+                // Keep super.log to force log
+                super.log(this.formater && this.formater.action ? this.formater.action(commandResult) : commandResult);
             }
         } catch (globalCatchException) {
             this.promptErrAndExit(globalCatchException.message);
@@ -66,14 +73,6 @@ export abstract class BaseCommand extends Command {
         this.log(`\t${label}: ${value}`);
     }
 
-    /**
-     *
-     * @param value Transform value to satoshi number
-     */
-    protected toSatoshi(value: number): string {
-        return `${value * 100000000}`;
-    }
-
     protected fromSatoshi(value: number): string {
         return `${value / 100000000}`;
     }
@@ -85,6 +84,18 @@ export abstract class BaseCommand extends Command {
     protected checkDataConsistency(...heights: number[]) {
         if (!heights.every(v => v === heights[0])) {
             throw new Error("Data consistency error. Please retry.");
+        }
+    }
+
+    protected actionStart(msg: string) {
+        if (this.verbose) {
+            cli.action.start(msg);
+        }
+    }
+
+    protected actionStop() {
+        if (this.verbose) {
+            cli.action.stop();
         }
     }
 

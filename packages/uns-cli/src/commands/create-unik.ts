@@ -1,8 +1,7 @@
-import { color } from "@oclif/color";
 import { flags } from "@oclif/command";
 import { ITransactionData } from "@uns/crypto";
-import cli from "cli-ux";
 import { BaseCommand } from "../baseCommand";
+import { BaseCommandLogs } from "../baseCommandLogs";
 import { CommandOutput } from "../formater";
 import { getUnikTypesList, UNIK_TYPES } from "../types";
 import {
@@ -12,7 +11,7 @@ import {
     passphraseFlag,
 } from "../utils";
 
-export class CreateUnikCommand extends BaseCommand {
+export class CreateUnikCommand extends BaseCommandLogs {
     public static description = "Create UNIK token";
 
     public static examples = [
@@ -22,7 +21,7 @@ export class CreateUnikCommand extends BaseCommand {
     ];
 
     public static flags = {
-        ...BaseCommand.baseFlags,
+        ...BaseCommandLogs.baseFlags,
         explicitValue: flags.string({ description: "UNIK nft token explicit value", required: true }),
         type: flags.string({
             description: "UNIK nft type",
@@ -52,14 +51,15 @@ export class CreateUnikCommand extends BaseCommand {
         /**
          * Compute Fingerprint
          */
-        cli.action.start("Computing UNIK fingerprint");
+        this.actionStart("Computing UNIK fingerprint");
         const tokenId = await this.api.computeTokenId(this.api.network.backend, flags.explicitValue, flags.type);
-        cli.action.stop();
+        this.actionStop();
+        this.log(`unikid: ${tokenId}`);
 
         /**
          * Transaction creation
          */
-        cli.action.start("Creating transaction");
+        this.actionStart("Creating transaction");
         const transaction: ITransactionData = createNFTMintTransaction(
             this.client,
             tokenId,
@@ -67,46 +67,55 @@ export class CreateUnikCommand extends BaseCommand {
             passphrase,
             this.api.getVersion(),
         );
-
-        cli.action.stop();
+        this.actionStop();
+        this.log(`Transaction id: ${transaction.id}`);
 
         /**
          * Transaction broadcast
          */
-        cli.action.start("Sending transaction");
-        const sendResult = await this.api.sendTransaction(transaction);
-        cli.action.stop();
-        if (sendResult.errors) {
-            throw new Error(`Transaction not accepted. Caused by: ${JSON.stringify(sendResult.errors)}`);
+        this.actionStart("Sending transaction");
+        const sendResponse = await this.api.sendTransaction(transaction);
+        this.actionStop();
+        if (sendResponse.errors) {
+            throw new Error(`Transaction not accepted. Caused by: ${JSON.stringify(sendResponse.errors)}`);
         }
+        const transactionUrl = `${this.api.getExplorerUrl()}/transaction/${transaction.id}`;
+        this.log(`Transaction in explorer: ${transactionUrl}`);
 
         /**
          * Wait for the first transaction confirmation (2 blocktimes max)
          */
-        cli.action.start("Waiting for transaction confirmation");
+        this.actionStart("Waiting for transaction confirmation");
         const transactionFromNetwork = await this.waitTransactionConfirmations(
             this.api.getBlockTime(),
             transaction.id,
             1,
             1,
         );
-        cli.action.stop();
+        this.actionStop();
 
         /**
          * Result prompt
          */
-        const transactionUrl = color.cyanBright(`${this.api.getExplorerUrl()}/transaction/${transaction.id}`);
         if (transactionFromNetwork) {
-            const tokenUrl = color.cyanBright(`${this.api.getExplorerUrl()}/uniks/${tokenId}`);
-            const confirmations = color.green(`${transactionFromNetwork.confirmations} confirmation(s)`);
-            this.log(`UNIK nft created (${confirmations}): ${tokenId} [ ${tokenUrl} ]`);
-            this.log(`See transaction in explorer: ${transactionUrl}`);
-        } else {
             this.log(
+                `UNIK nft forged:  ${transactionFromNetwork.confirmations} confirmation${
+                    transactionFromNetwork.confirmations > 0 ? "s" : ""
+                }`,
+            );
+
+            const tokenUrl = `${this.api.getExplorerUrl()}/nft/${tokenId}`;
+            this.log(`UNIK nft in UNS explorer: ${tokenUrl}`);
+        } else {
+            this.error(
                 `Transaction not found yet, the network can be slow. Check this url in a while: ${transactionUrl}`,
             );
         }
-        return {};
+        return {
+            unikid: tokenId,
+            transaction: transaction.id,
+            confirmations: transactionFromNetwork.confirmations,
+        };
     }
 
     private getTypeValue(tokenType): string {

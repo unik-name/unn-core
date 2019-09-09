@@ -1,6 +1,6 @@
 import { flags } from "@oclif/command";
 import { BaseCommand } from "../baseCommand";
-import { CommandOutput } from "../formater";
+import { CommandOutput, Formater, OUTPUT_FORMAT } from "../formater";
 import { ReadCommand } from "../readCommand";
 import { getNetworksListListForDescription } from "../utils";
 
@@ -8,7 +8,7 @@ export class ReadWalletCommand extends ReadCommand {
     public static description = "Read current data of a specified wallet, ic. balance";
 
     public static examples = [
-        `$ uns read-wallet [--publicKey {publicKey} | --address {address}] --listunik --network ${getNetworksListListForDescription()}`,
+        `$ uns read-wallet --idwallet {publicKey|address} --listunik --network ${getNetworksListListForDescription()} --format {json|yaml}`,
     ];
 
     public static flags = {
@@ -19,6 +19,14 @@ export class ReadWalletCommand extends ReadCommand {
         }),
         listunik: flags.boolean({ description: "List UNIK tokens owned by the wallet, if any." }),
     };
+
+    protected getAvailableFormats(): Formater[] {
+        return [OUTPUT_FORMAT.json, OUTPUT_FORMAT.yaml];
+    }
+
+    protected getDefaultFormat(): Formater {
+        return OUTPUT_FORMAT.json;
+    }
 
     protected getCommand(): typeof BaseCommand {
         return ReadWalletCommand;
@@ -43,9 +51,6 @@ export class ReadWalletCommand extends ReadCommand {
         this.logAttribute("isDelegate", wallet.isDelegate);
         this.logAttribute("vote", wallet.vote);
         this.logAttribute("numberOfUNIK", wallet.tokens.length);
-
-        this.showContext(wallet.chainmeta);
-
         if (flags.listunik) {
             /**
              * LIST OF UNIK
@@ -57,6 +62,26 @@ export class ReadWalletCommand extends ReadCommand {
                 });
             }
         }
-        return {};
+
+        let result = {
+            data: {
+                address: wallet.address,
+                publicKey: wallet.publicKey,
+                username: wallet.username,
+                secondPublicKey: wallet.secondPublicKey,
+                tokenName: `${this.api.getToken()}`,
+                balance: Number(`${this.fromSatoshi(wallet.balance)}`),
+                isDelegate: wallet.isDelegate,
+                vote: wallet.vote,
+                nbUnik: wallet.tokens.length,
+            },
+        };
+        if (flags.listunik) {
+            result = {
+                data: { ...result.data, ...{ tokens: wallet.tokens } },
+            };
+        }
+
+        return { ...result, ...this.showContext(wallet.chainmeta) };
     }
 }

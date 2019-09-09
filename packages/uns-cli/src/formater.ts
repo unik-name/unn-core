@@ -5,7 +5,7 @@ import YAML from "yaml";
 import { EOL } from "os";
 
 export interface CommandOutput {
-    [_: string]: string | number;
+    [_: string]: object | string | number;
 }
 
 export interface Formater {

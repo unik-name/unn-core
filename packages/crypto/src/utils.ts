@@ -2,7 +2,7 @@ import BigNumber from "bignumber.js";
 import { SATOSHI } from "./constants";
 import { configManager } from "./managers";
 import { IBlockData } from "./models";
-import { ITransactionData } from "./transactions/interfaces";
+import { INftAsset, ITransactionData } from "./transactions/interfaces";
 
 class Bignum extends BigNumber {
     public static readonly ZERO = new BigNumber(0);
@@ -78,5 +78,18 @@ export const maxVendorFieldLength = (height?: number): number => configManager.g
 export function sum(a: number, b: number) {
     return a + b;
 }
+
+export const getCurrentNftAsset = (transactionData: ITransactionData): INftAsset => {
+    if (
+        transactionData &&
+        transactionData.asset &&
+        transactionData.asset.nft &&
+        Object.keys(transactionData.asset.nft).length > 0
+    ) {
+        const nftName = Object.keys(transactionData.asset.nft)[0];
+        return transactionData.asset.nft[nftName];
+    }
+    throw new Error(`Nft asset should be defined in transaction data. Transaction ID: ${transactionData.id}`);
+};
 
 export { Bignum };

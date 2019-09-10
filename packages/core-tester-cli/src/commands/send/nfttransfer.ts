@@ -1,4 +1,4 @@
-import { Address, HashAlgorithms } from "@arkecosystem/crypto";
+import { Address, configManager, HashAlgorithms } from "@arkecosystem/crypto";
 import { flags } from "@oclif/command";
 import { satoshiFlag } from "../../flags";
 import { logger } from "../../logger";
@@ -87,7 +87,9 @@ export class NFTTransferCommand extends SendCommand {
     }
 
     private async knockWallet(address: string, expected: string, mustContain: boolean = false): Promise<void> {
-        const contained: boolean = (await this.api.get(`wallets/${address}`)).data.tokens.includes(expected);
+        const contained: boolean = (await this.api.get(
+            `wallets/${address}/${configManager.getCurrentNftName()}s`,
+        )).data.some(nft => nft.id === expected);
 
         if (mustContain) {
             if (contained) {

@@ -1,3 +1,4 @@
+import { configManager, getCurrentNftAsset } from "@arkecosystem/crypto";
 import "jest-extended";
 import { NFTUpdateBuilder } from "../../../../../../packages/crypto/src/builder/transactions/nft/nft-update";
 import { client } from "../../../../../../packages/crypto/src/client";
@@ -38,19 +39,25 @@ describe("NFTUpdate Transaction", () => {
             expect(builder).toHaveProperty("data.type", TransactionTypes.NftUpdate);
             expect(builder).toHaveProperty("data.fee", feeManager.get(TransactionTypes.NftUpdate));
             expect(builder).toHaveProperty("data.senderPublicKey", SENDER_PK);
-            expect(builder).toHaveProperty("data.asset.nft.properties", properties);
+            expect(builder).toHaveProperty(
+                `data.asset.nft.${configManager.getCurrentNftName()}.properties`,
+                properties,
+            );
         });
 
         it("should return all properties", () => {
             const transactionStruct = builder.getStruct();
-            expect(transactionStruct).toHaveProperty("asset.nft.properties", properties);
+            expect(transactionStruct).toHaveProperty(
+                `asset.nft.${configManager.getCurrentNftName()}.properties`,
+                properties,
+            );
         });
 
         it("should return all properties after build", () => {
             const transaction: Transaction = builder.build();
             // Has to not be replaced by undefined, stay null (property is removed from structure when value is undefined)
-            expect(transaction.data.asset.nft.properties.myProp2Delete).toBeDefined();
-            expect(transaction.data.asset.nft.properties.myProp2Delete).toBeNull();
+            expect(getCurrentNftAsset(transaction.data).properties.myProp2Delete).toBeDefined();
+            expect(getCurrentNftAsset(transaction.data).properties.myProp2Delete).toBeNull();
         });
     });
 });

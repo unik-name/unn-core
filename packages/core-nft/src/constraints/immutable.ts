@@ -1,3 +1,4 @@
+import { getCurrentNftAsset } from "@arkecosystem/crypto";
 import { NFTModifier } from "../modifier";
 import { ConstraintApplicationContext } from "../types";
 import { Constraint } from "./constraint";
@@ -9,7 +10,7 @@ import { ConstraintError } from "./error";
  */
 class ImmutableConstraint implements Constraint {
     public async apply(context: ConstraintApplicationContext): Promise<void> {
-        const { tokenId } = context.transaction.asset.nft;
+        const { tokenId } = getCurrentNftAsset(context.transaction);
 
         const currentValue = await NFTModifier.getProperty(tokenId, context.propertyKey);
 

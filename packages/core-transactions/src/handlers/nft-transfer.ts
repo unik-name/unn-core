@@ -1,6 +1,7 @@
 import { ApplicationEvents } from "@arkecosystem/core-event-emitter";
 import { Database, EventEmitter, TransactionPool } from "@arkecosystem/core-interfaces";
 import { ITransactionData, NFTTransferTransaction, Transaction, TransactionConstructor } from "@arkecosystem/crypto";
+import { getCurrentNftAsset } from "@arkecosystem/crypto";
 import { NftOwnerError } from "../errors";
 import { TransactionHandler } from "./transaction";
 
@@ -14,7 +15,7 @@ export class NftTransferTransactionHandler extends TransactionHandler {
         wallet: Database.IWallet,
         walletManager?: Database.IWalletManager,
     ): Promise<boolean> {
-        const tokenId = transaction.data.asset.nft.tokenId;
+        const tokenId = getCurrentNftAsset(transaction.data).tokenId;
         if (!wallet.tokens.includes(tokenId)) {
             throw new NftOwnerError(wallet.publicKey, tokenId);
         }
@@ -23,7 +24,7 @@ export class NftTransferTransactionHandler extends TransactionHandler {
     }
 
     public applyToRecipient(transaction: Transaction, wallet: Database.IWallet): void {
-        this.addTokenToWallet(wallet, transaction.data.asset.nft.tokenId);
+        this.addTokenToWallet(wallet, getCurrentNftAsset(transaction.data).tokenId);
     }
 
     public revertForRecipient(transaction: Transaction, wallet: Database.IWallet): void {
@@ -41,7 +42,7 @@ export class NftTransferTransactionHandler extends TransactionHandler {
      * Revert the transaction from the sender wallet.
      */
     public revert(transaction: Transaction, wallet: Database.IWallet): void {
-        this.addTokenToWallet(wallet, transaction.data.asset.nft.tokenId);
+        this.addTokenToWallet(wallet, getCurrentNftAsset(transaction.data).tokenId);
     }
 
     public canEnterTransactionPool(data: ITransactionData, guard: TransactionPool.IGuard): boolean {
@@ -57,10 +58,10 @@ export class NftTransferTransactionHandler extends TransactionHandler {
     }
 
     private removeTokenFromWallet(wallet: Database.IWallet, transaction: ITransactionData): void {
-        if (!wallet.tokens.includes(transaction.asset.nft.tokenId)) {
-            throw new NftOwnerError(wallet.address, transaction.asset.nft.tokenId); // TODO change message ?
+        if (!wallet.tokens.includes(getCurrentNftAsset(transaction).tokenId)) {
+            throw new NftOwnerError(wallet.address, getCurrentNftAsset(transaction).tokenId); // TODO change message ?
         }
-        wallet.tokens = wallet.tokens.filter(t => t !== transaction.asset.nft.tokenId);
+        wallet.tokens = wallet.tokens.filter(t => t !== getCurrentNftAsset(transaction).tokenId);
     }
     private addTokenToWallet(wallet: Database.IWallet, tokenId: string): void {
         wallet.tokens = wallet.tokens.concat([tokenId]);

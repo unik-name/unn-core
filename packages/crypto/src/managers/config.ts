@@ -128,6 +128,11 @@ export class ConfigManager {
         return this.milestone.data;
     }
 
+    public getCurrentNftName() {
+        // Get first token name until multi tokens support
+        return Object.keys(this.config.nfts)[0];
+    }
+
     /**
      * Build constant data based on active heights.
      */

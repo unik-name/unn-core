@@ -2,7 +2,15 @@ import "jest-extended";
 import "./mocks/core-container";
 
 import { Wallet } from "@arkecosystem/core-database";
-import { Bignum, configManager, constants, crypto, ITransactionData, Transaction } from "@arkecosystem/crypto";
+import {
+    Bignum,
+    configManager,
+    constants,
+    crypto,
+    getCurrentNftAsset,
+    ITransactionData,
+    Transaction,
+} from "@arkecosystem/crypto";
 import { TransactionTypes } from "@arkecosystem/crypto/dist/constants";
 import { ConstraintError } from "../../../packages/core-nft";
 import {
@@ -862,41 +870,41 @@ describe("NFTUpdateTransaction", () => {
 
     describe("immutableProperty", () => {
         it("should pass, immutable property not set yet", async () => {
-            (instance.data.asset.nft.properties as any).blankImmutableProp = "value";
+            (getCurrentNftAsset(instance.data).properties as any).blankImmutableProp = "value";
             await expect(handler.canBeApplied(instance, wallet)).resolves.toBeTrue();
         });
         it("should throw ConstraintError, property already set", async () => {
-            (instance.data.asset.nft.properties as any).immutableProp = 2;
+            (getCurrentNftAsset(instance.data).properties as any).immutableProp = 2;
             await expect(handler.canBeApplied(instance, wallet)).rejects.toThrow(ConstraintError);
         });
     });
 
     describe("number type constraint", () => {
         it("should pass, new value is in-bound", async () => {
-            (instance.data.asset.nft.properties as any).boundedNumberProp = 4;
+            (getCurrentNftAsset(instance.data).properties as any).boundedNumberProp = 4;
             await expect(handler.canBeApplied(instance, wallet)).resolves.toBeTrue();
         });
         it("should throw ConstraintError, new value is lower bound", async () => {
-            (instance.data.asset.nft.properties as any).boundedNumberProp = 0;
+            (getCurrentNftAsset(instance.data).properties as any).boundedNumberProp = 0;
             await expect(handler.canBeApplied(instance, wallet)).rejects.toThrow(ConstraintError);
         });
         it("should throw ConstraintError, new value is upper bound", async () => {
-            (instance.data.asset.nft.properties as any).boundedNumberProp = 6;
+            (getCurrentNftAsset(instance.data).properties as any).boundedNumberProp = 6;
             await expect(handler.canBeApplied(instance, wallet)).rejects.toThrow(ConstraintError);
         });
         it("should throw ConstraintError, new value is not a number", async () => {
-            (instance.data.asset.nft.properties as any).boundedNumberProp = "hello";
+            (getCurrentNftAsset(instance.data).properties as any).boundedNumberProp = "hello";
             await expect(handler.canBeApplied(instance, wallet)).rejects.toThrow(ConstraintError);
         });
     });
 
     describe("enumeration type constraint", () => {
         it("should pass, new value is a possible value", async () => {
-            (instance.data.asset.nft.properties as any).enumerationProp = "2";
+            (getCurrentNftAsset(instance.data).properties as any).enumerationProp = "2";
             await expect(handler.canBeApplied(instance, wallet)).resolves.toBeTrue();
         });
         it("should throw ConstraintError, new value is not in possible values", async () => {
-            (instance.data.asset.nft.properties as any).enumerationProp = "0";
+            (getCurrentNftAsset(instance.data).properties as any).enumerationProp = "0";
             await expect(handler.canBeApplied(instance, wallet)).rejects.toThrow(ConstraintError);
         });
     });

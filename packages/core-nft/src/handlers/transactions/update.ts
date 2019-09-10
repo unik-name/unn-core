@@ -1,14 +1,13 @@
 import { app } from "@arkecosystem/core-container";
 import { Logger } from "@arkecosystem/core-interfaces";
-import { ITransactionData } from "@arkecosystem/crypto";
+import { getCurrentNftAsset, ITransactionData } from "@arkecosystem/crypto";
 import { NFTModifier } from "../../modifier";
 
 const logger: Logger.ILogger = app.resolvePlugin<Logger.ILogger>("logger");
 
 export abstract class NFTUpdateHandler {
     public static async onApplied(transaction: ITransactionData) {
-        const { nft } = transaction.asset;
-        const { tokenId, properties } = nft;
+        const { tokenId, properties } = getCurrentNftAsset(transaction);
 
         if (!(await NFTModifier.exists(tokenId))) {
             return logger.error(`[💎] No token found for id ${tokenId}.`);

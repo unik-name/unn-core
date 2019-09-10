@@ -1,4 +1,4 @@
-import { Bignum } from "@arkecosystem/crypto";
+import { Bignum, getCurrentNftAsset } from "@arkecosystem/crypto";
 import { sortBy } from "@arkecosystem/utils";
 
 import { app } from "@arkecosystem/core-container";
@@ -209,7 +209,7 @@ export class IntegrityVerifier {
         const builtTokens = []; // List of tokens already built
 
         for (const transaction of transactions) {
-            const nftId = transaction.asset.nft.tokenId;
+            const nftId = getCurrentNftAsset(transaction).tokenId;
 
             if (!builtTokens.includes(nftId)) {
                 let ownerWallet;

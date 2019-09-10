@@ -1,9 +1,9 @@
-import { Address, ITransactionData } from "@arkecosystem/crypto";
+import { Address, getCurrentNftAsset, ITransactionData } from "@arkecosystem/crypto";
 import { NFTModifier } from "../../modifier";
 
 export abstract class NFTMintHandler {
     public static async onApplied(transaction: ITransactionData) {
-        const { tokenId, properties } = transaction.asset.nft;
+        const { tokenId, properties } = getCurrentNftAsset(transaction);
 
         const sender = Address.fromPublicKey(transaction.senderPublicKey);
 
@@ -17,6 +17,6 @@ export abstract class NFTMintHandler {
     }
 
     public static async onReverted(transaction: ITransactionData) {
-        return NFTModifier.delete(transaction.asset.nft.tokenId);
+        return NFTModifier.delete(getCurrentNftAsset(transaction).tokenId);
     }
 }

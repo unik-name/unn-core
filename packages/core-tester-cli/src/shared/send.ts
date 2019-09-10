@@ -1,3 +1,4 @@
+import { ITransactionData } from "@arkecosystem/crypto";
 import { BaseCommand } from "../commands/command";
 
 export abstract class SendCommand extends BaseCommand {
@@ -39,7 +40,7 @@ export abstract class SendCommand extends BaseCommand {
 
     protected abstract async signTransactions(flags: Record<string, any>, wallets: Record<string, any>): Promise<any[]>;
 
-    protected abstract async expectBalances(transactions, wallets): Promise<void>;
+    protected abstract async expectBalances(transactions: ITransactionData[], wallets): Promise<void>;
 
-    protected abstract async verifyTransactions(transactions, wallets): Promise<void>;
+    protected abstract async verifyTransactions(transactions: ITransactionData[], wallets): Promise<void>;
 }

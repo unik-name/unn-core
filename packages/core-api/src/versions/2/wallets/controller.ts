@@ -98,7 +98,7 @@ export class WalletsController extends Controller {
             // @ts-ignore
             const data = await request.server.methods.v2.nfts.search(request);
 
-            return super.respondWithCache(data, h);
+            return super.respondWithCache(data, h, true, true);
         } catch (error) {
             return Boom.badImplementation(error);
         }

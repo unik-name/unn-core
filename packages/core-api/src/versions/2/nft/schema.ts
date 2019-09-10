@@ -1,15 +1,12 @@
-import { app } from "@arkecosystem/core-container";
 import Joi from "joi";
+import { networkNfts, nftsPathParameterFailAction } from "../shared/schemas/nfts";
 import { pagination } from "../shared/schemas/pagination";
 
 const nftId = Joi.string()
     .hex()
     .length(64);
 
-const nfts = app.getConfig().get("network.nfts");
-const nftsKey = Object.keys(nfts || {});
-
-const nftPathParameterScheme = Joi.string().valid("nft", ...nftsKey);
+const nftPathParameterScheme = Joi.string().valid("nft", ...networkNfts());
 
 export const index: object = {
     params: {
@@ -21,6 +18,7 @@ export const index: object = {
             orderBy: Joi.string(),
         },
     },
+    failAction: nftsPathParameterFailAction,
 };
 
 export const show: object = {
@@ -28,6 +26,7 @@ export const show: object = {
         nft: nftPathParameterScheme,
         id: nftId,
     },
+    failAction: nftsPathParameterFailAction,
 };
 
 export const properties: object = {
@@ -36,6 +35,7 @@ export const properties: object = {
         id: nftId,
     },
     query: pagination,
+    failAction: nftsPathParameterFailAction,
 };
 
 export const property: object = {
@@ -44,6 +44,7 @@ export const property: object = {
         id: nftId,
         key: Joi.string().max(255),
     },
+    failAction: nftsPathParameterFailAction,
 };
 
 export const search: object = {
@@ -58,4 +59,5 @@ export const search: object = {
             .alphanum()
             .length(34),
     },
+    failAction: nftsPathParameterFailAction,
 };

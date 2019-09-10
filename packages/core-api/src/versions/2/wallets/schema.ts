@@ -1,6 +1,6 @@
-import { app } from "@arkecosystem/core-container";
 import Joi from "joi";
 import { blockId } from "../shared/schemas/block-id";
+import { networkNfts, nftsPathParameterFailAction } from "../shared/schemas/nfts";
 import { pagination } from "../shared/schemas/pagination";
 
 export const index: object = {
@@ -214,13 +214,10 @@ export const search: object = {
     },
 };
 
-const networkNfts = app.getConfig().get("network.nfts");
-const nftsKey = Object.keys(networkNfts || {});
-
-export const nfts: object = {
+export const nfts = {
     params: {
         id: Joi.string(),
-        nft: Joi.string().valid(...nftsKey),
+        nft: Joi.string().valid(...networkNfts()),
     },
     query: {
         ...pagination,
@@ -228,4 +225,5 @@ export const nfts: object = {
             orderBy: Joi.string(),
         },
     },
+    failAction: nftsPathParameterFailAction,
 };

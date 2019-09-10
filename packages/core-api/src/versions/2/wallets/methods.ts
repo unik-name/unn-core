@@ -32,16 +32,6 @@ const show = async request => {
     return respondWithResource(request, wallet, "wallet");
 };
 
-const nfts = async request => {
-    const wallet = await databaseService.wallets.findById(request.params.id);
-
-    if (!wallet) {
-        return Boom.notFound("Wallet not found");
-    }
-
-    return respondWithResource(request, wallet, "walletNfts");
-};
-
 const transactions = async request => {
     const wallet = await databaseService.wallets.findById(request.params.id);
 
@@ -133,7 +123,6 @@ export function registerMethods(server) {
         }))
         .method("v2.wallets.top", top, 30, request => paginate(request))
         .method("v2.wallets.show", show, 8, request => ({ id: request.params.id }))
-        .method("v2.wallets.nfts", nfts, 8, request => ({ id: request.params.id }))
         .method("v2.wallets.transactions", transactions, 30, request => ({
             ...{ id: request.params.id },
             ...request.query,

@@ -14,5 +14,24 @@
         "token": "DARK",
         "symbol": "DѦ",
         "explorer": "https://dexplorer.ark.io"
+    },
+    "nfts": {
+        "unik": {
+            "name": "UNIK",
+            "properties": {
+                "type": {
+                    "genesis": true,
+                    "constraints": [
+                        "immutable",
+                        {
+                            "name": "enumeration",
+                            "parameters": {
+                                "values": ["1", "2"]
+                            }
+                        }
+                    ]
+                }
+            }
+        }
     }
 }

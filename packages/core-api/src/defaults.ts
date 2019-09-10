@@ -80,6 +80,7 @@ export const defaults = {
             "/api/v2/wallets/{id}/transactions/sent",
             "/api/v2/wallets/{id}/votes",
             "/api/v2/wallets/search",
+            "/api/v2/wallets/{id}/{nft}s",
         ],
     },
     whitelist: ["127.0.0.1", "::ffff:127.0.0.1"],

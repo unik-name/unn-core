@@ -30,6 +30,7 @@ export class ReadWalletCommand extends ReadCommand {
 
     protected async do(flags: Record<string, any>): Promise<CommandOutput> {
         const wallet: any = await this.api.getWallet(flags.idwallet);
+        const tokens: any = await this.api.getWalletTokens(flags.idwallet);
 
         /**
          * WALLET
@@ -42,7 +43,7 @@ export class ReadWalletCommand extends ReadCommand {
         this.logAttribute("balance", `${this.fromSatoshi(wallet.balance)} ${this.api.getToken()}`);
         this.logAttribute("isDelegate", wallet.isDelegate);
         this.logAttribute("vote", wallet.vote);
-        this.logAttribute("numberOfUNIK", wallet.tokens.length);
+        this.logAttribute("numberOfUNIK", tokens.length);
 
         this.showContext(wallet.chainmeta);
 
@@ -50,10 +51,10 @@ export class ReadWalletCommand extends ReadCommand {
             /**
              * LIST OF UNIK
              */
-            this.log(`\nLIST OF UNIK:${wallet.tokens.length === 0 ? " none" : ""}`);
-            if (wallet.tokens.length > 0) {
-                wallet.tokens.forEach(tokenID => {
-                    this.logAttribute("unikid", tokenID);
+            this.log(`\nLIST OF UNIK:${tokens.length === 0 ? " none" : ""}`);
+            if (tokens.length > 0) {
+                tokens.forEach(tokenProps => {
+                    this.logAttribute("unikid", tokenProps.id);
                 });
             }
         }

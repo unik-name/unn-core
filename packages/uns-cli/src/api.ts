@@ -177,6 +177,24 @@ export class UNSCLIAPI {
             });
     }
 
+    public async getWalletTokens(walletIdentifier: string, tokenName: string = "unik"): Promise<any> {
+        return req
+            .get(`${this.network.url}/api/v2/wallets/${walletIdentifier}/${tokenName}s`)
+            .then(res => {
+                const Response = JSON.parse(res);
+                return {
+                    ...Response.data,
+                };
+            })
+            .catch(e => {
+                const error =
+                    e.statusCode === 404
+                        ? `No wallet found with id ${walletIdentifier} or token ${tokenName} unknown`
+                        : `Error fetching tokens ${walletIdentifier}/${tokenName}. Caused by ${e.message}`;
+                throw new Error(error);
+            });
+    }
+
     /**
      * Get total (D)UNS supply.
      */

@@ -8,7 +8,7 @@ export function registerRoutes(server: Hapi.Server): void {
 
     server.route({
         method: "GET",
-        path: "/{nft}",
+        path: "/{nft}s",
         handler: controller.index,
         options: {
             validate: Schema.index,
@@ -17,7 +17,7 @@ export function registerRoutes(server: Hapi.Server): void {
 
     server.route({
         method: "GET",
-        path: "/{nft}/{id}",
+        path: "/{nft}s/{id}",
         handler: controller.show,
         options: {
             validate: Schema.show,
@@ -26,7 +26,7 @@ export function registerRoutes(server: Hapi.Server): void {
 
     server.route({
         method: "GET",
-        path: "/{nft}/{id}/properties",
+        path: "/{nft}s/{id}/properties",
         handler: controller.properties,
         options: {
             validate: Schema.properties,
@@ -35,7 +35,7 @@ export function registerRoutes(server: Hapi.Server): void {
 
     server.route({
         method: "GET",
-        path: "/{nft}/{id}/properties/{key}",
+        path: "/{nft}s/{id}/properties/{key}",
         handler: controller.property,
         options: {
             validate: Schema.property,
@@ -44,7 +44,7 @@ export function registerRoutes(server: Hapi.Server): void {
 
     server.route({
         method: "POST",
-        path: "/{nft}/search",
+        path: "/{nft}s/search",
         handler: controller.search,
         options: {
             validate: Schema.search,

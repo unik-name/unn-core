@@ -9,7 +9,7 @@ const nftId = Joi.string()
 const nfts = app.getConfig().get("network.nfts");
 const nftsKey = Object.keys(nfts || {});
 
-const nftPathParameterScheme = Joi.string().valid("nfts", ...nftsKey);
+const nftPathParameterScheme = Joi.string().valid("nft", ...nftsKey);
 
 export const index: object = {
     params: {

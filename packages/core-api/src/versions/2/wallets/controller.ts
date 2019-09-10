@@ -90,4 +90,15 @@ export class WalletsController extends Controller {
             return Boom.badImplementation(error);
         }
     }
+
+    public async nfts(request: Hapi.Request, h: Hapi.ResponseToolkit) {
+        try {
+            // @ts-ignore
+            const data = await request.server.methods.v2.wallets.nfts(request);
+
+            return super.respondWithCache(data, h);
+        } catch (error) {
+            return Boom.badImplementation(error);
+        }
+    }
 }

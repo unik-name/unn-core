@@ -11,3 +11,9 @@ export function transformWallet(model) {
         vote: model.vote,
     };
 }
+
+export function transformWalletNfts(model) {
+    return {
+        tokens: model.tokens,
+    };
+}

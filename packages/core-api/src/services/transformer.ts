@@ -14,7 +14,7 @@ import { transformPeer } from "../versions/2/peers/transformer";
 import { transformFeeStatistics } from "../versions/2/shared/transformers/fee-statistics";
 import { transformPorts } from "../versions/2/shared/transformers/ports";
 import { transformTransaction } from "../versions/2/transactions/transformer";
-import { transformWallet } from "../versions/2/wallets/transformer";
+import { transformWallet, transformWalletNfts } from "../versions/2/wallets/transformer";
 
 class Transformer {
     private transformers: Map<number, any> = new Map();
@@ -39,6 +39,7 @@ class Transformer {
             ports: transformPorts,
             transaction: transformTransaction,
             wallet: transformWallet,
+            walletNfts: transformWalletNfts,
             nft: transformNft,
             nftProperties: transformNftProperties,
             nftProperty: transformNftProperty,

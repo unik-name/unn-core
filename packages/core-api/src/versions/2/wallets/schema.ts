@@ -1,4 +1,5 @@
-import * as Joi from "joi";
+import { app } from "@arkecosystem/core-container";
+import Joi from "joi";
 import { blockId } from "../shared/schemas/block-id";
 import { pagination } from "../shared/schemas/pagination";
 
@@ -210,5 +211,21 @@ export const search: object = {
                 .integer()
                 .min(0),
         }),
+    },
+};
+
+const networkNfts = app.getConfig().get("network.nfts");
+const nftsKey = Object.keys(networkNfts || {});
+
+export const nfts: object = {
+    params: {
+        id: Joi.string(),
+        nft: Joi.string().valid(...nftsKey),
+    },
+    query: {
+        ...pagination,
+        ...{
+            orderBy: Joi.string(),
+        },
     },
 };

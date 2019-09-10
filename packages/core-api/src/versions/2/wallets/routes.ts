@@ -77,4 +77,13 @@ export function registerRoutes(server: Hapi.Server): void {
             validate: Schema.search,
         },
     });
+
+    server.route({
+        method: "GET",
+        path: "/wallets/{id}/{nft}s",
+        handler: controller.nfts,
+        options: {
+            validate: Schema.nfts,
+        },
+    });
 }

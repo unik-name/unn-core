@@ -1,9 +1,9 @@
 import { TransactionTypes } from "../../../constants";
-import { feeManager } from "../../../managers";
+import { configManager, feeManager } from "../../../managers";
 import { ITransactionData } from "../../../transactions";
 import { TransactionBuilder } from "../transaction";
 
-export abstract class NFTBuilder extends TransactionBuilder<NFTBuilder> {
+export abstract class NFTBuilder<T extends NFTBuilder<T>> extends TransactionBuilder<T> {
     constructor(tokenId: string) {
         super();
 
@@ -15,7 +15,9 @@ export abstract class NFTBuilder extends TransactionBuilder<NFTBuilder> {
 
         this.data.asset = {
             nft: {
-                tokenId,
+                [configManager.getCurrentNftName()]: {
+                    tokenId,
+                },
             },
         };
     }
@@ -28,6 +30,5 @@ export abstract class NFTBuilder extends TransactionBuilder<NFTBuilder> {
         return struct;
     }
 
-    protected abstract instance();
     protected abstract type(): TransactionTypes;
 }

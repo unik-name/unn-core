@@ -9,6 +9,11 @@ export function transformWallet(model) {
         balance: +bignumify(model.balance).toFixed(),
         isDelegate: !!model.username,
         vote: model.vote,
+    };
+}
+
+export function transformWalletNfts(model) {
+    return {
         tokens: model.tokens,
     };
 }

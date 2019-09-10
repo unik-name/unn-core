@@ -15,20 +15,22 @@
         "symbol": "DUNS",
         "explorer": "https://explorer.devnet.uns.network"
     },
-    "nft": {
-        "name": "UNIK",
-        "properties": {
-            "type": {
-                "genesis": true,
-                "constraints": [
-                    "immutable",
-                    {
-                        "name": "enumeration",
-                        "parameters": {
-                            "values": ["1", "2"]
+    "nfts": {
+        "unik": {
+            "name": "UNIK",
+            "properties": {
+                "type": {
+                    "genesis": true,
+                    "constraints": [
+                        "immutable",
+                        {
+                            "name": "enumeration",
+                            "parameters": {
+                                "values": ["1", "2"]
+                            }
                         }
-                    }
-                ]
+                    ]
+                }
             }
         }
     }

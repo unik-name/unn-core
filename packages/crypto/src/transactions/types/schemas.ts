@@ -128,19 +128,27 @@ export const vote = extend(transactionBaseSchema, {
     },
 });
 
+const nftToken = {
+    type: "object",
+    required: ["tokenId"],
+    properties: {
+        tokenId: {
+            allOf: [{ $ref: "hex" }, { minLength: 64, maxLength: 64 }],
+        },
+    },
+};
+
 const nft = {
     amount: { bignumber: { minimum: 0, maximum: 0 } },
     asset: {
         type: "object",
         required: ["nft"],
+        additionalProperties: false,
         properties: {
             nft: {
                 type: "object",
-                required: ["tokenId"],
-                properties: {
-                    tokenId: {
-                        allOf: [{ $ref: "hex" }, { minLength: 64, maxLength: 64 }],
-                    },
+                patternProperties: {
+                    "^.*$": { ...nftToken },
                 },
             },
         },
@@ -151,15 +159,35 @@ const nftProperties = {
     asset: {
         properties: {
             nft: {
-                properties: {
-                    properties: {
-                        type: "object",
-                        minProperties: 1,
-                        maxProperties: 255,
-                        patternProperties: {
-                            "^.*$": { maxLength: 255 },
+                type: "object",
+                patternProperties: {
+                    "^.*$": {
+                        properties: {
+                            properties: {
+                                type: "object",
+                                minProperties: 1,
+                                maxProperties: 255,
+                                patternProperties: {
+                                    "^.*$": { maxLength: 255 },
+                                },
+                                propertyNames: { maxLength: 255 },
+                            },
                         },
-                        propertyNames: { maxLength: 255 },
+                    },
+                },
+            },
+        },
+    },
+};
+
+const nftUpdateProperties = {
+    asset: {
+        properties: {
+            nft: {
+                type: "object",
+                patternProperties: {
+                    "^.*$": {
+                        required: ["properties"],
                     },
                 },
             },
@@ -182,7 +210,7 @@ export const nftUpdate = extend(transactionBaseSchema, {
     required: ["asset"],
     properties: {
         type: { transactionType: TransactionTypes.NftUpdate },
-        ...extend(nft, extend(nftProperties, { asset: { properties: { nft: { required: ["properties"] } } } })), // nft.properties is required
+        ...extend(nft, extend(nftProperties, nftUpdateProperties)), // nft.properties is required
     },
 });
 

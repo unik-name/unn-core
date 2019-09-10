@@ -1,6 +1,7 @@
 import { app } from "@arkecosystem/core-container";
 import { Database, NFT, TransactionPool } from "@arkecosystem/core-interfaces";
 import { ITransactionData, NFTUpdateTransaction, Transaction, TransactionConstructor } from "@arkecosystem/crypto";
+import { getCurrentNftAsset } from "@arkecosystem/crypto";
 import { NftOwnerError } from "../errors";
 import { TransactionHandler } from "./transaction";
 
@@ -17,8 +18,8 @@ export class NftUpdateTransactionHandler extends TransactionHandler {
         wallet: Database.IWallet,
         walletManager?: Database.IWalletManager,
     ): Promise<boolean> {
-        if (!wallet.tokens.includes(transaction.data.asset.nft.tokenId)) {
-            throw new NftOwnerError(wallet.address, transaction.data.asset.nft.tokenId);
+        if (!wallet.tokens.includes(getCurrentNftAsset(transaction.data).tokenId)) {
+            throw new NftOwnerError(wallet.address, getCurrentNftAsset(transaction.data).tokenId);
         }
 
         await app.resolvePlugin<NFT.INFTManager>("nft").applyConstraints(transaction.data);

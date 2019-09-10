@@ -63,16 +63,21 @@ export const schemaNetwork = Joi.object({
             symbol: Joi.string().required(),
             explorer: Joi.string().required(),
         }),
-        nft: Joi.object({
-            name: Joi.string().required(),
-            properties: Joi.object().pattern(
-                Joi.string(), // TODO add constraint on property length
+        nfts: Joi.object()
+            .pattern(
+                Joi.string(), // can add constraints on nfts keys here
                 Joi.object({
-                    genesis: Joi.boolean(),
-                    constraints: Joi.array().items(Joi.string(), ...nftParameterConstraints),
+                    name: Joi.string().required(),
+                    properties: Joi.object().pattern(
+                        Joi.string(), // TODO add constraint on property length
+                        Joi.object({
+                            genesis: Joi.boolean(),
+                            constraints: Joi.array().items(Joi.string(), ...nftParameterConstraints),
+                        }),
+                    ),
                 }),
-            ),
-        }).optional(),
+            )
+            .optional(),
     }).required(),
 });
 

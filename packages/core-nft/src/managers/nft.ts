@@ -1,6 +1,6 @@
 import { ApplicationEvents } from "@arkecosystem/core-event-emitter";
 import { NFT } from "@arkecosystem/core-interfaces";
-import { ITransactionData } from "@arkecosystem/crypto";
+import { getCurrentNftAsset, ITransactionData } from "@arkecosystem/crypto";
 import { NFTEventHandler } from "../handlers/event";
 import { NFTTransactionListener } from "../listener";
 import { ConstraintsManager } from "./constraints";
@@ -27,7 +27,7 @@ export class NFTManager implements NFT.INFTManager {
     }
 
     public async applyConstraints(transaction: ITransactionData) {
-        const { properties } = transaction.asset.nft;
+        const { properties } = getCurrentNftAsset(transaction);
 
         if (properties) {
             for (const [key, value] of Object.entries(properties)) {

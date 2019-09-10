@@ -1,5 +1,6 @@
-import * as Joi from "joi";
+import Joi from "joi";
 import { blockId } from "../shared/schemas/block-id";
+import { networkNfts, nftsPathParameterFailAction } from "../shared/schemas/nfts";
 import { pagination } from "../shared/schemas/pagination";
 
 export const index: object = {
@@ -211,4 +212,18 @@ export const search: object = {
                 .min(0),
         }),
     },
+};
+
+export const nfts = {
+    params: {
+        id: Joi.string(),
+        nft: Joi.string().valid(...networkNfts()),
+    },
+    query: {
+        ...pagination,
+        ...{
+            orderBy: Joi.string(),
+        },
+    },
+    failAction: nftsPathParameterFailAction,
 };

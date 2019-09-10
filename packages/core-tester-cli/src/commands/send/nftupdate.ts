@@ -1,4 +1,4 @@
-import { Address } from "@arkecosystem/crypto";
+import { Address, getCurrentNftAsset, ITransactionData } from "@arkecosystem/crypto";
 import { flags } from "@oclif/command";
 import { satoshiFlag } from "../../flags";
 import { logger } from "../../logger";
@@ -72,7 +72,7 @@ export class NFTUpdateCommand extends SendCommand {
         }
     }
 
-    protected async verifyTransactions(transactions, wallets): Promise<void> {
+    protected async verifyTransactions(transactions: ITransactionData[], wallets): Promise<void> {
         for (const transaction of transactions) {
             const wasCreated = await this.knockTransaction(transaction.id);
 
@@ -81,7 +81,7 @@ export class NFTUpdateCommand extends SendCommand {
                 const tokenId = wallets[senderId].expectedNft;
 
                 await this.knockBalance(senderId, wallets[senderId].expectedBalance);
-                await this.knockNftProperties(tokenId, transaction.asset.nft.properties);
+                await this.knockNftProperties(tokenId, getCurrentNftAsset(transaction).properties);
             }
         }
     }

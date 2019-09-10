@@ -16,10 +16,16 @@ export interface ITransactionAsset {
     };
     payments?: any;
     nft?: {
-        tokenId: string;
-        properties?: { [_: string]: string };
+        [_: string]: INftAsset;
     };
     [custom: string]: any;
+}
+
+export interface INftAsset {
+    tokenId: string;
+    properties?: {
+        [_: string]: string;
+    };
 }
 
 export interface IMultiSignatureAsset {

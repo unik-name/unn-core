@@ -14,7 +14,7 @@ export class ConstraintsManager {
 
     constructor() {
         this.registerConstraints();
-        this.nftPropertiesConfig = app.getConfig().get("network.nft.properties");
+        this.nftPropertiesConfig = app.getConfig().get("network.nfts.properties");
     }
 
     public registerConstraint(constraint: Constraint) {

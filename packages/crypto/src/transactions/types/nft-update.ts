@@ -1,5 +1,7 @@
 import ByteBuffer from "bytebuffer";
 import { TransactionTypes } from "../../constants";
+import { configManager } from "../../managers";
+import { getCurrentNftAsset } from "../../utils";
 import * as schemas from "./schemas";
 import { Transaction } from "./transaction";
 
@@ -12,11 +14,12 @@ export class NFTUpdateTransaction extends Transaction {
 
     public serialize(): ByteBuffer {
         const { data } = this;
-        const properties: { [_: string]: string } = data.asset.nft.properties || {};
+        const nft = getCurrentNftAsset(data);
+        const properties: { [_: string]: string } = nft.properties || {};
         const bufferSize = 32 + 1 + this.computePropertiesSize(properties);
         const buffer = new ByteBuffer(bufferSize, true);
 
-        buffer.append(Buffer.from(data.asset.nft.tokenId.padStart(64, "0"), "hex"));
+        buffer.append(Buffer.from(nft.tokenId.padStart(64, "0"), "hex"));
         const keys = Object.keys(properties);
         buffer.writeByte(keys.length);
         keys.forEach(propertyKey => {
@@ -37,11 +40,7 @@ export class NFTUpdateTransaction extends Transaction {
 
     public deserialize(buf: ByteBuffer): void {
         const { data } = this;
-        data.asset = {
-            nft: {
-                tokenId: buf.readBytes(32).toString("hex"),
-            },
-        };
+        const tokenId = buf.readBytes(32).toString("hex");
         const propertiesLength = buf.readByte();
         const properties: { [_: string]: string } = propertiesLength > 0 ? {} : undefined;
 
@@ -55,8 +54,14 @@ export class NFTUpdateTransaction extends Transaction {
 
             properties[propertyKey] = propertyValue;
         }
-
-        data.asset.nft.properties = properties;
+        data.asset = {
+            nft: {
+                [configManager.getCurrentNftName()]: {
+                    tokenId,
+                    properties,
+                },
+            },
+        };
     }
 
     /**

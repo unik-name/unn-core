@@ -1,7 +1,7 @@
 {
     "name": "@uns/uns-cli",
     "description": "uns CLI",
-    "version": "0.0.20",
+    "version": "3.0.0-alpha.2",
     "author": "Space Elephant",
     "contributors": [
         "Fabien Tréguer <fabien@spacelephant.org>"

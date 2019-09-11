@@ -837,8 +837,10 @@ describe("NFTUpdateTransaction", () => {
                 "304402202816cfd3d9b8a5a29fb0572b0f54c4803da65cc308b1d06b72a085e7ead5a27702206de6423e23acf006fb00d49cc3b8b82ce6255c27a37a3b3549b719b76423d560",
             asset: {
                 nft: {
-                    tokenId: "6f35a40470021425558f5cbb7b5f056e51b694db5cc6c336abdc6b777fc9d051",
-                    properties: { myProperty: "myPropertyValue" },
+                    [configManager.getCurrentNftName()]: {
+                        tokenId: "6f35a40470021425558f5cbb7b5f056e51b694db5cc6c336abdc6b777fc9d051",
+                        properties: { myProperty: "myPropertyValue" },
+                    },
                 },
             },
         };

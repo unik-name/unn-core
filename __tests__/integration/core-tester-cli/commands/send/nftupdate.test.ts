@@ -1,4 +1,5 @@
 import { httpie } from "@arkecosystem/core-utils";
+import { configManager } from "@arkecosystem/crypto";
 import { TransactionTypes } from "@arkecosystem/crypto/dist/constants";
 import "jest-extended";
 import nock from "nock";
@@ -54,10 +55,12 @@ describe("Commands - NftUpdate", () => {
             fee: arkToSatoshi(expectedFee),
             asset: {
                 nft: {
-                    tokenId: TOKEN_ID,
-                    properties: {
-                        myProp: "myValue",
-                        test: null,
+                    [configManager.getCurrentNftName()]: {
+                        tokenId: TOKEN_ID,
+                        properties: {
+                            myProp: "myValue",
+                            test: null,
+                        },
                     },
                 },
             },

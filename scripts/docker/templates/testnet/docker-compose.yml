@@ -1,4 +1,4 @@
-version: '2'
+version: '3.7'
 services:
 
   postgres:
@@ -36,7 +36,9 @@ services:
 
 volumes:
   postgres:
+    name: testnet_postgres_{token}
   core:
+    name: testnet_core_{token}
     driver_opts:
       type: none
       device: $PWD/../../../

@@ -76,7 +76,7 @@ export class UNSCLIAPI {
         const fingerprintUrl = backendUrl + FINGERPRINT_API;
         const fingerPrintBody = {
             type,
-            explicitIdentifier: explicitValue,
+            explicitValue,
         };
 
         const requestOptions = {
@@ -91,7 +91,7 @@ export class UNSCLIAPI {
         return req
             .post(fingerprintUrl, requestOptions)
             .then(unikFingerprintResponse => {
-                return unikFingerprintResponse.result;
+                return unikFingerprintResponse.data.fingerprint;
             })
             .catch(e => {
                 throw new Error(`Error computing  UNIK id. Caused by ${e.message}`);

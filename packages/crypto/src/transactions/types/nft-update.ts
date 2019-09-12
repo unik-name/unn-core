@@ -21,17 +21,21 @@ export class NFTUpdateTransaction extends Transaction {
 
         buffer.append(Buffer.from(nft.tokenId.padStart(64, "0"), "hex"));
         const keys = Object.keys(properties);
-        buffer.writeByte(keys.length);
+
+        // Use unsigned Int to serialize nb properties max 255 properties (max with signed 8 bits int is 127)
+        buffer.writeUint8(keys.length);
         keys.forEach(propertyKey => {
             const keyBytes = Buffer.from(propertyKey, "utf8");
-            buffer.writeByte(keyBytes.length);
+            // Use unsigned 8 bits int for property key length (should not be longer than 255)
+            buffer.writeUint8(keyBytes.length);
             buffer.append(keyBytes, "hex");
             const value = properties[propertyKey];
             if (!value && value !== "") {
-                buffer.writeByte(-1);
+                // Use signed 16 bits, to serialize at least 255 and -1 numbers
+                buffer.writeInt16(-1);
             } else {
                 const valueBytes = Buffer.from(value, "utf8");
-                buffer.writeByte(valueBytes.length);
+                buffer.writeInt16(valueBytes.length);
                 buffer.append(valueBytes, "hex");
             }
         });
@@ -41,15 +45,18 @@ export class NFTUpdateTransaction extends Transaction {
     public deserialize(buf: ByteBuffer): void {
         const { data } = this;
         const tokenId = buf.readBytes(32).toString("hex");
-        const propertiesLength = buf.readByte();
+
+        // Use unsigned Int to serialize nb properties max 255 properties (max with signed 8 bits int is 127)
+        const propertiesLength = buf.readUint8();
         const properties: { [_: string]: string } = propertiesLength > 0 ? {} : undefined;
 
         for (let i = 0; i < propertiesLength; i++) {
-            const propertyKeyLength = buf.readByte();
+            const propertyKeyLength = buf.readUint8();
             const propertyKey = buf.readBytes(propertyKeyLength).toUTF8();
 
-            const propertyValueLength = buf.readByte();
+            const propertyValueLength = buf.readInt16();
             const propertyValue: string =
+                // null is needed for property deletion
                 propertyValueLength === -1 ? null : buf.readBytes(propertyValueLength).toUTF8();
 
             properties[propertyKey] = propertyValue;

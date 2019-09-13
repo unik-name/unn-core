@@ -32,10 +32,20 @@ yarn setup
 
 ##### Database
 
+###### Old way
+
+:warning: `yarn docker uns` has been removed and is replaced by :
+
 ```
-yarn docker uns
+yarn docker:pg
 cd docker/development/testnet
 docker-compose up -d postgres
+```
+
+###### New way
+
+```
+yarn docker:db testnet
 ```
 
 ##### Launch
@@ -201,4 +211,11 @@ A release must be made from `private/develop` branch.
 > git push ${remote} private/develop ${version-tag}
 > cd packages/crypto
 > npm publish
+```
+
+and for docker (you must be logged with a write access docker account)
+
+```
+yarn docker:build
+yarn docker:publish ${version-tag}
 ```

@@ -1,7 +1,7 @@
 version: '2'
 services:
   postgres:
-    image: "postgres:alpine"
+    image: "postgres:11-alpine"
     container_name: postgres-devnet
     restart: always
     ports:
@@ -12,32 +12,37 @@ services:
       - core 
     environment:
      POSTGRES_PASSWORD: password
-     POSTGRES_DB: core_devnet
-     POSTGRES_USER: node
+     POSTGRES_DB: uns_devnet
+     POSTGRES_USER: uns
 
-  core:
-    image: arkecosystem/core:devnet
-    container_name: core-devnet
+  uns:
+    build:   
+      context: ../../..
+      dockerfile: docker/Dockerfile
+    image: universalnamesystem/core
+    container_name: uns
     restart: always
+    environment:
+     UNS_NET: devnet
+     # FORGER_SECRET: ""
+     DB_HOST: postgres
+     DB_PORT: 5432
+     DB_PASSWORD: password
+     DB_DATABASE: uns_devnet
+     DB_USER: uns
     ports:
-     - "4002:4002"
-     - "4003:4003"
-     - "127.0.0.1:4004:4004"
-     - "127.0.0.1:4005:4005"
-     - "127.0.0.1:8080:8080" 
+     - "4102:4102"
+     - "4103:4103"
     cap_add:
       - SYS_NICE
       - SYS_RESOURCE
       - SYS_TIME
     volumes:
-     - ~/.config/ark-core:/home/node/.config/ark-core
-     - ~/.local/share/ark-core:/home/node/.local/share/ark-core
-     - ~/.local/state/ark-core:/home/node/.local/state/ark-core
-     - /etc/localtime:/etc/localtime:ro
-     - ./enc:/run/secrets
+     - /tmp/uns-data/cfg:/etc/uns
+     - /tmp/uns-data/log:/var/log/uns
+     - /tmp/uns-data/key:/run/secrets
     networks:
       - core 
-    env_file: ./devnet.env
     tty: true
     links:
      - postgres

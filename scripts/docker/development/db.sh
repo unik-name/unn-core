@@ -1,0 +1,19 @@
+#!/bin/sh
+
+set -e
+
+NETWORK=${1} # default testnet
+
+docker run \
+    --name uns-$NETWORK-postgres \
+    -v /tmp/uns-$NETWORK-pgdata:/var/lib/postgresql/data \
+    -e POSTGRES_PASSWORD=password \
+    -e POSTGRES_DB=uns_$NETWORK \
+    -e POSTGRES_USER=uns \
+    -p 127.0.0.1:5432:5432 \
+    -d postgres:11-alpine
+
+echo "🎉 Successfully started DB container for $NETWORK (see id above)"
+
+echo "> Stop container with command 'docker stop uns_"$NETWORK"_postgres'"
+echo "> Remove container with command 'docker rm uns_"$NETWORK"_postgres'"

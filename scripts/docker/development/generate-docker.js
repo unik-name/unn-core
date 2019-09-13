@@ -2,7 +2,7 @@ const fs = require("fs");
 const { ensureDirSync } = require("fs-extra");
 
 const regex = new RegExp("{token}", "g");
-const templateRoot = './scripts/docker/templates'
+const templateRoot = './scripts/docker/development/templates'
 const templateDirs = fs.readdirSync(templateRoot);
 
 if (process.argv.length !== 3) {

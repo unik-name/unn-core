@@ -45,7 +45,10 @@
         "upgrade": "cross-env-shell ./scripts/upgrade.sh",
         "version": "cross-env-shell ./scripts/version.sh",
         "deps": "cross-env-shell ./scripts/deps.sh",
-        "docker": "node ./scripts/docker/generate-docker.js",
+        "docker:pg": "node ./scripts/docker/development/generate-docker.js uns",
+        "docker:db": "cross-env-shell ./scripts/docker/development/db.sh",
+        "docker:build": "cross-env-shell ./scripts/docker/production/build.sh",
+        "docker:publish": "cross-env-shell ./scripts/docker/production/publish.sh",
         "bench": "node benchmark/index.js",
         "rebrand": "node ./scripts/rebrand/index.js"
     },

@@ -2,6 +2,7 @@ import { ITransactionData } from "@uns/crypto";
 import delay from "delay";
 import * as req from "request-promise";
 import { FINGERPRINT_API } from "./config";
+import { handleErrors } from "./errorHandler";
 import * as UTILS from "./utils";
 
 export class UNSCLIAPI {
@@ -18,7 +19,6 @@ export class UNSCLIAPI {
     /**
      * Broadcast transaction
      * @param transaction
-     * @param networkUrl
      */
     public async sendTransaction(transaction: ITransactionData): Promise<any> {
         const requestOptions = {
@@ -35,6 +35,9 @@ export class UNSCLIAPI {
         return req
             .post(`${this.network.url}/api/v2/transactions`, requestOptions)
             .then(resp => {
+                if (resp.errors) {
+                    resp.errors = handleErrors(resp.errors);
+                }
                 return resp;
             })
             .catch(e => {

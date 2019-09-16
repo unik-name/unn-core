@@ -68,6 +68,9 @@ export class SetPropertiesCommand extends BaseCommand {
         // Check unikid format
         checkUnikIdFormat(flags.unikid);
 
+        // Parse properties
+        const properties: { [_: string]: string } = this.parseProperties(flags.properties);
+
         // Get passphrase
         let passphrase = flags.passphrase;
         if (!passphrase) {
@@ -76,9 +79,6 @@ export class SetPropertiesCommand extends BaseCommand {
 
         // Check passphrase format
         checkPassphraseFormat(passphrase);
-
-        // Parse properties
-        const properties: { [_: string]: string } = this.parseProperties(flags.properties);
 
         // Update transaction
         const transactionStruct = createNFTUpdateTransaction(

@@ -1,7 +1,7 @@
 {
     "name": "@uns/core-transactions",
     "description": "Transaction Services for UNS Core",
-    "version": "3.0.0-alpha.2",
+    "version": "3.0.0-alpha.3",
     "contributors": [
         "Joshua Noack <joshua@ark.io>",
         "Guillaume Nicolas <guillaume@spacelephant.org>"
@@ -20,9 +20,9 @@
         "clean": "del dist"
     },
     "dependencies": {
-        "@uns/core-container": "^3.0.0-alpha.2",
-        "@uns/core-interfaces": "^3.0.0-alpha.2",
-        "@uns/crypto": "^3.0.0-alpha.2",
+        "@uns/core-container": "^3.0.0-alpha.3",
+        "@uns/core-interfaces": "^3.0.0-alpha.3",
+        "@uns/crypto": "^3.0.0-alpha.3",
         "bs58check": "^2.1.2"
     },
     "publishConfig": {

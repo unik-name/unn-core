@@ -1,5 +1,7 @@
 import { app } from "@arkecosystem/core-container";
 import { Database } from "@arkecosystem/core-interfaces";
+import { NFT } from "@arkecosystem/core-interfaces";
+import { configManager } from "@arkecosystem/crypto";
 import Boom from "boom";
 import { ServerCache } from "../../../services";
 import { paginate, respondWithResource, toPagination } from "../utils";
@@ -18,27 +20,35 @@ const index = async request => {
 
 const show = async request => {
     const nft = await nftsRepository.findById(request.params.id);
-    const transactions = await transactionsRepository.findAllByAsset({
+    if (!nft) {
+        return Boom.notFound(`Non fungible token ${request.params.id} not found`);
+    }
+    const nftName: string = configManager.getCurrentNftName();
+    const transactions: NFT.INftTx[] = await transactionsRepository.findAllByAsset({
         nft: {
-            tokenId: `${request.params.id}`,
+            [nftName]: {
+                tokenId: `${request.params.id}`,
+            },
         },
     });
+    if (!transactions || transactions.length < 1) {
+        return Boom.notFound(`Unable to retrieve transaction for token ${request.params.id}`);
+    }
 
-    if (transactions && transactions.length > 0) {
-        nft.transactions = {
+    const result = {
+        id: nft.id,
+        ownerId: nft.ownerId,
+        transactions: {
             first: {
                 id: transactions[0].id,
             },
             last: {
                 id: transactions[transactions.length - 1].id,
             },
-        };
-    }
-    if (!nft) {
-        return Boom.notFound(`Non fungible token ${request.params.id} not found`);
-    }
+        },
+    };
 
-    return respondWithResource(request, nft, "nft");
+    return respondWithResource(request, result, "nft");
 };
 
 const properties = async request => {

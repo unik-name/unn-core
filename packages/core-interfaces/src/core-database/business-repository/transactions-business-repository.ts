@@ -1,3 +1,4 @@
+import { INftTx } from "../../core-nft";
 import { IParameters } from "./parameters";
 
 export interface ITransactionsBusinessRepository {
@@ -13,7 +14,7 @@ export interface ITransactionsBusinessRepository {
 
     findAllByRecipient(recipientId, parameters?: IParameters): Promise<any>;
 
-    findAllByAsset(asset: any): Promise<any>;
+    findAllByAsset(asset: any): Promise<INftTx[]>;
 
     allVotesBySender(senderPublicKey, parameters?: IParameters): Promise<any>;
 

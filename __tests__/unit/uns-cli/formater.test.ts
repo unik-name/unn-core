@@ -51,11 +51,11 @@ https://explorer.devnet.uns.network/block/157555`,
     });
 
     it("TABLE", async () => {
-        const formatOutput = OUTPUT_FORMAT.table.action(formatInput);
+        const formatOutput = OUTPUT_FORMAT.table.action([formatInput]);
         // tslint:disable-next-line
         expect(formatOutput).toStrictEqual(
-            `Height,Network,Supply DUNS,Supply UNIKs,Active delegates,Last block
-157555,devnet,21315110 DUNS,140 UNIKs,2,https://explorer.devnet.uns.network/block/157555`,
+            `Height;Network;Supply DUNS;Supply UNIKs;Active delegates;Last block
+157555;devnet;21315110 DUNS;140 UNIKs;2;https://explorer.devnet.uns.network/block/157555`,
         );
     });
 });

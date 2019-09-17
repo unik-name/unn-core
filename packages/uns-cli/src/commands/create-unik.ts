@@ -2,7 +2,7 @@ import { flags } from "@oclif/command";
 import { ITransactionData } from "@uns/crypto";
 import { BaseCommand } from "../baseCommand";
 import { BaseCommandLogs } from "../baseCommandLogs";
-import { CommandOutput } from "../formater";
+import { Formater, NestedCommandOutput, OUTPUT_FORMAT } from "../formater";
 import { getTypeValue, getUnikTypesList } from "../types";
 import {
     createNFTMintTransaction,
@@ -17,7 +17,7 @@ export class CreateUnikCommand extends BaseCommandLogs {
     public static examples = [
         `$ uns create-unik --explicitValue {explicitValue} --type [${getUnikTypesList().join(
             "|",
-        )}] --network ${getNetworksListListForDescription()}`,
+        )}] --network ${getNetworksListListForDescription()} --format {json|yaml}`,
     ];
 
     public static flags = {
@@ -31,6 +31,10 @@ export class CreateUnikCommand extends BaseCommandLogs {
         ...passphraseFlag,
     };
 
+    protected getAvailableFormats(): Formater[] {
+        return [OUTPUT_FORMAT.json, OUTPUT_FORMAT.yaml];
+    }
+
     protected getCommand(): typeof BaseCommand {
         return CreateUnikCommand;
     }
@@ -39,7 +43,7 @@ export class CreateUnikCommand extends BaseCommandLogs {
         return "create-unik";
     }
 
-    protected async do(flags: Record<string, any>): Promise<CommandOutput> {
+    protected async do(flags: Record<string, any>): Promise<NestedCommandOutput> {
         /**
          * Get passphrase
          */
@@ -112,9 +116,11 @@ export class CreateUnikCommand extends BaseCommandLogs {
             );
         }
         return {
-            unikid: tokenId,
-            transaction: transaction.id,
-            confirmations: transactionFromNetwork.confirmations,
+            data: {
+                id: tokenId,
+                transaction: transaction.id,
+                confirmations: transactionFromNetwork.confirmations,
+            },
         };
     }
 }

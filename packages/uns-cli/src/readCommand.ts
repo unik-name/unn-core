@@ -11,5 +11,14 @@ export abstract class ReadCommand extends BaseCommand {
         this.logAttribute("node", this.api.getCurrentNode());
         this.logAttribute("readDateTime", chainmeta.timestamp.human);
         this.logAttribute("height", chainmeta.height);
+
+        return {
+            chainmeta: {
+                network: this.api.network.name,
+                node: this.api.getCurrentNode(),
+                date: chainmeta.timestamp.human,
+                height: chainmeta.height,
+            },
+        };
     }
 }

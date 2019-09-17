@@ -8,6 +8,10 @@ export interface CommandOutput {
     [_: string]: string | number;
 }
 
+export interface NestedCommandOutput {
+    [_: string]: any;
+}
+
 export interface Formater {
     key: string;
     action: (obj: CommandOutput) => string;
@@ -15,7 +19,7 @@ export interface Formater {
 
 const json: Formater = {
     key: "json",
-    action: (obj: CommandOutput) => {
+    action: (obj: NestedCommandOutput) => {
         return JSON.stringify(obj, null, 2);
     },
 };
@@ -36,7 +40,7 @@ const table: Formater = {
 
 const yaml: Formater = {
     key: "yaml",
-    action: (obj: CommandOutput) => {
+    action: (obj: NestedCommandOutput) => {
         return YAML.stringify(obj).trim();
     },
 };

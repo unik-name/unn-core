@@ -1,10 +1,12 @@
 import { BaseCommand } from "../baseCommand";
+import { BaseCommandLogs } from "../baseCommandLogs";
 import { CommandOutput, Formater, OUTPUT_FORMAT } from "../formater";
+import { getNetworksListListForDescription } from "../utils";
 
-export class StatusCommand extends BaseCommand {
+export class StatusCommand extends BaseCommandLogs {
     public static description = "Display blockchain status";
 
-    public static examples = [`$ uns status`];
+    public static examples = [`$ uns status --network ${getNetworksListListForDescription()}`];
 
     public static flags = {
         ...BaseCommand.baseFlags,

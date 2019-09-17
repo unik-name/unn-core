@@ -2,7 +2,7 @@ import { Command, flags as oFlags } from "@oclif/command";
 import { Client, configManager } from "@uns/crypto";
 import { cli } from "cli-ux";
 import { UNSCLIAPI } from "./api";
-import { CommandOutput, Formater, getFormatFlag, OUTPUT_FORMAT } from "./formater";
+import { CommandOutput, Formater, getFormatFlag, NestedCommandOutput, OUTPUT_FORMAT } from "./formater";
 import * as UTILS from "./utils";
 
 export abstract class BaseCommand extends Command {
@@ -65,7 +65,7 @@ export abstract class BaseCommand extends Command {
     protected getDefaultFormat(): Formater {
         return OUTPUT_FORMAT.json;
     }
-    protected abstract do(flags: Record<string, any>): Promise<CommandOutput>;
+    protected abstract do(flags: Record<string, any>): Promise<CommandOutput> | Promise<NestedCommandOutput>;
     protected abstract getCommand(): typeof BaseCommand;
     protected abstract getCommandTechnicalName(): string;
 

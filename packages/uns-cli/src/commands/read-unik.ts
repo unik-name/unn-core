@@ -1,18 +1,24 @@
 import { flags } from "@oclif/command";
 import { BaseCommand } from "../baseCommand";
-import { CommandOutput } from "../formater";
+import { Formater, NestedCommandOutput, OUTPUT_FORMAT } from "../formater";
 import { ReadCommand } from "../readCommand";
 import { getNetworksListListForDescription } from "../utils";
 
 export class ReadUnikCommand extends ReadCommand {
     public static description = "Display UNIK token informations";
 
-    public static examples = [`$ uns read-unik --unikid {unikId} --network ${getNetworksListListForDescription()}`];
+    public static examples = [
+        `$ uns read-unik --unikid {unikId} --network ${getNetworksListListForDescription()} --format {json|yaml}`,
+    ];
 
     public static flags = {
         ...ReadCommand.baseFlags,
         unikid: flags.string({ description: "Token id to read", required: true }),
     };
+
+    protected getAvailableFormats(): Formater[] {
+        return [OUTPUT_FORMAT.json, OUTPUT_FORMAT.yaml];
+    }
 
     protected getCommand(): typeof BaseCommand {
         return ReadUnikCommand;
@@ -22,7 +28,7 @@ export class ReadUnikCommand extends ReadCommand {
         return "read-unik";
     }
 
-    protected async do(flags: Record<string, any>): Promise<CommandOutput> {
+    protected async do(flags: Record<string, any>): Promise<NestedCommandOutput> {
         const unik: any = await this.api.getUnikById(flags.unikid);
         const properties: any = await this.api.getUnikProperties(flags.unikid);
         const creationTransaction = await this.api.getTransaction(unik.transactions.first.id);
@@ -47,7 +53,18 @@ export class ReadUnikCommand extends ReadCommand {
             this.log("\t\t", prop);
         }
 
-        this.showContext(unik.chainmeta);
-        return {};
+        const result = {
+            id: unik.id,
+            ownerAddress: unik.ownerId,
+            creationBlock: creationTransaction.blockId,
+            creationTransaction: creationTransaction.id,
+            creationDate: creationTransaction.timestamp.human,
+            properties: properties.data,
+        };
+
+        return {
+            data: result,
+            ...this.showContext(unik.chainmeta),
+        };
     }
 }

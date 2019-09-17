@@ -16,10 +16,6 @@ export class StatusCommand extends BaseCommandLogs {
         return [OUTPUT_FORMAT.json, OUTPUT_FORMAT.yaml, OUTPUT_FORMAT.table];
     }
 
-    protected getDefaultFormat(): Formater {
-        return OUTPUT_FORMAT.json;
-    }
-
     protected getCommand(): typeof BaseCommand {
         return StatusCommand;
     }

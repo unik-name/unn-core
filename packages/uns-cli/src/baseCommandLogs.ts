@@ -8,13 +8,29 @@ export abstract class BaseCommandLogs extends BaseCommand {
     /**
      * Enables this.log on every BaseCommandLogs sub commands
      */
-    public log(message?: string, ...args: any[]): void {
-        if (this.verbose) {
+    public log(message = "", ...args: any[]): void {
+        // If help flag is set, we force logger. We can only test here.
+        if (this.verbose || this._helpOverride()) {
             if (args && args.length > 0) {
                 super.log(message, args);
             } else {
                 super.log(message);
             }
         }
+    }
+
+    /**
+     * Override of _helpOverride to take care of all help flags
+     */
+    public _helpOverride() {
+        for (const arg of this.argv) {
+            if (arg === "--help" || arg === "-h" || arg === "help") {
+                return true;
+            }
+            if (arg === "--") {
+                return false;
+            }
+        }
+        return false;
     }
 }

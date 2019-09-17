@@ -1,6 +1,6 @@
 import { flags } from "@oclif/parser";
 import { BaseCommand } from "../baseCommand";
-import { CommandOutput } from "../formater";
+import { CommandOutput, Formater, OUTPUT_FORMAT } from "../formater";
 import {
     checkPassphraseFormat,
     checkUnikIdFormat,
@@ -15,7 +15,10 @@ const KEY_VALUE_SEPARATOR = ":";
 export class SetPropertiesCommand extends BaseCommand {
     public static description = "Set (add or update) properties of UNIK token.";
 
-    public static examples = [`$ uns set-properties --network ${getNetworksListListForDescription()}`];
+    public static examples = [
+        `$ uns set-properties --network ${getNetworksListListForDescription()} --unkid {unikId}
+        --properties "{key}:{value}" --format {json|yaml}`,
+    ];
 
     public static flags = {
         ...BaseCommand.baseFlags,
@@ -46,6 +49,10 @@ export class SetPropertiesCommand extends BaseCommand {
             default: 100000000,
         }),
     };
+
+    protected getAvailableFormats(): Formater[] {
+        return [OUTPUT_FORMAT.json, OUTPUT_FORMAT.yaml];
+    }
 
     protected getCommand(): typeof BaseCommand {
         return SetPropertiesCommand;
@@ -105,7 +112,11 @@ export class SetPropertiesCommand extends BaseCommand {
         this.log("transaction: ", finalTransaction.id);
         this.log("confirmations: ", finalTransaction.confirmations);
 
-        return {};
+        return {
+            id: flags.unikid,
+            transaction: finalTransaction.id,
+            confirmations: finalTransaction.confirmations,
+        };
     }
 
     private parseProperties(props: string[]): { [_: string]: string } {

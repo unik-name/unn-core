@@ -3,7 +3,7 @@ import { ITransactionData } from "@uns/crypto";
 import { BaseCommand } from "../baseCommand";
 import { BaseCommandLogs } from "../baseCommandLogs";
 import { CommandOutput } from "../formater";
-import { getUnikTypesList, UNIK_TYPES } from "../types";
+import { getTypeValue, getUnikTypesList } from "../types";
 import {
     createNFTMintTransaction,
     getNetworksListListForDescription,
@@ -63,7 +63,7 @@ export class CreateUnikCommand extends BaseCommandLogs {
         const transaction: ITransactionData = createNFTMintTransaction(
             this.client,
             tokenId,
-            this.getTypeValue(flags.type),
+            getTypeValue(flags.type),
             passphrase,
             this.api.getVersion(),
         );
@@ -116,9 +116,5 @@ export class CreateUnikCommand extends BaseCommandLogs {
             transaction: transaction.id,
             confirmations: transactionFromNetwork.confirmations,
         };
-    }
-
-    private getTypeValue(tokenType): string {
-        return `${UNIK_TYPES[tokenType].code}`;
     }
 }

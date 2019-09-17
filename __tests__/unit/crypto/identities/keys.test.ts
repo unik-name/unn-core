@@ -8,7 +8,7 @@ import { data, passphrase } from "./fixture.json";
 
 /* 
     fixture.json wallet was generated from command : 
-    `yarn tester make:wallets --quantity 1 --portAPI 4103 --portP2P 4102 --write --network devnet`
+    `yarn tester make:wallets --quantity 1 --portAPI 4103 --portP2P 4102 --write`
     (running local devnet relay node)
  */
 

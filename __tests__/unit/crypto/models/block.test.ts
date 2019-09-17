@@ -1,7 +1,7 @@
 import "jest-extended";
 
 import ByteBuffer from "bytebuffer";
-import { configManager, NetworkName, ITransactionData } from "../../../../packages/crypto/src";
+import { configManager, ITransactionData, NetworkName } from "../../../../packages/crypto/src";
 import { slots } from "../../../../packages/crypto/src/crypto";
 import { Block, Delegate } from "../../../../packages/crypto/src/models";
 import { devnet, testnet } from "../../../../packages/crypto/src/networks";
@@ -46,7 +46,6 @@ describe("Models - Block", () => {
         });
 
         it("should verify the block", () => {
-
             const block = new Block(dummyBlock);
 
             expect(block.verification.verified).toBeTrue();
@@ -347,7 +346,7 @@ describe("Models - Block", () => {
 
     describe("serializeFull", () => {
         describe("genesis block", () => {
-            describe.each([["mainnet", 468048], ["devnet", 1228], ["testnet", 46488]])(
+            describe.each([["mainnet", 468048], ["devnet", 2576], ["testnet", 46488]])(
                 "%s",
                 (network: NetworkName, length: number) => {
                     configManager.setFromPreset(network);

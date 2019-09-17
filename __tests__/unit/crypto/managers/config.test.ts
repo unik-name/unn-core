@@ -28,7 +28,7 @@ describe("Configuration", () => {
     });
 
     it('key should be "get"', () => {
-        expect(configManager.get("nethash")).toBe("3791db03238b053984fab6e4ae2738ef8cca7983353e3be166b55790b9bd0196");
+        expect(configManager.get("nethash")).toBe("418a754bbed3919c8af1ababb469d5759fa4f535b77df987367fc5d7eb153d86");
     });
 
     it("should build milestones", () => {

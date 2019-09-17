@@ -2,14 +2,14 @@
     {
         "height": 1,
         "reward": 200000000,
-        "activeDelegates": 2,
+        "activeDelegates": 7,
         "blocktime": 8,
         "block": {
             "version": 0,
             "maxTransactions": 50,
             "maxPayload": 2097152
         },
-        "epoch": "2019-02-19T15:14:14.000Z",
+        "epoch": "2019-09-17T10:08:26.813Z",
         "fees": {
             "staticFees": {
                 "transfer": 10000000,

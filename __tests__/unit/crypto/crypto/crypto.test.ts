@@ -207,7 +207,7 @@ describe("crypto.ts", () => {
 
     describe("getKeysFromWIF", () => {
         it("should return two keys in hex", () => {
-            const keys = crypto.getKeysFromWIF("VBJ3fNmqwyEJPLm1Rq27dJWjeZ5Lzz8jenuksAnijvcQqUb4eC5o");
+            const keys = crypto.getKeysFromWIF("SYYQimm1upmYd2ssX57cVszSVzPtxHvcmBMFnb545sYpWYbj6FfS");
 
             expect(keys).toBeObject();
             expect(keys).toHaveProperty("publicKey");
@@ -221,14 +221,14 @@ describe("crypto.ts", () => {
         });
 
         it("should return address", () => {
-            const keys = crypto.getKeysFromWIF("VBJ3fNmqwyEJPLm1Rq27dJWjeZ5Lzz8jenuksAnijvcQqUb4eC5o");
+            const keys = crypto.getKeysFromWIF("SYYQimm1upmYd2ssX57cVszSVzPtxHvcmBMFnb545sYpWYbj6FfS");
             // @ts-ignore
             const address = crypto.getAddress(keys.publicKey.toString("hex"));
-            expect(address).toBe("DRsJbyZJi8wtEkbNp49bempdVz6UdKKXDj");
+            expect(address).toBe("DShZWhD5WELYsvvAhigJrxcWFRt65RMJVa");
         });
 
         it("should get keys from compressed WIF", () => {
-            const keys = crypto.getKeysFromWIF("VBJ3fNmqwyEJPLm1Rq27dJWjeZ5Lzz8jenuksAnijvcQqUb4eC5o");
+            const keys = crypto.getKeysFromWIF("SYYQimm1upmYd2ssX57cVszSVzPtxHvcmBMFnb545sYpWYbj6FfS");
 
             expect(keys).toBeObject();
             expect(keys).toHaveProperty("publicKey");
@@ -237,7 +237,7 @@ describe("crypto.ts", () => {
         });
 
         it("should get keys from uncompressed WIF", () => {
-            const keys = crypto.getKeysFromWIF("7Puh38ftpMePF8rENGzsLCPB59PSpY7RLjAjYpHxPgYYynWXv5H");
+            const keys = crypto.getKeysFromWIF("6nfP974dTU8pwqTUkyDNduLMjNAGPx3BNLZgboEc8uEZ4Y5BYsv");
 
             expect(keys).toBeObject();
             expect(keys).toHaveProperty("publicKey");
@@ -248,7 +248,7 @@ describe("crypto.ts", () => {
 
     describe("keysToWIF", () => {
         it("should get keys from WIF", () => {
-            const wifKey = "VBJ3fNmqwyEJPLm1Rq27dJWjeZ5Lzz8jenuksAnijvcQqUb4eC5o";
+            const wifKey = "SYYQimm1upmYd2ssX57cVszSVzPtxHvcmBMFnb545sYpWYbj6FfS";
             const keys = crypto.getKeysFromWIF(wifKey);
             const actual = crypto.keysToWIF(keys);
 
@@ -268,12 +268,12 @@ describe("crypto.ts", () => {
 
         it("should get address from compressed WIF (devnet)", () => {
             const keys = crypto.getKeysFromWIF(
-                "VBJ3fNmqwyEJPLm1Rq27dJWjeZ5Lzz8jenuksAnijvcQqUb4eC5o",
+                "SYYQimm1upmYd2ssX57cVszSVzPtxHvcmBMFnb545sYpWYbj6FfS",
                 networkDevnet.network,
             );
             const address = crypto.getAddress(keys.publicKey, networkDevnet.network.pubKeyHash);
             expect(keys.compressed).toBeTruthy();
-            expect(address).toBe("DRsJbyZJi8wtEkbNp49bempdVz6UdKKXDj");
+            expect(address).toBe("DShZWhD5WELYsvvAhigJrxcWFRt65RMJVa");
         });
     });
 

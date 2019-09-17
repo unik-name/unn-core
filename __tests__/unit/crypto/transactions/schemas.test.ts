@@ -12,7 +12,7 @@ let transaction;
 let transactionSchema: TransactionSchema;
 
 describe("Transfer Transaction", () => {
-    const address = "DTRdbaUW3RQQSL5By4G43JVaeHiqfVp9oh";
+    const address = "D59pZ7fH6vtk23mADnbpqyhfMiJzpdixws";
     const fee = 1 * constants.ARKTOSHI;
     const amount = 10 * constants.ARKTOSHI;
 

@@ -153,7 +153,7 @@ export const transactionBuilder = <T extends TransactionBuilder<T>>(provider: ()
                 builder.network(23).signWithWif("dummy pass");
 
                 expect(crypto.getKeysFromWIF).toHaveBeenCalledWith("dummy pass", {
-                    wif: 190,
+                    wif: 172,
                 });
                 expect(crypto.sign).toHaveBeenCalledWith((builder as any).getSigningObject(), keys);
             });
@@ -200,7 +200,7 @@ export const transactionBuilder = <T extends TransactionBuilder<T>>(provider: ()
 
                 builder.network(23).secondSignWithWif("my very real second pass", null);
 
-                expect(crypto.getKeysFromWIF).toHaveBeenCalledWith("my very real second pass", { wif: 190 });
+                expect(crypto.getKeysFromWIF).toHaveBeenCalledWith("my very real second pass", { wif: 172 });
                 expect(crypto.secondSign).toHaveBeenCalledWith((builder as any).getSigningObject(), keys);
             });
         });

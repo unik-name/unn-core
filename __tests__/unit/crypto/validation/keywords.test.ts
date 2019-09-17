@@ -233,7 +233,7 @@ describe("keyword bignumber", () => {
 
             const validate = ajv.compile(schema);
             expect(
-                validate({ amount: 0, id: "e343fd3fd83c75f0d851a60e803cfb8b11fb1fc2c353ef116fe91f6001db0ac3" }),
+                validate({ amount: 0, id: "6bf042492188d8ae0c688504f7c0938e8e708810490d886e29557e482cb1dd13" }),
             ).toBeTrue();
             expect(
                 validate({ amount: 0, id: "affe17fd0c35bc36674f3874c2953fa3e35877cbcdb44a08bdc6083dbd39d572" }),

@@ -5,17 +5,23 @@ import { generateMnemonic } from "bip39";
 import { createHash, randomBytes } from "crypto";
 import * as MoreEntropy from "promised-entropy";
 import { BaseCommand } from "../baseCommand";
-import { CommandOutput } from "../formater";
+import { CommandOutput, Formater, OUTPUT_FORMAT } from "../formater";
 import { getNetworksListListForDescription } from "../utils";
 
 export class CreateWalletCommand extends BaseCommand {
     public static description = "Create UNS wallet";
 
-    public static examples = [`$ uns create-wallet --network ${getNetworksListListForDescription()}`];
+    public static examples = [
+        `$ uns create-wallet --network ${getNetworksListListForDescription()} --format {json|yaml}`,
+    ];
 
     public static flags = {
         ...BaseCommand.baseFlags,
     };
+
+    protected getAvailableFormats(): Formater[] {
+        return [OUTPUT_FORMAT.json, OUTPUT_FORMAT.yaml];
+    }
 
     protected getCommand(): typeof BaseCommand {
         return CreateWalletCommand;
@@ -37,8 +43,6 @@ export class CreateWalletCommand extends BaseCommand {
             network: this.api.network.name,
         };
 
-        const jsonWallet = JSON.stringify(wallet, null, 2);
-
         // Do not use this.error. It throws error and close. {exit: 0} option closes too.
         console.error(
             color.red(
@@ -46,8 +50,7 @@ export class CreateWalletCommand extends BaseCommand {
             ),
         );
 
-        this.log(jsonWallet);
-        return {};
+        return wallet;
     }
 
     private async randomMnemonicSeed(nbBits: number) {

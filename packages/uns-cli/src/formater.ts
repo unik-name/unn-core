@@ -14,7 +14,7 @@ export interface NestedCommandOutput {
 
 export interface Formater {
     key: string;
-    action: (obj: CommandOutput) => string;
+    action: (obj: CommandOutput | CommandOutput[]) => string;
 }
 
 const json: Formater = {
@@ -33,8 +33,8 @@ const raw: Formater = {
 
 const table: Formater = {
     key: "table",
-    action: (obj: CommandOutput) => {
-        return Papa.unparse([obj], { newline: EOL });
+    action: (obj: CommandOutput[]) => {
+        return Papa.unparse(obj, { newline: EOL, delimiter: ";" });
     },
 };
 

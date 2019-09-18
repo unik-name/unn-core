@@ -12,7 +12,8 @@ export class CreateWalletCommand extends BaseCommand {
     public static description = "Create UNS wallet";
 
     public static examples = [
-        `$ uns create-wallet --network ${getNetworksListListForDescription()} --format {json|yaml}`,
+        `$ uns create-wallet --network ${getNetworksListListForDescription()}
+        --format {json|yaml} --verbose`,
     ];
 
     public static flags = {

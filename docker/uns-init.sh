@@ -37,7 +37,17 @@ fi
 
 mkdir -p /etc/uns && cp $ENV_FILE /etc/uns/env #copy file to mount
 FORGER=false
-if [[ -n "${FORGER_SECRET}" ]]; then
+
+if [[ -n "${BOOTSTRAP}" ]]; then
+  echo "bootstrap mode"
+  NETWORK_START="--networkStart"
+fi
+
+if [[ -n "${FORGERS_SECRET}" ]]; then
+  echo "setting forgers secret"
+  echo "{\"secrets\": [$FORGERS_SECRET]}" > /etc/uns/delegates.json
+  FORGER=true
+elif [[ -n "${FORGER_SECRET}" ]]; then
   echo "setting forger secret"
   uns config:forger:bip39 --bip39 "$FORGER_SECRET"
   FORGER=true
@@ -49,4 +59,4 @@ if [ "$FORGER" = true ] ; then
     echo "Starting forger"
     nohup uns forger:run > /var/log/uns/uns-forger.log 2>&1 &
 fi
-uns relay:run --network=$NETWORK 2>&1 | tee -a /var/log/uns/uns-relay.log
+uns relay:run --network=$NETWORK $NETWORK_START 2>&1 | tee -a /var/log/uns/uns-relay.log

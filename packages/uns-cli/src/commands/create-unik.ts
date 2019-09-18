@@ -107,7 +107,7 @@ export class CreateUnikCommand extends BaseCommand {
                 }`,
             );
 
-            const tokenUrl = `${this.api.getExplorerUrl()}/nft/${tokenId}`;
+            const tokenUrl = `${this.api.getExplorerUrl()}/uniks/${tokenId}`;
             this.log(`UNIK nft in UNS explorer: ${tokenUrl}`);
         } else {
             this.error(

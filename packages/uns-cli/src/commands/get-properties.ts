@@ -50,14 +50,6 @@ export class GetPropertiesCommand extends BaseCommand {
             );
         }
 
-        this.log("UNIK:");
-        this.logAttribute("unikid", unik.id);
-        this.logAttribute("properties", "");
-        for (const prop of properties.data) {
-            this.log("\t\t", prop);
-        }
-        this.logAttribute("confirmations", lastTransaction.confirmations);
-
         if (flags.format === OUTPUT_FORMAT.raw.key) {
             return properties.data.reduce((accumulator, currentValue) => Object.assign(accumulator, currentValue));
         }

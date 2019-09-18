@@ -39,20 +39,6 @@ export class ReadUnikCommand extends ReadCommand {
             creationTransaction.chainmeta.height,
         );
 
-        /**
-         * WALLET
-         */
-        this.log("UNIK:");
-        this.logAttribute("unikid", unik.id);
-        this.logAttribute("owner address", unik.ownerId);
-        this.logAttribute("creation block", creationTransaction.blockId);
-        this.logAttribute("creation transaction", creationTransaction.id);
-        this.logAttribute("creation date", creationTransaction.timestamp.human);
-        this.logAttribute("properties", "");
-        for (const prop of properties.data) {
-            this.log("\t\t", prop);
-        }
-
         const result = {
             id: unik.id,
             ownerAddress: unik.ownerId,

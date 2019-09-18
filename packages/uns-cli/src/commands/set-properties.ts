@@ -17,7 +17,7 @@ export class SetPropertiesCommand extends BaseCommand {
 
     public static examples = [
         `$ uns set-properties --network ${getNetworksListListForDescription()} --unkid {unikId}
-        --properties "{key}:{value}" --format {json|yaml}`,
+        --properties "{key}:{value}" --format {json|yaml} --verbose`,
     ];
 
     public static flags = {
@@ -97,20 +97,19 @@ export class SetPropertiesCommand extends BaseCommand {
             passphrase,
         );
 
+        this.log("Binding new propert" + (Object.keys(properties).length > 1 ? "ies" : "y") + " to UNIK.");
         const sendResult = await this.api.sendTransaction(transactionStruct);
         if (sendResult.errors) {
             throw new Error(`Transaction not accepted. Caused by: ${JSON.stringify(sendResult.errors)}`);
         }
+        this.actionStart("Waiting for transaction confirmation");
         const finalTransaction = await this.waitTransactionConfirmations(
             this.api.getBlockTime(),
             transactionStruct.id,
             flags.await,
             flags.confirmations,
         );
-
-        this.log("\nunikid: ", flags.unikid);
-        this.log("transaction: ", finalTransaction.id);
-        this.log("confirmations: ", finalTransaction.confirmations);
+        this.actionStop();
 
         return {
             id: flags.unikid,

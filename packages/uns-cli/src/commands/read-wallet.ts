@@ -38,19 +38,6 @@ export class ReadWalletCommand extends ReadCommand {
 
         this.checkDataConsistency(wallet.chainmeta.height, tokens.chainmeta.height);
 
-        /**
-         * WALLET
-         */
-        this.log("UNS WALLET:");
-        this.logAttribute("address", wallet.address);
-        this.logAttribute("publicKey", wallet.publicKey);
-        this.logAttribute("username", wallet.username);
-        this.logAttribute("secondPublicKey", wallet.secondPublicKey);
-        this.logAttribute("balance", `${this.fromSatoshi(wallet.balance)} ${this.api.getToken()}`);
-        this.logAttribute("isDelegate", wallet.isDelegate);
-        this.logAttribute("vote", wallet.vote);
-        this.logAttribute("numberOfUNIK", tokens.data.length);
-
         const data: NestedCommandOutput = {
             address: wallet.address,
             publicKey: wallet.publicKey,

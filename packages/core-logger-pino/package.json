@@ -1,7 +1,7 @@
 {
     "name": "@uns/core-logger-pino",
     "description": "Pino integration for UNS Core",
-    "version": "3.0.0-alpha.4",
+    "version": "3.0.0",
     "contributors": [
         "Brian Faust <brian@ark.io>",
         "Guillaume Nicolas <guillaume@spacelephant.org>"
@@ -20,9 +20,9 @@
         "clean": "del dist"
     },
     "dependencies": {
-        "@uns/core-container": "^3.0.0-alpha.4",
-        "@uns/core-interfaces": "^3.0.0-alpha.4",
-        "@uns/core-logger": "^3.0.0-alpha.4",
+        "@uns/core-container": "^3.0.0",
+        "@uns/core-interfaces": "^3.0.0",
+        "@uns/core-logger": "^3.0.0",
         "pino": "^5.11.1",
         "pino-pretty": "^2.5.0",
         "pump": "^3.0.0",

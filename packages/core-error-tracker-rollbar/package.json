@@ -1,7 +1,7 @@
 {
     "name": "@uns/core-error-tracker-rollbar",
     "description": "Rollbar error tracker integration for UNS Core.",
-    "version": "3.0.0-alpha.4",
+    "version": "3.0.0",
     "contributors": [
         "Brian Faust <brian@ark.io>",
         "Guillaume Nicolas <guillaume@spacelephant.org>"
@@ -19,7 +19,7 @@
         "clean": "del dist"
     },
     "dependencies": {
-        "@uns/core-container": "^3.0.0-alpha.4",
+        "@uns/core-container": "^3.0.0",
         "rollbar": "^2.5.4"
     },
     "publishConfig": {

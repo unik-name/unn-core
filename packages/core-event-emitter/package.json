@@ -1,7 +1,7 @@
 {
     "name": "@uns/core-event-emitter",
     "description": "Event Manager for UNS Core",
-    "version": "3.0.0-alpha.4",
+    "version": "3.0.0",
     "contributors": [
         "Brian Faust <brian@ark.io>",
         "Guillaume Nicolas <guillaume@spacelephant.org>"

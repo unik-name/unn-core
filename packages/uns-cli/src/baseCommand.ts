@@ -24,10 +24,13 @@ export abstract class BaseCommand extends Command {
 
     private formater;
 
-    public async run() {
+    public async init() {
         // Add dynamic format flag
         Object.assign(this.getCommand().flags, getFormatFlag(this.getDefaultFormat(), this.getAvailableFormats()));
+        await super.init();
+    }
 
+    public async run() {
         const { flags } = this.parse(this.getCommand());
 
         // Set formater

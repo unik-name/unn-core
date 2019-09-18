@@ -1,7 +1,7 @@
 {
     "name": "@uns/core-nft",
     "description": "NFT for Ark Core",
-    "version": "3.0.0-alpha.3",
+    "version": "3.0.0-alpha.4",
     "contributors": [
         "Guillaume Nicolas <guillaume@spacelephant.org>"
     ],
@@ -27,9 +27,9 @@
         "updates": "../../node_modules/npm-check-updates/bin/npm-check-updates -a"
     },
     "dependencies": {
-        "@uns/core-container": "^3.0.0-alpha.3",
-        "@uns/core-interfaces": "^3.0.0-alpha.3",
-        "@uns/crypto": "^3.0.0-alpha.3",
+        "@uns/core-container": "^3.0.0-alpha.4",
+        "@uns/core-interfaces": "^3.0.0-alpha.4",
+        "@uns/crypto": "^3.0.0-alpha.4",
         "lodash.difference": "^4.5.0"
     },
     "publishConfig": {

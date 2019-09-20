@@ -4,6 +4,13 @@ NETWORK=${UNS_NET:-devnet} # default devnet
 
 echo "network : $NETWORK" #devnet, mainnet, testnet
 
+replace_or_add () {
+  KEY="${1}"
+  VALUE="${2}"
+  FILE="${3}"
+  grep -q "^$KEY=.*$" $FILE && sed -i -E "s/($KEY=).*/\1$VALUE/" $FILE || echo "$KEY=$VALUE" >> $FILE
+}
+
 # -> config
 ENV_FILE=~/.config/uns-core/$NETWORK/.env
 if [ ! -f "$ENV_FILE" ]; then
@@ -16,23 +23,23 @@ if [ ! -f "$ENV_FILE" ]; then
 fi
 if [[ -n "${DB_HOST}" ]]; then
   echo "updating DB HOST with $DB_HOST"
-  sed -i -E "s/(CORE_DB_HOST=).*/\1$DB_HOST/" $ENV_FILE
+  replace_or_add "CORE_DB_HOST" "$DB_HOST" $ENV_FILE
 fi
 if [[ -n "${DB_PORT}" ]]; then
   echo "updating DB PORT with $DB_PORT"
-  sed -i -E "s/(CORE_DB_PORT=).*/\1$DB_PORT/" $ENV_FILE
+  replace_or_add "CORE_DB_PORT" "$DB_PORT" $ENV_FILE
 fi
 if [[ -n "${DB_USER}" ]]; then
   echo "updating DB USER with $DB_USER"
-  sed -i -E "s/(CORE_DB_USER=).*/\1$DB_USER/" $ENV_FILE
+  replace_or_add "CORE_DB_USER" "$DB_USER" $ENV_FILE
 fi
 if [[ -n "${DB_PASSWORD}" ]]; then
   echo "updating DB PASSWORD with $DB_PASSWORD"
-  sed -i -E "s/(CORE_DB_PASSWORD=).*/\1$DB_PASSWORD/" $ENV_FILE
+  replace_or_add "CORE_DB_PASSWORD" "$DB_PASSWORD" $ENV_FILE
 fi
 if [[ -n "${DB_DATABASE}" ]]; then
   echo "updating DB DATABASE with $DB_DATABASE"
-  sed -i -E "s/(CORE_DB_DATABASE=).*/\1$DB_DATABASE/" $ENV_FILE
+  replace_or_add "CORE_DB_DATABASE" "$DB_DATABASE" $ENV_FILE
 fi
 
 mkdir -p /etc/uns && cp $ENV_FILE /etc/uns/env #copy file to mount
@@ -41,6 +48,15 @@ FORGER=false
 if [[ -n "${BOOTSTRAP}" ]]; then
   echo "bootstrap mode"
   NETWORK_START="--networkStart"
+fi
+
+if [[ -n "${BOOTNODE}" ]]; then
+  echo "setting bootnode : ${BOOTNODE}"
+  IP=$(nslookup $BOOTNODE | cut -d ' ' -f 3)
+  PEER_FILE=/etc/uns/peers.json
+  apk add jq
+  echo $(jq --arg ip $IP '.list += [{"ip": $ip,"port":"4002"}]' $PEER_FILE) > $PEER_FILE
+  apk del jq
 fi
 
 if [[ -n "${FORGERS_SECRET}" ]]; then

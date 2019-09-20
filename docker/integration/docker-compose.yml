@@ -1,0 +1,70 @@
+version: '2'
+services:
+  postgres:
+    build:   
+      context: .
+      dockerfile: Dockerfile
+    image: "universalnamesystem/dcore-db"
+    container_name: uns_dalinet_db
+    restart: always
+    ports:
+      - '127.0.0.1:5432:5432'
+    volumes:
+      - 'postgres:/var/lib/postgresql/data'
+    networks:
+      - core 
+    environment:
+     POSTGRES_PASSWORD: password
+     POSTGRES_USER: uns
+
+  forger1:
+    extends:
+      file: forger-commons.yml
+      service: forger
+    container_name: uns_dalinet_forger1
+    environment:
+    #  FORGER_SECRET: ""
+     BOOTSTRAP: "true"
+     DB_DATABASE: uns_dalinet_forger1
+    ports:
+     - "4002:4002"
+     - "4003:4003"
+    links:
+     - postgres
+    depends_on:
+     - postgres
+  forger2:
+    extends:
+      file: forger-commons.yml
+      service: forger
+    container_name: uns_dalinet_forger2
+    environment:
+    #  FORGER_SECRET: ""
+     DB_DATABASE: uns_dalinet_forger2
+     BOOTNODE: forger1
+    links:
+     - forger1
+     - postgres
+    depends_on:
+     - forger1
+     - postgres
+  forger3:
+    extends:
+      file: forger-commons.yml
+      service: forger
+    container_name: uns_dalinet_forger3
+    environment:
+    #  FORGER_SECRET: ""
+     DB_DATABASE: uns_dalinet_forger3
+     BOOTNODE: forger1
+    links:
+     - forger1
+     - postgres
+    depends_on:
+     - forger1
+     - postgres
+
+volumes:
+  postgres:
+networks:
+  core:

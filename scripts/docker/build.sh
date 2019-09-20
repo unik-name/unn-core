@@ -2,7 +2,15 @@
 
 set -e
 
-IMAGE="universalnamesystem/core"
+ORG="universalnamesystem"
+REPO="core"
+
+if [ "${1}" == "integration" ]; then
+    REPO="d"$REPO
+fi
+
+IMAGE=$ORG"/"$REPO
+
 COMMIT=$(git rev-parse --short HEAD)
 
 docker build -t "$IMAGE":"$COMMIT" -f ./docker/Dockerfile .

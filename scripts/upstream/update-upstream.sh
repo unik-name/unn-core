@@ -2,7 +2,7 @@
 
 set -e
 
-cd /home/unikname/core
+cd /root/uns-core
 
 echo -e "\n["$(date +%F_%H-%M-%S)"]"
 
@@ -19,18 +19,10 @@ else
     echo "--> source updated"
 fi
 
-echo -e "\nStopping node"
-./packages/core/bin/run relay:stop 
-./packages/core/bin/run forger:stop
-echo "--> Node stopped"
+cd docker/integration
 
-echo -e "\nBuilding sources"
-rm -rf ./node_modules
-yarn && yarn setup:clean
-echo "--> sources built"
+docker-compose down 
 
-echo -e "\nStarting node"
-./packages/core/bin/run relay:start --network=devnet --ignoreMinimumNetworkReach
-./packages/core/bin/run forger:start --network=devnet
+docker-compose up --build
 
 exit 0

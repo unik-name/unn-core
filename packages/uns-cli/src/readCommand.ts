@@ -1,5 +1,5 @@
+import { ChainMeta } from "@uns/ts-sdk";
 import { BaseCommand } from "./baseCommand";
-import { ChainMeta } from "./types";
 import { chainmetaFlag } from "./utils";
 
 export abstract class ReadCommand extends BaseCommand {

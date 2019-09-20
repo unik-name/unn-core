@@ -19,6 +19,7 @@
         "@uns/ts-sdk": "^1.0.0-alpha.1",
         "cli-ux": "^5.3.1",
         "delay": "^4.1.0",
+        "flat": "^4.1.0",
         "papaparse": "^5.0.2",
         "promised-entropy": "^0.1.0",
         "request": "^2.88.0",
@@ -28,6 +29,7 @@
     },
     "devDependencies": {
         "@oclif/dev-cli": "^1.21.3",
+        "@types/flat": "^0.0.28",
         "@types/node": "^11.10.5",
         "@types/request-promise": "^4.1.44",
         "globby": "^10.0.1",

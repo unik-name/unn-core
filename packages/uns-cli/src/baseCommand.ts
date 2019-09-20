@@ -11,11 +11,13 @@ export abstract class BaseCommand extends Command {
     public static baseFlags = {
         help: oFlags.help({ char: "h" }),
         network: oFlags.string({
+            char: "n",
             description: "Network used to create UNIK nft token (local are for development only)",
             required: true,
             options: UTILS.getNetworksList(),
         }),
         verbose: oFlags.boolean({
+            char: "v",
             description: "Detailed logs",
         }),
     };
@@ -38,6 +40,10 @@ export abstract class BaseCommand extends Command {
         // Set formater
         this.formater = OUTPUT_FORMAT[flags.format];
         this.verbose = flags.verbose;
+
+        if (!this.verbose) {
+            this.disableLogs();
+        }
 
         /**
          * Configuration
@@ -64,41 +70,12 @@ export abstract class BaseCommand extends Command {
         }
     }
 
-    /**
-     * Enables this.log on every BaseCommand sub commands
-     */
-    public log(message = "", ...args: any[]): void {
-        // If help flag is set, we force logger. We can only test here.
-        if (this.verbose || this._helpOverride()) {
-            if (args && args.length > 0) {
-                super.log(message, args);
-            } else {
-                super.log(message);
-            }
-        }
-    }
-
     public info(message: string, ...args: any[]): void {
         if (this.verbose || this._helpOverride()) {
             message = typeof message === "string" ? message : util.inspect(message);
             const info = color.yellowBright(`:info: ${util.format(message, ...args)}\n`);
             process.stdout.write(info);
         }
-    }
-
-    /**
-     * Override of _helpOverride to take care of all help flags
-     */
-    public _helpOverride() {
-        for (const arg of this.argv) {
-            if (arg === "--help" || arg === "-h" || arg === "help") {
-                return true;
-            }
-            if (arg === "--") {
-                return false;
-            }
-        }
-        return false;
     }
 
     protected getAvailableFormats(): Formater[] {
@@ -178,5 +155,14 @@ export abstract class BaseCommand extends Command {
     private promptErrAndExit(errorMsg: string): void {
         this.error(`[${this.getCommandTechnicalName()}] ${errorMsg}`);
         this.exit(1);
+    }
+
+    private disableLogs(): void {
+        const disableFunction = (...args) => {
+            /*doNothing*/
+        };
+        ["debug", "log", "info", "warn"].forEach(level => (console[level] = disableFunction));
+        ["log", "warn", "info"].forEach(level => (this[level] = disableFunction));
+        // Do not override console.error and this.error
     }
 }

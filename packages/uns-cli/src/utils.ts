@@ -139,3 +139,11 @@ export const chainmetaFlag = {
         default: false,
     }),
 };
+
+export const confirmedFlag = {
+    confirmed: flags.integer({
+        default: 3,
+        description:
+            "Minimum number of confirmation since the last update of the UNIK required to return the value.",
+    }),
+}

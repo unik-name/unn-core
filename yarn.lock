@@ -1994,13 +1994,6 @@
   dependencies:
     "@types/node" "*"
 
-"@types/deepmerge@^2.2.0":
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/@types/deepmerge/-/deepmerge-2.2.0.tgz#6f63896c217f3164782f52d858d9f3a927139f64"
-  integrity sha512-FEQYDHh6+Q+QXKSrIY46m+/lAmAj/bk4KpLaam+hArmzaVpMBHLcfwOH2Q2UOkWM7XsdY9PmZpGyPAjh/JRGhQ==
-  dependencies:
-    deepmerge "*"
-
 "@types/elasticsearch@^5.0.31":
   version "5.0.31"
   resolved "https://registry.yarnpkg.com/@types/elasticsearch/-/elasticsearch-5.0.31.tgz#82c02c743a5eaca6dbb4b04a0689e6c53fd4f296"
@@ -2110,13 +2103,6 @@
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/@types/is-reachable/-/is-reachable-3.0.0.tgz#3203aa585cd5d3a4c1339bc857f4de06c4a18aff"
   integrity sha512-rCl0PxFRPqwnKnWOO+6YdfnIIEsqahrEQjBfKR31C6E5oC4MY2U9W6VvXl090ZBYoCEY2wtqrBQaZn0UBGY85g==
-
-"@types/is-url-superb@^3.0.0":
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/@types/is-url-superb/-/is-url-superb-3.0.0.tgz#09998cf8bc71a8c44b791dd7873bf07c7cd25598"
-  integrity sha512-+nhGVHjrJkCkCOQ30MpTqxylxEsubto8gLJCXAHceA4mMjIZfUGKRcRBJ1DFIVff1YqsNaGY0ZmzXklaZrfIhA==
-  dependencies:
-    is-url-superb "*"
 
 "@types/istanbul-lib-coverage@^1.1.0":
   version "1.1.0"
@@ -2684,13 +2670,11 @@
   resolved "https://registry.yarnpkg.com/@tyriar/fibonacci-heap/-/fibonacci-heap-2.0.9.tgz#df3dcbdb1b9182168601f6318366157ee16666e9"
   integrity sha512-bYuSNomfn4hu2tPiDN+JZtnzCpSpbJ/PNeulmocDy3xN2X5OkJL65zo6rPZp65cPPhLF9vfT/dgE+RtFRCSxOA==
 
-"@uns/ts-sdk@^1.0.0-alpha.1":
-  version "1.0.0-alpha.1"
-  resolved "https://registry.yarnpkg.com/@uns/ts-sdk/-/ts-sdk-1.0.0-alpha.1.tgz#5ecceade146960c984ee99e2fb67060079da7e7e"
-  integrity sha512-DE3BXcmas/0bGNWongesgOJQaOYO+O4/y4NWRR8ebr9KzNcQmAXXHIIpRC2a94WJB1WLMppWSyNsFY9S72xDpg==
+"@uns/ts-sdk@^1.1.0-beta":
+  version "1.1.0-beta"
+  resolved "https://registry.yarnpkg.com/@uns/ts-sdk/-/ts-sdk-1.1.0-beta.tgz#fa6d324cd0d147961a72db83cf973b79a7e04857"
+  integrity sha512-7JKbZALAEr/pGJmNfl+E8NzK33gwOiEX0Dw9dmUorPOrxXIoMp21v4+WPoDrYF4OjxTYMTbZFaa9QIlt7HAuvw==
   dependencies:
-    "@types/deepmerge" "^2.2.0"
-    "@types/is-url-superb" "^3.0.0"
     "@uns/crypto" "^3.0.0-alpha.3"
     deepmerge "^4.0.0"
     is-url-superb "^3.0.0"
@@ -5233,15 +5217,15 @@ deep-is@~0.1.3:
   resolved "https://registry.yarnpkg.com/deep-is/-/deep-is-0.1.3.tgz#b369d6fb5dbc13eecf524f91b070feedc357cf34"
   integrity sha1-s2nW+128E+7PUk+RsHD+7cNXzzQ=
 
-deepmerge@*, deepmerge@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/deepmerge/-/deepmerge-4.0.0.tgz#3e3110ca29205f120d7cb064960a39c3d2087c09"
-  integrity sha512-YZ1rOP5+kHor4hMAH+HRQnBQHg+wvS1un1hAOuIcxcBy0hzcUf6Jg2a1w65kpoOUnurOfZbERwjI1TfZxNjcww==
-
 deepmerge@3.2.0, deepmerge@^3.2.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/deepmerge/-/deepmerge-3.2.0.tgz#58ef463a57c08d376547f8869fdc5bcee957f44e"
   integrity sha512-6+LuZGU7QCNUnAJyX8cIrlzoEgggTM6B7mm+znKOX4t5ltluT9KLjN6g61ECMS0LTsLW7yDpNoxhix5FZcrIow==
+
+deepmerge@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/deepmerge/-/deepmerge-4.0.0.tgz#3e3110ca29205f120d7cb064960a39c3d2087c09"
+  integrity sha512-YZ1rOP5+kHor4hMAH+HRQnBQHg+wvS1un1hAOuIcxcBy0hzcUf6Jg2a1w65kpoOUnurOfZbERwjI1TfZxNjcww==
 
 default-require-extensions@^1.0.0:
   version "1.0.0"
@@ -7855,7 +7839,7 @@ is-typedarray@~1.0.0:
   resolved "https://registry.yarnpkg.com/is-typedarray/-/is-typedarray-1.0.0.tgz#e479c80858df0c1b11ddda6940f96011fcda4a9a"
   integrity sha1-5HnICFjfDBsR3dppQPlgEfzaSpo=
 
-is-url-superb@*, is-url-superb@^3.0.0:
+is-url-superb@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/is-url-superb/-/is-url-superb-3.0.0.tgz#b9a1da878a1ac73659047d1e6f4ef22c209d3e25"
   integrity sha512-3faQP+wHCGDQT1qReM5zCPx2mxoal6DzbzquFlCYJLWyy4WPTved33ea2xFbX37z4NoriEwZGIYhFtx8RUB5wQ==

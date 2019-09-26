@@ -1,7 +1,7 @@
 {
     "name": "@uns/uns-cli",
     "description": "uns CLI",
-    "version": "0.2.0-alpha",
+    "version": "0.3.0-beta",
     "author": "Space Elephant",
     "contributors": [
         "Fabien Tréguer <fabien@spacelephant.org>",
@@ -17,7 +17,7 @@
         "@oclif/plugin-help": "^2.1.6",
         "@oclif/plugin-warn-if-update-available": "^1.7.0",
         "@uns/crypto": "^3.0.0",
-        "@uns/ts-sdk": "^1.0.0-alpha.1",
+        "@uns/ts-sdk": "^1.1.0-beta",
         "cli-ux": "^5.3.1",
         "delay": "^4.1.0",
         "flat": "^4.1.0",

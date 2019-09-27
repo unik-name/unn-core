@@ -57,20 +57,19 @@ export class DidResolveCommand extends BaseCommand {
         }
 
         if (resolved.confirmations && resolved.confirmations < flags.confirmed) {
-            throw new Error(
-                `Not enough confirmations (expected: ${flags.confirmed}, actual: ${resolved.confirmations})`,
-            );
+            this.warn("DID has not reach the requested confirmation level.");
+            return undefined;
+        } else {
+            delete resolved.chainmeta;
+            delete resolved.confirmations;
+
+            if (flags.format === OUTPUT_FORMAT.raw.key && resolved.data instanceof Object) {
+                const flattenResult = flatten(resolved.data);
+                this.log("", flattenResult);
+                return flattenResult;
+            }
+
+            return resolved;
         }
-
-        delete resolved.chainmeta;
-        delete resolved.confirmations;
-
-        if (flags.format === OUTPUT_FORMAT.raw.key && resolved.data instanceof Object) {
-            const flattenResult = flatten(resolved.data);
-            this.log("", flattenResult);
-            return flattenResult;
-        }
-
-        return resolved;
     }
 }

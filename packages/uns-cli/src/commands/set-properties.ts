@@ -39,11 +39,16 @@ export class SetPropertiesCommand extends UpdatePropertiesCommand {
     protected getProperties(flags: Record<string, any>): { [_: string]: string } {
         const properties: { [_: string]: string } = {};
         for (const prop of flags.properties) {
-            const firstSeparatorIndex = prop.indexOf(KEY_VALUE_SEPARATOR);
-            if (firstSeparatorIndex === -1) {
-                throw new Error(`Property ${prop}, doesn't contain ${KEY_VALUE_SEPARATOR}`);
+            const keyValue = prop.split(KEY_VALUE_SEPARATOR);
+            if (keyValue.length !== 2) {
+                throw new Error(`Property parsing error. Should match key:value ${prop}`);
             }
-            properties[prop.substr(0, firstSeparatorIndex)] = prop.substr(firstSeparatorIndex + 1);
+            const [key, value] = keyValue;
+            const keyMatcher = key.match(/[a-zA-Z_0-9]+/);
+            if (!keyMatcher || keyMatcher[0] !== key) {
+                throw new Error(`Property key ${key} should match [a-zA-Z_0-9]+ pattern`);
+            }
+            properties[key] = value;
         }
         return properties;
     }

@@ -1,5 +1,5 @@
 import { flags } from "@oclif/command";
-import { constants, ITransactionData } from "@uns/crypto";
+import { ITransactionData } from "@uns/crypto";
 import { BaseCommand } from "../baseCommand";
 import { Formater, NestedCommandOutput, OUTPUT_FORMAT } from "../formater";
 import { getTypeValue, getUnikTypesList } from "../types";
@@ -10,6 +10,8 @@ import {
     passphraseFlag,
 } from "../utils";
 import { WriteCommand } from "../writeCommand";
+
+const EXPLICIT_VALUE_MAX_LENGTH: number = 100;
 
 export class CreateUnikCommand extends WriteCommand {
     public static description = "Create UNIK token";
@@ -44,6 +46,12 @@ export class CreateUnikCommand extends WriteCommand {
     }
 
     protected async do(flags: Record<string, any>): Promise<NestedCommandOutput> {
+        if (flags.explicitValue.length > EXPLICIT_VALUE_MAX_LENGTH) {
+            throw new Error(
+                `Error computing  UNIK id. Too long explicitValue ([${flags.explicitValue.length}] max length: 100)`,
+            );
+        }
+
         /**
          * Get passphrase
          */

@@ -90,7 +90,7 @@ export class CreateUnikCommand extends WriteCommand {
         const sendResponse = await this.api.sendTransaction(transaction);
         this.actionStop();
         if (sendResponse.errors) {
-            throw new Error(`Transaction not accepted. Caused by: ${JSON.stringify(sendResponse.errors)}`);
+            throw new Error(sendResponse.errors);
         }
         const transactionUrl = `${this.api.getExplorerUrl()}/transaction/${transaction.id}`;
         this.log(`Transaction in explorer: ${transactionUrl}`);

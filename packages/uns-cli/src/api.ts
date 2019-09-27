@@ -36,12 +36,12 @@ export class UNSCLIAPI {
             .post(`${this.network.url}/api/v2/transactions`, requestOptions)
             .then(resp => {
                 if (resp.errors) {
-                    resp.errors = handleErrors(resp.errors);
+                    resp.errors = `Transaction not accepted. Caused by: ${JSON.stringify(handleErrors(resp.errors))}`;
                 }
                 return resp;
             })
             .catch(e => {
-                throw new Error("Technical error. Please retry");
+                return { errors: `Technical error. ${e.message}` };
             });
     }
 

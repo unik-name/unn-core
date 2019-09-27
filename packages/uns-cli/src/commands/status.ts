@@ -32,13 +32,14 @@ export class StatusCommand extends BaseCommand {
         const blockUrl = `${this.api.getExplorerUrl()}/block/${currentHeight}`;
 
         let result: any = {
-            Height: currentHeight,
-            Network: flags.network,
+            height: currentHeight,
+            network: flags.network,
+            totalTokenSupply: this.fromSatoshi(unsSupply),
+            tokenSymbol: this.api.getToken(),
+            numberOfUniks: uniks,
+            activeDelegates: this.api.getActiveDelegates(),
+            lastBlockUrl: blockUrl,
         };
-        result[`Supply ${this.api.getToken()}`] = `${this.fromSatoshi(unsSupply)} ${this.api.getToken()}`;
-        result["Supply UNIKs"] = `${uniks} UNIKs`;
-        result["Active delegates"] = this.api.getActiveDelegates();
-        result["Last block"] = blockUrl;
 
         if (flags.format === OUTPUT_FORMAT.table.key) {
             result = [result];

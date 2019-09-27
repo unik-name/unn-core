@@ -154,19 +154,21 @@ describe the command here
 Read current data of a specified wallet, ic. balance
 
 USAGE
-  $ uns read-wallet
+  $ uns read-wallet WALLETID
+
+ARGUMENTS
+  WALLETID  The ID of the wallet. Can be either the publicKey or the address of the wallet.
 
 OPTIONS
   -f, --format=json|yaml  [default: json] Specify how to format the output [json|yaml].
   -h, --help              show CLI help
   --chainmeta             Retrieve chain meta data
-  --idwallet=idwallet     (required) The ID of the wallet. Can be either the publicKey or the address of the wallet.
   --listunik              List UNIK tokens owned by the wallet, if any.
   --network=devnet|local  (required) Network used to create UNIK nft token (local are for development only)
   --verbose               Detailed logs
 
 EXAMPLE
-  $ uns read-wallet --idwallet {publicKey|address} --listunik --network [devnet|local] --format {json|yaml}
+  $ uns read-wallet {publicKey|address} --listunik --network [devnet|local] --format {json|yaml}
 ```
 
 ## `uns set-properties [FILE]`

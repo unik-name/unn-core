@@ -8,17 +8,21 @@ export class ReadWalletCommand extends ReadCommand {
     public static description = "Read current data of a specified wallet, ic. balance";
 
     public static examples = [
-        `$ uns read-wallet --idwallet {publicKey|address} --listunik --network ${getNetworksListListForDescription()} --format {json|yaml}`,
+        `$ uns read-wallet {publicKey|address} --listunik --network ${getNetworksListListForDescription()} --format {json|yaml}`,
     ];
 
     public static flags = {
         ...ReadCommand.flags,
-        idwallet: flags.string({
-            description: "The ID of the wallet. Can be either the publicKey or the address of the wallet.",
-            required: true,
-        }),
         listunik: flags.boolean({ description: "List UNIK tokens owned by the wallet, if any." }),
     };
+
+    public static args = [
+        {
+            name: "walletId",
+            description: "The ID of the wallet. Can be either the publicKey or the address of the wallet.",
+            required: true,
+        },
+    ];
 
     protected getAvailableFormats(): Formater[] {
         return [OUTPUT_FORMAT.json, OUTPUT_FORMAT.yaml];
@@ -32,9 +36,10 @@ export class ReadWalletCommand extends ReadCommand {
         return "read-wallet";
     }
 
-    protected async do(flags: Record<string, any>): Promise<NestedCommandOutput> {
-        const wallet: any = await this.api.getWallet(flags.idwallet);
-        const tokens: any = await this.api.getWalletTokens(flags.idwallet);
+    protected async do(flags: Record<string, any>, args?: Record<string, any>): Promise<NestedCommandOutput> {
+        const walletId = args.walletId;
+        const wallet: any = await this.api.getWallet(walletId);
+        const tokens: any = await this.api.getWalletTokens(walletId);
 
         this.checkDataConsistency(wallet.chainmeta.height, tokens.chainmeta.height);
 

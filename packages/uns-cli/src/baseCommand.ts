@@ -31,7 +31,7 @@ export abstract class BaseCommand extends Command {
     }
 
     public async run() {
-        const { flags } = this.parse(this.getCommand());
+        const { flags, args } = this.parse(this.getCommand());
 
         // Set formater
         this.formater = OUTPUT_FORMAT[flags.format];
@@ -51,7 +51,7 @@ export abstract class BaseCommand extends Command {
         this.client = new Client(networkPreset);
 
         try {
-            const commandResult = await this.do(flags);
+            const commandResult = await this.do(flags, args);
             if (commandResult && Object.keys(commandResult).length > 0) {
                 // Keep super.log to force log
                 super.log(this.formater && this.formater.action ? this.formater.action(commandResult) : commandResult);
@@ -97,7 +97,10 @@ export abstract class BaseCommand extends Command {
     protected getDefaultFormat(): Formater {
         return OUTPUT_FORMAT.json;
     }
-    protected abstract do(flags: Record<string, any>): Promise<CommandOutput> | Promise<NestedCommandOutput>;
+    protected abstract do(
+        flags: Record<string, any>,
+        args?: Record<string, any>,
+    ): Promise<CommandOutput> | Promise<NestedCommandOutput>;
     protected abstract getCommand(): typeof BaseCommand;
     protected abstract getCommandTechnicalName(): string;
 

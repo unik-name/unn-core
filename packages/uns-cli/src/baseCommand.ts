@@ -1,6 +1,8 @@
+import { color } from "@oclif/color";
 import { Command, flags as oFlags } from "@oclif/command";
 import { Client, configManager } from "@uns/crypto";
 import { cli } from "cli-ux";
+import util from "util";
 import { UNSCLIAPI } from "./api";
 import { CommandOutput, Formater, getFormatFlag, NestedCommandOutput, OUTPUT_FORMAT } from "./formater";
 import * as UTILS from "./utils";
@@ -51,6 +53,7 @@ export abstract class BaseCommand extends Command {
         this.client = new Client(networkPreset);
 
         try {
+            this.info(`node: ${this.api.getCurrentNode()}`);
             const commandResult = await this.do(flags, args);
             if (commandResult && Object.keys(commandResult).length > 0) {
                 // Keep super.log to force log
@@ -72,6 +75,14 @@ export abstract class BaseCommand extends Command {
             } else {
                 super.log(message);
             }
+        }
+    }
+
+    public info(message: string, ...args: any[]): void {
+        if (this.verbose || this._helpOverride()) {
+            message = typeof message === "string" ? message : util.inspect(message);
+            const info = color.yellowBright(`:info: ${util.format(message, ...args)}\n`);
+            process.stdout.write(info);
         }
     }
 

@@ -1,5 +1,9 @@
 #!/usr/bin/env node
 
+
+// Rewrite argument --help to display format flag in help
+process.argv = process.argv.map(arg => arg === "--help" ? "-h" : arg);
+
 require('@oclif/command').run()
 .then(require('@oclif/command/flush'))
 .catch(require('@oclif/errors/handle'))

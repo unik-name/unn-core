@@ -2,7 +2,7 @@ import { flags } from "@oclif/command";
 import { BaseCommand } from "../baseCommand";
 import { Formater, NestedCommandOutput, OUTPUT_FORMAT } from "../formater";
 import { ReadCommand } from "../readCommand";
-import { getNetworksListListForDescription, unikidFlag } from "../utils";
+import { checkUnikIdFormat, getNetworksListListForDescription, unikidFlag } from "../utils";
 
 export class ReadUnikCommand extends ReadCommand {
     public static description = "Display UNIK token informations";
@@ -29,6 +29,8 @@ export class ReadUnikCommand extends ReadCommand {
     }
 
     protected async do(flags: Record<string, any>): Promise<NestedCommandOutput> {
+        checkUnikIdFormat(flags.unikid);
+
         const unik: any = await this.api.getUnikById(flags.unikid);
         const properties: any = await this.api.getUnikProperties(flags.unikid);
         const creationTransaction = await this.api.getTransaction(unik.transactions.first.id);

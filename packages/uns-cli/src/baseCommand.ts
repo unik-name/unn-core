@@ -145,7 +145,7 @@ export abstract class BaseCommand extends Command {
         expectedConfirmations: number = 0,
     ) {
         const transactionFromNetwork = await this.api.getTransaction(transactionId, blockTime * 1000);
-        const confirmations = transactionFromNetwork.confirmations;
+        const confirmations = transactionFromNetwork ? transactionFromNetwork.confirmations : 0;
         if (confirmations < expectedConfirmations && numberOfRetry > 0) {
             return await this.waitTransactionConfirmations(
                 blockTime,

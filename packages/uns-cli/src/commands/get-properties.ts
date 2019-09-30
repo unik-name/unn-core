@@ -1,7 +1,7 @@
 import { flags } from "@oclif/command";
 import { BaseCommand } from "../baseCommand";
 import { CommandOutput, Formater, NestedCommandOutput, OUTPUT_FORMAT } from "../formater";
-import { getNetworksListListForDescription } from "../utils";
+import { getNetworksListListForDescription, unikidFlag } from "../utils";
 
 export class GetPropertiesCommand extends BaseCommand {
     public static description = "Get properties of UNIK token.";
@@ -13,10 +13,7 @@ export class GetPropertiesCommand extends BaseCommand {
 
     public static flags = {
         ...BaseCommand.baseFlags,
-        unikid: flags.string({
-            description: "The UNIK token on which to get the properties.",
-            required: true,
-        }),
+        ...unikidFlag("The UNIK token on which to get the properties."),
         confirmed: flags.integer({
             default: 3,
             description:

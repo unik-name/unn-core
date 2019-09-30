@@ -2,7 +2,7 @@ import { flags } from "@oclif/command";
 import { BaseCommand } from "../baseCommand";
 import { Formater, NestedCommandOutput, OUTPUT_FORMAT } from "../formater";
 import { ReadCommand } from "../readCommand";
-import { getNetworksListListForDescription } from "../utils";
+import { getNetworksListListForDescription, unikidFlag } from "../utils";
 
 export class ReadUnikCommand extends ReadCommand {
     public static description = "Display UNIK token informations";
@@ -13,7 +13,7 @@ export class ReadUnikCommand extends ReadCommand {
 
     public static flags = {
         ...ReadCommand.baseFlags,
-        unikid: flags.string({ description: "Token id to read", required: true }),
+        ...unikidFlag("Token id to read"),
     };
 
     protected getAvailableFormats(): Formater[] {

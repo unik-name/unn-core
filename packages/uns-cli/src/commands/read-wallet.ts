@@ -43,10 +43,13 @@ export class ReadWalletCommand extends ReadCommand {
             publicKey: wallet.publicKey,
             username: wallet.username,
             secondPublicKey: wallet.secondPublicKey,
-            balance: `${this.fromSatoshi(wallet.balance)}`,
+            balance: this.fromSatoshi(wallet.balance),
+            token: this.api.getToken(),
             isDelegate: wallet.isDelegate,
             vote: wallet.vote,
-            nbUnik: tokens.data.length,
+            nfts: {
+                unik: tokens.data.length,
+            },
         };
 
         if (flags.listunik) {
@@ -59,7 +62,9 @@ export class ReadWalletCommand extends ReadCommand {
                     this.logAttribute("unikid", tokenProps.id);
                 });
             }
-            data.tokens = tokens.data.map(t => t.id);
+            data.tokens = {
+                unik: tokens.data.map(t => t.id),
+            };
         }
 
         return {

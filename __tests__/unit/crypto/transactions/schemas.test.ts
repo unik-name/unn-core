@@ -3,7 +3,7 @@ import { transactionBuilder } from "../../../../packages/crypto/src/builder";
 import { ITransactionData, TransactionRegistry } from "../../../../packages/crypto/src/transactions";
 import { TransactionSchema } from "../../../../packages/crypto/src/transactions/types/schemas";
 import { AjvWrapper as Ajv } from "../../../../packages/crypto/src/validation";
-import { getProperties, nftupdateTransctionStruct } from "./__fixtures__/nft-update";
+import { getProperties, nftupdateTransactionStruct } from "./__fixtures__/nft-update";
 
 const ajvInstance = Ajv.instance();
 const { TransactionTypes } = constants;
@@ -711,17 +711,17 @@ describe("Transactions schemas", () => {
     let transaction: ITransactionData;
 
     it("Validate nftupdate schema fails without properties ", () => {
-        transaction = nftupdateTransctionStruct(TOKEN_ID, SENDER_PK, OWNER_PASSPHRASE, {});
+        transaction = nftupdateTransactionStruct(TOKEN_ID, SENDER_PK, OWNER_PASSPHRASE, {});
         expect(validate(transaction)).toBeFalsy();
     });
 
     it("Validate nftupdate schema succeed with only one property ", () => {
-        transaction = nftupdateTransctionStruct(TOKEN_ID, SENDER_PK, OWNER_PASSPHRASE, getProperties(1));
+        transaction = nftupdateTransactionStruct(TOKEN_ID, SENDER_PK, OWNER_PASSPHRASE, getProperties(1));
         expect(validate(transaction)).toBeTruthy();
     });
 
     it("Validate nftupdate schema succeed with 255 properties to update", () => {
-        transaction = nftupdateTransctionStruct(
+        transaction = nftupdateTransactionStruct(
             TOKEN_ID,
             SENDER_PK,
             OWNER_PASSPHRASE,
@@ -731,7 +731,7 @@ describe("Transactions schemas", () => {
     });
 
     it("Validate nftupdate schema fails with 256 properties to update", () => {
-        transaction = nftupdateTransctionStruct(
+        transaction = nftupdateTransactionStruct(
             TOKEN_ID,
             SENDER_PK,
             OWNER_PASSPHRASE,

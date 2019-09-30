@@ -1,4 +1,3 @@
-import { BaseCommand } from "./baseCommand";
 import { CommandOutput } from "./formater";
 import {
     awaitFlag,
@@ -6,20 +5,19 @@ import {
     checkUnikIdFormat,
     confirmationsFlag,
     createNFTUpdateTransaction,
-    feeFlag,
     getPassphraseFromUser,
     passphraseFlag,
     unikidFlag,
 } from "./utils";
+import { WriteCommand } from "./writeCommand";
 
-export abstract class UpdateProperties extends BaseCommand {
+export abstract class UpdateProperties extends WriteCommand {
     public static flags = {
-        ...BaseCommand.baseFlags,
+        ...WriteCommand.flags,
         ...unikidFlag("The UNIK token on which to update the properties."),
         ...awaitFlag,
         ...confirmationsFlag,
         ...passphraseFlag,
-        ...feeFlag,
     };
 
     protected abstract getProperties(flags: Record<string, any>): { [_: string]: string };

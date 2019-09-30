@@ -32,6 +32,7 @@ export const createNFTMintTransaction = (
     client: Client,
     tokenId: string,
     tokenType: string,
+    fee: number,
     passphrase: string,
     networkVerion: number,
 ): ITransactionData => {
@@ -39,7 +40,7 @@ export const createNFTMintTransaction = (
         .getBuilder()
         .nftMint(tokenId)
         .properties({ type: tokenType })
-        .fee(client.getFeeManager().get(constants.TransactionTypes.NftTransfer))
+        .fee(fee)
         .network(networkVerion)
         .sign(passphrase)
         .getStruct();
@@ -114,11 +115,13 @@ export const confirmationsFlag = {
     }),
 };
 
-export const feeFlag = {
-    fee: flags.integer({
-        description: "Specify a dynamic fee in satoUNS. Defaults to 100000000 satoUNS = 1 UNS.",
-        default: 100000000,
-    }),
+export const feeFlag = (defaultFee: number = 100000000): { [_: string]: flags.IOptionFlag<number> } => {
+    return {
+        fee: flags.integer({
+            description: `Specify a dynamic fee in satoUNS. Defaults to ${defaultFee} (100000000 satoUNS = 1 UNS).`,
+            default: defaultFee,
+        }),
+    };
 };
 
 export const unikidFlag = (description?: string) => {

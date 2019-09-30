@@ -1,5 +1,5 @@
 import { flags } from "@oclif/command";
-import { ITransactionData } from "@uns/crypto";
+import { constants, ITransactionData } from "@uns/crypto";
 import { BaseCommand } from "../baseCommand";
 import { Formater, NestedCommandOutput, OUTPUT_FORMAT } from "../formater";
 import { getTypeValue, getUnikTypesList } from "../types";
@@ -9,8 +9,9 @@ import {
     getPassphraseFromUser,
     passphraseFlag,
 } from "../utils";
+import { WriteCommand } from "../writeCommand";
 
-export class CreateUnikCommand extends BaseCommand {
+export class CreateUnikCommand extends WriteCommand {
     public static description = "Create UNIK token";
 
     public static examples = [
@@ -20,7 +21,7 @@ export class CreateUnikCommand extends BaseCommand {
     ];
 
     public static flags = {
-        ...BaseCommand.baseFlags,
+        ...WriteCommand.flags,
         explicitValue: flags.string({ description: "UNIK nft token explicit value", required: true }),
         type: flags.string({
             description: "UNIK nft type",
@@ -67,6 +68,7 @@ export class CreateUnikCommand extends BaseCommand {
             this.client,
             tokenId,
             getTypeValue(flags.type),
+            flags.fee,
             passphrase,
             this.api.getVersion(),
         );

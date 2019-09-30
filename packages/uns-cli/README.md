@@ -210,6 +210,31 @@ EXAMPLE
            --properties "{key}:{value}" --format {json|yaml} --verbose
 ```
 
+## `uns did-resolve [DID]`
+
+describe the command here
+
+```
+Resolve a decentralized identifier.
+
+USAGE
+  $ uns did-resolve [DID]
+
+ARGUMENTS
+  DID  The identifier to resolve. Expected format : '@[unik:][type,1]/expliciteValue[?propertyKey|?*]'
+
+OPTIONS
+  -f, --format=json|yaml|raw  [default: raw] Specify how to format the output [json|yaml|raw].
+  -h, --help                  show CLI help
+  -n, --network=devnet|local  (required) Network used to create UNIK nft token (local are for development only)
+  -v, --verbose               Detailed logs
+  --confirmed=confirmed       [default: 3] Minimum number of confirmation since the last update of the UNIK required to return the value.
+
+EXAMPLE
+  $ uns did-resolve --confirmed {number of confirmations}
+           --network [devnet|local] --format {json|yaml|table|raw}
+```
+
 ## `uns status [FILE]`
 
 describe the command here

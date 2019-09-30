@@ -31,7 +31,7 @@ export class StatusCommand extends BaseCommand {
         const currentHeight = await this.api.getCurrentHeight();
         const blockUrl = `${this.api.getExplorerUrl()}/block/${currentHeight}`;
 
-        const result = {
+        let result: any = {
             Height: currentHeight,
             Network: flags.network,
         };
@@ -39,6 +39,10 @@ export class StatusCommand extends BaseCommand {
         result["Supply UNIKs"] = `${uniks} UNIKs`;
         result["Active delegates"] = this.api.getActiveDelegates();
         result["Last block"] = blockUrl;
+
+        if (flags.format === OUTPUT_FORMAT.table.key) {
+            result = [result];
+        }
 
         return result;
     }

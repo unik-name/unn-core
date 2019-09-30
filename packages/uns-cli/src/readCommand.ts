@@ -1,7 +1,13 @@
 import { BaseCommand } from "./baseCommand";
 import { ChainMeta } from "./types";
+import { chainmetaFlag } from "./utils";
 
 export abstract class ReadCommand extends BaseCommand {
+    public static flags = {
+        ...BaseCommand.baseFlags,
+        ...chainmetaFlag,
+    };
+
     protected showContext(chainmeta: ChainMeta) {
         /**
          * CONTEXT

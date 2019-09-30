@@ -12,7 +12,7 @@ export class ReadWalletCommand extends ReadCommand {
     ];
 
     public static flags = {
-        ...ReadCommand.baseFlags,
+        ...ReadCommand.flags,
         idwallet: flags.string({
             description: "The ID of the wallet. Can be either the publicKey or the address of the wallet.",
             required: true,
@@ -64,7 +64,7 @@ export class ReadWalletCommand extends ReadCommand {
 
         return {
             data,
-            ...this.showContext(wallet.chainmeta),
+            ...(flags.chainmeta ? this.showContext(wallet.chainmeta) : {}),
         };
     }
 }

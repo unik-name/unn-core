@@ -12,7 +12,7 @@ export class ReadUnikCommand extends ReadCommand {
     ];
 
     public static flags = {
-        ...ReadCommand.baseFlags,
+        ...ReadCommand.flags,
         ...unikidFlag("Token id to read"),
     };
 
@@ -39,7 +39,7 @@ export class ReadUnikCommand extends ReadCommand {
             creationTransaction.chainmeta.height,
         );
 
-        const result = {
+        const data = {
             id: unik.id,
             ownerAddress: unik.ownerId,
             creationBlock: creationTransaction.blockId,
@@ -49,8 +49,8 @@ export class ReadUnikCommand extends ReadCommand {
         };
 
         return {
-            data: result,
-            ...this.showContext(unik.chainmeta),
+            data,
+            ...(flags.chainmeta ? this.showContext(unik.chainmeta) : {}),
         };
     }
 }

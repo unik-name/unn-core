@@ -129,3 +129,10 @@ export const unikidFlag = (description?: string) => {
         }),
     };
 };
+
+export const chainmetaFlag = {
+    chainmeta: flags.boolean({
+        description: "Retrieve chain meta datas",
+        default: false,
+    }),
+};

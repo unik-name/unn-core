@@ -105,8 +105,8 @@ export abstract class BaseCommand extends Command {
         this.log(`\t${label}: ${value}`);
     }
 
-    protected fromSatoshi(value: number): string {
-        return `${value / 100000000}`;
+    protected fromSatoshi(value: number): number {
+        return value / 100000000;
     }
 
     /**

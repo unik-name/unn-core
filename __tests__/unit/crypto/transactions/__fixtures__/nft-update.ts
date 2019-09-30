@@ -1,7 +1,7 @@
 import { ITransactionData } from "../../../../../packages/crypto/src";
 import { transactionBuilder } from "../../../../../packages/crypto/src/builder";
 
-export const nftupdateTransctionStruct = (
+export const nftupdateTransactionStruct = (
     tokenId: string,
     sender: string,
     owner: string,

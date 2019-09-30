@@ -1,4 +1,4 @@
-import { getProperties, nftupdateTransctionStruct } from "../__fixtures__/nft-update";
+import { getProperties, nftupdateTransactionStruct } from "../__fixtures__/nft-update";
 
 import { TransactionTypes } from "../../../../../packages/crypto/src/constants";
 import { ITransactionData, Transaction, TransactionRegistry } from "../../../../../packages/crypto/src/transactions";
@@ -29,7 +29,7 @@ describe("NFTUpdate serialization/deserialization", () => {
         owner: string,
         properties: { [_: string]: string },
     ) => {
-        transaction = nftupdateTransctionStruct(tokenid, sender, owner, properties);
+        transaction = nftupdateTransactionStruct(tokenid, sender, owner, properties);
 
         const serializedTransaction = serialize(transaction);
 

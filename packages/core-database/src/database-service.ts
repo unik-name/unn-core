@@ -399,7 +399,7 @@ export class DatabaseService implements Database.IDatabaseService {
 
         assert(this.blocksInCurrentRound.pop().data.id === block.data.id);
 
-        this.emitter.emit("block.reverted", block.data);
+        this.emitter.emit("block.reverted", block);
     }
 
     public async revertRound(height: number) {

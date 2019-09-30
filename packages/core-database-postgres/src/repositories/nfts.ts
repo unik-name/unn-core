@@ -44,7 +44,7 @@ export class NftsRepository extends Repository implements Database.INftsReposito
         return this.findManyWithCount(selectQuery, parameters.paginate, parameters.orderBy);
     }
 
-    public delete(id: string) {
+    public async delete(id: string): Promise<any> {
         this.db.tx(t => {
             t.batch([t.none(sql.delete, { id }), t.none(sql.deleteProperties, { id })]);
         });

@@ -32,15 +32,13 @@ export class NftUpdateTransactionHandler extends TransactionHandler {
      */
     public apply(transaction: Transaction, wallet: Database.IWallet): void {
         // action delegated to the nft manager
-        // TODO:
     }
 
     /**
      * Revert the transaction from the wallet.
      */
     public revert(transaction: Transaction, wallet: Database.IWallet): void {
-        // cannot get back property value...
-        // TODO:
+        // action delegated to the nft manager
     }
     public canEnterTransactionPool(data: ITransactionData, guard: TransactionPool.IGuard): boolean {
         return !this.typeFromSenderAlreadyInPool(data, guard);

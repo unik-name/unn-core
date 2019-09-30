@@ -96,3 +96,36 @@ export const passphraseFlag = {
             "The passphrase of the owner of UNIK. If you do not enter a passphrase you will be prompted for it.",
     }),
 };
+
+export const awaitFlag = {
+    await: flags.integer({
+        description: `Number of blocks to wait to get confirmed for the success. Default to 3.
+            0 for immediate return.
+            Needs to be strictly greater than --confirmation flag`,
+        default: 3,
+    }),
+};
+
+export const confirmationsFlag = {
+    confirmations: flags.integer({
+        description:
+            "Number of confirmations to wait to get confirmed for the success. Default to 1.\n\t Needs to be strictly lower than --await flag",
+        default: 1,
+    }),
+};
+
+export const feeFlag = {
+    fee: flags.integer({
+        description: "Specify a dynamic fee in satoUNS. Defaults to 100000000 satoUNS = 1 UNS.",
+        default: 100000000,
+    }),
+};
+
+export const unikidFlag = (description?: string) => {
+    return {
+        unikid: flags.string({
+            description,
+            required: true,
+        }),
+    };
+};

@@ -1,7 +1,7 @@
 import { app } from "@arkecosystem/core-container";
 import { Database } from "@arkecosystem/core-interfaces";
 import { NFT } from "@arkecosystem/core-interfaces";
-import { configManager } from "@arkecosystem/crypto";
+import { configManager, ITransactionData } from "@arkecosystem/crypto";
 import "../../../../utils";
 import { setUp, tearDown } from "../../__support__/setup";
 import { utils } from "../utils";
@@ -28,10 +28,8 @@ afterAll(async () => {
 
 describe("API 2.0 - Nfts", () => {
     it("should return token id, owner and associated transactions", async () => {
-        jest.spyOn(
-            app.resolvePlugin<Database.IDatabaseService>("database").nftsBusinessRepository,
-            "findById",
-        ).mockImplementationOnce(
+        const databaseService = app.resolvePlugin<Database.IDatabaseService>("database");
+        jest.spyOn(databaseService.nftsBusinessRepository, "findById").mockImplementationOnce(
             (_: string): Promise<NFT.INft> => {
                 return new Promise(resolve => {
                     resolve({ id: nftId, ownerId: address });
@@ -39,15 +37,25 @@ describe("API 2.0 - Nfts", () => {
             },
         );
 
+        const TxTemplate: ITransactionData = {
+            id: "txid",
+            type: 1,
+            timestamp: 666,
+            senderPublicKey: "toto",
+            fee: "1",
+            amount: "1",
+        };
+
         const nftsRepositoryMock = jest
-            .spyOn(
-                app.resolvePlugin<Database.IDatabaseService>("database").transactionsBusinessRepository,
-                "findAllByAsset",
-            )
+            .spyOn(databaseService.transactionsBusinessRepository, "findAllByAsset")
             .mockImplementationOnce(
-                (_: any): Promise<NFT.INftTx[]> => {
+                (_: any): Promise<ITransactionData[]> => {
                     return new Promise(resolve => {
-                        resolve([{ id: txId1 }, { id: txId2 }]);
+                        const tx1 = { ...TxTemplate };
+                        tx1.id = txId1;
+                        const tx2 = { ...TxTemplate };
+                        tx2.id = txId2;
+                        resolve([tx1, tx2]);
                     });
                 },
             );

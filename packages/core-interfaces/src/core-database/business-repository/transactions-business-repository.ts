@@ -1,4 +1,4 @@
-import { INftTx } from "../../core-nft";
+import { ITransactionData } from "@arkecosystem/crypto";
 import { IParameters } from "./parameters";
 
 export interface ITransactionsBusinessRepository {
@@ -14,7 +14,7 @@ export interface ITransactionsBusinessRepository {
 
     findAllByRecipient(recipientId, parameters?: IParameters): Promise<any>;
 
-    findAllByAsset(asset: any): Promise<INftTx[]>;
+    findAllByAsset(asset: any): Promise<ITransactionData[]>;
 
     allVotesBySender(senderPublicKey, parameters?: IParameters): Promise<any>;
 

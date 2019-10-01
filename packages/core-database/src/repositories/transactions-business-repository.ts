@@ -1,7 +1,7 @@
 import { app } from "@arkecosystem/core-container";
 import { Database } from "@arkecosystem/core-interfaces";
 import { NFT } from "@arkecosystem/core-interfaces";
-import { constants } from "@arkecosystem/crypto";
+import { constants, ITransactionData } from "@arkecosystem/crypto";
 import { SearchParameterConverter } from "./utils/search-parameter-converter";
 
 export class TransactionsBusinessRepository implements Database.ITransactionsBusinessRepository {
@@ -55,7 +55,7 @@ export class TransactionsBusinessRepository implements Database.ITransactionsBus
         return this.mapBlocksToTransactions(result.rows);
     }
 
-    public async findAllByAsset(asset: any): Promise<NFT.INftTx[]> {
+    public async findAllByAsset(asset: any): Promise<ITransactionData[]> {
         const transactionsRepository = this.databaseServiceProvider().connection.transactionsRepository;
         return transactionsRepository.findAllByAsset(asset);
     }

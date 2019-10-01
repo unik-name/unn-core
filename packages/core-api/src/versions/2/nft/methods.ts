@@ -1,7 +1,6 @@
 import { app } from "@arkecosystem/core-container";
 import { Database } from "@arkecosystem/core-interfaces";
-import { NFT } from "@arkecosystem/core-interfaces";
-import { configManager } from "@arkecosystem/crypto";
+import { configManager, ITransactionData } from "@arkecosystem/crypto";
 import Boom from "boom";
 import { ServerCache } from "../../../services";
 import { paginate, respondWithResource, toPagination } from "../utils";
@@ -24,7 +23,7 @@ const show = async request => {
         return Boom.notFound(`Non fungible token ${request.params.id} not found`);
     }
     const nftName: string = configManager.getCurrentNftName();
-    const transactions: NFT.INftTx[] = await transactionsRepository.findAllByAsset({
+    const transactions = await transactionsRepository.findAllByAsset({
         nft: {
             [nftName]: {
                 tokenId: `${request.params.id}`,

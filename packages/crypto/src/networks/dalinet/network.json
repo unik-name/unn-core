@@ -13,7 +13,7 @@
     "client": {
         "token": "DUNS",
         "symbol": "DUNS",
-        "explorer": "https://explorer.dalinet.uns.network"
+        "explorer": "https://dalinet.explorer.uns.network"
     },
     "nfts": {
         "unik": {

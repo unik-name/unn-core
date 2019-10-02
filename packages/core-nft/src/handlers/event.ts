@@ -26,7 +26,7 @@ export class NFTEventHandler {
             });
     }
 
-    public static onBlockReverted(block: models.IBlockData) {
+    public static onBlockReverted(block: models.Block) {
         NFTEventHandler.onBlockRevertedAsync(block).catch(error => {
             logger.error(`[💎] Block not reverted due to ${error.message}`);
         });
@@ -58,10 +58,14 @@ export class NFTEventHandler {
         }
     }
 
-    private static async onBlockRevertedAsync(block: models.IBlockData) {
-        let promises = [];
+    private static async onBlockRevertedAsync(block: models.Block) {
+        const promises = [];
         if (block.transactions) {
-            promises = block.transactions.filter(isNftTransaction).map(this.onTransactionRevertedAsync);
+            for (const transaction of block.transactions) {
+                if (isNftTransaction(transaction.data)) {
+                    promises.push(this.onTransactionRevertedAsync(transaction.data));
+                }
+            }
         }
         return Promise.all(promises);
     }

@@ -23,7 +23,7 @@ services:
       service: forger
     container_name: uns_dalinet_forger1
     environment:
-    #  FORGER_SECRET: ""
+     FORGER_SECRET: "${FORGER1_SECRET}"
      BOOTSTRAP: "true"
      DB_DATABASE: uns_dalinet_forger1
     ports:
@@ -39,7 +39,7 @@ services:
       service: forger
     container_name: uns_dalinet_forger2
     environment:
-    #  FORGER_SECRET: ""
+     FORGER_SECRET: "${FORGER2_SECRET}"
      DB_DATABASE: uns_dalinet_forger2
      BOOTNODE: forger1
     links:
@@ -54,7 +54,7 @@ services:
       service: forger
     container_name: uns_dalinet_forger3
     environment:
-    #  FORGER_SECRET: ""
+     FORGER_SECRET: "${FORGER3_SECRET}"
      DB_DATABASE: uns_dalinet_forger3
      BOOTNODE: forger1
     links:

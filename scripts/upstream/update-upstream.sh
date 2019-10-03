@@ -2,7 +2,10 @@
 
 set -e
 
-cd /root/uns-core
+WORKDIR=~
+SOURCES_PATH=$WORKDIR/uns-core
+
+cd $SOURCES_PATH
 
 echo -e "\n["$(date +%F_%H-%M-%S)"]"
 
@@ -19,10 +22,12 @@ else
     echo "--> source updated"
 fi
 
-cd docker/integration
+cd $WORKDIR
 
-docker-compose down 
+DOCKER_COMPOSE_FILE_PATH=$SOURCES_PATH/docker/integration
 
-docker-compose up --build
+docker-compose -f $DOCKER_COMPOSE_FILE_PATH down 
+
+docker-compose -f $DOCKER_COMPOSE_FILE_PATH up --build
 
 exit 0

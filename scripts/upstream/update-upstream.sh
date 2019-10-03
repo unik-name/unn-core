@@ -28,6 +28,6 @@ DOCKER_COMPOSE_FILE_PATH=$SOURCES_PATH/docker/integration/docker-compose.yml
 
 docker-compose -f $DOCKER_COMPOSE_FILE_PATH down 
 
-docker-compose -f $DOCKER_COMPOSE_FILE_PATH up --build
+docker-compose -f $DOCKER_COMPOSE_FILE_PATH up --build -d
 
 exit 0

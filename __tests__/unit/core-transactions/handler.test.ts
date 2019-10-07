@@ -910,4 +910,29 @@ describe("NFTUpdateTransaction", () => {
             await expect(handler.canBeApplied(instance, wallet)).rejects.toThrow(ConstraintError);
         });
     });
+
+    describe("NFT properies validation", () => {
+        it("should throw PropertyValueLengthError", async () => {
+            const tooLongProperty = {
+                oneProperty: "toto",
+                oneLongProperty:
+                    "💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎",
+            };
+            transaction.asset.nft[configManager.getCurrentNftName()].properties = tooLongProperty;
+            expect(() => {
+                Transaction.fromData(transaction);
+            }).toThrow(`Value of property oneLongProperty exceed the maximum allowed size of 255 bytes.`);
+        });
+
+        it("should ingest valid transaction", async () => {
+            const property = {
+                myProperty: "💎💎💎💎",
+                myProperty2: "tututu",
+            };
+            transaction.asset.nft[configManager.getCurrentNftName()].properties = property;
+
+            instance = Transaction.fromData(transaction);
+            await expect(handler.canBeApplied(instance, wallet)).resolves.toBeTrue();
+        });
+    });
 });

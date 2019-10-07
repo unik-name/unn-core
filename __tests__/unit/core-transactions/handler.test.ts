@@ -910,4 +910,17 @@ describe("NFTUpdateTransaction", () => {
             await expect(handler.canBeApplied(instance, wallet)).rejects.toThrow(ConstraintError);
         });
     });
+
+    describe("NFT properies validation", () => {
+        it("should throw PropertyValueLengthError", async () => {
+            const tooLongProperty = {
+                myProperty:
+                    "💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎",
+            };
+            transaction.asset.nft[configManager.getCurrentNftName()].properties = tooLongProperty;
+            expect(() => {
+                Transaction.fromData(transaction);
+            }).toThrow(`Expected a maximum size of 255 bytes for property value field.`);
+        });
+    });
 });

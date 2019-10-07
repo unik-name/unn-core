@@ -147,3 +147,9 @@ export class InvalidMilestoneConfigurationError extends CryptoError {
         super(message);
     }
 }
+
+export class PropertyValueSizeError extends CryptoError {
+    constructor() {
+        super(`Expected a maximum size of 255 bytes for property value field.`);
+    }
+}

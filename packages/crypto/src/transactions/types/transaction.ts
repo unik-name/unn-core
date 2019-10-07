@@ -5,6 +5,7 @@ import { crypto } from "../../crypto";
 import {
     MalformedTransactionBytesError,
     NotImplementedError,
+    PropertyValueSizeError,
     TransactionSchemaError,
     TransactionVersionError,
 } from "../../errors";
@@ -154,6 +155,16 @@ export abstract class Transaction {
         if (data.type === TransactionTypes.MultiSignature) {
             data.amount = new Bignum(data.amount);
             data.fee = new Bignum(data.fee);
+            return { value: data, error: null };
+        }
+
+        if (data.type === TransactionTypes.NftMint || data.type === TransactionTypes.NftUpdate) {
+            Object.entries(data.asset.nft.unik.properties).map(([key, value]: [string, string]) => {
+                if (value && Buffer.from(value, "utf8").length > 255) {
+                    throw new PropertyValueSizeError();
+                }
+            });
+
             return { value: data, error: null };
         }
 

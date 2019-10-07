@@ -8,6 +8,7 @@ import {
     TransactionSchemaError,
     TransactionVersionError,
 } from "../../errors";
+import { configManager } from "../../managers";
 import { Bignum, isException } from "../../utils";
 import { AjvWrapper } from "../../validation";
 import { TransactionDeserializer } from "../deserializers";
@@ -155,6 +156,20 @@ export abstract class Transaction {
             data.amount = new Bignum(data.amount);
             data.fee = new Bignum(data.fee);
             return { value: data, error: null };
+        }
+        let error = null;
+        if (data.type === TransactionTypes.NftMint || data.type === TransactionTypes.NftUpdate) {
+            const properties = data.asset.nft[configManager.getCurrentNftName()].properties;
+            for (const propertyKey in properties) {
+                if (properties.hasOwnProperty(propertyKey)) {
+                    const value = properties[propertyKey];
+                    if (value && Buffer.from(value, "utf8").length > 255) {
+                        error = `Value of property ${propertyKey} exceed the maximum allowed size of 255 bytes.`;
+                        break;
+                    }
+                }
+            }
+            return { value: data, error };
         }
 
         const { $id } = TransactionRegistry.get(data.type).getSchema();

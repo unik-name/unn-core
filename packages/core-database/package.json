@@ -1,7 +1,7 @@
 {
     "name": "@uns/core-database",
     "description": "Database Interface for UNS Core",
-    "version": "3.1.0-alpha.0",
+    "version": "3.1.0-beta",
     "contributors": [
         "François-Xavier Thoorens <fx@ark.io>",
         "Kristjan Košič <kristjan@ark.io>",
@@ -24,12 +24,12 @@
     },
     "dependencies": {
         "@arkecosystem/utils": "^0.3.0",
-        "@uns/core-container": "^3.1.0-alpha.0",
-        "@uns/core-event-emitter": "^3.1.0-alpha.0",
-        "@uns/core-interfaces": "^3.1.0-alpha.0",
-        "@uns/core-transactions": "^3.1.0-alpha.0",
-        "@uns/core-utils": "^3.1.0-alpha.0",
-        "@uns/crypto": "^3.1.0-alpha.0",
+        "@uns/core-container": "^3.1.0-beta",
+        "@uns/core-event-emitter": "^3.1.0-beta",
+        "@uns/core-interfaces": "^3.1.0-beta",
+        "@uns/core-transactions": "^3.1.0-beta",
+        "@uns/core-utils": "^3.1.0-beta",
+        "@uns/crypto": "^3.1.0-beta",
         "lodash.clonedeep": "^4.5.0",
         "lodash.compact": "^3.0.1",
         "lodash.uniq": "^4.5.0",

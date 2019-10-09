@@ -1,7 +1,7 @@
 {
     "name": "@uns/core-tester-cli",
     "description": "Tester CLI for UNS Core",
-    "version": "3.1.0-alpha.0",
+    "version": "3.1.0-beta",
     "contributors": [
         "Brian Faust <brian@ark.io>",
         "Alex Barnsley <alex@ark.io>",
@@ -33,8 +33,8 @@
         "@oclif/config": "^1.12.9",
         "@oclif/plugin-help": "^2.1.6",
         "@oclif/plugin-not-found": "^1.2.2",
-        "@uns/core-utils": "^3.1.0-alpha.0",
-        "@uns/crypto": "^3.1.0-alpha.0",
+        "@uns/core-utils": "^3.1.0-beta",
+        "@uns/crypto": "^3.1.0-beta",
         "bip39": "^2.5.0",
         "clipboardy": "^1.2.3",
         "delay": "^4.1.0",

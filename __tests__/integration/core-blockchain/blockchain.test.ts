@@ -1,32 +1,25 @@
 /* tslint:disable:max-line-length */
-import { Wallet } from "@arkecosystem/core-database";
-import { roundCalculator } from "@arkecosystem/core-utils";
-import {
-    Bignum,
-    crypto,
-    HashAlgorithms,
-    ITransactionData,
-    models,
-    slots,
-    sortTransactions,
-    transactionBuilder,
-} from "@arkecosystem/crypto";
-import { asValue } from "awilix";
 import delay from "delay";
-import { Blockchain } from "../../../packages/core-blockchain/src/blockchain";
-import { defaults } from "../../../packages/core-blockchain/src/defaults";
+import { roundCalculator } from "../../../packages/core-utils";
+import { Bignum, crypto, models, transactionBuilder } from "../../../packages/crypto";
 import "../../utils";
-import { blocks101to155 } from "../../utils/fixtures/testnet/blocks101to155";
-import { blocks2to100 } from "../../utils/fixtures/testnet/blocks2to100";
 import { delegates } from "../../utils/fixtures/testnet/delegates";
 import { setUp, tearDown } from "./__support__/setup";
+import {
+    __addBlocks,
+    __resetBlocksInCurrentRound,
+    __resetToHeight1,
+    __start,
+    blockchain,
+    createBlock,
+    genesisBlock,
+    getNextForger,
+} from "./__support__/utils";
 
 const { Block } = models;
 
-let genesisBlock;
 let configManager;
 let container;
-let blockchain: Blockchain;
 let loggerDebugBackup;
 
 describe("Blockchain", () => {
@@ -38,10 +31,6 @@ describe("Blockchain", () => {
         logger = container.resolvePlugin("logger");
         loggerDebugBackup = logger.debug;
 
-        // Create the genesis block after the setup has finished or else it uses a potentially
-        // wrong network config.
-        genesisBlock = new Block(require("../../utils/config/testnet/genesisBlock.json"));
-
         configManager = container.getConfig();
 
         // Workaround: Add genesis transactions to the exceptions list, because they have a fee of 0
@@ -49,7 +38,7 @@ describe("Blockchain", () => {
         configManager.set("exceptions.transactions", genesisBlock.transactions.map(tx => tx.id));
 
         // Manually register the blockchain and start it
-        await __start(false);
+        await __start(container, false);
     });
 
     afterAll(async () => {
@@ -152,47 +141,6 @@ describe("Blockchain", () => {
             await __resetToHeight1();
             await __addBlocks(155);
         });
-
-        const getNextForger = async () => {
-            const lastBlock = blockchain.state.getLastBlock();
-            const roundInfo = roundCalculator.calculateRound(lastBlock.data.height);
-            const activeDelegates = await blockchain.database.getActiveDelegates(roundInfo);
-            const nextSlot = slots.getSlotNumber(lastBlock.data.timestamp) + 1;
-            return activeDelegates[nextSlot % activeDelegates.length];
-        };
-
-        const createBlock = (generatorKeys: any, transactions: ITransactionData[]) => {
-            const transactionData = {
-                amount: Bignum.ZERO,
-                fee: Bignum.ZERO,
-                ids: [],
-            };
-
-            const sortedTransactions = sortTransactions(transactions);
-            sortedTransactions.forEach(transaction => {
-                transactionData.amount = transactionData.amount.plus(transaction.amount);
-                transactionData.fee = transactionData.fee.plus(transaction.fee);
-                transactionData.ids.push(Buffer.from(transaction.id, "hex"));
-            });
-
-            const lastBlock = blockchain.state.getLastBlock();
-            const data = {
-                timestamp: slots.getSlotTime(slots.getSlotNumber(lastBlock.data.timestamp) + 1),
-                version: 0,
-                previousBlock: lastBlock.data.id,
-                previousBlockHex: lastBlock.data.idHex,
-                height: lastBlock.data.height + 1,
-                numberOfTransactions: sortedTransactions.length,
-                totalAmount: transactionData.amount,
-                totalFee: transactionData.fee,
-                reward: Bignum.ZERO,
-                payloadLength: 32 * sortedTransactions.length,
-                payloadHash: HashAlgorithms.sha256(transactionData.ids).toString("hex"),
-                transactions: sortedTransactions,
-            };
-
-            return Block.create(data, crypto.getKeys(generatorKeys.secret));
-        };
 
         it("should restore vote balances after a rollback", async () => {
             const mockCallback = jest.fn(() => true);
@@ -316,72 +264,3 @@ describe("Blockchain", () => {
         });
     });
 });
-
-async function __start(networkStart) {
-    process.env.CORE_SKIP_BLOCKCHAIN = "false";
-    process.env.CORE_SKIP_PEER_STATE_VERIFICATION = "true";
-    process.env.CORE_ENV = "false";
-
-    const plugin = require("../../../packages/core-blockchain/src").plugin;
-
-    blockchain = await plugin.register(container, {
-        networkStart,
-        ...defaults,
-    });
-
-    await container.register(
-        "blockchain",
-        asValue({
-            name: "blockchain",
-            version: "0.1.0",
-            plugin: blockchain,
-            options: {},
-        }),
-    );
-
-    if (networkStart) {
-        return;
-    }
-
-    await __resetToHeight1();
-
-    await blockchain.start();
-    await __addBlocks(5);
-}
-
-async function __resetBlocksInCurrentRound() {
-    await blockchain.database.loadBlocksFromCurrentRound();
-}
-
-async function __resetToHeight1() {
-    const lastBlock = await blockchain.database.getLastBlock();
-    if (lastBlock) {
-        // Make sure the wallet manager has been fed or else revertRound
-        // cannot determine the previous delegates. This is only necessary, because
-        // the database is not dropped after the unit tests are done.
-        await blockchain.database.buildWallets();
-
-        // Index the genesis wallet or else revert block at height 1 fails
-        const generator = crypto.getAddress(genesisBlock.data.generatorPublicKey);
-        const genesis = new Wallet(generator);
-        genesis.publicKey = genesisBlock.data.generatorPublicKey;
-        genesis.username = "genesis";
-        blockchain.database.walletManager.reindex(genesis);
-
-        blockchain.state.clear();
-
-        blockchain.state.setLastBlock(lastBlock);
-        await __resetBlocksInCurrentRound();
-        await blockchain.removeBlocks(lastBlock.data.height - 1);
-    }
-}
-
-async function __addBlocks(untilHeight) {
-    const allBlocks = [...blocks2to100, ...blocks101to155];
-    const lastHeight = blockchain.getLastHeight();
-
-    for (let height = lastHeight + 1; height < untilHeight && height < 155; height++) {
-        const blockToProcess = new Block(allBlocks[height - 2]);
-        await blockchain.processBlock(blockToProcess, () => null);
-    }
-}

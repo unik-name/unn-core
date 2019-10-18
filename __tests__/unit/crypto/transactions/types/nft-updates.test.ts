@@ -1,9 +1,8 @@
 import { getProperties, nftupdateTransactionStruct } from "../__fixtures__/nft-update";
 
 import { TransactionTypes } from "../../../../../packages/crypto/src/constants";
-import { ITransactionData, Transaction, TransactionRegistry } from "../../../../../packages/crypto/src/transactions";
-import { TransactionDeserializer } from "../../../../../packages/crypto/src/transactions/deserializers";
-import { TransactionSerializer } from "../../../../../packages/crypto/src/transactions/serializers";
+import { ITransactionData } from "../../../../../packages/crypto/src/transactions";
+import { checkSerializedTxCommon, deserialize, serialize } from "../__fixtures__/transaction";
 
 describe("NFTUpdate serialization/deserialization", () => {
     const TOKEN_ID = "ee16f4b75f38f6e3d16635f72a8445e0ff8fbacfdfa8f05df077e73de79d6e4f";
@@ -12,16 +11,6 @@ describe("NFTUpdate serialization/deserialization", () => {
     const MAX_UPDATE_PROPERTIES = 255;
 
     let transaction: ITransactionData;
-
-    const serialize = (transaction: ITransactionData): Buffer => {
-        const nftTransaction: Transaction = TransactionRegistry.create(transaction);
-        TransactionDeserializer.applyV1Compatibility(nftTransaction.data);
-        return TransactionSerializer.serialize(nftTransaction);
-    };
-
-    const deserialize = (serializedTransactionBuffer: Buffer): ITransactionData => {
-        return TransactionDeserializer.deserialize(serializedTransactionBuffer).data;
-    };
 
     const assertSerializeDeserialize = (
         tokenid: string,
@@ -35,27 +24,11 @@ describe("NFTUpdate serialization/deserialization", () => {
 
         const deserializedTransaction = deserialize(serializedTransaction);
 
-        expect(deserializedTransaction).toHaveProperty("signature");
-        expect(deserializedTransaction.signature).toEqual(transaction.signature);
-
-        expect(deserializedTransaction).toHaveProperty("timestamp");
-        expect(deserializedTransaction.timestamp).toEqual(transaction.timestamp);
-
-        expect(deserializedTransaction).toHaveProperty("version");
-        expect(deserializedTransaction.version).toEqual(transaction.version);
+        checkSerializedTxCommon(transaction, deserializedTransaction);
 
         expect(deserializedTransaction).toHaveProperty("type");
         expect(deserializedTransaction.type).toEqual(transaction.type);
         expect(deserializedTransaction.type).toEqual(TransactionTypes.NftUpdate);
-
-        expect(deserializedTransaction).toHaveProperty("fee");
-        expect(parseInt(deserializedTransaction.fee as string)).toEqual(transaction.fee);
-
-        expect(deserializedTransaction).toHaveProperty("senderPublicKey");
-        expect(deserializedTransaction.senderPublicKey).toEqual(transaction.senderPublicKey);
-
-        expect(deserializedTransaction).toHaveProperty("amount");
-        expect(parseInt(deserializedTransaction.amount as string)).toEqual(transaction.amount);
 
         expect(deserializedTransaction).toHaveProperty("asset.nft.unik.tokenId");
         expect(deserializedTransaction.asset.nft.unik.tokenId).toEqual(transaction.asset.nft.unik.tokenId);

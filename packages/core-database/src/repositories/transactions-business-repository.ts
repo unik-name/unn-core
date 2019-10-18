@@ -98,7 +98,7 @@ export class TransactionsBusinessRepository implements Database.ITransactionsBus
         }
     }
 
-    private getPublicKeyFromAddress(senderId: string): string {
+    public getPublicKeyFromAddress(senderId: string): string {
         const walletManager = this.databaseServiceProvider().walletManager;
         return walletManager.exists(senderId) ? walletManager.findByAddress(senderId).publicKey : null;
     }

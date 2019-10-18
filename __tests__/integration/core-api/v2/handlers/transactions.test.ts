@@ -1,11 +1,10 @@
-import "../../../../utils";
-import { setUp, tearDown } from "../../__support__/setup";
-import { utils } from "../utils";
-
 import { TransactionFactory } from "../../../../helpers/transaction-factory";
+import "../../../../utils";
 import genesisBlock from "../../../../utils/config/testnet/genesisBlock.json";
 import { delegates } from "../../../../utils/fixtures/testnet/delegates";
 import { generateWallets } from "../../../../utils/generators/wallets";
+import { setUp, tearDown } from "../../__support__/setup";
+import { utils } from "../utils";
 
 const transferFee = 10000000;
 
@@ -145,6 +144,7 @@ describe("API 2.0 - Transactions", () => {
                         NftTransfer: 9,
                         NftUpdate: 10,
                         NftMint: 11,
+                        UnsDiscloseExplicit: 12,
                     });
                 });
             },

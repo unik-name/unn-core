@@ -19,7 +19,7 @@ export class NFTUpdateTransaction extends Transaction {
         const bufferSize = 32 + 1 + this.computePropertiesSize(properties);
         const buffer = new ByteBuffer(bufferSize, true);
 
-        buffer.append(Buffer.from(nft.tokenId.padStart(64, "0"), "hex"));
+        buffer.append(Buffer.from(nft.tokenId, "hex"));
         const keys = Object.keys(properties);
 
         // Use unsigned Int to serialize nb properties max 255 properties (max with signed 8 bits int is 127)

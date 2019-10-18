@@ -13,6 +13,7 @@ import { ITransactionData } from "./interfaces";
 import {
     DelegateRegistrationTransaction,
     DelegateResignationTransaction,
+    DiscloseExplicitTransaction,
     IpfsTransaction,
     MultiPaymentTransaction,
     MultiSignatureRegistrationTransaction,
@@ -45,6 +46,7 @@ class TransactionRegistry {
         this.registerCoreType(NFTTransferTransaction);
         this.registerCoreType(NFTUpdateTransaction);
         this.registerCoreType(NFTMintTransaction);
+        this.registerCoreType(DiscloseExplicitTransaction);
     }
 
     public create(data: ITransactionData): Transaction {

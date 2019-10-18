@@ -1,9 +1,8 @@
 /* tslint:disable:max-line-length */
 import { IContainer } from "../../../packages/core-interfaces/src/core-container";
-import { crypto, models, transactionBuilder } from "../../../packages/crypto";
+import { crypto, transactionBuilder } from "../../../packages/crypto";
 import "../../utils";
 import { delegates } from "../../utils/fixtures/testnet/delegates";
-import { generateNftIdentifier } from "../../utils/generators/nft";
 import { setUp, tearDown } from "./__support__/setup";
 
 import { mintNft } from "./__support__/nft-utils";
@@ -20,8 +19,6 @@ import {
     waitForNftMinted,
     waitForNftProperty,
 } from "./__support__/utils";
-
-const { Block } = models;
 
 let configManager;
 let container: IContainer;
@@ -165,16 +162,7 @@ describe("NFT transactions tests", () => {
         await blockchain.processBlock(newBlock, mockCallback);
 
         // Apply property process is asynchronous events, so we have to wait for the new data to be written in db
-        let nftProp = await conditionnalTimeout(
-            nftId,
-            async nftId => {
-                return await blockchain.database.nftsBusinessRepository.findProperty(nftId, "fookey");
-            },
-            res => {
-                return res.value === fooVal;
-            },
-            1000,
-        );
+        let nftProp = await waitForNftProperty(nftId, { key: "fookey", val: fooVal });
 
         // Check for nft property added
         expect(walletForger.tokens.length).toEqual(1);

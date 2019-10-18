@@ -32,6 +32,7 @@ module.exports = {
                 nftTransfer: 100,
                 nftUpdate: 100,
                 nftMint: 100,
+                unsDiscloseExplicit: 100,
             },
         },
     },

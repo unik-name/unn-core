@@ -51,6 +51,11 @@ export const schemas = {
         ],
     },
 
+    tokenId: {
+        $id: "tokenId",
+        allOf: [{ $ref: "hex" }, { minLength: 64, maxLength: 64 }],
+    },
+
     block: {
         $id: "block",
         type: "object",

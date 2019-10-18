@@ -9,6 +9,7 @@ import { NftUpdateTransactionHandler } from "./nft-update";
 import { SecondSignatureTransactionHandler } from "./second-signature";
 import { TimelockTransferTransactionHandler } from "./timelock-transfer";
 import { TransferTransactionHandler } from "./transfer";
+import { UNSDiscloseExplicitTransactionHandler } from "./uns-disclose-explicit";
 import { VoteTransactionHandler } from "./vote";
 
 export const transactionHandlers = [
@@ -24,4 +25,5 @@ export const transactionHandlers = [
     NftTransferTransactionHandler,
     NftUpdateTransactionHandler,
     NftMintTransactionHandler,
+    UNSDiscloseExplicitTransactionHandler,
 ];

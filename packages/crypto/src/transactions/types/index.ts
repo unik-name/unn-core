@@ -11,6 +11,7 @@ export * from "./delegate-resignation";
 export * from "./nft-transfer";
 export * from "./nft-update";
 export * from "./nft-mint";
+export * from "./uns-disclose-explicit";
 
 import * as schemas from "./schemas";
 export { schemas };

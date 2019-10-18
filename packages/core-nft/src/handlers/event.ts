@@ -3,6 +3,7 @@ import { Logger } from "@arkecosystem/core-interfaces";
 import { constants, ITransactionData, models } from "@arkecosystem/crypto";
 import { isNftTransaction } from "../utils";
 import { NFTMintHandler, NFTTransferHandler, NFTUpdateHandler } from "./transactions";
+import { UNSDiscloseExpliciteHandler } from "./transactions/uns-disclose-explicit";
 
 const { TransactionTypes } = constants;
 const logger: Logger.ILogger = app.resolvePlugin<Logger.ILogger>("logger");
@@ -40,6 +41,8 @@ export class NFTEventHandler {
                 return NFTUpdateHandler.onApplied(transaction);
             case TransactionTypes.NftMint:
                 return NFTMintHandler.onApplied(transaction);
+            case TransactionTypes.UnsDiscloseExplicit:
+                return UNSDiscloseExpliciteHandler.onApplied(transaction);
             default:
                 return Promise.resolve("Not a NFT transaction. Continue.");
         }
@@ -53,6 +56,8 @@ export class NFTEventHandler {
                 return NFTUpdateHandler.onReverted(transaction);
             case TransactionTypes.NftMint:
                 return NFTMintHandler.onReverted(transaction);
+            case TransactionTypes.UnsDiscloseExplicit:
+                return UNSDiscloseExpliciteHandler.onReverted(transaction);
             default:
                 return Promise.reject("Not a NFT transaction. Continue.");
         }

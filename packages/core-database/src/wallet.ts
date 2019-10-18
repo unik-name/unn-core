@@ -205,6 +205,10 @@ export class Wallet implements Database.IWallet {
             audit.push({ "Resignate Delegate": this.username });
         }
 
+        if (transaction.type === TransactionTypes.UnsDiscloseExplicit) {
+            audit.push({ "Disclose explicit value": true });
+        }
+
         if (!Object.values(TransactionTypes).includes(transaction.type)) {
             audit.push({ "Unknown Type": true });
         }

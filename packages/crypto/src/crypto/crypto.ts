@@ -4,7 +4,6 @@ import { configManager, feeManager } from "../managers";
 import { ITransactionData } from "../transactions";
 import { ISerializeOptions, TransactionSerializer } from "../transactions/serializers/transaction";
 import { HashAlgorithms } from "./hash-algorithms";
-
 class Crypto {
     /**
      * Get transaction fee.

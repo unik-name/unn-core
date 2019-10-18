@@ -1,5 +1,6 @@
 import deepmerge = require("deepmerge");
 import { TransactionTypes } from "../../constants";
+import { DIDTypes } from "../../models";
 
 export const extend = (parent, properties): TransactionSchema => {
     return deepmerge(parent, properties);
@@ -132,9 +133,7 @@ const nftToken = {
     type: "object",
     required: ["tokenId"],
     properties: {
-        tokenId: {
-            allOf: [{ $ref: "hex" }, { minLength: 64, maxLength: 64 }],
-        },
+        tokenId: { $ref: "tokenId" },
     },
 };
 
@@ -189,6 +188,65 @@ const nftUpdateProperties = {
                     "^.*$": {
                         required: ["properties"],
                     },
+                },
+            },
+        },
+    },
+};
+
+const unsDiscloseDemandCertificationPayload = {
+    asset: {
+        type: "object",
+        required: ["sub", "iss", "iat"],
+        additionalProperties: false,
+        properties: {
+            sub: { $ref: "hex" },
+            iss: { $ref: "tokenId" },
+            iat: { type: "integer" },
+        },
+    },
+};
+
+const unsDiscloseDemandPayload = {
+    asset: {
+        type: "object",
+        required: ["explicitValue", "sub", "type", "iss", "iat"],
+        additionalProperties: false,
+        properties: {
+            explicitValue: {
+                type: "array",
+                minItems: 1,
+                maxItems: 255,
+                items: { $ref: "alphanumeric" },
+            },
+            sub: { $ref: "tokenId" },
+            type: { type: "integer", enum: DIDTypes /*FIXME this statement has no effect*/ },
+            iss: { $ref: "tokenId" },
+            iat: { type: "integer" },
+        },
+    },
+};
+
+const unsDiscloseDemand = {
+    asset: {
+        type: "object",
+        required: ["disclose-demand", "disclose-demand-certification"],
+        additionalProperties: false,
+        properties: {
+            "disclose-demand": {
+                type: "object",
+                required: ["payload", "signature"],
+                properties: {
+                    payload: unsDiscloseDemandPayload,
+                    signature: { $ref: "hex" },
+                },
+            },
+            "disclose-demand-certification": {
+                type: "object",
+                required: ["payload", "signature"],
+                properties: {
+                    payload: unsDiscloseDemandCertificationPayload,
+                    signature: { $ref: "hex" },
                 },
             },
         },
@@ -260,5 +318,15 @@ export const delegateResignation = extend(transactionBaseSchema, {
     properties: {
         type: { transactionType: TransactionTypes.DelegateResignation },
         amount: { bignumber: { minimum: 0, maximum: 0 } },
+    },
+});
+
+export const discloseExplicit = extend(transactionBaseSchema, {
+    $id: "unsDiscloseExplicit",
+    required: ["asset"],
+    properties: {
+        type: { transactionType: TransactionTypes.UnsDiscloseExplicit },
+        amount: { bignumber: { minimum: 0, maximum: 0 } },
+        ...unsDiscloseDemand,
     },
 });

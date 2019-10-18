@@ -23,7 +23,8 @@
                 "delegateResignation": 0,
                 "nftTransfer": 10000000,
                 "nftUpdate": 10000000,
-                "nftMint": 10000000
+                "nftMint": 10000000,
+                "unsdiscloseExplicit": 10000000
             }
         },
         "vendorFieldLength": 64

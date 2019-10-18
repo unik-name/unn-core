@@ -9,6 +9,7 @@ import { configManager } from "../../managers";
 import { Bignum } from "../../utils";
 import { ITransactionData } from "../interfaces";
 import { Transaction } from "../types";
+import { PayloadSerializer } from "./uns-disclose-demand";
 
 export interface ISerializeOptions {
     excludeSignature?: boolean;
@@ -102,6 +103,32 @@ export class TransactionSerializer {
 
                 assetBytes = bb.toBuffer();
                 assetSize = assetBytes.length;
+                break;
+            }
+            case TransactionTypes.UnsDiscloseExplicit: {
+                if (
+                    transaction.asset["disclose-demand"] !== null &&
+                    transaction.asset["disclose-demand-certification"] !== null
+                ) {
+                    const discloseDemandBuf = PayloadSerializer.getBytes(transaction.asset["disclose-demand"].payload);
+                    const discloseDemandSignBuf = Buffer.from(transaction.asset["disclose-demand"].signature, "hex");
+                    const discloseDemandCertBuf = PayloadSerializer.getBytes(
+                        transaction.asset["disclose-demand-certification"].payload,
+                    );
+                    const discloseDemandCertSignBuf = Buffer.from(
+                        transaction.asset["disclose-demand-certification"].signature,
+                        "hex",
+                    );
+                    assetSize =
+                        discloseDemandBuf.length +
+                        discloseDemandSignBuf.length +
+                        discloseDemandCertBuf.length +
+                        discloseDemandCertSignBuf.length;
+                    assetBytes = Buffer.concat(
+                        [discloseDemandBuf, discloseDemandSignBuf, discloseDemandCertBuf, discloseDemandCertSignBuf],
+                        assetSize,
+                    );
+                }
                 break;
             }
         }

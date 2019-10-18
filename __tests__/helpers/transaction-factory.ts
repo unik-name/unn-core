@@ -50,6 +50,14 @@ export class TransactionFactory {
         return new TransactionFactory(transactionBuilder.nftMint(tokenId).properties(properties));
     }
 
+    public static unsDiscloseExplicit(discloseDemand): TransactionFactory {
+        return new TransactionFactory(
+            transactionBuilder
+                .unsDiscloseExplicit()
+                .discloseDemand(discloseDemand["disclose-demand"], discloseDemand["disclose-demand-certification"]),
+        );
+    }
+
     private builder: any;
     private network: NetworkName = "testnet";
     private fee: number;

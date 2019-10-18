@@ -1,4 +1,3 @@
-import { Bignum } from "../utils";
 import { DelegateRegistrationBuilder } from "./transactions/delegate-registration";
 import { DelegateResignationBuilder } from "./transactions/delegate-resignation";
 import { IPFSBuilder } from "./transactions/ipfs";
@@ -8,6 +7,7 @@ import { NFTMintBuilder, NFTTransferBuilder, NFTUpdateBuilder } from "./transact
 import { SecondSignatureBuilder } from "./transactions/second-signature";
 import { TimelockTransferBuilder } from "./transactions/timelock-transfer";
 import { TransferBuilder } from "./transactions/transfer";
+import { UNSDiscloseExplicitBuilder } from "./transactions/uns-disclose-explicit";
 import { VoteBuilder } from "./transactions/vote";
 
 export class TransactionBuilderFactory {
@@ -93,6 +93,13 @@ export class TransactionBuilderFactory {
      */
     public nftMint(tokenId: string): NFTMintBuilder {
         return new NFTMintBuilder(tokenId);
+    }
+
+    /**
+     * Create a new uns disclose explicit transaction type.
+     */
+    public unsDiscloseExplicit(): UNSDiscloseExplicitBuilder {
+        return new UNSDiscloseExplicitBuilder();
     }
 }
 

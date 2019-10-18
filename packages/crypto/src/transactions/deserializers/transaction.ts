@@ -55,20 +55,9 @@ class TransactionDeserializer {
     }
 
     private deserializeSignatures(transaction: ITransactionData, buf: ByteBuffer) {
-        const currentSignatureLength = (): number => {
-            buf.mark();
-            const lengthHex = buf
-                .skip(1)
-                .readBytes(1)
-                .toString("hex");
-            buf.reset();
-
-            return parseInt(lengthHex, 16) + 2;
-        };
-
         // Signature
         if (buf.remaining()) {
-            const signatureLength = currentSignatureLength();
+            const signatureLength = getSignatureLength(buf);
             transaction.signature = buf.readBytes(signatureLength).toString("hex");
         }
 
@@ -81,7 +70,7 @@ class TransactionDeserializer {
 
         // Second Signature
         if (buf.remaining() && !beginningMultiSignature()) {
-            const secondSignatureLength = currentSignatureLength();
+            const secondSignatureLength = getSignatureLength(buf);
             transaction.secondSignature = buf.readBytes(secondSignatureLength).toString("hex");
         }
 
@@ -125,3 +114,14 @@ class TransactionDeserializer {
 }
 
 export const transactionDeserializer = new TransactionDeserializer();
+
+export const getSignatureLength = (buf): number => {
+    buf.mark();
+    const lengthHex = buf
+        .skip(1)
+        .readBytes(1)
+        .toString("hex");
+    buf.reset();
+
+    return parseInt(lengthHex, 16) + 2;
+};

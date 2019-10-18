@@ -25,4 +25,5 @@ export enum TransactionTypes {
     NftTransfer = 9,
     NftUpdate = 10,
     NftMint = 11,
+    UnsDiscloseExplicit = 12,
 }

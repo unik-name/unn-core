@@ -6,3 +6,4 @@ export { HashAlgorithms } from "./hash-algorithms";
 export { HDWallet } from "./hdwallet";
 export { Message } from "./message";
 export { slots } from "./slots";
+export { unsCrypto } from "./uns-crypto";

@@ -1,4 +1,11 @@
-import { Bignum } from "../../../../../packages/crypto/src/utils";
+import {
+    Bignum,
+    ITransactionData,
+    Transaction,
+    TransactionDeserializer,
+    TransactionRegistry,
+    TransactionSerializer,
+} from "@arkecosystem/crypto/";
 
 export const transaction = {
     version: 1,
@@ -14,4 +21,34 @@ export const transaction = {
     signature:
         "304402205881204c6e515965098099b0e20a7bf104cd1bad6cfe8efd1641729fcbfdbf1502203cfa3bd9efb2ad250e2709aaf719ac0db04cb85d27a96bc8149aeaab224de82b",
     asset: {},
+};
+
+export const serialize = (transaction: ITransactionData): Buffer => {
+    const tx: Transaction = TransactionRegistry.create(transaction);
+    TransactionDeserializer.applyV1Compatibility(tx.data);
+    return TransactionSerializer.serialize(tx);
+};
+
+export const deserialize = (serializedTransactionBuffer: Buffer): ITransactionData => {
+    return TransactionDeserializer.deserialize(serializedTransactionBuffer).data;
+};
+
+export const checkSerializedTxCommon = (transaction, deserializedTx) => {
+    expect(deserializedTx).toHaveProperty("signature");
+    expect(deserializedTx.signature).toEqual(transaction.signature);
+
+    expect(deserializedTx).toHaveProperty("timestamp");
+    expect(deserializedTx.timestamp).toEqual(transaction.timestamp);
+
+    expect(deserializedTx).toHaveProperty("version");
+    expect(deserializedTx.version).toEqual(transaction.version);
+
+    expect(deserializedTx).toHaveProperty("fee");
+    expect(parseInt(deserializedTx.fee as string)).toEqual(transaction.fee);
+
+    expect(deserializedTx).toHaveProperty("senderPublicKey");
+    expect(deserializedTx.senderPublicKey).toEqual(transaction.senderPublicKey);
+
+    expect(deserializedTx).toHaveProperty("amount");
+    expect(parseInt(deserializedTx.amount as string)).toEqual(transaction.amount);
 };

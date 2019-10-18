@@ -29,4 +29,6 @@ export interface ITransactionsBusinessRepository {
     getFeeStatistics(): Promise<any>;
 
     search(params: IParameters): Promise<any>;
+
+    getPublicKeyFromAddress(senderId: string): string;
 }

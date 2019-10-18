@@ -1,5 +1,6 @@
 import { TransactionTypes } from "../constants";
 import { Bignum } from "../utils";
+import { DiscloseDemand, DiscloseDemandCertification } from "./uns-interfaces";
 
 export interface ITransactionAsset {
     signature?: {
@@ -18,6 +19,8 @@ export interface ITransactionAsset {
     nft?: {
         [_: string]: INftAsset;
     };
+    "disclose-demand"?: DiscloseDemand;
+    "disclose-demand-certification"?: DiscloseDemandCertification;
     [custom: string]: any;
 }
 

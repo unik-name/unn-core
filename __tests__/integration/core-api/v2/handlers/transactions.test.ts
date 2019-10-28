@@ -526,7 +526,9 @@ describe("API 2.0 - Transactions", () => {
                     });
 
                     expect(response.data.statusCode).toBe(422);
-                    expect(response.data.message).toBe("should NOT have more than 40 items");
+                    expect(response.data.message).toBe(
+                        "should NOT have more than 40 items (data: .transactions ; schema: #/properties/transactions/maxItems)",
+                    );
                 });
             },
         );

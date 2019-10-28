@@ -43,7 +43,12 @@ export const hapiAjv = {
                     errors = validate(config.payloadSchema, request.payload);
 
                     if (errors) {
-                        return createErrorResponse(request, h, errors[0].message);
+                        const error = errors[0];
+                        return createErrorResponse(
+                            request,
+                            h,
+                            `${error.message} (data: ${error.dataPath} ; schema: ${error.schemaPath})`,
+                        );
                     }
                 }
 

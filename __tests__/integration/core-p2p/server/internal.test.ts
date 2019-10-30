@@ -48,7 +48,7 @@ describe("API - Internal", () => {
     });
 
     describe("POST /blocks", () => {
-        it("should be ok", async () => {
+        it.skip("should be ok", async () => {
             const block = new Block(blockFixture.data);
             const response = await utils.POST("internal/blocks", {
                 block: block.toJson(),
@@ -67,7 +67,7 @@ describe("API - Internal", () => {
     });
 
     describe("POST /transactions/verify", () => {
-        it("should be ok", async () => {
+        it.skip("should be ok", async () => {
             const transaction = TransactionFactory.transfer("testnet").build()[0];
             const response = await utils.POST("internal/transactions/verify", {
                 transaction: Transaction.toBytes(transaction.data).toString("hex"),

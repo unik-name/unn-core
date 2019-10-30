@@ -180,8 +180,9 @@ describe("API - Version 1", () => {
         });
 
         it("should fail with a cold wallet", async () => {
-            const transactions = TransactionFactory.transfer("wallet does not exist")
+            const transactions = TransactionFactory.transfer("AGo8TiinQfE64uS1ga6THvYYuQBXWSEbuh")
                 .withNetwork("testnet")
+                .withPassphrase("a passphrase")
                 .create();
             const response = await utils.POST("peer/transactions", {
                 transactions,

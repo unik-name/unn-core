@@ -19,5 +19,6 @@ COMMIT=$(git rev-parse --short HEAD)
 docker tag "$IMAGE":"$COMMIT" "$IMAGE":"$TAG"
 
 docker push "$IMAGE":"$TAG"
+docker push "$IMAGE":"$COMMIT"
 
 echo "🎉 Successfully published UNS image : $IMAGE:$TAG"

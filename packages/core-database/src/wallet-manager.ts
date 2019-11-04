@@ -299,7 +299,7 @@ export class WalletManager implements Database.IWalletManager {
             this.logger.error("Failed to apply all transactions in block - reverting previous transactions");
             // Revert the applied transactions from last to first
             for (let i = appliedTransactions.length - 1; i >= 0; i--) {
-                this.revertTransaction(appliedTransactions[i]);
+                await this.revertTransaction(appliedTransactions[i]);
             }
 
             // TODO: should revert the delegate applyBlock ?
@@ -327,7 +327,7 @@ export class WalletManager implements Database.IWalletManager {
             // Revert the transactions from last to first
             for (let i = block.transactions.length - 1; i >= 0; i--) {
                 const transaction = block.transactions[i];
-                this.revertTransaction(transaction);
+                await this.revertTransaction(transaction);
                 revertedTransactions.push(transaction);
             }
 
@@ -384,7 +384,7 @@ export class WalletManager implements Database.IWalletManager {
             }
         }
 
-        transactionHandler.applyToSender(transaction, sender);
+        await transactionHandler.applyToSender(transaction, sender);
 
         if (type === TransactionTypes.DelegateRegistration) {
             this.reindex(sender);
@@ -401,13 +401,13 @@ export class WalletManager implements Database.IWalletManager {
     /**
      * Remove the given transaction from a delegate.
      */
-    public revertTransaction(transaction: Transaction): void {
+    public async revertTransaction(transaction: Transaction): Promise<void> {
         const { type, data } = transaction;
         const transactionHandler = TransactionHandlerRegistry.get(transaction.type);
         const sender = this.findByPublicKey(data.senderPublicKey); // Should exist
         const recipient = this.byAddress[data.recipientId];
 
-        transactionHandler.revertForSender(transaction, sender);
+        await transactionHandler.revertForSender(transaction, sender);
 
         // removing the wallet from the delegates index
         if (type === TransactionTypes.DelegateRegistration) {

@@ -293,7 +293,7 @@ describe("Wallet Manager", () => {
             expect(voter.balance).toEqual(new Bignum(100_000).minus(voteTransaction.data.fee));
             expect(delegate.voteBalance).toEqual(new Bignum(100_000_000).plus(voter.balance));
 
-            walletManager.revertTransaction(voteTransaction);
+            await walletManager.revertTransaction(voteTransaction);
 
             expect(voter.balance).toEqual(new Bignum(100_000));
             expect(delegate.voteBalance).toEqual(new Bignum(100_000_000));
@@ -343,7 +343,7 @@ describe("Wallet Manager", () => {
             );
             expect(delegate.voteBalance).toEqual(new Bignum(100_000_000));
 
-            walletManager.revertTransaction(unvoteTransaction);
+            await walletManager.revertTransaction(unvoteTransaction);
 
             expect(voter.balance).toEqual(new Bignum(100_000).minus(voteTransaction.data.fee));
             expect(delegate.voteBalance).toEqual(new Bignum(100_000_000).plus(voter.balance));

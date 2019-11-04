@@ -33,12 +33,12 @@ export interface IConnection {
     /**
      * Get the number of transactions in the pool.
      */
-    getPoolSize(): number;
+    getPoolSize(): Promise<number>;
 
     /**
      * Get the number of transactions in the pool from a specific sender\
      */
-    getSenderSize(senderPublicKey: string): number;
+    getSenderSize(senderPublicKey: string): Promise<number>;
 
     /**
      * Add many transactions to the pool.
@@ -77,24 +77,24 @@ export interface IConnection {
     /**
      * Get all transactions that are ready to be forged.
      */
-    getTransactionsForForging(blockSize: number): string[];
+    getTransactionsForForging(blockSize: number): Promise<string[]>;
 
     /**
      * Get a transaction by transaction id.
      */
-    getTransaction(id: string): Transaction;
+    getTransaction(id: string): Promise<Transaction>;
 
     /**
      * Get all transactions within the specified range [start, start + size), ordered by fee.
      * @return {(Array|void)} array of serialized transaction hex strings
      */
-    getTransactions(start: number, size: number, maxBytes?: number): Buffer[];
+    getTransactions(start: number, size: number, maxBytes?: number): Promise<Buffer[]>;
 
     /**
      * Get all transactions within the specified range [start, start + size).
      * @return {Array} array of transactions IDs in the specified range
      */
-    getTransactionIdsForForging(start: number, size: number): string[];
+    getTransactionIdsForForging(start: number, size: number): Promise<string[]>;
 
     /**
      * Get data from all transactions within the specified range [start, start + size).
@@ -102,7 +102,7 @@ export interface IConnection {
      * insertion time, if fees equal (earliest transaction first).
      * @return {Array} array of transaction[property]
      */
-    getTransactionsData(start: number, size: number, property: string, maxBytes?: number): string[] | Buffer[];
+    getTransactionsData(start: number, size: number, property: string, maxBytes?: number): Promise<string[] | Buffer[]>;
 
     /**
      *  Get all transactions of a given type from the pool.
@@ -117,7 +117,7 @@ export interface IConnection {
     /**
      * Check whether sender of transaction has exceeded max transactions in queue.
      */
-    hasExceededMaxTransactions(transaction: ITransactionData): boolean;
+    hasExceededMaxTransactions(transaction: ITransactionData): Promise<boolean>;
 
     /**
      * Flush the pool (delete all transactions from it).
@@ -127,7 +127,7 @@ export interface IConnection {
     /**
      * Checks if a transaction exists in the pool.
      */
-    transactionExists(transactionId: string): any;
+    transactionExists(transactionId: string): Promise<boolean>;
 
     /**
      * Check if transaction sender is blocked
@@ -170,11 +170,11 @@ export interface IConnection {
      * Purges all transactions from the block.
      * Purges if transaction exists. It assumes that if trx exists that also wallet exists in pool
      */
-    purgeBlock(block: models.Block): void;
+    purgeBlock(block: models.Block): Promise<void>;
 
     /**
      * Check whether a given sender has any transactions of the specified type
      * in the pool.
      */
-    senderHasTransactionsOfType(senderPublicKey: string, transactionType: constants.TransactionTypes): boolean;
+    senderHasTransactionsOfType(senderPublicKey: string, transactionType: constants.TransactionTypes): Promise<boolean>;
 }

@@ -36,9 +36,9 @@ describe("Accept handler", () => {
             const handler = new AcceptBlockHandler(blockchain as any, new Block(blocks2to100[0]));
 
             const loggerWarn = jest.spyOn(logger, "warn");
-            jest.spyOn(blockchain.transactionPool, "acceptChainedBlock").mockImplementationOnce(() => {
-                throw new Error("¯_(ツ)_/¯");
-            });
+            jest.spyOn(blockchain.transactionPool, "acceptChainedBlock").mockImplementationOnce(() =>
+                Promise.reject(new Error("¯_(ツ)_/¯")),
+            );
 
             expect(await handler.execute()).toBe(BlockProcessorResult.Accepted);
             expect(loggerWarn).toHaveBeenCalledWith("Issue applying block to transaction pool");

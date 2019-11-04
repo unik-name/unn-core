@@ -20,11 +20,11 @@ export class Connection implements TransactionPool.IConnection {
         return;
     }
 
-    public getPoolSize(): number {
+    public async getPoolSize(): Promise<number> {
         return 0;
     }
 
-    public getSenderSize(senderPublicKey: string): number {
+    public async getSenderSize(senderPublicKey: string): Promise<number> {
         return 0;
     }
 
@@ -49,23 +49,28 @@ export class Connection implements TransactionPool.IConnection {
         return;
     }
 
-    public getTransactionsForForging(blockSize: number): string[] {
+    public async getTransactionsForForging(blockSize: number): Promise<string[]> {
         return [];
     }
 
-    public getTransaction(id: string): Transaction {
+    public async getTransaction(id: string): Promise<Transaction> {
         return null;
     }
 
-    public getTransactions(start: number, size: number, maxBytes?: number): Buffer[] {
+    public async getTransactions(start: number, size: number, maxBytes?: number): Promise<Buffer[]> {
         return [];
     }
 
-    public getTransactionIdsForForging(start: number, size: number): string[] {
+    public async getTransactionIdsForForging(start: number, size: number): Promise<string[]> {
         return null;
     }
 
-    public getTransactionsData(start: number, size: number, property: string, maxBytes?: number): string[] | Buffer[] {
+    public async getTransactionsData(
+        start: number,
+        size: number,
+        property: string,
+        maxBytes?: number,
+    ): Promise<string[] | Buffer[]> {
         return null;
     }
 
@@ -77,7 +82,7 @@ export class Connection implements TransactionPool.IConnection {
         return;
     }
 
-    public hasExceededMaxTransactions(transaction: ITransactionData): boolean {
+    public async hasExceededMaxTransactions(transaction: ITransactionData): Promise<boolean> {
         return true;
     }
 
@@ -85,8 +90,8 @@ export class Connection implements TransactionPool.IConnection {
         return;
     }
 
-    public transactionExists(transactionId: string): any {
-        return;
+    public async transactionExists(transactionId: string): Promise<boolean> {
+        return false;
     }
 
     public isSenderBlocked(senderPublicKey: string): boolean {
@@ -113,11 +118,14 @@ export class Connection implements TransactionPool.IConnection {
         return;
     }
 
-    public purgeBlock(block: models.Block): void {
+    public async purgeBlock(block: models.Block): Promise<void> {
         return;
     }
 
-    public senderHasTransactionsOfType(senderPublicKey: string, transactionType: constants.TransactionTypes): boolean {
+    public async senderHasTransactionsOfType(
+        senderPublicKey: string,
+        transactionType: constants.TransactionTypes,
+    ): Promise<boolean> {
         return true;
     }
 }

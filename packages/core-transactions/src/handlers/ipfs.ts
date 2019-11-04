@@ -15,11 +15,11 @@ export class IpfsTransactionHandler extends TransactionHandler {
         return super.canBeApplied(transaction, wallet, walletManager);
     }
 
-    public apply(transaction: Transaction, wallet: Database.IWallet): void {
+    public async apply(transaction: Transaction, wallet: Database.IWallet): Promise<void> {
         return;
     }
 
-    public revert(transaction: Transaction, wallet: Database.IWallet): void {
+    public async revert(transaction: Transaction, wallet: Database.IWallet): Promise<void> {
         return;
     }
 }

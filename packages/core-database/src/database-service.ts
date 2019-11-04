@@ -528,8 +528,8 @@ export class DatabaseService implements Database.IDatabaseService {
 
         const dbTransaction = await this.getTransaction(transaction.data.id);
 
-        const canBeApplied = await transactionHandler.canBeApplied(transaction, sender);
         try {
+            const canBeApplied = await transactionHandler.canBeApplied(transaction, sender);
             return canBeApplied && !dbTransaction;
         } catch {
             return false;

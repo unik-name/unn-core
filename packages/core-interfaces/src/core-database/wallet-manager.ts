@@ -64,7 +64,7 @@ export interface IWalletManager {
 
     applyTransaction(transaction: Transaction): Promise<void>;
 
-    revertTransaction(transaction: Transaction): void;
+    revertTransaction(transaction: Transaction): Promise<void>;
 
     isDelegate(publicKey: string): boolean;
 

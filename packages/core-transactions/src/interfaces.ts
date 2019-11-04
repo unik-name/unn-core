@@ -9,13 +9,13 @@ export interface ITransactionHandler {
         wallet: Database.IWallet,
         walletManager?: Database.IWalletManager,
     ): Promise<boolean>;
-    applyToSender(transaction: Transaction, wallet: Database.IWallet): void;
+    applyToSender(transaction: Transaction, wallet: Database.IWallet): Promise<void>;
     applyToRecipient(transaction: Transaction, wallet: Database.IWallet): void;
-    revertForSender(transaction: Transaction, wallet: Database.IWallet): void;
+    revertForSender(transaction: Transaction, wallet: Database.IWallet): Promise<void>;
     revertForRecipient(transaction: Transaction, wallet: Database.IWallet): void;
-    apply(transaction: Transaction, wallet: Database.IWallet): void;
-    revert(transaction: Transaction, wallet: Database.IWallet): void;
+    apply(transaction: Transaction, wallet: Database.IWallet): Promise<void>;
+    revert(transaction: Transaction, wallet: Database.IWallet): Promise<void>;
 
-    canEnterTransactionPool(data: ITransactionData, guard: TransactionPool.IGuard): boolean;
+    canEnterTransactionPool(data: ITransactionData, guard: TransactionPool.IGuard): Promise<boolean>;
     emitEvents(transaction: Transaction, emitter: EventEmitter.EventEmitter): void;
 }

@@ -86,7 +86,7 @@ export class TransactionGuard implements TransactionPool.IGuard {
      */
     public async __filterAndTransformTransactions(transactions: ITransactionData[]): Promise<void> {
         for (const transaction of transactions) {
-            const exists = this.pool.transactionExists(transaction.id);
+            const exists = await this.pool.transactionExists(transaction.id);
 
             if (exists) {
                 this.pushError(transaction, "ERR_DUPLICATE", `Duplicate transaction ${transaction.id}`);
@@ -102,9 +102,9 @@ export class TransactionGuard implements TransactionPool.IGuard {
                     "ERR_TOO_LARGE",
                     `Transaction ${transaction.id} is larger than ${this.pool.options.maxTransactionBytes} bytes.`,
                 );
-            } else if (this.pool.hasExceededMaxTransactions(transaction)) {
+            } else if (await this.pool.hasExceededMaxTransactions(transaction)) {
                 this.excess.push(transaction.id);
-            } else if (this.__validateTransaction(transaction)) {
+            } else if (await this.__validateTransaction(transaction)) {
                 try {
                     const receivedId = transaction.id;
                     const trx = Transaction.fromData(transaction);
@@ -159,7 +159,7 @@ export class TransactionGuard implements TransactionPool.IGuard {
      *    - if sender already has another transaction of the same type, for types that
      *    - only allow one transaction at a time in the pool (e.g. vote)
      */
-    public __validateTransaction(transaction: ITransactionData): boolean {
+    public async __validateTransaction(transaction: ITransactionData): Promise<boolean> {
         const now = slots.getTime();
         if (transaction.timestamp > now + 3600) {
             const secondsInFuture = transaction.timestamp - now;
@@ -183,7 +183,7 @@ export class TransactionGuard implements TransactionPool.IGuard {
         const { type } = transaction;
         try {
             const handler = TransactionHandlerRegistry.get(type);
-            return handler.canEnterTransactionPool(transaction, this);
+            return await handler.canEnterTransactionPool(transaction, this);
         } catch (error) {
             if (error instanceof errors.InvalidTransactionTypeError) {
                 this.pushError(

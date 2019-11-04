@@ -33,11 +33,13 @@ export class TransactionsController extends Controller {
         try {
             const pagination = super.paginate(request);
 
-            const transactions = this.transactionPool
-                .getTransactions(pagination.offset, pagination.limit, 0)
-                .map(transaction => ({
-                    serialized: transaction,
-                }));
+            const transactions = (await this.transactionPool.getTransactions(
+                pagination.offset,
+                pagination.limit,
+                0,
+            )).map(transaction => ({
+                serialized: transaction,
+            }));
 
             return super.respondWith({
                 transactions: super.toCollection(request, transactions, "transaction"),
@@ -50,7 +52,7 @@ export class TransactionsController extends Controller {
     public async showUnconfirmed(request: Hapi.Request, h: Hapi.ResponseToolkit) {
         try {
             // @ts-ignore
-            const transaction = this.transactionPool.getTransaction(request.query.id);
+            const transaction = await this.transactionPool.getTransaction(request.query.id);
 
             if (!transaction) {
                 return super.respondWith("Transaction not found", true);

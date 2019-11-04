@@ -81,12 +81,12 @@ describe("Transaction Guard", () => {
     });
 
     describe("__filterAndTransformTransactions", () => {
-        it("should reject duplicate transactions", () => {
+        it("should reject duplicate transactions", async () => {
             const transactionExists = guard.pool.transactionExists;
-            guard.pool.transactionExists = jest.fn(() => true);
+            guard.pool.transactionExists = jest.fn(() => Promise.resolve(true));
 
             const tx = { id: "1" };
-            guard.__filterAndTransformTransactions([tx]);
+            await guard.__filterAndTransformTransactions([tx]);
 
             expect(guard.errors[tx.id]).toEqual([
                 {
@@ -98,14 +98,14 @@ describe("Transaction Guard", () => {
             guard.pool.transactionExists = transactionExists;
         });
 
-        it("should reject blocked senders", () => {
+        it("should reject blocked senders", async () => {
             const transactionExists = guard.pool.transactionExists;
-            guard.pool.transactionExists = jest.fn(() => false);
+            guard.pool.transactionExists = jest.fn(() => Promise.resolve(false));
             const isSenderBlocked = guard.pool.isSenderBlocked;
             guard.pool.isSenderBlocked = jest.fn(() => true);
 
             const tx = { id: "1", senderPublicKey: "affe" };
-            guard.__filterAndTransformTransactions([tx]);
+            await guard.__filterAndTransformTransactions([tx]);
 
             expect(guard.errors[tx.id]).toEqual([
                 {
@@ -118,7 +118,7 @@ describe("Transaction Guard", () => {
             guard.pool.transactionExists = transactionExists;
         });
 
-        it("should reject transactions that are too large", () => {
+        it("should reject transactions that are too large", async () => {
             const tx = TransactionFactory.transfer(wallets[12].address)
                 .withNetwork("unitnet")
                 .withPassphrase(wallets[11].passphrase)
@@ -130,7 +130,7 @@ describe("Transaction Guard", () => {
                 // @ts-ignore
                 tx.data.signatures += "1";
             }
-            guard.__filterAndTransformTransactions([tx]);
+            await guard.__filterAndTransformTransactions([tx]);
 
             expect(guard.errors[tx.id]).toEqual([
                 {
@@ -142,10 +142,10 @@ describe("Transaction Guard", () => {
             ]);
         });
 
-        it("should reject transactions from the future", () => {
+        it("should reject transactions from the future", async () => {
             const now = 47157042; // seconds since genesis block
             const transactionExists = guard.pool.transactionExists;
-            guard.pool.transactionExists = jest.fn(() => false);
+            guard.pool.transactionExists = jest.fn(() => Promise.resolve(false));
             const getTime = slots.getTime;
             slots.getTime = jest.fn(() => now);
 
@@ -155,7 +155,7 @@ describe("Transaction Guard", () => {
                 senderPublicKey: "affe",
                 timestamp: slots.getTime() + secondsInFuture,
             };
-            guard.__filterAndTransformTransactions([tx]);
+            await guard.__filterAndTransformTransactions([tx]);
 
             expect(guard.errors[tx.id]).toEqual([
                 {
@@ -168,9 +168,9 @@ describe("Transaction Guard", () => {
             guard.pool.transactionExists = transactionExists;
         });
 
-        it("should accept transaction with correct network byte", () => {
+        it("should accept transaction with correct network byte", async () => {
             const transactionExists = guard.pool.transactionExists;
-            guard.pool.transactionExists = jest.fn(() => false);
+            guard.pool.transactionExists = jest.fn(() => Promise.resolve(false));
 
             const canApply = guard.pool.walletManager.canApply;
             guard.pool.walletManager.canApply = jest.fn(() => true);
@@ -182,7 +182,7 @@ describe("Transaction Guard", () => {
                 senderPublicKey: "023ee98f453661a1cb765fd60df95b4efb1e110660ffb88ae31c2368a70f1f7359",
                 recipientId: "DEJHR83JFmGpXYkJiaqn7wPGztwjheLAmY",
             };
-            guard.__filterAndTransformTransactions([tx]);
+            await guard.__filterAndTransformTransactions([tx]);
 
             expect(guard.errors[tx.id]).not.toEqual([
                 {
@@ -195,9 +195,9 @@ describe("Transaction Guard", () => {
             guard.pool.walletManager.canApply = canApply;
         });
 
-        it("should accept transaction with missing network byte", () => {
+        it("should accept transaction with missing network byte", async () => {
             const transactionExists = guard.pool.transactionExists;
-            guard.pool.transactionExists = jest.fn(() => false);
+            guard.pool.transactionExists = jest.fn(() => Promise.resolve(false));
 
             const canApply = guard.pool.walletManager.canApply;
             guard.pool.walletManager.canApply = jest.fn(() => true);
@@ -208,7 +208,7 @@ describe("Transaction Guard", () => {
                 senderPublicKey: "023ee98f453661a1cb765fd60df95b4efb1e110660ffb88ae31c2368a70f1f7359",
                 recipientId: "DEJHR83JFmGpXYkJiaqn7wPGztwjheLAmY",
             };
-            guard.__filterAndTransformTransactions([tx]);
+            await guard.__filterAndTransformTransactions([tx]);
 
             expect(guard.errors[tx.id].type).not.toEqual("ERR_WRONG_NETWORK");
 
@@ -216,9 +216,9 @@ describe("Transaction Guard", () => {
             guard.pool.walletManager.canApply = canApply;
         });
 
-        it("should not accept transaction with wrong network byte", () => {
+        it("should not accept transaction with wrong network byte", async () => {
             const transactionExists = guard.pool.transactionExists;
-            guard.pool.transactionExists = jest.fn(() => false);
+            guard.pool.transactionExists = jest.fn(() => Promise.resolve(false));
 
             const canApply = guard.pool.walletManager.canApply;
             guard.pool.walletManager.canApply = jest.fn(() => true);
@@ -228,7 +228,7 @@ describe("Transaction Guard", () => {
                 network: 2,
                 senderPublicKey: "023ee98f453661a1cb765fd60df95b4efb1e110660ffb88ae31c2368a70f1f7359",
             };
-            guard.__filterAndTransformTransactions([tx]);
+            await guard.__filterAndTransformTransactions([tx]);
 
             expect(guard.errors[tx.id]).toEqual([
                 {
@@ -241,22 +241,22 @@ describe("Transaction Guard", () => {
             guard.pool.walletManager.canApply = canApply;
         });
 
-        it("should not accept transaction if pool hasExceededMaxTransactions and add it to excess", () => {
+        it("should not accept transaction if pool hasExceededMaxTransactions and add it to excess", async () => {
             const transactions = TransactionFactory.transfer(wallets[11].address, 35)
                 .withNetwork("unitnet")
                 .withPassphrase(wallets[10].passphrase)
                 .create(3);
 
-            jest.spyOn(guard.pool, "hasExceededMaxTransactions").mockImplementationOnce(tx => true);
+            jest.spyOn(guard.pool, "hasExceededMaxTransactions").mockReturnValueOnce(tx => Promise.resolve(true));
 
-            guard.__filterAndTransformTransactions(transactions);
+            await guard.__filterAndTransformTransactions(transactions);
 
             expect(guard.excess).toEqual([transactions[0].id]);
             expect(guard.accept).toEqual(new Map());
             expect(guard.broadcast).toEqual(new Map());
         });
 
-        it("should push a ERR_UNKNOWN error if something threw in validated transaction block", () => {
+        it("should push a ERR_UNKNOWN error if something threw in validated transaction block", async () => {
             const transactions = TransactionFactory.transfer(wallets[11].address, 35)
                 .withNetwork("unitnet")
                 .withPassphrase(wallets[10].passphrase)
@@ -267,7 +267,7 @@ describe("Transaction Guard", () => {
                 throw new Error("hey");
             });
 
-            guard.__filterAndTransformTransactions(transactions.map(tx => tx.data));
+            await guard.__filterAndTransformTransactions(transactions.map(tx => tx.data));
 
             expect(guard.accept).toEqual(new Map());
             expect(guard.broadcast).toEqual(new Map());
@@ -287,7 +287,7 @@ describe("Transaction Guard", () => {
                 .withPassphrase(wallets[10].passphrase)
                 .create(3);
 
-            expect(guard.__validateTransaction(transactions[0])).toBeFalse();
+            expect(await guard.__validateTransaction(transactions[0])).toBeFalse();
             expect(guard.errors).toEqual({
                 [transactions[0].id]: [
                     {
@@ -314,7 +314,7 @@ describe("Transaction Guard", () => {
             const memPoolTx = new MemPoolTransaction(delegateRegistrations[0]);
             jest.spyOn(guard.pool, "getTransactionsByType").mockReturnValueOnce(new Set([memPoolTx]));
 
-            expect(guard.__validateTransaction(delegateRegistrations[1].data)).toBeFalse();
+            expect(await guard.__validateTransaction(delegateRegistrations[1].data)).toBeFalse();
             expect(guard.errors[delegateRegistrations[1].id]).toEqual([
                 {
                     type: "ERR_PENDING",
@@ -340,7 +340,7 @@ describe("Transaction Guard", () => {
             const memPoolTx = new MemPoolTransaction(secondSignatureTransaction);
             jest.spyOn(guard.pool, "senderHasTransactionsOfType").mockReturnValueOnce(true);
 
-            expect(guard.__validateTransaction(transferTransaction.data)).toBeFalse();
+            expect(await guard.__validateTransaction(transferTransaction.data)).toBeFalse();
             expect(guard.errors[transferTransaction.id]).toEqual([
                 {
                     type: "ERR_PENDING",
@@ -370,7 +370,7 @@ describe("Transaction Guard", () => {
                 .build()[0];
 
             for (const tx of [vote, delegateReg, signature]) {
-                expect(guard.__validateTransaction(tx.data)).toBeFalse();
+                expect(await guard.__validateTransaction(tx.data)).toBeFalse();
                 expect(guard.errors[tx.id]).toEqual([
                     {
                         type: "ERR_PENDING",
@@ -406,7 +406,7 @@ describe("Transaction Guard", () => {
                 // @ts-ignore
                 baseTransaction.data.id = transactionType;
 
-                expect(guard.__validateTransaction(baseTransaction)).toBeFalse();
+                expect(await guard.__validateTransaction(baseTransaction)).toBeFalse();
                 expect(guard.errors[baseTransaction.id]).toEqual([
                     {
                         type: "ERR_UNSUPPORTED",

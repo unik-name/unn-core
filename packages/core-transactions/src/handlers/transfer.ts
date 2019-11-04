@@ -29,16 +29,16 @@ export class TransferTransactionHandler extends TransactionHandler {
         return true;
     }
 
-    public apply(transaction: Transaction, wallet: Database.IWallet): void {
+    public async apply(transaction: Transaction, wallet: Database.IWallet): Promise<void> {
         return;
     }
 
-    public revert(transaction: Transaction, wallet: Database.IWallet): void {
+    public async revert(transaction: Transaction, wallet: Database.IWallet): Promise<void> {
         return;
     }
 
-    public canEnterTransactionPool(data: ITransactionData, guard: TransactionPool.IGuard): boolean {
-        if (this.secondSignatureRegistrationFromSenderAlreadyInPool(data, guard)) {
+    public async canEnterTransactionPool(data: ITransactionData, guard: TransactionPool.IGuard): Promise<boolean> {
+        if (await this.secondSignatureRegistrationFromSenderAlreadyInPool(data, guard)) {
             return false;
         }
 

@@ -34,19 +34,19 @@ export class NftTransferTransactionHandler extends TransactionHandler {
     /**
      * Apply the transaction to the sender wallet.
      */
-    public apply(transaction: Transaction, wallet: Database.IWallet): void {
+    public async apply(transaction: Transaction, wallet: Database.IWallet): Promise<void> {
         this.removeTokenFromWallet(wallet, transaction.data);
     }
 
     /**
      * Revert the transaction from the sender wallet.
      */
-    public revert(transaction: Transaction, wallet: Database.IWallet): void {
+    public async revert(transaction: Transaction, wallet: Database.IWallet): Promise<void> {
         this.addTokenToWallet(wallet, getCurrentNftAsset(transaction.data).tokenId);
     }
 
-    public canEnterTransactionPool(data: ITransactionData, guard: TransactionPool.IGuard): boolean {
-        return !this.typeFromSenderAlreadyInPool(data, guard);
+    public async canEnterTransactionPool(data: ITransactionData, guard: TransactionPool.IGuard): Promise<boolean> {
+        return !(await this.typeFromSenderAlreadyInPool(data, guard));
     }
 
     public emitEvents(transaction: Transaction, emitter: EventEmitter.EventEmitter): void {

@@ -70,11 +70,11 @@ export class PoolWalletManager extends WalletManager {
     /**
      * Remove the given transaction from a sender only.
      */
-    public revertTransactionForSender(transaction: Transaction) {
+    public async revertTransactionForSender(transaction: Transaction): Promise<void> {
         const { data } = transaction;
         const sender = this.findByPublicKey(data.senderPublicKey); // Should exist
 
         const transactionHandler = TransactionHandlerRegistry.get(transaction.type);
-        transactionHandler.revertForSender(transaction, sender);
+        await transactionHandler.revertForSender(transaction, sender);
     }
 }

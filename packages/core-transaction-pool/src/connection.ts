@@ -51,7 +51,7 @@ export class Connection implements TransactionPool.IConnection {
         const all = this.storage.loadAll();
         all.forEach(t => this.mem.add(t, this.options.maxTransactionAge, true));
 
-        this.__purgeExpired();
+        await this.__purgeExpired();
 
         // Remove transactions that were forged while we were offline.
         const allIds = all.map(memPoolTransaction => memPoolTransaction.transaction.id);
@@ -84,8 +84,8 @@ export class Connection implements TransactionPool.IConnection {
      * @param {Number} type of transaction
      * @return {Set of MemPoolTransaction} all transactions of the given type, could be empty Set
      */
-    public getTransactionsByType(type) {
-        this.__purgeExpired();
+    public async getTransactionsByType(type): Promise<Set<unknown>> {
+        await this.__purgeExpired();
 
         return this.mem.getByType(type);
     }
@@ -93,8 +93,8 @@ export class Connection implements TransactionPool.IConnection {
     /**
      * Get the number of transactions in the pool.
      */
-    public getPoolSize(): number {
-        this.__purgeExpired();
+    public async getPoolSize(): Promise<number> {
+        await this.__purgeExpired();
 
         return this.mem.getSize();
     }
@@ -102,8 +102,8 @@ export class Connection implements TransactionPool.IConnection {
     /**
      * Get the number of transactions in the pool from a specific sender
      */
-    public getSenderSize(senderPublicKey: string): number {
-        this.__purgeExpired();
+    public async getSenderSize(senderPublicKey: string): Promise<number> {
+        await this.__purgeExpired();
 
         return this.mem.getBySender(senderPublicKey).size;
     }
@@ -151,12 +151,11 @@ export class Connection implements TransactionPool.IConnection {
      * property yield information about the error.
      */
     public async addTransaction(transaction: Transaction): Promise<TransactionPool.IAddTransactionResponse> {
-        if (this.transactionExists(transaction.id)) {
+        if (await this.transactionExists(transaction.id)) {
             this.logger.debug(
                 "Transaction pool: ignoring attempt to add a transaction that is already " +
                     `in the pool, id: ${transaction.id}`,
             );
-
             return this.__createError(transaction, "ERR_ALREADY_IN_POOL", "Already in pool");
         }
 
@@ -172,7 +171,7 @@ export class Connection implements TransactionPool.IConnection {
             const lowestFee = lowest.data.fee as Bignum;
 
             if (lowestFee.isLessThan(fee)) {
-                this.walletManager.revertTransactionForSender(lowest);
+                await this.walletManager.revertTransactionForSender(lowest);
                 this.mem.remove(lowest.id, lowest.data.senderPublicKey);
             } else {
                 return this.__createError(
@@ -194,7 +193,7 @@ export class Connection implements TransactionPool.IConnection {
         const errors = [];
         if (await this.walletManager.canApply(transaction, errors)) {
             const transactionHandler = TransactionHandlerRegistry.get(transaction.type);
-            transactionHandler.applyToSender(transaction, senderWallet);
+            await transactionHandler.applyToSender(transaction, senderWallet);
         } else {
             // Remove tx again from the pool
             this.mem.remove(transaction.id);
@@ -226,15 +225,17 @@ export class Connection implements TransactionPool.IConnection {
     /**
      * Get all transactions that are ready to be forged.
      */
-    public getTransactionsForForging(blockSize: number): string[] {
-        return this.getTransactions(0, blockSize, this.options.maxTransactionBytes).map(tx => tx.toString("hex"));
+    public async getTransactionsForForging(blockSize: number): Promise<string[]> {
+        return (await this.getTransactions(0, blockSize, this.options.maxTransactionBytes)).map(tx =>
+            tx.toString("hex"),
+        );
     }
 
     /**
      * Get a transaction by transaction id.
      */
-    public getTransaction(id: string): Transaction {
-        this.__purgeExpired();
+    public async getTransaction(id: string): Promise<Transaction> {
+        await this.__purgeExpired();
 
         return this.mem.getTransactionById(id);
     }
@@ -242,15 +243,15 @@ export class Connection implements TransactionPool.IConnection {
     /**
      * Get all transactions within the specified range [start, start + size), ordered by fee.
      */
-    public getTransactions(start: number, size: number, maxBytes?: number): Buffer[] {
-        return this.getTransactionsData(start, size, "serialized", maxBytes) as Buffer[];
+    public async getTransactions(start: number, size: number, maxBytes?: number): Promise<Buffer[]> {
+        return (await this.getTransactionsData(start, size, "serialized", maxBytes)) as Buffer[];
     }
 
     /**
      * Get all transactions within the specified range [start, start + size).
      */
-    public getTransactionIdsForForging(start: number, size: number): string[] {
-        return this.getTransactionsData(start, size, "id", this.options.maxTransactionBytes) as string[];
+    public async getTransactionIdsForForging(start: number, size: number): Promise<string[]> {
+        return (await this.getTransactionsData(start, size, "id", this.options.maxTransactionBytes)) as string[];
     }
 
     /**
@@ -258,8 +259,13 @@ export class Connection implements TransactionPool.IConnection {
      * Transactions are ordered by fee (highest fee first) or by
      * insertion time, if fees equal (earliest transaction first).
      */
-    public getTransactionsData(start: number, size: number, property: string, maxBytes = 0): string[] | Buffer[] {
-        this.__purgeExpired();
+    public async getTransactionsData(
+        start: number,
+        size: number,
+        property: string,
+        maxBytes = 0,
+    ): Promise<string[] | Buffer[]> {
+        await this.__purgeExpired();
 
         const data = [];
 
@@ -306,8 +312,8 @@ export class Connection implements TransactionPool.IConnection {
     /**
      * Check whether sender of transaction has exceeded max transactions in queue.
      */
-    public hasExceededMaxTransactions(transaction: ITransactionData): boolean {
-        this.__purgeExpired();
+    public async hasExceededMaxTransactions(transaction: ITransactionData): Promise<boolean> {
+        await this.__purgeExpired();
 
         if (this.options.allowedSenders.includes(transaction.senderPublicKey)) {
             if (!this.loggedAllowedSenders.includes(transaction.senderPublicKey)) {
@@ -339,14 +345,14 @@ export class Connection implements TransactionPool.IConnection {
     /**
      * Checks if a transaction exists in the pool.
      */
-    public transactionExists(transactionId: string): boolean {
+    public async transactionExists(transactionId: string): Promise<boolean> {
         if (!this.mem.transactionExists(transactionId)) {
             // If it does not exist then no need to purge expired transactions because
             // we know it will not exist after purge too.
             return false;
         }
 
-        this.__purgeExpired();
+        await this.__purgeExpired();
 
         return this.mem.transactionExists(transactionId);
     }
@@ -388,7 +394,7 @@ export class Connection implements TransactionPool.IConnection {
     public async acceptChainedBlock(block: models.Block) {
         for (const transaction of block.transactions) {
             const { data } = transaction;
-            const exists = this.transactionExists(data.id);
+            const exists = await this.transactionExists(data.id);
             const senderPublicKey = data.senderPublicKey;
             const transactionHandler = TransactionHandlerRegistry.get(transaction.type);
 
@@ -422,13 +428,13 @@ export class Connection implements TransactionPool.IConnection {
                     return;
                 }
 
-                transactionHandler.applyToSender(transaction, senderWallet);
+                await transactionHandler.applyToSender(transaction, senderWallet);
             }
 
             if (
                 senderWallet &&
                 this.walletManager.canBePurged(senderWallet) &&
-                this.getSenderSize(senderPublicKey) === 0
+                (await this.getSenderSize(senderPublicKey)) === 0
             ) {
                 this.walletManager.deleteWallet(senderPublicKey);
             }
@@ -452,12 +458,12 @@ export class Connection implements TransactionPool.IConnection {
      */
     public async buildWallets() {
         this.walletManager.reset();
-        const poolTransactionIds = await this.getTransactionIdsForForging(0, this.getPoolSize());
+        const poolTransactionIds = await this.getTransactionIdsForForging(0, await this.getPoolSize());
 
         app.resolve<Blockchain.IStateStorage>("state").removeCachedTransactionIds(poolTransactionIds);
 
         for (const transactionId of poolTransactionIds) {
-            const transaction = this.getTransaction(transactionId);
+            const transaction = await this.getTransaction(transactionId);
             if (!transaction) {
                 return;
             }
@@ -468,7 +474,7 @@ export class Connection implements TransactionPool.IConnection {
             // TODO: rework error handling
             try {
                 await transactionHandler.canBeApplied(transaction, senderWallet);
-                transactionHandler.applyToSender(transaction, senderWallet);
+                await transactionHandler.applyToSender(transaction, senderWallet);
             } catch (error) {
                 this.logger.error(`BuildWallets from pool: ${error.message}`);
                 this.purgeByPublicKey(transaction.data.senderPublicKey);
@@ -499,21 +505,24 @@ export class Connection implements TransactionPool.IConnection {
      * Purges all transactions from the block.
      * Purges if transaction exists. It assumes that if trx exists that also wallet exists in pool
      */
-    public purgeBlock(block: models.Block) {
-        block.transactions.forEach(tx => {
-            if (this.transactionExists(tx.id)) {
+    public async purgeBlock(block: models.Block): Promise<void> {
+        for (const tx of block.transactions) {
+            if (await this.transactionExists(tx.id)) {
                 this.removeTransaction(tx);
-                this.walletManager.revertTransactionForSender(tx);
+                await this.walletManager.revertTransactionForSender(tx);
             }
-        });
+        }
     }
 
     /**
      * Check whether a given sender has any transactions of the specified type
      * in the pool.
      */
-    public senderHasTransactionsOfType(senderPublicKey: string, transactionType: constants.TransactionTypes): boolean {
-        this.__purgeExpired();
+    public async senderHasTransactionsOfType(
+        senderPublicKey: string,
+        transactionType: constants.TransactionTypes,
+    ): Promise<boolean> {
+        await this.__purgeExpired();
 
         for (const memPoolTransaction of this.mem.getBySender(senderPublicKey)) {
             if (memPoolTransaction.transaction.type === transactionType) {
@@ -564,11 +573,11 @@ export class Connection implements TransactionPool.IConnection {
     /**
      * Remove all transactions from the pool that have expired.
      */
-    private __purgeExpired() {
+    private async __purgeExpired() {
         for (const transaction of this.mem.getExpired(this.options.maxTransactionAge)) {
             this.emitter.emit("transaction.expired", transaction.data);
 
-            this.walletManager.revertTransactionForSender(transaction);
+            await this.walletManager.revertTransactionForSender(transaction);
             this.mem.remove(transaction.id, transaction.data.senderPublicKey);
             this.__syncToPersistentStorageIfNecessary();
         }

@@ -25,15 +25,15 @@ export class SecondSignatureTransactionHandler extends TransactionHandler {
         return super.canBeApplied(transaction, wallet, walletManager);
     }
 
-    public apply(transaction: Transaction, wallet: Database.IWallet): void {
+    public async apply(transaction: Transaction, wallet: Database.IWallet): Promise<void> {
         wallet.secondPublicKey = transaction.data.asset.signature.publicKey;
     }
 
-    public revert(transaction: Transaction, wallet: Database.IWallet): void {
+    public async revert(transaction: Transaction, wallet: Database.IWallet): Promise<void> {
         wallet.secondPublicKey = null;
     }
 
-    public canEnterTransactionPool(data: ITransactionData, guard: TransactionPool.IGuard): boolean {
-        return !this.typeFromSenderAlreadyInPool(data, guard);
+    public async canEnterTransactionPool(data: ITransactionData, guard: TransactionPool.IGuard): Promise<boolean> {
+        return !(await this.typeFromSenderAlreadyInPool(data, guard));
     }
 }

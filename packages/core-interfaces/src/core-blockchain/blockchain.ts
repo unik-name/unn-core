@@ -118,11 +118,11 @@ export interface IBlockchain {
      */
     getUnconfirmedTransactions(
         blockSize: number,
-    ): {
+    ): Promise<{
         transactions: string[];
         poolSize: number;
         count: number;
-    };
+    }>;
 
     /**
      * Determine if the blockchain is synced.

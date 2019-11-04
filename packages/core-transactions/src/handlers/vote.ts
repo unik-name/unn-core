@@ -36,7 +36,7 @@ export class VoteTransactionHandler extends TransactionHandler {
         return super.canBeApplied(transaction, wallet, walletManager);
     }
 
-    public apply(transaction: Transaction, wallet: Database.IWallet): void {
+    public async apply(transaction: Transaction, wallet: Database.IWallet): Promise<void> {
         const { data } = transaction;
         const vote = data.asset.votes[0];
         if (vote.startsWith("+")) {
@@ -46,7 +46,7 @@ export class VoteTransactionHandler extends TransactionHandler {
         }
     }
 
-    public revert(transaction: Transaction, wallet: Database.IWallet): void {
+    public async revert(transaction: Transaction, wallet: Database.IWallet): Promise<void> {
         const { data } = transaction;
         const vote = data.asset.votes[0];
         if (vote.startsWith("+")) {
@@ -65,10 +65,10 @@ export class VoteTransactionHandler extends TransactionHandler {
         });
     }
 
-    public canEnterTransactionPool(data: ITransactionData, guard: TransactionPool.IGuard): boolean {
+    public async canEnterTransactionPool(data: ITransactionData, guard: TransactionPool.IGuard): Promise<boolean> {
         return (
-            !this.typeFromSenderAlreadyInPool(data, guard) &&
-            !this.secondSignatureRegistrationFromSenderAlreadyInPool(data, guard)
+            !(await this.typeFromSenderAlreadyInPool(data, guard)) &&
+            !(await this.secondSignatureRegistrationFromSenderAlreadyInPool(data, guard))
         );
     }
 }

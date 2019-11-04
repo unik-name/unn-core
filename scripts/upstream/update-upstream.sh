@@ -10,7 +10,7 @@ cd $SOURCES_PATH
 echo -e "\n["$(date +%F_%H-%M-%S)"]"
 
 echo -e "\nFetching sources"
-git fetch
+git fetch --prune
 DIFF=$(git diff private/develop origin/private/develop --shortstat)
 
 if [ -z $DIFF ]

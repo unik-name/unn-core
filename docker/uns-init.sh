@@ -60,13 +60,15 @@ if [[ -n "${BOOTNODE}" ]]; then
 fi
 
 if [[ -n "${FORGERS_SECRET}" ]]; then
-  echo "setting forgers secret"
+  echo "setting forgers secret from `FORGERS_SECRET` --> MULTI FORGERS MODE"
   echo "{\"secrets\": [$FORGERS_SECRET]}" > /etc/uns/delegates.json
   FORGER=true
 elif [[ -n "${FORGER_SECRET}" ]]; then
-  echo "setting forger secret"
+  echo "setting forger secret from `FORGER_SECRET` --> SINGLE FORGER MODE"
   uns config:forger:bip39 --bip39 "$FORGER_SECRET"
   FORGER=true
+else
+  echo "No forger configured. Only relay node will be started."
 fi
 
 # -> run

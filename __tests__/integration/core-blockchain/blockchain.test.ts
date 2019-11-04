@@ -67,7 +67,7 @@ describe("Blockchain", () => {
 
             blockchain.transactionPool.flush();
             await blockchain.postTransactions(transactionsWithoutType2);
-            const transactions = blockchain.transactionPool.getTransactions(0, 200);
+            const transactions = await blockchain.transactionPool.getTransactions(0, 200);
 
             expect(transactions.length).toBe(transactionsWithoutType2.length);
 
@@ -230,7 +230,7 @@ describe("Blockchain", () => {
 
             blockchain.transactionPool.flush();
             await blockchain.postTransactions(transactionsWithoutType2);
-            const unconfirmedTransactions = blockchain.getUnconfirmedTransactions(200);
+            const unconfirmedTransactions = await blockchain.getUnconfirmedTransactions(200);
 
             expect(unconfirmedTransactions.transactions.length).toBe(transactionsWithoutType2.length);
 
@@ -244,7 +244,7 @@ describe("Blockchain", () => {
         it("should return object with count == -1 if getTransactionsForForging returned a falsy value", async () => {
             jest.spyOn(blockchain.transactionPool, "getTransactionsForForging").mockReturnValueOnce(null);
 
-            const unconfirmedTransactions = blockchain.getUnconfirmedTransactions(200);
+            const unconfirmedTransactions = await blockchain.getUnconfirmedTransactions(200);
             expect(unconfirmedTransactions.count).toBe(-1);
         });
     });

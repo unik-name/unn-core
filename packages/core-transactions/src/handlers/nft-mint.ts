@@ -27,14 +27,14 @@ export class NftMintTransactionHandler extends TransactionHandler {
         return super.canBeApplied(transaction, wallet, walletManager);
     }
 
-    public apply(transaction: Transaction, wallet: Database.IWallet): void {
+    public async apply(transaction: Transaction, wallet: Database.IWallet): Promise<void> {
         wallet.tokens = wallet.tokens.concat([getCurrentNftAsset(transaction.data).tokenId]);
     }
 
-    public revert(transaction: Transaction, wallet: Database.IWallet): void {
+    public async revert(transaction: Transaction, wallet: Database.IWallet): Promise<void> {
         wallet.tokens = wallet.tokens.filter(t => t !== getCurrentNftAsset(transaction.data).tokenId);
     }
-    public canEnterTransactionPool(data: ITransactionData, guard: TransactionPool.IGuard): boolean {
-        return !this.typeFromSenderAlreadyInPool(data, guard);
+    public async canEnterTransactionPool(data: ITransactionData, guard: TransactionPool.IGuard): Promise<boolean> {
+        return !(await this.typeFromSenderAlreadyInPool(data, guard));
     }
 }

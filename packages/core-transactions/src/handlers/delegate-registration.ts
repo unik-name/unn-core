@@ -40,12 +40,12 @@ export class DelegateRegistrationTransactionHandler extends TransactionHandler {
         return super.canBeApplied(transaction, wallet, walletManager);
     }
 
-    public apply(transaction: Transaction, wallet: Database.IWallet): void {
+    public async apply(transaction: Transaction, wallet: Database.IWallet): Promise<void> {
         const { data } = transaction;
         wallet.username = data.asset.delegate.username;
     }
 
-    public revert(transaction: Transaction, wallet: Database.IWallet): void {
+    public async revert(transaction: Transaction, wallet: Database.IWallet): Promise<void> {
         wallet.username = null;
     }
 
@@ -53,10 +53,10 @@ export class DelegateRegistrationTransactionHandler extends TransactionHandler {
         emitter.emit("delegate.registered", transaction.data);
     }
 
-    public canEnterTransactionPool(data: ITransactionData, guard: TransactionPool.IGuard): boolean {
+    public async canEnterTransactionPool(data: ITransactionData, guard: TransactionPool.IGuard): Promise<boolean> {
         if (
-            this.typeFromSenderAlreadyInPool(data, guard) ||
-            this.secondSignatureRegistrationFromSenderAlreadyInPool(data, guard)
+            (await this.typeFromSenderAlreadyInPool(data, guard)) ||
+            (await this.secondSignatureRegistrationFromSenderAlreadyInPool(data, guard))
         ) {
             return false;
         }

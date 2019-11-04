@@ -416,12 +416,14 @@ export class Blockchain implements blockchain.IBlockchain {
      * @param  {Boolean} forForging
      * @return {Object}
      */
-    public getUnconfirmedTransactions(blockSize: number): { transactions: string[]; poolSize: number; count: number } {
-        const transactions = this.transactionPool.getTransactionsForForging(blockSize);
+    public async getUnconfirmedTransactions(
+        blockSize: number,
+    ): Promise<{ transactions: string[]; poolSize: number; count: number }> {
+        const transactions = await this.transactionPool.getTransactionsForForging(blockSize);
 
         return {
             transactions,
-            poolSize: this.transactionPool.getPoolSize(),
+            poolSize: await this.transactionPool.getPoolSize(),
             count: transactions ? transactions.length : -1,
         };
     }

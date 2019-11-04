@@ -70,12 +70,12 @@ export abstract class TransactionHandler implements ITransactionHandler {
         return true;
     }
 
-    public applyToSender(transaction: Transaction, wallet: Database.IWallet): void {
+    public async applyToSender(transaction: Transaction, wallet: Database.IWallet): Promise<void> {
         const { data } = transaction;
         if (data.senderPublicKey === wallet.publicKey || crypto.getAddress(data.senderPublicKey) === wallet.address) {
             wallet.balance = wallet.balance.minus(data.amount).minus(data.fee);
 
-            this.apply(transaction, wallet);
+            await this.apply(transaction, wallet);
         }
     }
 
@@ -86,12 +86,11 @@ export abstract class TransactionHandler implements ITransactionHandler {
         }
     }
 
-    public revertForSender(transaction: Transaction, wallet: Database.IWallet): void {
+    public async revertForSender(transaction: Transaction, wallet: Database.IWallet): Promise<void> {
         const { data } = transaction;
         if (data.senderPublicKey === wallet.publicKey || crypto.getAddress(data.senderPublicKey) === wallet.address) {
             wallet.balance = wallet.balance.plus(data.amount).plus(data.fee);
-
-            this.revert(transaction, wallet);
+            await this.revert(transaction, wallet);
         }
     }
 
@@ -102,8 +101,8 @@ export abstract class TransactionHandler implements ITransactionHandler {
         }
     }
 
-    public abstract apply(transaction: Transaction, wallet: Database.IWallet): void;
-    public abstract revert(transaction: Transaction, wallet: Database.IWallet): void;
+    public abstract async apply(transaction: Transaction, wallet: Database.IWallet): Promise<void>;
+    public abstract async revert(transaction: Transaction, wallet: Database.IWallet): Promise<void>;
 
     /**
      * Database Service
@@ -114,7 +113,7 @@ export abstract class TransactionHandler implements ITransactionHandler {
     /**
      * Transaction Pool logic
      */
-    public canEnterTransactionPool(data: ITransactionData, guard: TransactionPool.IGuard): boolean {
+    public async canEnterTransactionPool(data: ITransactionData, guard: TransactionPool.IGuard): Promise<boolean> {
         guard.pushError(
             data,
             "ERR_UNSUPPORTED",
@@ -123,9 +122,12 @@ export abstract class TransactionHandler implements ITransactionHandler {
         return false;
     }
 
-    protected typeFromSenderAlreadyInPool(data: ITransactionData, guard: TransactionPool.IGuard): boolean {
+    protected async typeFromSenderAlreadyInPool(
+        data: ITransactionData,
+        guard: TransactionPool.IGuard,
+    ): Promise<boolean> {
         const { senderPublicKey, type } = data;
-        if (guard.pool.senderHasTransactionsOfType(senderPublicKey, type)) {
+        if (await guard.pool.senderHasTransactionsOfType(senderPublicKey, type)) {
             guard.pushError(
                 data,
                 "ERR_PENDING",
@@ -138,12 +140,12 @@ export abstract class TransactionHandler implements ITransactionHandler {
         return false;
     }
 
-    protected secondSignatureRegistrationFromSenderAlreadyInPool(
+    protected async secondSignatureRegistrationFromSenderAlreadyInPool(
         data: ITransactionData,
         guard: TransactionPool.IGuard,
-    ): boolean {
+    ): Promise<boolean> {
         const { senderPublicKey } = data;
-        if (guard.pool.senderHasTransactionsOfType(senderPublicKey, TransactionTypes.SecondSignature)) {
+        if (await guard.pool.senderHasTransactionsOfType(senderPublicKey, TransactionTypes.SecondSignature)) {
             guard.pushError(
                 data,
                 "ERR_PENDING",

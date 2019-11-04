@@ -73,6 +73,6 @@ fi
 mkdir -p /var/log/uns
 if [ "$FORGER" = true ] ; then
     echo "Starting forger"
-    nohup uns forger:run > /var/log/uns/uns-forger.log 2>&1 &
+    nohup uns forger:run & # do not redirect `> /var/log/uns/uns-forger.log 2>&1 &`
 fi
-uns relay:run --network=$NETWORK $NETWORK_START 2>&1 | tee -a /var/log/uns/uns-relay.log
+uns relay:run --network=$NETWORK $NETWORK_START # do not redirect `2>&1 | tee -a /var/log/uns/uns-relay.log`

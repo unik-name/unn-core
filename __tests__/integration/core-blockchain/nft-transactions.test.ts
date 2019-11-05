@@ -3,7 +3,6 @@ import { IContainer } from "../../../packages/core-interfaces/src/core-container
 import { crypto, models, transactionBuilder } from "../../../packages/crypto";
 import "../../utils";
 import { delegates } from "../../utils/fixtures/testnet/delegates";
-import { generateNftIdentifier } from "../../utils/generators/nft";
 import { setUp, tearDown } from "./__support__/setup";
 
 import { mintNft } from "./__support__/nft-utils";
@@ -17,9 +16,9 @@ import {
     createBlock,
     genesisBlock,
     getNextForger,
+    waitForNftMinted,
+    waitForNftProperty,
 } from "./__support__/utils";
-
-const { Block } = models;
 
 let configManager;
 let container: IContainer;
@@ -68,14 +67,7 @@ describe("NFT transactions tests", () => {
         const nftId = await mintNft(blockchain, nextForger, {});
 
         // Writing NFT in db is asynchronous event, so we have to wait for the new data to be written
-        const nft = await conditionnalTimeout(
-            nftId,
-            async nftId => {
-                return await blockchain.database.nftsBusinessRepository.findById(nftId);
-            },
-            () => true,
-            1000,
-        );
+        const nft = await waitForNftMinted(nftId);
 
         // check nft presence
         expect(walletForger.tokens.length).toEqual(1);
@@ -92,14 +84,8 @@ describe("NFT transactions tests", () => {
         const walletForger = blockchain.database.walletManager.findByPublicKey(forgerKeys.publicKey);
         const nftId = await mintNft(blockchain, nextForger, { type: nftInitType });
 
-        const nft = await conditionnalTimeout(
-            nftId,
-            async nftId => {
-                return await blockchain.database.nftsBusinessRepository.findById(nftId);
-            },
-            () => true,
-            1000,
-        );
+        await waitForNftProperty(nftId, { key: "type", val: nftInitType });
+        const nft = await blockchain.database.nftsBusinessRepository.findById(nftId);
 
         // check nft presence
         expect(walletForger.tokens.length).toEqual(1);
@@ -119,14 +105,7 @@ describe("NFT transactions tests", () => {
         const walletForger = blockchain.database.walletManager.findByPublicKey(forgerKeys.publicKey);
         const nftId = await mintNft(blockchain, nextForger, { type: nftInitType });
 
-        await conditionnalTimeout(
-            nftId,
-            async nftId => {
-                return await blockchain.database.nftsBusinessRepository.findById(nftId);
-            },
-            () => true,
-            1000,
-        );
+        await waitForNftProperty(nftId, { key: "type", val: nftInitType });
 
         const keyPair = crypto.getKeys("secret");
         const recipient = crypto.getAddress(keyPair.publicKey);
@@ -163,14 +142,7 @@ describe("NFT transactions tests", () => {
         const walletForger = blockchain.database.walletManager.findByPublicKey(forgerKeys.publicKey);
         const nftId = await mintNft(blockchain, nextForger, { type: nftInitType });
 
-        await conditionnalTimeout(
-            nftId,
-            async nftId => {
-                return await blockchain.database.nftsBusinessRepository.findById(nftId);
-            },
-            () => true,
-            1000,
-        );
+        await waitForNftProperty(nftId, { key: "type", val: nftInitType });
 
         // add nft property
         const fooVal = "fooval";
@@ -216,14 +188,7 @@ describe("NFT transactions tests", () => {
         const walletForger = blockchain.database.walletManager.findByPublicKey(forgerKeys.publicKey);
         const nftId = await mintNft(blockchain, nextForger, { type: nftInitType });
 
-        await conditionnalTimeout(
-            nftId,
-            async nftId => {
-                return await blockchain.database.nftsBusinessRepository.findById(nftId);
-            },
-            () => true,
-            1000,
-        );
+        await waitForNftProperty(nftId, { key: "type", val: nftInitType });
 
         // add nft property
         const nftUpdate = transactionBuilder
@@ -260,14 +225,7 @@ describe("NFT transactions tests", () => {
         const walletForger = blockchain.database.walletManager.findByPublicKey(forgerKeys.publicKey);
         const nftId = await mintNft(blockchain, nextForger, { type: nftInitType });
 
-        await conditionnalTimeout(
-            nftId,
-            async nftId => {
-                return await blockchain.database.nftsBusinessRepository.findById(nftId);
-            },
-            () => true,
-            1000,
-        );
+        await waitForNftProperty(nftId, { key: "type", val: nftInitType });
 
         // add nft property
         const nftUpdate = transactionBuilder

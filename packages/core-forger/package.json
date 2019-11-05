@@ -1,7 +1,7 @@
 {
     "name": "@uns/core-forger",
     "description": "Forger for UNS Core",
-    "version": "3.1.0-beta",
+    "version": "3.1.0-beta.1",
     "contributors": [
         "François-Xavier Thoorens <fx@ark.io>",
         "Kristjan Košič <kristjan@ark.io>",
@@ -22,11 +22,11 @@
         "clean": "del dist"
     },
     "dependencies": {
-        "@uns/core-container": "^3.1.0-beta",
-        "@uns/core-interfaces": "^3.1.0-beta",
-        "@uns/core-p2p": "^3.1.0-beta",
-        "@uns/core-utils": "^3.1.0-beta",
-        "@uns/crypto": "^3.1.0-beta",
+        "@uns/core-container": "^3.1.0-beta.1",
+        "@uns/core-interfaces": "^3.1.0-beta.1",
+        "@uns/core-p2p": "^3.1.0-beta.1",
+        "@uns/core-utils": "^3.1.0-beta.1",
+        "@uns/crypto": "^3.1.0-beta.1",
         "lodash.isempty": "^4.4.0",
         "lodash.uniq": "^4.5.0",
         "pluralize": "^7.0.0"

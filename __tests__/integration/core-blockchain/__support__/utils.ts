@@ -146,3 +146,27 @@ export const conditionnalTimeout = async (nftId, checkFunction, resCondition, ti
         cnt += 10;
     }
 };
+
+export const waitForNftMinted = async (nftId): Promise<any> => {
+    return await conditionnalTimeout(
+        nftId,
+        async nftId => {
+            return await blockchain.database.nftsBusinessRepository.findById(nftId);
+        },
+        () => true,
+        1000,
+    );
+};
+
+export const waitForNftProperty = async (nftId, property): Promise<any> => {
+    return await conditionnalTimeout(
+        nftId,
+        async nftId => {
+            return await blockchain.database.nftsBusinessRepository.findProperty(nftId, property.key);
+        },
+        res => {
+            return res.value === property.val;
+        },
+        1000,
+    );
+};

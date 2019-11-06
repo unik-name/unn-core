@@ -15,5 +15,5 @@ COPY --from=BUILDER /opt/build /opt/uns
 RUN rm -rf /opt/uns/packages/*/src 
 ADD docker/uns-init.sh /opt/uns
 RUN ln -s /opt/uns/packages/core/bin/run /usr/bin/uns
-CMD [ "/opt/uns/uns-init.sh" ]
 USER node
+CMD [ "/opt/uns/uns-init.sh" ]

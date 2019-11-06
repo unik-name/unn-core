@@ -207,7 +207,7 @@ _NB: naming is UPSTREAM_VERSION-LOCAL_INCREMENT (e.g 2.3.22 -> 2.3.22-1)_
 A release must be made from `private/develop` branch.
 
 ```
-> yarn lerna version --no-push --message "release new UNS version %v"
+> yarn lerna version --no-push --message "release: %v" --force-publish
 > git push ${remote} private/develop ${version-tag}
 > cd packages/crypto
 > npm publish

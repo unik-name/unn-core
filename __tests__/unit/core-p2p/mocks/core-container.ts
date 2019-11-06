@@ -23,7 +23,7 @@ jest.mock("@arkecosystem/core-container", () => {
                     }),
                 };
             },
-            getVersion: () => "2.3.0",
+            getVersion: () => "3.1.0",
             has: () => true,
             resolvePlugin: name => {
                 if (name === "logger") {

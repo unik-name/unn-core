@@ -1,7 +1,7 @@
 {
     "name": "@uns/core-container",
     "description": "Container for UNS Core",
-    "version": "3.1.0-beta.2",
+    "version": "3.1.0",
     "contributors": [
         "Brian Faust <brian@ark.io>",
         "Guillaume Nicolas <guillaume@spacelephant.org>"
@@ -20,8 +20,8 @@
         "clean": "del dist"
     },
     "dependencies": {
-        "@uns/core-interfaces": "^3.1.0-beta.2",
-        "@uns/crypto": "^3.1.0-beta.2",
+        "@uns/core-interfaces": "^3.1.0",
+        "@uns/crypto": "^3.1.0",
         "awilix": "^4.2.1",
         "delay": "^4.1.0",
         "env-paths": "^2.1.0",

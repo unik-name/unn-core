@@ -1,6 +1,6 @@
 module.exports = {
     "@arkecosystem/core-event-emitter": {},
-    "@arkecosystem/core-logger-pino": {},
+    "@arkecosystem/core-logger-signale": {},
     "@arkecosystem/core-database-postgres": {
         connection: {
             host: process.env.CORE_DB_HOST || "localhost",

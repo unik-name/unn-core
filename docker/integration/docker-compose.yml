@@ -25,7 +25,7 @@ services:
     environment:
      FORGER_SECRET: "${FORGER1_SECRET}"
      BOOTSTRAP: "true"
-     DB_DATABASE: uns_dalinet_forger1
+     CORE_DB_DATABASE: uns_dalinet_forger1
     ports:
      - "4002:4002"
      - "4003:4003"
@@ -40,7 +40,7 @@ services:
     container_name: uns_dalinet_forger2
     environment:
      FORGER_SECRET: "${FORGER2_SECRET}"
-     DB_DATABASE: uns_dalinet_forger2
+     CORE_DB_DATABASE: uns_dalinet_forger2
      BOOTNODE: forger1
     links:
      - forger1
@@ -55,7 +55,7 @@ services:
     container_name: uns_dalinet_forger3
     environment:
      FORGER_SECRET: "${FORGER3_SECRET}"
-     DB_DATABASE: uns_dalinet_forger3
+     CORE_DB_DATABASE: uns_dalinet_forger3
      BOOTNODE: forger1
     links:
      - forger1

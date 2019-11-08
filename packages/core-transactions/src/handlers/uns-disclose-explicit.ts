@@ -103,7 +103,7 @@ export class UNSDiscloseExplicitTransactionHandler extends TransactionHandler {
     /**
      * Apply the transaction to the wallet.
      */
-    public apply(transaction: Transaction, wallet: Database.IWallet): void {
+    public async apply(transaction: Transaction, wallet: Database.IWallet): Promise<void> {
         // action delegated to the nft manager
         // TODO:
     }
@@ -111,11 +111,11 @@ export class UNSDiscloseExplicitTransactionHandler extends TransactionHandler {
     /**
      * Revert the transaction from the wallet.
      */
-    public revert(transaction: Transaction, wallet: Database.IWallet): void {
+    public async revert(transaction: Transaction, wallet: Database.IWallet): Promise<void> {
         // cannot get back property value...
         // TODO:
     }
-    public canEnterTransactionPool(data: ITransactionData, guard: TransactionPool.IGuard): boolean {
-        return !this.typeFromSenderAlreadyInPool(data, guard);
+    public async canEnterTransactionPool(data: ITransactionData, guard: TransactionPool.IGuard): Promise<boolean> {
+        return !(await this.typeFromSenderAlreadyInPool(data, guard));
     }
 }

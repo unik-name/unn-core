@@ -67,12 +67,16 @@ export abstract class Transaction {
         }
     }
 
-    public static fromData(data: ITransactionData, strict: boolean = true): Transaction {
+    public static validateTransactionData(data: ITransactionData, strict: boolean = true): ITransactionData {
         const { value, error } = this.validateSchema(data, strict);
         if (error !== null && !isException(value)) {
             throw new TransactionSchemaError(error);
         }
+        return value;
+    }
 
+    public static fromData(data: ITransactionData, strict: boolean = true): Transaction {
+        const value = this.validateTransactionData(data, strict);
         const transaction = TransactionRegistry.create(value);
         TransactionDeserializer.applyV1Compatibility(transaction.data); // TODO: generalize this kinda stuff
         TransactionSerializer.serialize(transaction);

@@ -165,11 +165,10 @@ export abstract class Transaction {
                     const value = properties[propertyKey];
                     if (value && Buffer.from(value, "utf8").length > 255) {
                         error = `Value of property ${propertyKey} exceed the maximum allowed size of 255 bytes.`;
-                        break;
+                        return { value: data, error };
                     }
                 }
             }
-            return { value: data, error };
         }
 
         const { $id } = TransactionRegistry.get(data.type).getSchema();

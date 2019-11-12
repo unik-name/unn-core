@@ -12,7 +12,29 @@ uns config:publish --network=$NETWORK
 # warning: remove `.env` file otherwise external environment variables will be ignored.
 rm $CONFIG_DIR/.env
 
-echo $CORE_DB_HOST
+# Backward compatibility (remove later)
+if [[ -n "${DB_HOST}" ]]; then
+  export CORE_DB_HOST=$DB_HOST
+  echo $DB_HOST $CORE_DB_HOST
+  echo "warning: 'DB_HOST' environment variable will be deprecated soon. Use 'CORE_DB_HOST' instead."
+fi
+if [[ -n "${DB_PORT}" ]]; then
+  export CORE_DB_PORT=$DB_PORT
+  echo "warning: 'DB_PORT' environment variable will be deprecated soon. Use 'CORE_DB_PORT' instead."
+fi
+if [[ -n "${DB_USER}" ]]; then
+  export CORE_DB_USER=$DB_USER
+  echo "warning: 'DB_USER' environment variable will be deprecated soon. Use 'CORE_DB_USER' instead."
+fi
+if [[ -n "${DB_PASSWORD}" ]]; then
+  export CORE_DB_PASSWORD=$DB_PASSWORD
+  echo "warning: 'DB_PASSWORD' environment variable will be deprecated soon. Use 'CORE_DB_PASSWORD' instead."
+fi
+if [[ -n "${DB_DATABASE}" ]]; then
+  export CORE_DB_DATABASE=$DB_DATABASE
+  echo "warning: 'DB_DATABASE' environment variable will be deprecated soon. Use 'CORE_DB_DATABASE' instead."
+fi
+
 
 if [[ -n "${BOOTSTRAP}" ]]; then
   echo "bootstrap mode"

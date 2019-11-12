@@ -7,7 +7,7 @@ SOURCES_PATH=$WORKDIR/uns-core
 
 cd $SOURCES_PATH
 
-echo -e "\n["$(date +%F_%H-%M-%S)"]"
+echo -e "\n["$(date --iso-8601=seconds)"]"
 
 echo -e "\nFetching sources"
 git fetch --prune

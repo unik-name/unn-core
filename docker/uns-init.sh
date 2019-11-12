@@ -64,7 +64,9 @@ fi
 
 # Run
 if [ "$FORGER" = true ] ; then
-    echo "Starting forger"
-    uns forger:run & 
+  echo "Starting full node (relay + forger)"
+  uns core:run --network=$NETWORK $NETWORK_START  
+else
+  echo "Starting relay node"
+  uns relay:run --network=$NETWORK $NETWORK_START 
 fi
-uns relay:run --network=$NETWORK $NETWORK_START 

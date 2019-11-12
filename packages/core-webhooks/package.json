@@ -1,7 +1,7 @@
 {
     "name": "@uns/core-webhooks",
     "description": "Webhooks for UNS Core",
-    "version": "3.1.0",
+    "version": "3.1.1",
     "contributors": [
         "Brian Faust <brian@ark.io>",
         "Guillaume Nicolas <guillaume@spacelephant.org>"
@@ -20,11 +20,11 @@
         "clean": "del dist"
     },
     "dependencies": {
-        "@uns/core-container": "^3.1.0",
-        "@uns/core-event-emitter": "^3.1.0",
-        "@uns/core-http-utils": "^3.1.0",
-        "@uns/core-interfaces": "^3.1.0",
-        "@uns/core-utils": "^3.1.0",
+        "@uns/core-container": "^3.1.1",
+        "@uns/core-event-emitter": "^3.1.1",
+        "@uns/core-http-utils": "^3.1.1",
+        "@uns/core-interfaces": "^3.1.1",
+        "@uns/core-utils": "^3.1.1",
         "boom": "^7.3.0",
         "fs-extra": "^7.0.1",
         "hapi-pagination": "^2.1.0",

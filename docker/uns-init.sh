@@ -65,6 +65,6 @@ fi
 # Run
 if [ "$FORGER" = true ] ; then
     echo "Starting forger"
-    nohup uns forger:run & 
+    uns forger:run & 
 fi
 uns relay:run --network=$NETWORK $NETWORK_START 

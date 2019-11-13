@@ -1,0 +1,35 @@
+{
+    "name": "@uns/crypto",
+    "version": "4.0.0-dev",
+    "description": "Crypto utilities for the UNS.network Blockchain",
+    "license": "MIT",
+    "contributors": [
+        "Guillaume Nicolas <guillaume@unik-name.com>"
+    ],
+    "files": [
+        "dist"
+    ],
+    "main": "dist/index",
+    "module": "dist/index",
+    "browser": "dist/index-browser",
+    "types": "dist/index",
+    "scripts": {
+        "build": "yarn clean && tsc",
+        "build:rollup": "yarn clean && tsc && rollup -c",
+        "build:watch": "yarn clean && yarn compile -w",
+        "clean": "del dist",
+        "compile": "../../node_modules/typescript/bin/tsc",
+        "prepublishOnly": "yarn build"
+    },
+    "dependencies": {},
+    "devDependencies": {
+        "rollup": "^1.17.0",
+        "rollup-plugin-commonjs": "^10.0.1",
+        "rollup-plugin-json": "^4.0.0",
+        "rollup-plugin-node-resolve": "^5.2.0",
+        "rollup-plugin-terser": "^5.1.1"
+    },
+    "publishConfig": {
+        "access": "public"
+    }
+}

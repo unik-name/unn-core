@@ -8,6 +8,7 @@ export class DatabaseConnectionStub implements Database.IConnection {
     public roundsRepository: Database.IRoundsRepository;
     public transactionsRepository: Database.ITransactionsRepository;
     public walletsRepository: Database.IWalletsRepository;
+
     public options: any;
 
     public buildWallets(): Promise<void> {

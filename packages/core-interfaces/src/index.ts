@@ -8,4 +8,6 @@ import * as State from "./core-state";
 import * as TransactionPool from "./core-transaction-pool";
 import * as Shared from "./shared";
 
-export { Container, Logger, Blockchain, TransactionPool, EventEmitter, P2P, Database, Shared, State };
+import * as NFT from "./core-nft";
+
+export { Container, Logger, Blockchain, TransactionPool, EventEmitter, P2P, Database, Shared, State, NFT };

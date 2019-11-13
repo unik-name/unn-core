@@ -3,3 +3,4 @@ export * from "./rounds-repository";
 export * from "./wallets-repository";
 export * from "./blocks-repository";
 export * from "./repository";
+export * from "./nfts-repository";

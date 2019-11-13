@@ -3,6 +3,7 @@ import { ApplicationEvents } from "@arkecosystem/core-event-emitter";
 import { Database, EventEmitter, Logger, State } from "@arkecosystem/core-interfaces";
 import { Handlers } from "@arkecosystem/core-transactions";
 import { Utils } from "@arkecosystem/crypto";
+import { getCurrentNftAsset } from "@uns/crypto";
 
 export class StateBuilder {
     private readonly logger: Logger.ILogger = app.resolvePlugin<Logger.ILogger>("logger");
@@ -15,7 +16,7 @@ export class StateBuilder {
 
     public async run(): Promise<void> {
         const transactionHandlers: Handlers.TransactionHandler[] = Handlers.Registry.getAll();
-        const steps = transactionHandlers.length + 3;
+        const steps = transactionHandlers.length + 4;
 
         this.logger.info(`State Generation - Step 1 of ${steps}: Block Rewards`);
         await this.buildBlockRewards();
@@ -23,11 +24,14 @@ export class StateBuilder {
         this.logger.info(`State Generation - Step 2 of ${steps}: Fees & Nonces`);
         await this.buildSentTransactions();
 
+        this.logger.info(`State Generation - Step 3 of ${steps}: Nfts`);
+        await this.buildNfts();
+
         const capitalize = (key: string) => key[0].toUpperCase() + key.slice(1);
         for (let i = 0; i < transactionHandlers.length; i++) {
             const transactionHandler = transactionHandlers[i];
             this.logger.info(
-                `State Generation - Step ${3 + i} of ${steps}: ${capitalize(transactionHandler.getConstructor().key)}`,
+                `State Generation - Step ${4 + i} of ${steps}: ${capitalize(transactionHandler.getConstructor().key)}`,
             );
 
             await transactionHandler.bootstrap(this.connection, this.walletManager);
@@ -63,6 +67,30 @@ export class StateBuilder {
             const wallet = this.walletManager.findByPublicKey(transaction.senderPublicKey);
             wallet.nonce = Utils.BigNumber.make(transaction.nonce);
             wallet.balance = wallet.balance.minus(transaction.amount).minus(transaction.fee);
+        }
+    }
+
+    private async buildNfts() {
+        const transactions = await this.connection.transactionsRepository.getNftTransactions();
+
+        const builtTokens = []; // List of tokens already built
+
+        for (const transaction of transactions) {
+            const nftId = getCurrentNftAsset(transaction).tokenId;
+
+            if (!builtTokens.includes(nftId)) {
+                let ownerWallet;
+                if (transaction.recipientId) {
+                    // it's nft-transfer
+                    ownerWallet = this.walletManager.findByAddress(transaction.recipientId);
+                } else {
+                    // it's nft-mint
+                    ownerWallet = this.walletManager.findByPublicKey(transaction.senderPublicKey);
+                }
+                ownerWallet.tokens.push(nftId);
+            }
+
+            builtTokens.push(nftId);
         }
     }
 

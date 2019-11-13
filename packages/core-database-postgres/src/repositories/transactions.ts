@@ -181,6 +181,10 @@ export class TransactionsRepository extends Repository implements Database.ITran
         return this.db.many(queries.stateBuilder.sentTransactions);
     }
 
+    public async getNftTransactions(): Promise<any> {
+        return this.db.many(queries.stateBuilder.nfts);
+    }
+
     public async forged(ids: string[]): Promise<Interfaces.ITransactionData[]> {
         return this.db.manyOrNone(queries.transactions.forged, { ids });
     }

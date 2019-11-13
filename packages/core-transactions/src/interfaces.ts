@@ -22,8 +22,16 @@ export interface ITransactionHandler {
         wallet: State.IWallet,
         walletManager: State.IWalletManager,
     ): Promise<void>;
-    apply(transaction: Interfaces.ITransaction, walletManager: State.IWalletManager): Promise<void>;
-    revert(transaction: Interfaces.ITransaction, walletManager: State.IWalletManager): Promise<void>;
+    apply(
+        transaction: Interfaces.ITransaction,
+        walletManager: State.IWalletManager,
+        applyInDb?: boolean,
+    ): Promise<void>;
+    revert(
+        transaction: Interfaces.ITransaction,
+        walletManager: State.IWalletManager,
+        applyInDb?: boolean,
+    ): Promise<void>;
 
     canEnterTransactionPool(
         data: Interfaces.ITransactionData,

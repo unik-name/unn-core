@@ -1,0 +1,422 @@
+# Javascript Node CircleCI 2.1 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-javascript/ for more details
+#
+version: 2.1
+
+####################################
+## Helpers
+####################################
+
+repo_path: &repo_path
+  ~/core
+
+job_config: &job_config
+  docker:
+    - image: circleci/node:12-browsers
+    - image: 'postgres:alpine'
+      environment:
+        POSTGRES_PASSWORD: password
+        POSTGRES_DB: ark_unitnet
+        POSTGRES_USER: ark
+  working_directory: *repo_path
+  environment:
+    CORE_DB_DATABASE: ark_unitnet
+    CORE_DB_USERNAME: ark
+
+update_apt: &update_apt
+  run:
+    name: Update APT
+    command: >-
+      sudo sh -c 'echo "deb http://ftp.debian.org/debian stable main
+      contrib non-free" >> /etc/apt/sources.list' && sudo apt-get update
+
+install_dependencies: &install_dependencies
+  run:
+    name: Install xsel & postgresql-client
+    command: sudo apt-get install -q xsel postgresql-client
+
+create_db_dir: &create_db_dir
+  run:
+    name: Create .core/database directory
+    command: mkdir -p $HOME/.core/database
+
+generate_cache_key: &generate_cache_key
+  run: >-
+    find ./packages/ -name package.json -print0 | sort -z | xargs -r0
+    echo ./package.json | xargs md5sum | md5sum - > checksum.txt
+
+cache_key: &cache_key
+  'cache-node_modules-{{ checksum "checksum.txt" }}'
+
+restore: &restore
+  restore_cache:
+    key: *cache_key
+
+save: &save
+  save_cache:
+    key: *cache_key
+    paths:
+      - ./packages/*/node_modules
+      - ./node_modules
+
+attach: &attach
+  attach_workspace:
+    at: ~/
+
+persist: &persist
+  persist_to_workspace:
+    root: ~/
+    paths: 
+      - core
+      - .core/
+
+all_tests: &all_tests
+  - Unit
+  - Integration
+  - F-bridgechain-registration
+  - F-bridgechain-resignation
+  - F-bridgechain-update
+  - F-business-registration
+  - F-business-resignation
+  - F-business-update
+  - F-delegate-registration
+  - F-delegate-resignation
+  - F-htlc-claim
+  - F-htlc-lock
+  - F-htlc-refund
+  - F-ipfs
+  - F-multi-payment
+  - F-multi-signature-registration
+  - F-second-signature-registration
+  - F-transfer
+  - F-vote
+
+test_requirements: &test_requirements
+  requires:
+    - build
+
+coverage: &coverage
+  run: ./node_modules/.bin/codecov
+
+notif: &notif
+  slack/status:
+    fail_only: true
+    only_for_branches: 'develop'
+    failure_message: "\U0001F62D build failed > $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH:$CIRCLE_SHA1 ( \U0001F916 $CIRCLE_WORKFLOW_ID/$CIRCLE_JOB)"
+  
+####################################
+## Jobs
+####################################
+jobs:
+
+  prepare:
+    <<: *job_config
+    steps:
+      - checkout
+      - *attach
+      - *update_apt
+      - *install_dependencies
+      - *create_db_dir
+      - *generate_cache_key
+      - *persist
+      - *notif
+      
+  build:
+    <<: *job_config
+    steps:
+      - *attach
+      - *restore
+      - run: yarn setup
+      - run: yarn lint
+      - *save
+      - *persist
+      - *notif
+
+  Unit:
+    docker:
+      - image: circleci/node:12-browsers
+    working_directory: *repo_path
+    steps:
+      - *attach
+      - run: yarn test:unit:coverage --maxWorkers=2 
+      - *coverage
+      - *notif
+
+  Integration:
+    <<: *job_config
+    steps:
+      - *attach
+      - run: yarn test:integration:coverage
+      - *coverage
+      - *notif 
+
+  F-bridgechain-registration:
+    <<: *job_config
+    steps:
+      - *attach
+      - run: yarn test:coverage __tests__/functional/transaction-forging/bridgechain-registration.test.ts
+      - *coverage
+      - *notif 
+  F-bridgechain-resignation:
+    <<: *job_config
+    steps:
+      - *attach
+      - run: yarn test:coverage __tests__/functional/transaction-forging/bridgechain-resignation.test.ts
+      - *coverage
+      - *notif 
+  F-bridgechain-update:
+    <<: *job_config
+    steps:
+      - *attach
+      - run: yarn test:coverage __tests__/functional/transaction-forging/bridgechain-update.test.ts
+      - *coverage
+      - *notif 
+  F-business-registration:
+    <<: *job_config
+    steps:
+      - *attach
+      - run: yarn test:coverage __tests__/functional/transaction-forging/business-registration.test.ts
+      - *coverage
+      - *notif 
+  F-business-resignation:
+    <<: *job_config
+    steps:
+      - *attach
+      - run: yarn test:coverage __tests__/functional/transaction-forging/business-resignation.test.ts
+      - *coverage
+      - *notif 
+  F-business-update:
+    <<: *job_config
+    steps:
+      - *attach
+      - run: yarn test:coverage __tests__/functional/transaction-forging/business-update.test.ts
+      - *coverage
+      - *notif 
+  F-delegate-registration:
+    <<: *job_config
+    steps:
+      - *attach
+      - run: yarn test:coverage __tests__/functional/transaction-forging/delegate-registration.test.ts
+      - *coverage
+      - *notif 
+  F-delegate-resignation:
+    <<: *job_config
+    steps:
+      - *attach
+      - run: yarn test:coverage __tests__/functional/transaction-forging/bridgechain-resignation.test.ts
+      - *coverage
+      - *notif 
+  F-htlc-claim:
+    <<: *job_config
+    steps:
+      - *attach
+      - run: yarn test:coverage __tests__/functional/transaction-forging/htlc-claim.test.ts
+      - *coverage
+      - *notif 
+  F-htlc-lock:
+    <<: *job_config
+    steps:
+      - *attach
+      - run: yarn test:coverage __tests__/functional/transaction-forging/htlc-lock.test.ts
+      - *coverage
+      - *notif 
+  F-htlc-refund:
+    <<: *job_config
+    steps:
+      - *attach
+      - run: yarn test:coverage __tests__/functional/transaction-forging/htlc-refund.test.ts
+      - *coverage
+      - *notif 
+  F-ipfs:
+    <<: *job_config
+    steps:
+      - *attach
+      - run: yarn test:coverage __tests__/functional/transaction-forging/ipfs.test.ts
+      - *coverage
+      - *notif 
+  F-multi-payment:
+    <<: *job_config
+    steps:
+      - *attach
+      - run: yarn test:coverage __tests__/functional/transaction-forging/multi-payment.test.ts
+      - *coverage
+      - *notif 
+  F-multi-signature-registration:
+    <<: *job_config
+    steps:
+      - *attach
+      - run: yarn test:coverage __tests__/functional/transaction-forging/multi-signature-registration.test.ts
+      - *coverage
+      - *notif 
+  F-second-signature-registration:
+    <<: *job_config
+    steps:
+      - *attach
+      - run: yarn test:coverage __tests__/functional/transaction-forging/second-signature-registration.test.ts
+      - *coverage
+      - *notif 
+  F-transfer:
+    <<: *job_config
+    steps:
+      - *attach
+      - run: yarn test:coverage __tests__/functional/transaction-forging/transfer.test.ts
+      - *coverage
+      - *notif 
+  F-vote:
+    <<: *job_config
+    steps:
+      - *attach
+      - run: yarn test:coverage __tests__/functional/transaction-forging/vote.test.ts
+      - *coverage
+      - *notif 
+        
+  # Temporary disabled because requires command modifications
+  # e2e:
+  #   docker:
+  #     - image: circleci/node:12-browsers
+  #   working_directory: *repo_path
+  #   steps:
+  #     - *attach
+  #     - setup_remote_docker
+  #     - run: 
+  #         name: Initialize docker swarm
+  #         command: docker swarm init
+  #     - run: 
+  #         name: Install and build e2e project
+  #         command: cd __tests__/e2e && ../../node_modules/.bin/tsc && yarn cache clean && yarn install --frozen-lockfile
+  #     - run:
+  #         name: Generate files
+  #         command: node --version && cd __tests__/e2e && yarn generate -c 3 -v 12.x
+  #     - run: 
+  #         name: Make scripts executable
+  #         command: sudo chmod +x __tests__/e2e/dist/docker* && sudo chmod +x __tests__/e2e/dist/node0/docker/testnet-e2e/entrypoint.sh && sudo chmod +x __tests__/e2e/dist/node1/docker/testnet-e2e/entrypoint.sh && sudo chmod +x __tests__/e2e/dist/node2/docker/testnet-e2e/entrypoint.sh && sudo chmod +x __tests__/e2e/dist/node0/ark.sh && sudo chmod +x __tests__/e2e/dist/node1/ark.sh && sudo chmod +x __tests__/e2e/dist/node2/ark.sh
+  #     - run: 
+  #         name: Docker init and start
+  #         command: cd __tests__/e2e/dist && ./docker-init.sh && ./docker-start.sh
+  #     - run:
+  #         name: Wait 10 sec for docker containers to be up
+  #         command: sleep 10
+  #     - run:
+  #         name: Run tests
+  #         command: cd __tests__/e2e && sudo chown -R $USER:$USER ./dist/ && yarn run-tests -s scenario1
+  #     - run:
+  #         name: Output results - node0
+  #         command: cat __tests__/e2e/dist/node0/output.log && cat __tests__/e2e/dist/node0/errors.log
+  #         when: always
+  #     - run:
+  #         name: Output results - node1
+  #         command: cat __tests__/e2e/dist/node1/output.log && cat __tests__/e2e/dist/node1/errors.log
+  #         when: always
+  #     - run:
+  #         name: Output results - node2
+  #         command: cat __tests__/e2e/dist/node2/output.log && cat __tests__/e2e/dist/node2/errors.log
+  #         when: always
+  #     - *notif
+
+  docker_build_publish:
+    machine: true
+    working_directory: *repo_path
+    steps:
+      - *attach
+      - run: echo "$DOCKERHUB_PASS" | docker login --username $DOCKERHUB_USER --password-stdin
+      - run: ./scripts/docker/build.sh integration
+      - run: ./scripts/docker/publish.sh integration
+      - *notif
+
+####################################
+## Orbs
+####################################
+orbs:
+  slack: circleci/slack@3.3.0
+
+####################################
+## Workflows
+####################################
+
+workflow: &workflow
+  - prepare
+  - build:
+      requires:
+        - prepare
+  - Unit:
+      requires:
+        - build
+  - Integration:
+      requires:
+        - build
+  - F-bridgechain-registration:
+      requires:
+        - build
+  - F-bridgechain-resignation:
+      requires:
+        - build
+  - F-bridgechain-update:
+      requires:
+        - build
+  - F-business-registration:
+      requires:
+        - build
+  - F-business-resignation:
+      requires:
+        - build
+  - F-business-update:
+      requires:
+        - build
+  - F-delegate-registration:
+      requires:
+        - build
+  - F-delegate-resignation:
+      requires:
+        - build
+  - F-htlc-claim:
+      requires:
+        - build
+  - F-htlc-lock:
+      requires:
+        - build
+  - F-htlc-refund:
+      requires:
+        - build
+  - F-ipfs:
+      requires:
+        - build
+  - F-multi-payment:
+      requires:
+        - build
+  - F-multi-signature-registration:
+      requires:
+        - build
+  - F-second-signature-registration:
+      requires:
+        - build
+  - F-transfer:
+      requires:
+        - build
+  - F-vote:
+      requires:
+        - build
+  - docker_build_publish:
+     filters:
+       branches:
+         only: develop
+     requires:
+       *all_tests
+
+workflows:
+  version: 2.1
+  weekly:
+    triggers:
+      - schedule: # Execute `full` workflow on develop every tuesday, at 06:10
+          cron: "10 6 * * 2"
+          filters:
+            branches:
+              only:
+                - develop
+    jobs:
+      *workflow
+
+  full:
+    jobs:
+      *workflow
+

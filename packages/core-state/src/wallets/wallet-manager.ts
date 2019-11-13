@@ -361,7 +361,7 @@ export class WalletManager implements State.IWalletManager {
             lockTransaction = lockWallet.getAttribute("htlc.locks", {})[lockId];
         }
 
-        await transactionHandler.apply(transaction, this);
+        await transactionHandler.apply(transaction, this, true);
 
         const sender: State.IWallet = this.findByPublicKey(transaction.data.senderPublicKey);
         const recipient: State.IWallet = this.findByAddress(transaction.data.recipientId);
@@ -379,7 +379,7 @@ export class WalletManager implements State.IWalletManager {
         const sender: State.IWallet = this.findByPublicKey(data.senderPublicKey);
         const recipient: State.IWallet = this.findByAddress(data.recipientId);
 
-        await transactionHandler.revert(transaction, this);
+        await transactionHandler.revert(transaction, this, true);
 
         let lockWallet: State.IWallet;
         let lockTransaction: Interfaces.ITransactionData;

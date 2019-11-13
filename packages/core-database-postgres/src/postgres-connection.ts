@@ -188,6 +188,9 @@ export class PostgresConnection implements Database.IConnection {
     }
 
     public async resetAll(): Promise<void> {
+        // TODO: uns : find a better way to truncate db
+        this.db.nfts.truncate();
+
         return this.db.none(sqlQueries.common.truncateAllTables);
     }
 

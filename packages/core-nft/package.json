@@ -1,0 +1,34 @@
+{
+    "name": "@uns/core-nft",
+    "version": "1.0.0-dev",
+    "description": "NFT plugin for chains using ARK Core",
+    "license": "MIT",
+    "contributors": [
+        "Guillaume Nicolas <guillaume@unik-name.com>",
+        "Pierre Seznec <pierre.seznec@spacelephant.org>"
+    ],
+    "files": [
+        "dist"
+    ],
+    "main": "dist/index",
+    "types": "dist/index",
+    "scripts": {
+        "build": "yarn clean && yarn compile",
+        "build:watch": "yarn clean && yarn compile -w",
+        "clean": "del dist",
+        "compile": "../../node_modules/typescript/bin/tsc",
+        "prepublishOnly": "yarn build"
+    },
+    "dependencies": {
+        "@arkecosystem/crypto": "^2.6.0-next.4",
+        "@arkecosystem/core-container": "^2.6.0-next.4",
+        "@arkecosystem/core-interfaces": "^2.6.0-next.4",
+        "@arkecosystem/core-database": "^2.6.0-next.4",
+        "@arkecosystem/core-transactions": "^2.6.0-next.4",
+        "@uns/core-nft-crypto": "1.0.0-dev",
+        "lodash.difference": "^4.5.0"
+    },
+    "publishConfig": {
+        "access": "public"
+    }
+}

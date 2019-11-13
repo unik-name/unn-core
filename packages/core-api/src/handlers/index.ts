@@ -13,6 +13,8 @@ import * as Transactions from "./transactions";
 import * as Votes from "./votes";
 import * as Wallets from "./wallets";
 
+import * as Nfts from "../core-nft/handlers";
+
 export = {
     async register(server: Hapi.Server): Promise<void> {
         const modules = [Blockchain, Blocks, Delegates, Locks, Node, Peers, Rounds, Transactions, Votes, Wallets];
@@ -25,6 +27,11 @@ export = {
         if (app.has("core-magistrate-transactions")) {
             Businesses.register(server);
             Bridgechains.register(server);
+        }
+
+        // TODO: uns : same than above i suppose
+        if (app.has("core-nft")) {
+            Nfts.register(server);
         }
     },
     name: "Public API",

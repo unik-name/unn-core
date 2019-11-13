@@ -7,7 +7,8 @@
         "François-Xavier Thoorens <fx@ark.io>",
         "Kristjan Košič <kristjan@ark.io>",
         "Brian Faust <brian@ark.io>",
-        "Alex Barnsley <alex@ark.io>"
+        "Alex Barnsley <alex@ark.io>",
+        "Guillaume Nicolas <guillaume@unik-name.com>"
     ],
     "files": [
         "/bin",
@@ -41,7 +42,10 @@
         "relay:testnet": "cross-env CORE_PATH_CONFIG=./bin/config/testnet yarn ark relay:run --env=test",
         "start:devnet": "cross-env CORE_PATH_CONFIG=./bin/config/devnet yarn ark core:run",
         "start:mainnet": "cross-env CORE_PATH_CONFIG=./bin/config/mainnet yarn ark core:run",
-        "start:testnet": "cross-env CORE_PATH_CONFIG=./bin/config/testnet yarn ark core:run --env=test"
+        "start:testnet": "cross-env CORE_PATH_CONFIG=./bin/config/testnet yarn ark core:run --env=test",
+        "relay:dalinet": "cross-env CORE_PATH_CONFIG=./bin/config/dalinet yarn ark relay:run --token uns",
+        "forger:dalinet": "cross-env CORE_PATH_CONFIG=./bin/config/dalinet yarn ark forger:run --token uns",
+        "start:dalinet": "cross-env CORE_PATH_CONFIG=./bin/config/dalinet yarn ark core:run --token uns"
     },
     "dependencies": {
         "@arkecosystem/core-api": "^2.6.0-next.4",
@@ -69,6 +73,9 @@
         "@oclif/plugin-not-found": "^1.2.2",
         "@oclif/plugin-plugins": "^1.7.8",
         "@typeskrift/foreman": "^0.2.1",
+        "@uns/core-nft": "^1.0.0-dev",
+        "@uns/chainmeta-plugin": "^0.0.2-alpha.0",
+        "@uns/uns-transactions": "4.0.0-dev",
         "bip39": "^3.0.2",
         "bytebuffer": "^5.0.1",
         "chalk": "^3.0.0",

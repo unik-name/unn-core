@@ -20,6 +20,24 @@
         "object-literal-sort-keys": false,
         "only-arrow-functions": true,
         "radix": false,
-        "return-undefined": true
+        "return-undefined": true,
+        "no-floating-promises": true
+    },
+    "linterOptions": {
+        "exclude": [
+            "packages/core-api/src/handlers/transactions/controller.ts",
+            "packages/core-api/src/server.ts",
+            "packages/core-blockchain/src/blockchain.ts",
+            "packages/core-blockchain/src/processor/handlers/unchained-handler.ts",
+            "packages/core-blockchain/src/replay/replay-blockchain.ts",
+            "packages/core-forger/src/manager.ts",
+            "packages/core-p2p/src/network-monitor.ts",
+            "packages/core-p2p/src/peer-communicator.ts",
+            "packages/core-p2p/src/socket-server/payload-processor.ts",
+            "packages/core-p2p/src/socket-server/versions/peer.ts",
+            "packages/core-p2p/src/socket-server/worker.ts",
+            "packages/core/src/commands/config/cli.ts",
+            "packages/core/src/commands/update.ts"
+        ]
     }
 }

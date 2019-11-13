@@ -32,6 +32,7 @@ export class PostgresConnection implements Database.IConnection {
     public walletsRepository: Database.IWalletsRepository;
     // @TODO: make this private
     public pgp: IMain;
+    public nftsRepository: Database.INftsRepository;
     private readonly logger: Logger.ILogger = app.resolvePlugin<Logger.ILogger>("logger");
     private readonly emitter: EventEmitter.EventEmitter = app.resolvePlugin<EventEmitter.EventEmitter>("event-emitter");
     private migrationsRepository: MigrationsRepository;
@@ -287,5 +288,6 @@ export class PostgresConnection implements Database.IConnection {
         this.roundsRepository = this.db.rounds;
         this.walletsRepository = this.db.wallets;
         this.migrationsRepository = this.db.migrations;
+        this.nftsRepository = this.db.nfts;
     }
 }

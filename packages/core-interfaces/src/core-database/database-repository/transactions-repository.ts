@@ -64,6 +64,8 @@ export interface ITransactionsRepository extends IRepository {
 
     getSentTransactions(): Promise<any>;
 
+    getNftTransactions(): Promise<any>;
+
     forged(ids: string[]): Promise<Interfaces.ITransactionData[]>;
 
     findByHtlcLocks(lockIds: string[]): Promise<Interfaces.ITransactionData[]>;

@@ -38,6 +38,7 @@ export const queries = {
         openLocks: loadQueryFile(__dirname, "./state-builder/open-locks.sql"),
         refundedLocks: loadQueryFile(__dirname, "./state-builder/refunded-locks.sql"),
         claimedLocks: loadQueryFile(__dirname, "./state-builder/claimed-locks.sql"),
+        nfts: loadQueryFile(__dirname, "./state-builder/nfts.sql"),
     },
     transactions: {
         findByBlock: loadQueryFile(__dirname, "./transactions/find-by-block.sql"),
@@ -49,5 +50,17 @@ export const queries = {
         deleteByBlock: loadQueryFile(__dirname, "./transactions/delete-by-block.sql"),
         feeStatistics: loadQueryFile(__dirname, "./transactions/fee-statistics.sql"),
         findByHtlcLocks: loadQueryFile(__dirname, "./transactions/find-by-htlc-locks.sql"),
+        findAllByAsset: loadQueryFile(__dirname, "./transactions/find-by-asset.sql"),
+    },
+    nfts: {
+        findById: loadQueryFile(__dirname, "./nfts/find-by-id.sql"),
+        delete: loadQueryFile(__dirname, "./nfts/delete.sql"),
+        updateOwnerId: loadQueryFile(__dirname, "./nfts/update-owner-id.sql"),
+        deleteProperties: loadQueryFile(__dirname, "./nftproperties/delete-properties.sql"),
+        insertKey: loadQueryFile(__dirname, "./nftproperties/insert.sql"),
+        updateProperty: loadQueryFile(__dirname, "./nftproperties/update-property.sql"),
+        findByKey: loadQueryFile(__dirname, "./nftproperties/findByKey.sql"),
+        deleteByKey: loadQueryFile(__dirname, "./nftproperties/deleteByKey.sql"),
+        findProperties: loadQueryFile(__dirname, "./nftproperties/find-by-nft-id.sql"),
     },
 };

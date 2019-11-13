@@ -108,6 +108,10 @@ export class TransactionsBusinessRepository implements Database.ITransactionsBus
         return this.databaseServiceProvider().connection.transactionsRepository.getSentTransactions();
     }
 
+    public async getNftTransactions(): Promise<any> {
+        return this.databaseServiceProvider().connection.transactionsRepository.getNftTransactions();
+    }
+
     public async getOpenHtlcLocks(): Promise<any> {
         return this.databaseServiceProvider().connection.transactionsRepository.getOpenHtlcLocks();
     }

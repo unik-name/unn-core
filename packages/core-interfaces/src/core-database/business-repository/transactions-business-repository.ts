@@ -31,6 +31,8 @@ export interface ITransactionsBusinessRepository {
 
     getSentTransactions(): Promise<any>;
 
+    getNftTransactions(): Promise<any>;
+
     getOpenHtlcLocks(): Promise<any>;
 
     getRefundedHtlcLocks(): Promise<any>;

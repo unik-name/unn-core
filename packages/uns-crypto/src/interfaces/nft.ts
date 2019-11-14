@@ -37,3 +37,8 @@ interface ICertifiedDemand<T extends ICertificationable> {
 export type IDiscloseDemand = ICertifiedDemand<IDiscloseDemandPayload>;
 
 export type IDiscloseDemandCertification = ICertifiedDemand<ICertificationable>;
+
+export interface INft {
+    id: string;
+    ownerId: string;
+}

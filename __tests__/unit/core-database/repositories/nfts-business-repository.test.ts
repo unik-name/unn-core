@@ -1,6 +1,6 @@
 import { Database } from "@arkecosystem/core-interfaces";
 import { NftsBusinessRepository } from "../../../../packages/core-database/src/repositories/nfts-business-repository";
-import { models } from "../../../../packages/uns-crypto/";
+import { INft } from "../../../../packages/uns-crypto/";
 import { DatabaseConnectionStub } from "../__fixtures__/database-connection-stub";
 import { MockDatabaseModel } from "../__fixtures__/mock-database-model";
 
@@ -27,7 +27,7 @@ describe("Transactions Business Repository", () => {
                     ({
                         id: "TokenId",
                         ownerId: "OwnerId",
-                    } as models.INft),
+                    } as INft),
             );
 
             await nftsBusinessRepository.findById("id");

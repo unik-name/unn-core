@@ -18,6 +18,7 @@ export class DatabaseService implements Database.IDatabaseService {
     public wallets: Database.IWalletsBusinessRepository;
     public blocksBusinessRepository: Database.IBlocksBusinessRepository;
     public transactionsBusinessRepository: Database.ITransactionsBusinessRepository;
+    public nftsBusinessRepository: Database.INftsBusinessRepository;
     public blocksInCurrentRound: Interfaces.IBlock[] = undefined;
     public restoredDatabaseIntegrity: boolean = false;
     public forgingDelegates: State.IWallet[] = undefined;
@@ -30,6 +31,7 @@ export class DatabaseService implements Database.IDatabaseService {
         walletsBusinessRepository: Database.IWalletsBusinessRepository,
         transactionsBusinessRepository: Database.ITransactionsBusinessRepository,
         blocksBusinessRepository: Database.IBlocksBusinessRepository,
+        nftsBusinessRepository: Database.INftsBusinessRepository,
     ) {
         this.connection = connection;
         this.walletManager = walletManager;
@@ -37,6 +39,7 @@ export class DatabaseService implements Database.IDatabaseService {
         this.wallets = walletsBusinessRepository;
         this.blocksBusinessRepository = blocksBusinessRepository;
         this.transactionsBusinessRepository = transactionsBusinessRepository;
+        this.nftsBusinessRepository = nftsBusinessRepository;
     }
 
     public async init(): Promise<void> {

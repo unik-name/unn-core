@@ -1,6 +1,7 @@
 import { Database, State } from "@arkecosystem/core-interfaces";
 import { DatabaseService } from "./database-service";
 import { BlocksBusinessRepository } from "./repositories/blocks-business-repository";
+import { NftsBusinessRepository } from "./repositories/nfts-business-repository";
 import { TransactionsBusinessRepository } from "./repositories/transactions-business-repository";
 import { WalletsBusinessRepository } from "./repositories/wallets-business-repository";
 
@@ -17,6 +18,7 @@ export const databaseServiceFactory = async (
         new WalletsBusinessRepository(() => databaseService),
         new TransactionsBusinessRepository(() => databaseService),
         new BlocksBusinessRepository(() => databaseService),
+        new NftsBusinessRepository(() => databaseService),
     );
 
     await databaseService.init();

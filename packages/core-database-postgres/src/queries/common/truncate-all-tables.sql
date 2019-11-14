@@ -1,1 +1,1 @@
-TRUNCATE TABLE blocks, rounds, transactions RESTART IDENTITY;
+TRUNCATE TABLE blocks, rounds, transactions, nfts RESTART IDENTITY;

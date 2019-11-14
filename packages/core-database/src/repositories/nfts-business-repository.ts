@@ -1,12 +1,12 @@
 import { Database } from "@arkecosystem/core-interfaces";
-import { models } from "@uns/crypto";
+import { INft } from "@uns/crypto";
 import limitRows = require("./utils/limit-rows");
 import { SearchParameterConverter } from "./utils/search-parameter-converter";
 
 export class NftsBusinessRepository implements Database.INftsBusinessRepository {
     constructor(private databaseServiceProvider: () => Database.IDatabaseService) {}
 
-    public async findById(id: string): Promise<models.INft> {
+    public async findById(id: string): Promise<INft> {
         return await this.databaseServiceProvider().connection.nftsRepository.findById(id);
     }
 

@@ -30,11 +30,6 @@ export const registerRoutes = (server: Hapi.Server): void => {
         handler: controller.show,
         options: {
             validate: Schema.show,
-            plugins: {
-                "hapi-uns-chainmeta": {
-                    addChainmeta: true,
-                },
-            },
         },
     });
 

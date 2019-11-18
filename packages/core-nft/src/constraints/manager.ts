@@ -1,3 +1,4 @@
+import { NFT } from "@arkecosystem/core-interfaces";
 import { Interfaces } from "@arkecosystem/crypto";
 import difference from "lodash.difference";
 import {
@@ -9,7 +10,7 @@ import {
     INftPropertyConstraintsConfig,
 } from "../interfaces";
 import { getCurrentNftAsset, getNftName } from "../utils";
-import { constraints } from "./constraint";
+import { EnumerationConstraint, ImmutableConstraint, NumberConstraint, TypeConstraint } from "./constraint/";
 import { ConstraintError } from "./error";
 
 const genesisPropertiesReducer = (acc, current): string[] => {
@@ -22,8 +23,8 @@ const genesisPropertiesReducer = (acc, current): string[] => {
 export class ConstraintsManager {
     private registeredConstraints: { [_: string]: IConstraint } = {};
 
-    constructor(private config: IConstraintsConfig) {
-        this.registerConstraints();
+    constructor(private config: IConstraintsConfig, repository: NFT.INftsRepository) {
+        this.buildAndRegisterConstraints(repository);
     }
 
     public registerConstraint(constraint: IConstraint) {
@@ -82,10 +83,12 @@ export class ConstraintsManager {
         } // else : no constraints, we can continue
     }
 
-    private registerConstraints() {
-        for (const constraint of constraints) {
-            this.registerConstraint(constraint);
-        }
+    private buildAndRegisterConstraints(repository: NFT.INftsRepository) {
+        [
+            new ImmutableConstraint(repository),
+            new EnumerationConstraint(repository),
+            new TypeConstraint(repository).registerTypeConstraint(new NumberConstraint(repository)),
+        ].map(constraint => this.registerConstraint(constraint));
     }
 
     private getNftConstraintsConfig(nft: string): INftConstraintsConfig {

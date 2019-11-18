@@ -1,4 +1,5 @@
-import { IConstraint, IConstraintApplicationContext } from "../../../interfaces";
+import { IConstraintApplicationContext } from "../../../interfaces";
+import { Constraint } from "../../constraint";
 import { ConstraintError } from "../../error";
 
 /**
@@ -7,7 +8,7 @@ import { ConstraintError } from "../../error";
  *  - a maximum value
  *  - a minimum value
  */
-export class NumberConstraint implements IConstraint {
+export class NumberConstraint extends Constraint {
     public async apply(context: IConstraintApplicationContext, parameters?: any): Promise<void> {
         const value = context.value;
 

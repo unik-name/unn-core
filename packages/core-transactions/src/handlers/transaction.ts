@@ -150,19 +150,28 @@ export abstract class TransactionHandler implements ITransactionHandler {
         return this.performGenericWalletChecks(transaction, sender, walletManager);
     }
 
-    public async apply(transaction: Interfaces.ITransaction, walletManager: State.IWalletManager): Promise<void> {
-        await this.applyToSender(transaction, walletManager);
+    public async apply(
+        transaction: Interfaces.ITransaction,
+        walletManager: State.IWalletManager,
+        applyInDb: boolean = false,
+    ): Promise<void> {
+        await this.applyToSender(transaction, walletManager, applyInDb);
         await this.applyToRecipient(transaction, walletManager);
     }
 
-    public async revert(transaction: Interfaces.ITransaction, walletManager: State.IWalletManager): Promise<void> {
-        await this.revertForSender(transaction, walletManager);
+    public async revert(
+        transaction: Interfaces.ITransaction,
+        walletManager: State.IWalletManager,
+        applyInDb: boolean = false,
+    ): Promise<void> {
+        await this.revertForSender(transaction, walletManager, applyInDb);
         await this.revertForRecipient(transaction, walletManager);
     }
 
     public async applyToSender(
         transaction: Interfaces.ITransaction,
         walletManager: State.IWalletManager,
+        _: boolean = false,
     ): Promise<void> {
         const sender: State.IWallet = walletManager.findByPublicKey(transaction.data.senderPublicKey);
         const data: Interfaces.ITransactionData = transaction.data;
@@ -204,6 +213,7 @@ export abstract class TransactionHandler implements ITransactionHandler {
     public async revertForSender(
         transaction: Interfaces.ITransaction,
         walletManager: State.IWalletManager,
+        _: boolean = false,
     ): Promise<void> {
         const sender: State.IWallet = walletManager.findByPublicKey(transaction.data.senderPublicKey);
         const data: Interfaces.ITransactionData = transaction.data;

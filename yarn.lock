@@ -3436,6 +3436,18 @@
   resolved "https://registry.yarnpkg.com/@tyriar/fibonacci-heap/-/fibonacci-heap-2.0.9.tgz#df3dcbdb1b9182168601f6318366157ee16666e9"
   integrity sha512-bYuSNomfn4hu2tPiDN+JZtnzCpSpbJ/PNeulmocDy3xN2X5OkJL65zo6rPZp65cPPhLF9vfT/dgE+RtFRCSxOA==
 
+"@uns/chainmeta-plugin@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@uns/chainmeta-plugin/-/chainmeta-plugin-0.0.1.tgz#dbec53f4ace4b0ff849bdcebbcf9e08fad60e0be"
+  integrity sha512-TVIi6zQiZ36Q41p/6lNI/RGYbc4TMQC2eOywk8effDlYD3zFu2ICTVwjToDFPyQxdsLAJWWbjScD9bu4Am2oaQ==
+  dependencies:
+    "@arkecosystem/core-api" "^2.6.0-next.4"
+    "@arkecosystem/core-interfaces" "^2.6.0-next.4"
+    "@arkecosystem/crypto" "^2.6.0-next.4"
+    "@hapi/boom" "^8.0.0"
+    "@hapi/hapi" "^18.3.1"
+    dayjs "^1.8.17"
+
 "@yarnpkg/lockfile@^1.0.2":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@yarnpkg/lockfile/-/lockfile-1.1.0.tgz#e77a97fbd345b76d83245edcd17d393b1b41fb31"
@@ -5332,6 +5344,11 @@ dayjs@^1.8.15:
   version "1.8.16"
   resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.8.16.tgz#2a3771de537255191b947957af2fd90012e71e64"
   integrity sha512-XPmqzWz/EJiaRHjBqSJ2s6hE/BUoCIHKgdS2QPtTQtKcS9E4/Qn0WomoH1lXanWCzri+g7zPcuNV4aTZ8PMORQ==
+
+dayjs@^1.8.17:
+  version "1.8.17"
+  resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.8.17.tgz#53ec413f2a7b02afbea1846d61bb260fa8567cea"
+  integrity sha512-47VY/htqYqr9GHd7HW/h56PpQzRBSJcxIQFwqL3P20bMF/3az5c3PWdVY3LmPXFl6cQCYHL7c79b9ov+2bOBbw==
 
 de-indent@^1.0.2:
   version "1.0.2"

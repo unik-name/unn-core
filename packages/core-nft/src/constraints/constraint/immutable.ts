@@ -1,5 +1,5 @@
+import { getCurrentNftAsset } from "@uns/core-nft-crypto";
 import { IConstraintApplicationContext } from "../../interfaces";
-import { getCurrentNftAsset } from "../../utils";
 import { Constraint } from "../constraint";
 import { ConstraintError } from "../error";
 
@@ -9,7 +9,7 @@ import { ConstraintError } from "../error";
  */
 export class ImmutableConstraint extends Constraint {
     public async apply(context: IConstraintApplicationContext): Promise<void> {
-        const { tokenId } = getCurrentNftAsset(context.transaction);
+        const { tokenId } = getCurrentNftAsset(context.transaction.asset);
         const currentValue = await this.repository.findPropertyByKey(tokenId, context.key);
         if (currentValue !== null) {
             throw new ConstraintError(`immutable`);

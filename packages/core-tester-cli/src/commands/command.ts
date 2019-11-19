@@ -68,6 +68,7 @@ export abstract class BaseCommand extends Command {
     protected api: HttpClient;
     protected signer: Signer;
     protected constants: Record<string, any>;
+    protected nonce: string;
 
     protected get network(): number {
         return this.constants.pubKeyHash;
@@ -83,8 +84,8 @@ export abstract class BaseCommand extends Command {
         await this.setupConfigurationForCrypto();
 
         if (flags.passphrase) {
-            const nonce = flags.nonce || (await this.getNonce(flags.passphrase));
-            this.signer = new Signer(this.network, nonce);
+            this.nonce = flags.nonce || (await this.getNonce(flags.passphrase));
+            this.signer = new Signer(this.network, this.nonce);
         }
 
         return { args, flags };

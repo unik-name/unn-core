@@ -1,5 +1,6 @@
 import { NFT } from "@arkecosystem/core-interfaces";
 import { Interfaces } from "@arkecosystem/crypto";
+import { getCurrentNftAsset, getNftName } from "@uns/core-nft-crypto";
 import difference from "lodash.difference";
 import {
     IConstraint,
@@ -9,7 +10,6 @@ import {
     INftConstraintsConfig,
     INftPropertyConstraintsConfig,
 } from "../interfaces";
-import { getCurrentNftAsset, getNftName } from "../utils";
 import { EnumerationConstraint, ImmutableConstraint, NumberConstraint, TypeConstraint } from "./constraint/";
 import { ConstraintError } from "./error";
 
@@ -32,7 +32,7 @@ export class ConstraintsManager {
     }
 
     public async applyConstraints(transaction: Interfaces.ITransactionData) {
-        const { properties } = getCurrentNftAsset(transaction);
+        const { properties } = getCurrentNftAsset(transaction.asset);
 
         if (properties) {
             for (const [key, value] of Object.entries(properties)) {
@@ -43,7 +43,7 @@ export class ConstraintsManager {
 
     public applyGenesisPropertyConstraint(transaction: Interfaces.ITransactionData) {
         // Get constraint config of nft type modified in current transaction
-        const nftConfig: INftConstraintsConfig = this.getNftConstraintsConfig(getNftName(transaction));
+        const nftConfig: INftConstraintsConfig = this.getNftConstraintsConfig(getNftName(transaction.asset));
         if (nftConfig) {
             // Get list of genesis properties key
             const genesisProperties = Object.entries(nftConfig.properties || {}).reduce<string[]>(
@@ -52,7 +52,9 @@ export class ConstraintsManager {
             );
 
             // Get list of genesis properties set in current transaction
-            const keys = Object.keys(getCurrentNftAsset(transaction).properties) || [];
+
+            const properties = getCurrentNftAsset(transaction.asset).properties;
+            const keys = properties ? Object.keys(properties) : [];
 
             // compare lists, if there is more genesis properties in config then some are missing in current transaction
             if (difference(genesisProperties, keys).length > 0) {
@@ -63,7 +65,7 @@ export class ConstraintsManager {
 
     private async applyPropertyConstraints(context: IConstraintApplicationContext) {
         // Get constraint config of nft type modified in current transaction
-        const nftConfig: INftConstraintsConfig = this.getNftConstraintsConfig(getNftName(context.transaction));
+        const nftConfig: INftConstraintsConfig = this.getNftConstraintsConfig(getNftName(context.transaction.asset));
         if (nftConfig) {
             // Get constraints declared from configuration file
             for (const constraint of this.getNftPropertyConstraints(nftConfig, context.key)) {

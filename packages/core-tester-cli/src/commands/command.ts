@@ -5,6 +5,7 @@ import chunk from "lodash.chunk";
 import { satoshiFlag } from "../flags";
 import { HttpClient } from "../http-client";
 import { logger } from "../logger";
+import { NftSigner } from "../nft-signer";
 import { Signer } from "../signer";
 
 export abstract class BaseCommand extends Command {
@@ -67,6 +68,7 @@ export abstract class BaseCommand extends Command {
 
     protected api: HttpClient;
     protected signer: Signer;
+    protected nftSigner: NftSigner;
     protected constants: Record<string, any>;
 
     protected get network(): number {
@@ -85,6 +87,7 @@ export abstract class BaseCommand extends Command {
         if (flags.passphrase) {
             const nonce = flags.nonce || (await this.getNonce(flags.passphrase));
             this.signer = new Signer(this.network, nonce);
+            this.nftSigner = new NftSigner(this.network, nonce);
         }
 
         return { args, flags };

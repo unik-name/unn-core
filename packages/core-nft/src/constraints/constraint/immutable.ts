@@ -1,5 +1,5 @@
+import { getCurrentNftAsset } from "@uns/core-nft-crypto";
 import { IConstraintApplicationContext } from "../../interfaces";
-import { getCurrentNftAsset } from "../../utils";
 import { Constraint } from "../constraint";
 import { ConstraintError } from "../error";
 

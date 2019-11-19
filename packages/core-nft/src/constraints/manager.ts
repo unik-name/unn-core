@@ -1,5 +1,6 @@
 import { NFT } from "@arkecosystem/core-interfaces";
 import { Interfaces } from "@arkecosystem/crypto";
+import { getCurrentNftAsset, getNftName } from "@uns/core-nft-crypto";
 import difference from "lodash.difference";
 import {
     IConstraint,
@@ -9,7 +10,6 @@ import {
     INftConstraintsConfig,
     INftPropertyConstraintsConfig,
 } from "../interfaces";
-import { getCurrentNftAsset, getNftName } from "../utils";
 import { EnumerationConstraint, ImmutableConstraint, NumberConstraint, TypeConstraint } from "./constraint/";
 import { ConstraintError } from "./error";
 
@@ -52,7 +52,11 @@ export class ConstraintsManager {
             );
 
             // Get list of genesis properties set in current transaction
-            const keys = Object.keys(getCurrentNftAsset(transaction).properties) || [];
+            let keys = [];
+            const properties = getCurrentNftAsset(transaction).properties;
+            if (properties) {
+                keys = Object.keys(properties);
+            }
 
             // compare lists, if there is more genesis properties in config then some are missing in current transaction
             if (difference(genesisProperties, keys).length > 0) {

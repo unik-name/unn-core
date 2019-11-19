@@ -5,7 +5,7 @@ import { NftsManager } from "./manager";
 export const plugin: Container.IPluginDescriptor = {
     pkg: require("../package.json"),
     defaults,
-    alias: "nft",
+    alias: "core-nft",
     async register(container: Container.IContainer, options) {
         container.resolvePlugin<Logger.ILogger>("logger").info("Configuring NFT plugin");
         return new NftsManager(options);

@@ -17,7 +17,9 @@ module.exports = {
             user: process.env.CORE_DB_USERNAME || process.env.CORE_TOKEN,
             password: process.env.CORE_DB_PASSWORD || "password",
         },
+        estimateTotalCount: false // TODO: uns : otherwise total count of nfts was incorrect
     },
+    "@uns/core-nft":{},
     "@arkecosystem/core-transaction-pool": {
         enabled: true,
         maxTransactionsPerSender: process.env.CORE_TRANSACTION_POOL_MAX_PER_SENDER || 300,

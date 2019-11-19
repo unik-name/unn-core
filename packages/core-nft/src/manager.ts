@@ -1,19 +1,18 @@
 import { app } from "@arkecosystem/core-container";
-import { Database, Logger, NFT } from "@arkecosystem/core-interfaces";
+import { ConnectionManager } from "@arkecosystem/core-database";
+import { Logger, NFT } from "@arkecosystem/core-interfaces";
 import { ConstraintsManager } from "./constraints/manager";
 import { IConstraintsConfig } from "./interfaces";
 
 export class NftsManager {
     public constraints: ConstraintsManager;
 
-    private db: Database.IDatabaseService;
     private repository: NFT.INftsRepository;
     private logger: Logger.ILogger;
 
     constructor(options) {
-        this.db = app.resolvePlugin<Database.IDatabaseService>("database");
         this.logger = app.resolvePlugin<Logger.ILogger>("logger");
-        this.repository = (this.db.connection as any).db.nfts; // TODO: uns : ugly workaround to prevent modification of Ark repositories interfaces
+        this.repository = (app.resolvePlugin<ConnectionManager>("database-manager").connection() as any).db.nfts;
         this.constraints = new ConstraintsManager(options.constraints as IConstraintsConfig, this.repository); // TODO: uns : validate config
     }
 

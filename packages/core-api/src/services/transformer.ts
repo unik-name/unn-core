@@ -10,6 +10,9 @@ import { transformPorts } from "../handlers/shared/transformers/ports";
 import { transformTransaction } from "../handlers/transactions/transformer";
 import { transformWallet } from "../handlers/wallets/transformer";
 
+// TODO: uns :
+import { transformNft, transformNftProperties, transformNftProperty } from "../core-nft/handlers/transformer";
+
 class Transformer {
     private readonly transformers: Record<string, any> = {
         block: transformBlock,
@@ -23,6 +26,11 @@ class Transformer {
         transaction: transformTransaction,
         wallet: transformWallet,
         lock: transformLock,
+
+        // TODO: uns : can't do better due to `readonly` property
+        nft: transformNft,
+        nftProperties: transformNftProperties,
+        nftProperty: transformNftProperty,
     };
 
     public toResource(data, transformer, transform: boolean = true): object {

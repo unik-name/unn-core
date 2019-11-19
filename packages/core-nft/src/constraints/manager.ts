@@ -9,7 +9,7 @@ import {
     INftConstraintsConfig,
     INftPropertyConstraintsConfig,
 } from "../interfaces";
-import { getCurrentNftAsset, getNftName } from "../utils";
+import { getCurrentNftAsset, getNftName } from "@uns/core-nft-crypto";
 import { EnumerationConstraint, ImmutableConstraint, NumberConstraint, TypeConstraint } from "./constraint/";
 import { ConstraintError } from "./error";
 

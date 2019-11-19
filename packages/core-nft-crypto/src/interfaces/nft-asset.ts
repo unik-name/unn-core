@@ -4,3 +4,4 @@ export interface INftAsset {
         [_: string]: string;
     };
 }
+

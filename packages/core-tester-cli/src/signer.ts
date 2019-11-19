@@ -190,7 +190,7 @@ export class Signer {
         this.nonce = this.nonce.plus(1);
     }
 
-    private toSatoshi(value): string {
+    protected toSatoshi(value): string {
         return Utils.BigNumber.make(value * 1e8).toFixed();
     }
 }

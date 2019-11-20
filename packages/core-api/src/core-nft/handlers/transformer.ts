@@ -3,6 +3,7 @@ export const transformNft = model => {
         id: model.id,
         ownerId: model.ownerId,
         properties: model.properties,
+        transactions: model.transactions,
     };
 };
 

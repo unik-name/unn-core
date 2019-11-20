@@ -13,4 +13,5 @@ export interface INftsRepository extends Database.IRepository {
     deletePropertyByKey(nftid: string, key: string): Promise<any>;
     updateProperty(nftid: string, key: string, value: string): Promise<any>;
     findProperties(nftid: string): Promise<any>;
+    findEdgeTransactions(id: string, nftName: string): Promise<any>;
 }

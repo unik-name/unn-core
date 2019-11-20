@@ -3,6 +3,7 @@ import { ConnectionManager, NftsBusinessRepository } from "@arkecosystem/core-da
 import Boom from "@hapi/boom";
 import { paginate, respondWithResource, toPagination } from "../../handlers/utils";
 import { ServerCache } from "../../services";
+import { networkNfts } from "./utils";
 
 const nftsRepository: NftsBusinessRepository = new NftsBusinessRepository(
     app.resolvePlugin<ConnectionManager>("database-manager").connection(),
@@ -23,7 +24,18 @@ const show = async request => {
         return Boom.notFound(`Non fungible token ${request.params.id} not found`);
     }
 
-    return respondWithResource(nft, "nft");
+    const nftName: string = networkNfts()[0];
+    const transactions = await nftsRepository.findEdgeTransactions(nft.id, nftName);
+
+    if (!transactions.first.id || !transactions.last.id) {
+        return Boom.notFound(
+            `Unable to retrieve transactions for token ${request.params.id}.` +
+                `Got first:${transactions.first.id} ` +
+                `and last:${transactions.last.id}.`,
+        );
+    }
+
+    return respondWithResource({ ...nft, transactions }, "nft");
 };
 
 const properties = async request => {

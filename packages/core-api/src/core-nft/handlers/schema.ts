@@ -1,16 +1,7 @@
-import { app } from "@arkecosystem/core-container";
 import Boom from "@hapi/boom";
 import Joi from "@hapi/joi";
 import { pagination } from "../../handlers/shared/schemas";
-
-// Get nft configuration from global plugins config
-const networkNfts = () => {
-    if (app.has("pkg.core-nft.opts")) {
-        return Object.keys(app.resolve("pkg.core-nft.opts").constraints || {});
-    } else {
-        return [];
-    }
-};
+import { networkNfts } from "./utils";
 
 const nftsPathParameterFailAction = (_, __, err) => {
     return err &&

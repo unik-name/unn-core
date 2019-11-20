@@ -98,6 +98,17 @@ export class NftsRepository extends Repository implements NFT.INftsRepository {
         return this.db.any(sql.findProperties, { nftid });
     }
 
+    public async findEdgeTransactions(id: string, nftName: string): Promise<any> {
+        return {
+            first: {
+                id: await this.db.any(sql.findFirstTransaction, { id, nftName }),
+            },
+            last: {
+                id: await this.db.any(sql.findLastTransaction, { id, nftName }),
+            },
+        };
+    }
+
     /**
      * Overrides Repository `truncate` method because this repository manipulates 2 tables (nfts and nftproperties).
      * It's a bad implementation but it works for our needs.

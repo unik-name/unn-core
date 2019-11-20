@@ -1,22 +1,21 @@
 import { Transactions, Utils } from "@arkecosystem/crypto";
-import { schemas } from "@arkecosystem/crypto/src/transactions";
 import ByteBuffer from "bytebuffer";
 import { getCurrentNftAsset, getNftNameFromConfig } from "../utils";
 import { NftSchemas } from "./utils";
 
-import { NftTransactionGroup, NftTransactionType, NftTransactionStaticFees } from "../enums";
+import { NftTransactionGroup, NftTransactionStaticFees, NftTransactionType } from "../enums";
 
 export class NFTUpdateTransaction extends Transactions.Transaction {
     public static typeGroup: number = NftTransactionGroup;
     public static type: number = NftTransactionType.NftUpdate;
     public static key: string = "NftUpdate";
+    public static getSchema(): Transactions.schemas.TransactionSchema {
+        return NftSchemas.nftUpdate;
+    }
 
     protected static defaultStaticFee: Utils.BigNumber = Utils.BigNumber.make(
         NftTransactionStaticFees.NftUpdate,
     );
-    public static getSchema(): schemas.TransactionSchema {
-        return NftSchemas.nftUpdate;
-    }
 
     public serialize(): ByteBuffer {
         const { data } = this;

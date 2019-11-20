@@ -1,5 +1,5 @@
-import { Interfaces } from "@arkecosystem/crypto";
 import { Database } from "@arkecosystem/core-interfaces";
+import { Interfaces } from "@arkecosystem/crypto";
 import { INftAsset } from "./";
 import { defaults } from "./config";
 

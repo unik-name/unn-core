@@ -1,6 +1,6 @@
-import { Signer } from "./signer";
-import { NftBuilderFactory, NftTransactions } from "@uns/core-nft-crypto";
 import { Transactions } from "@arkecosystem/crypto";
+import { NftBuilderFactory, NftTransactions } from "@uns/core-nft-crypto";
+import { Signer } from "./signer";
 
 export class NftSigner extends Signer {
     public makeNftUpdate(opts: Record<string, any>): any {

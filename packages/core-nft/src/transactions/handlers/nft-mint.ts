@@ -1,8 +1,8 @@
 import { app } from "@arkecosystem/core-container";
 import { Database, EventEmitter, State, TransactionPool } from "@arkecosystem/core-interfaces";
-import { NftTransactions, NftTransactionType, NftTransactionGroup, getCurrentNftAsset } from "@uns/core-nft-crypto";
 import { Handlers, TransactionReader } from "@arkecosystem/core-transactions";
-import { Interfaces, Transactions, Identities } from "@arkecosystem/crypto";
+import { Identities, Interfaces, Transactions } from "@arkecosystem/crypto";
+import { getCurrentNftAsset, NftTransactionGroup, NftTransactions, NftTransactionType } from "@uns/core-nft-crypto";
 import { INftWalletAttributes } from "../../interfaces";
 import { NftsManager } from "../../manager";
 import { NftOwnedError } from "../errors";

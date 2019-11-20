@@ -35,6 +35,6 @@ export class UNSDiscloseExplicitBuilder extends Transactions.TransactionBuilder<
     }
 
     protected type() {
-        return //UnsTransactionType.UnsDiscloseExplicit;
+        return // UnsTransactionType.UnsDiscloseExplicit;
     }
 }

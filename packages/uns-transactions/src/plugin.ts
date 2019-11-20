@@ -1,22 +1,19 @@
 import { Container, Logger } from "@arkecosystem/core-interfaces";
 import { Handlers } from "@arkecosystem/core-transactions";
 import { defaults } from "@uns/core-nft-crypto";
-import { NftsManager } from "./manager";
-import { NftMintTransactionHandler } from "./transactions/handlers/nft-mint";
+import { DiscloseExplicitTransactionHandler } from "./handlers";
 
 export const plugin: Container.IPluginDescriptor = {
     pkg: require("../package.json"),
     defaults,
-    alias: "core-nft",
+    alias: "uns-transactions",
     async register(container: Container.IContainer, options) {
-        container.resolvePlugin<Logger.ILogger>("logger").info("Configuring NFT plugin");
+        container.resolvePlugin<Logger.ILogger>("logger").info("Configuring UNS Transactions plugin");
         // Register transactions
-        Handlers.Registry.registerTransactionHandler(NftMintTransactionHandler);
-
-        return new NftsManager(options);
+        Handlers.Registry.registerTransactionHandler(DiscloseExplicitTransactionHandler);
     },
     async deregister(container: Container.IContainer, options) {
-        container.resolvePlugin<Logger.ILogger>("logger").info("Stopping NFT plugin");
+        container.resolvePlugin<Logger.ILogger>("logger").info("Stopping UNS Transactions plugin");
         return;
     },
 };

@@ -5,8 +5,8 @@ import chunk from "lodash.chunk";
 import { satoshiFlag } from "../flags";
 import { HttpClient } from "../http-client";
 import { logger } from "../logger";
-import { Signer } from "../signer";
 import { NftSigner } from "../nft-signer";
+import { Signer } from "../signer";
 
 export abstract class BaseCommand extends Command {
     public static flagsConfig = {

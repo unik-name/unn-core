@@ -1,5 +1,5 @@
 import { Interfaces, Transactions, Utils } from "@arkecosystem/crypto";
-import { getNftTransactionFees, NftTransactionType, NftTransactionGroup } from "../enums";
+import { getNftTransactionFees, NftTransactionGroup, NftTransactionType } from "../enums";
 import { getNftNameFromConfig } from "../utils";
 
 export abstract class NFTBuilder<T extends NFTBuilder<T>> extends Transactions.TransactionBuilder<NFTBuilder<T>> {

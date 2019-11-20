@@ -1,5 +1,6 @@
 import { NFT } from "@arkecosystem/core-interfaces";
 import { Interfaces } from "@arkecosystem/crypto";
+import { getCurrentNftAsset, getNftName } from "@uns/core-nft-crypto";
 import difference from "lodash.difference";
 import {
     IConstraint,
@@ -9,7 +10,6 @@ import {
     INftConstraintsConfig,
     INftPropertyConstraintsConfig,
 } from "../interfaces";
-import { getCurrentNftAsset, getNftName } from "@uns/core-nft-crypto";
 import { EnumerationConstraint, ImmutableConstraint, NumberConstraint, TypeConstraint } from "./constraint/";
 import { ConstraintError } from "./error";
 

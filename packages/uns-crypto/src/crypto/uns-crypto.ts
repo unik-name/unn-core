@@ -1,12 +1,11 @@
-import { Crypto } from "@arkecosystem/crypto";
-import { Keys } from "@arkecosystem/crypto/src/identities";
+import { Crypto, Identities } from "@arkecosystem/crypto";
 import ByteBuffer from "bytebuffer";
 import Long from "long";
 import { IDiscloseDemandCertificationPayload, IDiscloseDemandPayload } from "../";
 
 class UnsCrypto {
     public signPayload(payload: any, passphrase: string): string {
-        return Crypto.Hash.signECDSA(this.getPayloadHashBuffer(payload), Keys.fromPassphrase(passphrase));
+        return Crypto.Hash.signECDSA(this.getPayloadHashBuffer(payload), Identities.Keys.fromPassphrase(passphrase));
     }
 
     public getPayloadHashBuffer(payload: IDiscloseDemandPayload | IDiscloseDemandCertificationPayload): Buffer {

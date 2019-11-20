@@ -1,9 +1,8 @@
 import { Transactions, Utils } from "@arkecosystem/crypto";
-import { schemas } from "@arkecosystem/crypto/src/transactions";
 import ByteBuffer from "bytebuffer";
 import Long from "long";
-import { IDiscloseDemand, IDiscloseDemandCertification } from "../interfaces";
 import { unsTransactionGroup, unsTransactionStaticFees, UnsTransactionType } from "../enums";
+import { IDiscloseDemand, IDiscloseDemandCertification } from "../interfaces";
 import { unsSchemas } from "./utils";
 
 export class DiscloseExplicitTransaction extends Transactions.Transaction {
@@ -11,7 +10,7 @@ export class DiscloseExplicitTransaction extends Transactions.Transaction {
     public static type: number = UnsTransactionType.UnsDiscloseExplicit;
     public static key: string = "UnsDiscloseExplicit";
 
-    public static getSchema(): schemas.TransactionSchema {
+    public static getSchema(): Transactions.schemas.TransactionSchema {
         return unsSchemas.discloseExplicit;
     }
 

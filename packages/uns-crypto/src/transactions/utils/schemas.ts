@@ -1,4 +1,4 @@
-import { schemas } from "@arkecosystem/crypto/src/transactions";
+import { Transactions } from "@arkecosystem/crypto";
 
 import { models } from "../..";
 import { UnsTransactionType } from "../../enums";
@@ -63,7 +63,7 @@ const unsDiscloseDemand = {
     },
 };
 
-export const discloseExplicit = schemas.extend(schemas.transactionBaseSchema, {
+export const discloseExplicit = Transactions.schemas.extend(Transactions.schemas.transactionBaseSchema, {
     $id: "unsDiscloseExplicit",
     required: ["asset"],
     properties: {

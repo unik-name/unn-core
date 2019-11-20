@@ -1,6 +1,6 @@
 import { Identities, Interfaces } from "@arkecosystem/crypto";
-import { getCurrentNftAsset } from "@uns/core-nft-crypto";
 import { flags } from "@oclif/command";
+import { getCurrentNftAsset } from "@uns/core-nft-crypto";
 import { satoshiFlag } from "../../flags";
 import { logger } from "../../logger";
 import { SendCommand } from "../../shared/send";

@@ -207,13 +207,15 @@ export class ForgerManager {
         if (networkState.status === NetworkStateStatus.Unknown) {
             this.logger.info("Failed to get network state from client. Will not forge.");
             return false;
-        } else if (networkState.status === NetworkStateStatus.ColdStart) {
-            this.logger.info("Skipping slot because of cold start. Will not forge.");
-            return false;
-        } else if (networkState.status === NetworkStateStatus.BelowMinimumPeers) {
-            this.logger.info("Network reach is not sufficient to get quorum. Will not forge.");
-            return false;
         }
+
+        // else if (networkState.status === NetworkStateStatus.ColdStart) {
+        //     this.logger.info("Skipping slot because of cold start. Will not forge.");
+        //     return false;
+        // } else if (networkState.status === NetworkStateStatus.BelowMinimumPeers) {
+        //     this.logger.info("Network reach is not sufficient to get quorum. Will not forge.");
+        //     return false;
+        // }
 
         const overHeightBlockHeaders: Array<{
             [id: string]: any;
@@ -234,12 +236,12 @@ export class ForgerManager {
             }
         }
 
-        if (networkState.getQuorum() < 0.66) {
-            this.logger.info("Fork 6 - Not enough quorum to forge next block. Will not forge.");
-            this.logger.debug(`Network State: ${networkState.toJson()}`);
+        // if (networkState.getQuorum() < 0.66) {
+        //     this.logger.info("Fork 6 - Not enough quorum to forge next block. Will not forge.");
+        //     this.logger.debug(`Network State: ${networkState.toJson()}`);
 
-            return false;
-        }
+        //     return false;
+        // }
 
         return true;
     }

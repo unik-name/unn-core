@@ -65,5 +65,7 @@ module.exports = {
         allowRemote: false,
         whitelist: ["127.0.0.1", "::ffff:127.0.0.1"],
     },
-    "@arkecosystem/core-snapshots": {}
+    "@arkecosystem/core-snapshots": {},
+    "@uns/chainmeta-plugin": {},
+    "@uns/uns-transactions": {}
 };

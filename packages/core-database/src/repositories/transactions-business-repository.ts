@@ -62,9 +62,11 @@ export class TransactionsBusinessRepository implements Database.ITransactionsBus
 
     // @TODO: simplify this
     public async findById(id: string) {
-        return (await this.mapBlocksToTransactions(
-            await this.databaseServiceProvider().connection.transactionsRepository.findById(id),
-        ))[0];
+        return (
+            await this.mapBlocksToTransactions(
+                await this.databaseServiceProvider().connection.transactionsRepository.findById(id),
+            )
+        )[0];
     }
 
     public async findByTypeAndId(type: number, id: string) {
@@ -126,7 +128,7 @@ export class TransactionsBusinessRepository implements Database.ITransactionsBus
         );
     }
 
-    private getPublicKeyFromAddress(senderId: string): string {
+    public getPublicKeyFromAddress(senderId: string): string {
         const { walletManager }: Database.IDatabaseService = this.databaseServiceProvider();
 
         return walletManager.hasByAddress(senderId) ? walletManager.findByAddress(senderId).publicKey : undefined;

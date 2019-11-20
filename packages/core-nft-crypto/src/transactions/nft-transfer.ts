@@ -1,5 +1,4 @@
 import { Transactions, Utils } from "@arkecosystem/crypto";
-import { schemas } from "@arkecosystem/crypto/src/transactions";
 import bs58check from "bs58check";
 import ByteBuffer from "bytebuffer";
 import { NftTransactionGroup, NftTransactionStaticFees, NftTransactionType } from "../enums";
@@ -11,7 +10,7 @@ export class NFTTransferTransaction extends Transactions.Transaction {
     public static type: number = NftTransactionType.NftTransfer;
     public static key: string = "NftTransfer";
 
-    public static getSchema(): schemas.TransactionSchema {
+    public static getSchema(): Transactions.schemas.TransactionSchema {
         return NftSchemas.nftTransfer;
     }
 

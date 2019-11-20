@@ -70,6 +70,7 @@
         "@oclif/plugin-plugins": "^1.7.8",
         "@typeskrift/foreman": "^0.2.1",
         "@uns/chainmeta-plugin": "^0.0.2-alpha.0",
+        "@uns/uns-transactions": "4.0.0-dev",
         "bip39": "^3.0.2",
         "bytebuffer": "^5.0.1",
         "chalk": "^3.0.0",

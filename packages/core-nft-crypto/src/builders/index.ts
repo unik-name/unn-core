@@ -16,3 +16,4 @@ export class NftBuilderFactory {
     }
 }
 
+export { NFTMintBuilder, NFTTransferBuilder, NFTUpdateBuilder };

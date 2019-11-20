@@ -1,2 +1,2 @@
 export * from "./handlers";
-export * from "./errors";
+export * from "./plugin";

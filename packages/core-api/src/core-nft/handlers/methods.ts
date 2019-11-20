@@ -32,7 +32,7 @@ const properties = async request => {
         ...paginate(request),
     });
 
-    return toPagination(properties, "nftProperties", false);
+    return toPagination(properties, "nftProperties");
 };
 
 const property = async request => {

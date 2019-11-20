@@ -7,7 +7,9 @@ export const transformNft = model => {
 };
 
 export const transformNftProperties = model => {
-    return model;
+    return {
+        [model.key]: model.value,
+    };
 };
 
 export const transformNftProperty = model => {

@@ -10,7 +10,7 @@ export const defaults = {
                         {
                             name: "enumeration",
                             parameters: {
-                                values: ["1", "2"],
+                                values: ["1", "2", "3"],
                             },
                         },
                     ],

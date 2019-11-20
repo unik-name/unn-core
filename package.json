@@ -48,7 +48,12 @@
         "deps:unused": "node ./scripts/deps/unused.js",
         "deps:types": "./node_modules/typesync/bin/typesync",
         "docker": "node ./scripts/docker/generate-docker.js",
-        "bench": "node benchmark/index.js"
+        "bench": "node benchmark/index.js",
+        "docker:db": "cross-env-shell ./scripts/docker/start-db.sh",
+        "docker:build": "cross-env-shell ./scripts/docker/build.sh",
+        "docker:build:integration": "cross-env-shell ./scripts/docker/build.sh integration",
+        "docker:publish": "cross-env-shell ./scripts/docker/publish.sh",
+        "docker:publish:integration": "cross-env-shell ./scripts/docker/publish.sh integration"
     },
     "devDependencies": {
         "@babel/core": "^7.6.4",

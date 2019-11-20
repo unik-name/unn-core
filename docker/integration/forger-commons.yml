@@ -1,0 +1,21 @@
+version: '2'
+services:
+  forger:
+    build:   
+      context: ../..
+      dockerfile: docker/Dockerfile
+    image: universalnamesystem/dcore:latest
+    restart: always
+    environment:
+      UNS_NET: dalinet
+      CORE_DB_HOST: postgres
+      CORE_DB_PORT: 5432
+      CORE_DB_PASSWORD: password
+      CORE_DB_USER: uns
+    cap_add:
+      - SYS_NICE
+      - SYS_RESOURCE
+      - SYS_TIME
+    networks:
+      - core 
+    tty: true

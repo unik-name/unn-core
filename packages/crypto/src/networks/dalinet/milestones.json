@@ -1,0 +1,41 @@
+[
+    {
+        "height": 1,
+        "reward": 200000000,
+        "activeDelegates": 3,
+        "blocktime": 8,
+        "block": {
+            "version": 0,
+            "maxTransactions": 500,
+            "maxPayload": 21000000,
+            "acceptExpiredTransactionTimestamps": false,
+            "idFullSha256": false
+        },
+        "epoch": "2019-09-19T11:42:10.474Z",
+        "fees": {
+            "staticFees": {
+                "transfer": 10000000,
+                "secondSignature": 500000000,
+                "delegateRegistration": 2500000000,
+                "vote": 100000000,
+                "multiSignature": 500000000,
+                "ipfs": 500000000,
+                "multiPayment": 10000000,
+                "delegateResignation": 2500000000,
+                "htlcLock": 10000000,
+                "htlcClaim": 0,
+                "htlcRefund": 0
+            }
+        },
+        "ignoreInvalidSecondSignatureField": false,
+        "vendorFieldLength": 255,
+        "ignoreExpiredTransactions": false,
+        "multiPaymentLimit": 128
+    },
+    {
+        "height": 2,
+        "block": {
+            "idFullSha256": true
+        }
+    }
+]

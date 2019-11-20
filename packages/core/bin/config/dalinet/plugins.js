@@ -1,9 +1,23 @@
 module.exports = {
     "@arkecosystem/core-event-emitter": {},
-    "@arkecosystem/core-logger-pino": {},
+    "@arkecosystem/core-logger-signale": {
+        config: {
+            displayDate: true,
+            displayTimestamp: true,
+            displayBadge: false,
+        },
+        types: {
+            info: {
+                color: "green",
+            },
+            debug: {
+                color: "cyan",
+            },
+        }
+    },
     "@arkecosystem/core-p2p": {
         server: {
-            port: process.env.CORE_P2P_PORT || 4000,
+            port: process.env.CORE_P2P_PORT || 4002,
         },
         minimumNetworkReach: 5,
     },
@@ -19,8 +33,9 @@ module.exports = {
         },
         estimateTotalCount: false // TODO: uns : otherwise total count of nfts was incorrect
     },
+    "@uns/core-nft":{},
     "@arkecosystem/core-transaction-pool": {
-        enabled: true,
+        enabled: !process.env.CORE_TRANSACTION_POOL_DISABLED,
         maxTransactionsPerSender: process.env.CORE_TRANSACTION_POOL_MAX_PER_SENDER || 300,
         allowedSenders: [],
         dynamicFees: {
@@ -38,7 +53,7 @@ module.exports = {
                 delegateResignation: 100,
                 htlcLock: 100,
                 htlcClaim: 0,
-                htlcRefund: 0
+                htlcRefund: 0,
             },
         },
     },
@@ -48,6 +63,7 @@ module.exports = {
         host: process.env.CORE_API_HOST || "0.0.0.0",
         port: process.env.CORE_API_PORT || 4003,
     },
+    "@uns/chainmeta-plugin": {},
     "@arkecosystem/core-wallet-api": {},
     "@arkecosystem/core-webhooks": {
         enabled: process.env.CORE_WEBHOOKS_ENABLED,
@@ -65,5 +81,5 @@ module.exports = {
         allowRemote: false,
         whitelist: ["127.0.0.1", "::ffff:127.0.0.1"],
     },
-    "@arkecosystem/core-snapshots": {}
+    "@arkecosystem/core-snapshots": {},
 };

@@ -72,18 +72,25 @@ persist: &persist
       - .core/
 
 all_tests: &all_tests
-  - unit
-  - functional
-  - api-integration
-  - blockchain-integration
-  - database-postgres-integration
-  - forger-integration
-  - json-rpc-integration
-  - tester-cli-integration
-  - transaction-pool-integration
-  - vote-report-integration
-  - webhooks-integration
-  - p2p-integration
+  - Unit
+  - Integration
+  - F-bridgechain-registration
+  - F-bridgechain-resignation
+  - F-bridgechain-update
+  - F-business-registration
+  - F-business-resignation
+  - F-business-update
+  - F-delegate-registration
+  - F-delegate-resignation
+  - F-htlc-claim
+  - F-htlc-lock
+  - F-htlc-refund
+  - F-ipfs
+  - F-multi-payment
+  - F-multi-signature-registration
+  - F-second-signature-registration
+  - F-transfer
+  - F-vote
 
 test_requirements: &test_requirements
   requires:
@@ -95,7 +102,7 @@ coverage: &coverage
 notif: &notif
   slack/status:
     fail_only: true
-    only_for_branches: 'private/develop,feat/nft'
+    only_for_branches: 'v2/develop'
     failure_message: "\U0001F62D build failed > $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH:$CIRCLE_SHA1 ( \U0001F916 $CIRCLE_WORKFLOW_ID/$CIRCLE_JOB)"
   
 ####################################
@@ -264,6 +271,7 @@ jobs:
       - *coverage
       - *notif 
         
+  # Temporary disabled because requires command modifications
   # e2e:
   #   docker:
   #     - image: circleci/node:12-browsers
@@ -388,24 +396,23 @@ workflow: &workflow
   - F-vote:
       requires:
         - build
-
-  #- docker_build_publish:
-  #    filters:
-  #      branches:
-  #        only: private/develop
-  #    requires:
-  #      *all_tests
+  - docker_build_publish:
+     filters:
+       branches:
+         only: v2/develop
+     requires:
+       *all_tests
 
 workflows:
   version: 2.1
   weekly:
     triggers:
-      - schedule: # Execute `full` workflow on private/develop every tuesday, at 06:10
+      - schedule: # Execute `full` workflow on v2/develop every tuesday, at 06:10
           cron: "10 6 * * 2"
           filters:
             branches:
               only:
-                - private/develop
+                - v2/develop
     jobs:
       *workflow
 

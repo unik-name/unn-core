@@ -7,6 +7,7 @@ import { NftTransactionHandler } from "./nft-handler";
 import { INftWalletAttributes } from "../../interfaces";
 import { NftOwnedError } from "../errors";
 import { NftApplicationEvents } from "../events";
+import { NftsManager } from "../../manager";
 
 export class NftMintTransactionHandler extends NftTransactionHandler {
     public getConstructor(): Transactions.TransactionConstructor {
@@ -28,10 +29,7 @@ export class NftMintTransactionHandler extends NftTransactionHandler {
             const transactions = await reader.read();
 
             for (const transaction of transactions) {
-                const wallet: State.IWallet = walletManager.findByPublicKey(transaction.senderPublicKey);
-                const attributes = wallet.getAttribute<INftWalletAttributes>("tokens");
-                wallet.setAttribute("tokens", attributes.tokens.concat([getCurrentNftAsset(transaction).tokenId]));
-                walletManager.reindex(wallet);
+                this.applyNftMintWalletState(transaction, walletManager);
             }
         }
     }
@@ -43,12 +41,22 @@ export class NftMintTransactionHandler extends NftTransactionHandler {
     ): Promise<void> {
         const { tokenId } = getCurrentNftAsset(transaction.data);
         //check if token is already owned
-        if (!!walletManager.allByAddress().find(wallet => wallet.getAttribute("tokens").tokens.includes(tokenId))) {
+        if (
+            wallet.hasAttribute("tokens") &&
+            !!walletManager.allByAddress().find(wallet => {
+                if (wallet.hasAttribute("tokens")) {
+                    return wallet.getAttribute<INftWalletAttributes>("tokens").tokens.includes(tokenId);
+                }
+                return false;
+            })
+        ) {
             throw new NftOwnedError(tokenId);
         }
 
-        const nftManager = app.resolvePlugin("core-nft");
-        nftManager.constraints.applyGenesisPropertyConstraint(transaction.data);
+        const nftManager = app.resolvePlugin<NftsManager>("core-nft");
+
+        await nftManager.constraints.applyGenesisPropertyConstraint(transaction.data);
+
         await nftManager.constraints.applyConstraints(transaction.data);
         return super.throwIfCannotBeApplied(transaction, wallet, walletManager);
     }
@@ -83,28 +91,12 @@ export class NftMintTransactionHandler extends NftTransactionHandler {
     public async applyToSender(
         transaction: Interfaces.ITransaction,
         walletManager: State.IWalletManager,
+        updateDb = false,
     ): Promise<void> {
         await super.applyToSender(transaction, walletManager);
-
-        const { tokenId, properties } = getCurrentNftAsset(transaction.data);
-
-        const wallet: State.IWallet = walletManager.findByPublicKey(transaction.data.senderPublicKey);
-        const attributes = wallet.getAttribute<INftWalletAttributes>("tokens");
-        wallet.setAttribute<INftWalletAttributes>("tokens", {
-            tokens: attributes.tokens.concat([tokenId]),
-        });
-        walletManager.reindex(wallet);
-
-        const sender = Identities.Address.fromPublicKey(transaction.data.senderPublicKey);
-
-        const nftManager = app.resolvePlugin("core-nft");
-        await nftManager.insert(tokenId, sender);
-
-        if (properties) {
-            await Promise.all(
-                Object.entries(properties).map(async ([key, value]) => nftManager.insertProperty(key, value, tokenId)),
-            );
-        }
+        this.applyNftMintWalletState(transaction.data, walletManager);
+        if (updateDb)
+          this.applyNftMintDb(transaction.data);
     }
 
     public async revertForSender(
@@ -123,7 +115,7 @@ export class NftMintTransactionHandler extends NftTransactionHandler {
         });
         walletManager.reindex(wallet);
 
-        const nftManager = app.resolvePlugin("nft");
+        const nftManager = app.resolvePlugin<NftsManager>("core-nft");
         return nftManager.delete(tokenId);
     }
 
@@ -138,4 +130,38 @@ export class NftMintTransactionHandler extends NftTransactionHandler {
         walletManager: State.IWalletManager,
         // tslint:disable-next-line:no-empty
     ): Promise<void> {}
+
+    private async applyNftMintWalletState(
+        transactionData: Interfaces.ITransactionData | Database.IBootstrapTransaction,
+        walletManager: State.IWalletManager,
+    ) {
+        const { tokenId } = getCurrentNftAsset(transactionData);
+
+        const wallet: State.IWallet = walletManager.findByPublicKey(transactionData.senderPublicKey);
+        let attributes: INftWalletAttributes = { tokens: [] };
+        if (wallet.hasAttribute("tokens")) {
+            attributes = wallet.getAttribute<INftWalletAttributes>("tokens");
+        }
+
+        wallet.setAttribute<INftWalletAttributes>("tokens", {
+            tokens: attributes.tokens.concat([tokenId]),
+        });
+        walletManager.reindex(wallet);
+    }
+
+    private async applyNftMintDb(
+        transactionData: Interfaces.ITransactionData | Database.IBootstrapTransaction,
+    ): Promise<void> {
+        const { tokenId, properties } = getCurrentNftAsset(transactionData);
+        const nftManager = app.resolvePlugin("core-nft");
+        const senderAddr = Identities.Address.fromPublicKey(transactionData.senderPublicKey);
+        await nftManager.insert(tokenId, senderAddr);
+
+        if (properties) {
+            await Promise.all(
+                Object.entries(properties).map(async ([key, value]) => nftManager.insertProperty(key, value, tokenId)),
+            );
+        }
+
+    }
 }

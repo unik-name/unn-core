@@ -525,7 +525,7 @@ export class Connection implements TransactionPool.IConnection {
                     transaction.typeGroup,
                 );
 
-                await handler.applyToSender(transaction, walletManager);
+                await handler.applyToSender(transaction, walletManager, true);
 
                 if (recipient && sender.address !== recipient.address) {
                     await handler.applyToRecipient(transaction, walletManager);

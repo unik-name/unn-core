@@ -52,7 +52,11 @@ export class ConstraintsManager {
             );
 
             // Get list of genesis properties set in current transaction
-            const keys = Object.keys(getCurrentNftAsset(transaction).properties) || [];
+            let keys = [];
+            const properties = getCurrentNftAsset(transaction).properties;
+            if (properties) {
+                keys = Object.keys(properties);
+            }
 
             // compare lists, if there is more genesis properties in config then some are missing in current transaction
             if (difference(genesisProperties, keys).length > 0) {

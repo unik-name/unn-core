@@ -163,7 +163,7 @@ export abstract class TransactionHandler implements ITransactionHandler {
     public async applyToSender(
         transaction: Interfaces.ITransaction,
         walletManager: State.IWalletManager,
-    ): Promise<void> {
+        _ : boolean = false): Promise<void> {
         const sender: State.IWallet = walletManager.findByPublicKey(transaction.data.senderPublicKey);
         const data: Interfaces.ITransactionData = transaction.data;
 

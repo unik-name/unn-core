@@ -28,9 +28,10 @@ export class NftsManager {
     }
 
     public async delete(tokenId: string) {
-        return this.repository.delete(tokenId).then(_ => {
-            this.logger.debug(`[💎] Token deleted (id:${tokenId}) and its properties`);
-        });
+        const db =  this.repository.delete(tokenId);
+        this.logger.debug(`[💎] Token deleted (id:${tokenId}) and its properties`);
+        return db;
+
     }
 
     public async updateOwner(tokenId: string, newOwner: string) {

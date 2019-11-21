@@ -3,11 +3,11 @@ import { Database, EventEmitter, State, TransactionPool } from "@arkecosystem/co
 import { NftTransactions, NftTransactionType, NftTransactionGroup, getCurrentNftAsset } from "@uns/core-nft-crypto";
 import { Handlers, TransactionReader } from "@arkecosystem/core-transactions";
 import { Interfaces, Transactions, Identities } from "@arkecosystem/crypto";
-import { NftTransactionHandler } from "./nft-handler";
 import { INftWalletAttributes } from "../../interfaces";
+import { NftsManager } from "../../manager";
 import { NftOwnedError } from "../errors";
 import { NftApplicationEvents } from "../events";
-import { NftsManager } from "../../manager";
+import { NftTransactionHandler } from "./nft-handler";
 
 export class NftMintTransactionHandler extends NftTransactionHandler {
     public getConstructor(): Transactions.TransactionConstructor {
@@ -40,7 +40,7 @@ export class NftMintTransactionHandler extends NftTransactionHandler {
         walletManager: State.IWalletManager,
     ): Promise<void> {
         const { tokenId } = getCurrentNftAsset(transaction.data);
-        //check if token is already owned
+        // check if token is already owned
         if (
             wallet.hasAttribute("tokens") &&
             !!walletManager.allByAddress().find(wallet => {
@@ -95,8 +95,9 @@ export class NftMintTransactionHandler extends NftTransactionHandler {
     ): Promise<void> {
         await super.applyToSender(transaction, walletManager);
         this.applyNftMintWalletState(transaction.data, walletManager);
-        if (updateDb)
+        if (updateDb) {
           this.applyNftMintDb(transaction.data);
+        }
     }
 
     public async revertForSender(

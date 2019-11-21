@@ -101,10 +101,10 @@ export class NftsRepository extends Repository implements NFT.INftsRepository {
     public async findEdgeTransactions(id: string, nftName: string): Promise<any> {
         return {
             first: {
-                id: await this.db.any(sql.findFirstTransaction, { id, nftName }),
+                ...(await this.db.any(sql.findFirstTransaction, { id, nftName }))[0],
             },
             last: {
-                id: await this.db.any(sql.findLastTransaction, { id, nftName }),
+                ...(await this.db.any(sql.findLastTransaction, { id, nftName }))[0],
             },
         };
     }

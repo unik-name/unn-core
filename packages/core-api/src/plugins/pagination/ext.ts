@@ -39,6 +39,7 @@ export class Ext {
         { method: "get", path: "/api/wallets/{id}/transactions/sent" },
         { method: "get", path: "/api/wallets/{id}/votes" },
         { method: "post", path: "/api/wallets/search" },
+        { method: "get", path: "/api/{nft}s/{id}/properties" },
     ];
 
     constructor(private readonly config) {}

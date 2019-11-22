@@ -3436,10 +3436,10 @@
   resolved "https://registry.yarnpkg.com/@tyriar/fibonacci-heap/-/fibonacci-heap-2.0.9.tgz#df3dcbdb1b9182168601f6318366157ee16666e9"
   integrity sha512-bYuSNomfn4hu2tPiDN+JZtnzCpSpbJ/PNeulmocDy3xN2X5OkJL65zo6rPZp65cPPhLF9vfT/dgE+RtFRCSxOA==
 
-"@uns/chainmeta-plugin@^0.0.1":
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/@uns/chainmeta-plugin/-/chainmeta-plugin-0.0.1.tgz#dbec53f4ace4b0ff849bdcebbcf9e08fad60e0be"
-  integrity sha512-TVIi6zQiZ36Q41p/6lNI/RGYbc4TMQC2eOywk8effDlYD3zFu2ICTVwjToDFPyQxdsLAJWWbjScD9bu4Am2oaQ==
+"@uns/chainmeta-plugin@^0.0.2-alpha.0":
+  version "0.0.2-alpha.0"
+  resolved "https://registry.yarnpkg.com/@uns/chainmeta-plugin/-/chainmeta-plugin-0.0.2-alpha.0.tgz#71ef034bf67b0450349f1f64e01bea6c330afb08"
+  integrity sha512-a195Q+hEMYsSeEoJZPf3UaZzgGIxNeqmgyRVxRr2hlTxgFqwhpAcFb7SrkozzdvFWfrdicsnFYdI7IjLFKqkRw==
   dependencies:
     "@arkecosystem/core-api" "^2.6.0-next.4"
     "@arkecosystem/core-interfaces" "^2.6.0-next.4"

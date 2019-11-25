@@ -52,7 +52,6 @@ export class ConstraintsManager {
             );
 
             // Get list of genesis properties set in current transaction
-
             const properties = getCurrentNftAsset(transaction.asset).properties;
             const keys = properties ? Object.keys(properties) : [];
 

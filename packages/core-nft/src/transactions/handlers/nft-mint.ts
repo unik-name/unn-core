@@ -90,13 +90,16 @@ export class NftMintTransactionHandler extends NftTransactionHandler {
         await super.revertForSender(transaction, walletManager);
 
         const { tokenId } = getCurrentNftAsset(transaction.data.asset);
-
         const wallet: State.IWallet = walletManager.findByPublicKey(transaction.data.senderPublicKey);
         const attributes = wallet.getAttribute<INftWalletAttributes>("tokens");
 
-        wallet.setAttribute<INftWalletAttributes>("tokens", {
-            tokens: attributes.tokens.filter(t => t !== tokenId),
-        });
+        if (attributes.tokens.length > 1) {
+            wallet.setAttribute<INftWalletAttributes>("tokens", {
+                tokens: attributes.tokens.filter(t => t !== tokenId),
+            });
+        } else {
+            wallet.forgetAttribute("tokens");
+        }
         walletManager.reindex(wallet);
 
         if (updateDb) {

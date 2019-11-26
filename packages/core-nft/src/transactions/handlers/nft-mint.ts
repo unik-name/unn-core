@@ -3,9 +3,9 @@ import { Database, State, TransactionPool } from "@arkecosystem/core-interfaces"
 import { Handlers, TransactionReader } from "@arkecosystem/core-transactions";
 import { Identities, Interfaces, Transactions } from "@arkecosystem/crypto";
 import { getCurrentNftAsset, NftTransactions } from "@uns/core-nft-crypto";
+import { NftOwnedError } from "../../errors";
 import { INftWalletAttributes } from "../../interfaces";
 import { NftsManager } from "../../manager";
-import { NftOwnedError } from "../errors";
 import { NftTransactionHandler } from "./nft-handler";
 
 export class NftMintTransactionHandler extends NftTransactionHandler {

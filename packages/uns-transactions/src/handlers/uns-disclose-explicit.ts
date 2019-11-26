@@ -5,11 +5,11 @@ import { Handlers, TransactionReader } from "@arkecosystem/core-transactions";
 import { Interfaces, Transactions } from "@arkecosystem/crypto";
 import { NftOwnerError } from "@uns/core-nft";
 import {
+    DiscloseExplicitTransaction,
     IDiscloseDemand,
     IDiscloseDemandCertification,
     unsCrypto,
     unsTransactionGroup,
-    unsTransactions,
     UnsTransactionType,
 } from "@uns/crypto";
 import {
@@ -26,7 +26,7 @@ export class DiscloseExplicitTransactionHandler extends Handlers.TransactionHand
     );
 
     public getConstructor(): Transactions.TransactionConstructor {
-        return unsTransactions.DiscloseExplicitTransaction;
+        return DiscloseExplicitTransaction;
     }
 
     public dependencies(): ReadonlyArray<Handlers.TransactionHandlerConstructor> {

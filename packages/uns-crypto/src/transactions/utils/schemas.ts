@@ -1,7 +1,7 @@
 import { Transactions } from "@arkecosystem/crypto";
 
-import { models } from "../..";
 import { UnsTransactionType } from "../../enums";
+import { DIDTypes } from "../../models";
 
 const unsDiscloseDemandCertificationPayload = {
     asset: {
@@ -29,7 +29,7 @@ const unsDiscloseDemandPayload = {
                 items: { $ref: "alphanumeric" },
             },
             sub: { $ref: "tokenId" },
-            type: { type: "integer", enum: models.DIDTypes /*FIXME this statement has no effect*/ },
+            type: { type: "integer", enum: DIDTypes /*FIXME this statement has no effect*/ },
             iss: { $ref: "tokenId" },
             iat: { type: "integer" },
         },

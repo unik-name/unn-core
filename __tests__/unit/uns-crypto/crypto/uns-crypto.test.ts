@@ -1,5 +1,5 @@
 import { Keys } from "@arkecosystem/crypto/src/identities";
-import { IDiscloseDemandCertificationPayload, IDiscloseDemandPayload, models, unsCrypto } from "@uns/crypto";
+import { DIDTypes, IDiscloseDemandCertificationPayload, IDiscloseDemandPayload, unsCrypto } from "@uns/crypto";
 import "jest-extended";
 
 describe("uns-crypto.ts", () => {
@@ -17,7 +17,7 @@ describe("uns-crypto.ts", () => {
         const discloseDemandPayload: IDiscloseDemandPayload = {
             explicitValue: ["explicitValue1", "explicitValue2"],
             sub: TOKEN_ID,
-            type: models.DIDTypes.ORGANIZATION,
+            type: DIDTypes.ORGANIZATION,
             iss: TOKEN_ID,
             iat: 12345678,
         };

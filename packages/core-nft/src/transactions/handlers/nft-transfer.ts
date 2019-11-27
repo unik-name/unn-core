@@ -2,8 +2,8 @@ import { Database, State, TransactionPool } from "@arkecosystem/core-interfaces"
 import { Handlers, TransactionReader } from "@arkecosystem/core-transactions";
 import { Interfaces, Transactions } from "@arkecosystem/crypto";
 import { getCurrentNftAsset, Transactions as NftTransactions } from "@uns/core-nft-crypto";
+import { NftOwnedError } from "../../errors";
 import { INftWalletAttributes } from "../../interfaces";
-import { NftOwnedError } from "../errors";
 import { addNftToWallet, applyNftTransferDb, removeNftFromWallet } from "./helpers";
 import { NftMintTransactionHandler } from "./nft-mint";
 

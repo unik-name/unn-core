@@ -3,9 +3,10 @@ import { Database, State, TransactionPool } from "@arkecosystem/core-interfaces"
 import { Handlers } from "@arkecosystem/core-transactions";
 import { Interfaces, Transactions } from "@arkecosystem/crypto";
 import { getCurrentNftAsset, Transactions as NftTransactions } from "@uns/core-nft-crypto";
+import { NftOwnerError } from "../../errors";
 import { INftWalletAttributes } from "../../interfaces";
 import { NftsManager } from "../../manager";
-import { NftOwnedError } from "../errors";
+import { checkAssetPropertiesSize } from "./helpers";
 import { NftMintTransactionHandler } from "./nft-mint";
 
 export class NftUpdateTransactionHandler extends Handlers.TransactionHandler {
@@ -34,14 +35,16 @@ export class NftUpdateTransactionHandler extends Handlers.TransactionHandler {
         wallet: State.IWallet,
         walletManager: State.IWalletManager,
     ): Promise<void> {
-        const { tokenId } = getCurrentNftAsset(transaction.data.asset);
+        const { tokenId, properties } = getCurrentNftAsset(transaction.data.asset);
+
+        checkAssetPropertiesSize(properties);
 
         // check if sender owns token
         if (
             !wallet.hasAttribute("tokens") ||
             !wallet.getAttribute<INftWalletAttributes>("tokens").tokens.includes(tokenId)
         ) {
-            throw new NftOwnedError(tokenId);
+            throw new NftOwnerError(tokenId);
         }
 
         await app.resolvePlugin<NftsManager>("core-nft").constraints.applyConstraints(transaction.data);

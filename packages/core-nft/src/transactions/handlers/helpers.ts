@@ -2,6 +2,8 @@ import { app } from "@arkecosystem/core-container";
 import { State } from "@arkecosystem/core-interfaces";
 import { Identities, Interfaces } from "@arkecosystem/crypto";
 import { getCurrentNftAsset } from "@uns/core-nft-crypto";
+import { INftProperties } from "@uns/core-nft-crypto/dist/interfaces";
+import { NftPropertyTooLongError } from "../../errors";
 import { INftWalletAttributes } from "../../interfaces";
 import { NftsManager } from "../../manager";
 
@@ -53,4 +55,12 @@ export const applyNftTransferDb = async (
     assets: Interfaces.ITransactionAsset,
 ): Promise<void> => {
     return app.resolvePlugin<NftsManager>("core-nft").updateOwner(getCurrentNftAsset(assets).tokenId, recipientAddress);
+};
+
+export const checkAssetPropertiesSize = (properties: INftProperties) => {
+    for (const [key, value] of Object.entries(properties)) {
+        if (Buffer.from(value, "utf8").length > 255) {
+            throw new NftPropertyTooLongError(key);
+        }
+    }
 };

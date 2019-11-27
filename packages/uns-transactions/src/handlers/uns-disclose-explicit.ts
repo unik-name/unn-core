@@ -46,8 +46,6 @@ export class DiscloseExplicitTransactionHandler extends Handlers.TransactionHand
         if (!certificationIssuerNft) {
             throw new DiscloseDemandIssuerError();
         }
-        // retrieve certification issuer public key
-        // could be retrieved from walletManager. To be changed when walletManager will be available anytime in ark 2.6
         const certificationIssuerPublicKey = walletManager.findByAddress(certificationIssuerNft.ownerId)?.publicKey;
 
         const demandIssuerNft = await this.nftsRepository.findById(discloseDemand.payload.iss);
@@ -126,7 +124,7 @@ export class DiscloseExplicitTransactionHandler extends Handlers.TransactionHand
         const nftManager = app.resolvePlugin("core-nft");
 
         const currentValues = await nftManager.getProperty(tokenId, "explicitValues");
-        if (currentValues && currentValues.value) {
+        if (currentValues?.value) {
             const currentValuesArray = currentValues.value.split(",");
             const newValues = explicitValues.filter(explicitVal => {
                 return !currentValuesArray.includes(explicitVal);

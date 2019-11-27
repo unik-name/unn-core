@@ -1,24 +1,23 @@
-import { app } from "@arkecosystem/core-container";
 import { Database, State, TransactionPool } from "@arkecosystem/core-interfaces";
 import { Handlers, TransactionReader } from "@arkecosystem/core-transactions";
 import { Interfaces, Transactions } from "@arkecosystem/crypto";
 import { getCurrentNftAsset, Transactions as NftTransactions } from "@uns/core-nft-crypto";
 import { INftWalletAttributes } from "../../interfaces";
-import { NftsManager } from "../../manager";
-import { NftOwnedError, NftPropertyTooLongError } from "../../errors";
-import { addNftToWallet, applyNftMintDb, removeNftFromWallet } from "./helpers";
+import { NftOwnedError } from "../errors";
+import { addNftToWallet, applyNftTransferDb, removeNftFromWallet } from "./helpers";
+import { NftMintTransactionHandler } from "./nft-mint";
 
-export class NftMintTransactionHandler extends Handlers.TransactionHandler {
+export class NftTransferTransactionHandler extends Handlers.TransactionHandler {
     public async isActivated(): Promise<boolean> {
         return true;
     }
 
     public getConstructor(): Transactions.TransactionConstructor {
-        return NftTransactions.NftMintTransaction;
+        return NftTransactions.NftTransferTransaction;
     }
 
     public dependencies(): ReadonlyArray<Handlers.TransactionHandlerConstructor> {
-        return [];
+        return [NftMintTransactionHandler];
     }
 
     public walletAttributes(): ReadonlyArray<string> {
@@ -32,7 +31,9 @@ export class NftMintTransactionHandler extends Handlers.TransactionHandler {
             const transactions = await reader.read();
 
             for (const transaction of transactions) {
-                await addNftToWallet(transaction.senderPublicKey, transaction.asset, walletManager);
+                const { asset, senderPublicKey, recipientId } = transaction;
+                await removeNftFromWallet(senderPublicKey, asset, walletManager);
+                await addNftToWallet(recipientId, asset, walletManager);
             }
         }
     }
@@ -42,26 +43,16 @@ export class NftMintTransactionHandler extends Handlers.TransactionHandler {
         wallet: State.IWallet,
         walletManager: State.IWalletManager,
     ): Promise<void> {
-        const { tokenId, properties } = getCurrentNftAsset(transaction.data.asset);
+        const { tokenId } = getCurrentNftAsset(transaction.data.asset);
 
-        this.checkAssetPropertiesSize(properties);
-
-        // check if token is already owned
+        // check if sender owns token
         if (
-            wallet.hasAttribute("tokens") &&
-            !!walletManager.allByAddress().find(wallet => {
-                if (wallet.hasAttribute("tokens")) {
-                    return wallet.getAttribute<INftWalletAttributes>("tokens").tokens.includes(tokenId);
-                }
-                return false;
-            })
+            !wallet.hasAttribute("tokens") ||
+            !wallet.getAttribute<INftWalletAttributes>("tokens").tokens.includes(tokenId)
         ) {
             throw new NftOwnedError(tokenId);
         }
 
-        const nftManager = app.resolvePlugin<NftsManager>("core-nft");
-        nftManager.constraints.applyGenesisPropertyConstraint(transaction.data);
-        await nftManager.constraints.applyConstraints(transaction.data);
         return super.throwIfCannotBeApplied(transaction, wallet, walletManager);
     }
 
@@ -82,10 +73,10 @@ export class NftMintTransactionHandler extends Handlers.TransactionHandler {
         updateDb = false,
     ): Promise<void> {
         await super.applyToSender(transaction, walletManager);
-        const { senderPublicKey, asset } = transaction.data;
-        await addNftToWallet(senderPublicKey, asset, walletManager);
+        const { senderPublicKey, asset, recipientId } = transaction.data;
+        await removeNftFromWallet(senderPublicKey, asset, walletManager);
         if (updateDb) {
-            return applyNftMintDb(senderPublicKey, asset);
+            return applyNftTransferDb(recipientId, asset);
         }
     }
 
@@ -95,11 +86,10 @@ export class NftMintTransactionHandler extends Handlers.TransactionHandler {
         updateDb = false,
     ): Promise<void> {
         await super.revertForSender(transaction, walletManager);
-        await removeNftFromWallet(transaction.data.senderPublicKey, transaction.data.asset, walletManager);
+        const { senderPublicKey, asset } = transaction.data;
+        await addNftToWallet(senderPublicKey, asset, walletManager);
         if (updateDb) {
-            return app
-                .resolvePlugin<NftsManager>("core-nft")
-                .delete(getCurrentNftAsset(transaction.data.asset).tokenId);
+            return applyNftTransferDb(senderPublicKey, asset);
         }
     }
 
@@ -107,22 +97,18 @@ export class NftMintTransactionHandler extends Handlers.TransactionHandler {
         transaction: Interfaces.ITransaction,
         walletManager: State.IWalletManager,
         // tslint:disable-next-line: no-empty
-    ): Promise<void> {}
+    ): Promise<void> {
+        const { asset, recipientId } = transaction.data;
+        await addNftToWallet(recipientId, asset, walletManager);
+        // db update is done in applyToSender method
+    }
 
     public async revertForRecipient(
         transaction: Interfaces.ITransaction,
         walletManager: State.IWalletManager,
         // tslint:disable-next-line:no-empty
-    ): Promise<void> {}
-
-    protected checkAssetPropertiesSize(properties) {
-        for (const propertyKey in properties) {
-            if (properties.hasOwnProperty(propertyKey)) {
-                const value = properties[propertyKey];
-                if (value && Buffer.from(value, "utf8").length > 255) {
-                    throw new NftPropertyTooLongError(propertyKey);
-                }
-            }
-        }
+    ): Promise<void> {
+        const { asset, recipientId } = transaction.data;
+        await removeNftFromWallet(recipientId, asset, walletManager);
     }
 }

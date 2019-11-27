@@ -3,10 +3,10 @@ import { Database, State, TransactionPool } from "@arkecosystem/core-interfaces"
 import { Handlers, TransactionReader } from "@arkecosystem/core-transactions";
 import { Interfaces, Transactions } from "@arkecosystem/crypto";
 import { getCurrentNftAsset, Transactions as NftTransactions } from "@uns/core-nft-crypto";
+import { NftOwnedError } from "../../errors";
 import { INftWalletAttributes } from "../../interfaces";
 import { NftsManager } from "../../manager";
-import { NftOwnedError, NftPropertyTooLongError } from "../../errors";
-import { addNftToWallet, applyNftMintDb, removeNftFromWallet } from "./helpers";
+import { addNftToWallet, applyNftMintDb, checkAssetPropertiesSize, removeNftFromWallet } from "./helpers";
 
 export class NftMintTransactionHandler extends Handlers.TransactionHandler {
     public async isActivated(): Promise<boolean> {
@@ -44,7 +44,7 @@ export class NftMintTransactionHandler extends Handlers.TransactionHandler {
     ): Promise<void> {
         const { tokenId, properties } = getCurrentNftAsset(transaction.data.asset);
 
-        this.checkAssetPropertiesSize(properties);
+        checkAssetPropertiesSize(properties);
 
         // check if token is already owned
         if (
@@ -114,15 +114,4 @@ export class NftMintTransactionHandler extends Handlers.TransactionHandler {
         walletManager: State.IWalletManager,
         // tslint:disable-next-line:no-empty
     ): Promise<void> {}
-
-    protected checkAssetPropertiesSize(properties) {
-        for (const propertyKey in properties) {
-            if (properties.hasOwnProperty(propertyKey)) {
-                const value = properties[propertyKey];
-                if (value && Buffer.from(value, "utf8").length > 255) {
-                    throw new NftPropertyTooLongError(propertyKey);
-                }
-            }
-        }
-    }
 }

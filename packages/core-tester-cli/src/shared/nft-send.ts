@@ -1,7 +1,24 @@
+import { flags } from "@oclif/command";
+import { satoshiFlag } from "../flags";
 import { NftSigner } from "../nft-signer";
 import { SendCommand } from "./send";
 
 export abstract class NftSendCommand extends SendCommand {
+    public static nftFlags = {
+        ...SendCommand.flagsSend,
+        id: flags.string({
+            description: "token identifier",
+            required: true,
+        }),
+        nftName: flags.string({
+            description: "NFT name",
+            required: true,
+        }),
+        nftFee: satoshiFlag({
+            description: "nft fee",
+            default: 1,
+        }),
+    };
     protected nftSigner: NftSigner;
 
     protected async make(command): Promise<any> {

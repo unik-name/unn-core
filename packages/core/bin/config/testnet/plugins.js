@@ -19,6 +19,7 @@ module.exports = {
         },
         estimateTotalCount: false // TODO: uns : otherwise total count of nfts was incorrect
     },
+    "@uns/core-nft":{},
     "@arkecosystem/core-transaction-pool": {
         enabled: true,
         maxTransactionsPerSender: process.env.CORE_TRANSACTION_POOL_MAX_PER_SENDER || 300,

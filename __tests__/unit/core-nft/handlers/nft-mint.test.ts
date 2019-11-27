@@ -9,7 +9,7 @@ import { NftMintTransactionHandler } from "../../../../packages/core-nft/src/tra
 import { NftBuilders } from "@uns/core-nft-crypto";
 import { INftWalletAttributes } from "@uns/core-nft/src/interfaces";
 import { propertiesAssets } from "../helper";
-import { NftOwnedError } from "@uns/core-nft/src/transactions/errors";
+import { NftOwnedError } from "@uns/core-nft/src/errors";
 
 let handler: NftMintTransactionHandler;
 let builder: NftBuilders.NftMintBuilder;

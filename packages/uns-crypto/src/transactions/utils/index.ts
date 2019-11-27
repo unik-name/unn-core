@@ -1,3 +1,3 @@
-import * as unsSchemas from "./schemas";
+import * as unsSchemas from "../uns-disclose-explicit/schema";
 
 export { unsSchemas };

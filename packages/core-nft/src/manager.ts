@@ -1,6 +1,7 @@
 import { app } from "@arkecosystem/core-container";
 import { ConnectionManager } from "@arkecosystem/core-database";
 import { Logger, NFT } from "@arkecosystem/core-interfaces";
+import { Interfaces } from "@uns/core-nft-crypto";
 import { ConstraintsManager } from "./constraints/manager";
 import { IConstraintsConfig } from "./interfaces";
 
@@ -56,12 +57,28 @@ export class NftsManager {
         });
     }
 
+    public async insertProperties(properties: Interfaces.INftProperties, tokenId: string): Promise<any> {
+        return Promise.all(
+            Object.entries<string>(properties).map(([key, value]) => {
+                return this.insertProperty(key, value, tokenId);
+            }),
+        );
+    }
+
     public async updateProperty(propertyKey: string, propertyValue: string, tokenId: string): Promise<any> {
         return this.repository.updateProperty(tokenId, propertyKey, propertyValue).then(_ => {
             this.logger.debug(
                 `[💎] Property '${propertyKey}' updated with value '${propertyValue}' for tokenid ${tokenId}`,
             );
         });
+    }
+
+    public async updateProperties(properties: Interfaces.INftProperties, tokenId: string): Promise<any> {
+        return Promise.all(
+            Object.entries<string>(properties).map(([key, value]) => {
+                return this.updateProperty(key, value, tokenId);
+            }),
+        );
     }
 
     public async deleteProperty(propertyKey: string, tokenId: string): Promise<any> {

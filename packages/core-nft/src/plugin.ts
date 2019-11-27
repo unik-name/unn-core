@@ -1,6 +1,6 @@
 import { Container, Logger } from "@arkecosystem/core-interfaces";
 import { Handlers } from "@arkecosystem/core-transactions";
-import { defaults } from "./config";
+import { defaults } from "./defaults";
 import { NftsManager } from "./manager";
 import { NftMintTransactionHandler } from "./transactions/";
 

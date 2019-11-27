@@ -61,6 +61,7 @@ export class TransactionsBusinessRepository implements Database.ITransactionsBus
     }
 
     // @TODO: simplify this
+    // TODO: uns : reset to original format ( see commit 4787d4 )
     public async findById(id: string) {
         return (
             await this.mapBlocksToTransactions(

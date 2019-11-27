@@ -28,14 +28,5 @@ export abstract class NftTransactionHandler extends Handlers.TransactionHandler 
         // tslint:disable-next-line:no-empty
     ): Promise<void> {}
 
-    protected checkAssetPropertiesSize(properties) {
-        for (const propertyKey in properties) {
-            if (properties.hasOwnProperty(propertyKey)) {
-                const value = properties[propertyKey];
-                if (value && Buffer.from(value, "utf8").length > 255) {
-                    throw new NftPropertyTooLongError(propertyKey);
-                }
-            }
-        }
-    }
+    
 }

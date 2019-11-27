@@ -4,14 +4,7 @@ import { Database, State, TransactionPool } from "@arkecosystem/core-interfaces"
 import { Handlers, TransactionReader } from "@arkecosystem/core-transactions";
 import { Interfaces, Transactions } from "@arkecosystem/crypto";
 import { NftOwnerError } from "@uns/core-nft";
-import {
-    DiscloseExplicitTransaction,
-    IDiscloseDemand,
-    IDiscloseDemandCertification,
-    unsCrypto,
-    unsTransactionGroup,
-    UnsTransactionType,
-} from "@uns/crypto";
+import { DiscloseExplicitTransaction, IDiscloseDemand, IDiscloseDemandCertification, unsCrypto } from "@uns/crypto";
 import {
     DiscloseDemandAlreadyExistsError,
     DiscloseDemandCertificationSignatureError,
@@ -21,9 +14,7 @@ import {
 } from "../errors";
 
 export class DiscloseExplicitTransactionHandler extends Handlers.TransactionHandler {
-    private nftsRepository: NftsBusinessRepository = new NftsBusinessRepository(
-        app.resolvePlugin<ConnectionManager>("database-manager").connection(),
-    );
+    private nftsRepository: NftsBusinessRepository = new NftsBusinessRepository(this.getConnection());
 
     public getConstructor(): Transactions.TransactionConstructor {
         return DiscloseExplicitTransaction;
@@ -46,7 +37,6 @@ export class DiscloseExplicitTransactionHandler extends Handlers.TransactionHand
         wallet: State.IWallet,
         walletManager: State.IWalletManager,
     ): Promise<void> {
-        const databaseService = app.resolvePlugin<Database.IDatabaseService>("database");
         const discloseDemand: IDiscloseDemand = transaction.data.asset["disclose-demand"];
         const discloseDemandCertif: IDiscloseDemandCertification =
             transaction.data.asset["disclose-demand-certification"];
@@ -58,18 +48,16 @@ export class DiscloseExplicitTransactionHandler extends Handlers.TransactionHand
         }
         // retrieve certification issuer public key
         // could be retrieved from walletManager. To be changed when walletManager will be available anytime in ark 2.6
-        const certificationIssuerPublicKey = databaseService.transactionsBusinessRepository.getPublicKeyFromAddress(
-            certificationIssuerNft.ownerId,
-        );
+        const certificationIssuerPublicKey = walletManager.findByAddress(certificationIssuerNft.ownerId)?.publicKey;
+
         const demandIssuerNft = await this.nftsRepository.findById(discloseDemand.payload.iss);
         // check existence of demand issuer UNIK
         if (!demandIssuerNft) {
             throw new DiscloseDemandIssuerError();
         }
         // retrieve demand issuer public key
-        const demandIssuerPublicKey = databaseService.transactionsBusinessRepository.getPublicKeyFromAddress(
-            demandIssuerNft.ownerId,
-        );
+        const demandIssuerPublicKey = walletManager.findByAddress(demandIssuerNft.ownerId)?.publicKey;
+
         // check issuer credentials
         if (!unsCrypto.verifyIssuerCredentials(discloseDemandCertif.payload.iss)) {
             throw new DiscloseDemandIssuerError();
@@ -105,7 +93,10 @@ export class DiscloseExplicitTransactionHandler extends Handlers.TransactionHand
         }
 
         // check token ownership
-        if (!wallet.getAttribute("tokens").tokens.includes(discloseDemand.payload.sub)) {
+        if (
+            wallet.hasAttribute("tokens") &&
+            !wallet.getAttribute("tokens").tokens.includes(discloseDemand.payload.sub)
+        ) {
             throw new NftOwnerError(wallet.address, discloseDemand.payload.sub);
         }
 
@@ -117,22 +108,7 @@ export class DiscloseExplicitTransactionHandler extends Handlers.TransactionHand
         pool: TransactionPool.IConnection,
         processor: TransactionPool.IProcessor,
     ): Promise<boolean> {
-        if (
-            await pool.senderHasTransactionsOfType(
-                data.senderPublicKey,
-                UnsTransactionType.UnsDiscloseExplicit,
-                unsTransactionGroup,
-            )
-        ) {
-            processor.pushError(
-                data,
-                "ERR_PENDING",
-                `UNS Disclose Explicit Values NFT "${data.senderPublicKey}" already in the pool`,
-            );
-            return false;
-        }
-
-        return true;
+        return !(await this.typeFromSenderAlreadyInPool(data, pool, processor));
     }
 
     // tslint:disable-next-line: no-empty

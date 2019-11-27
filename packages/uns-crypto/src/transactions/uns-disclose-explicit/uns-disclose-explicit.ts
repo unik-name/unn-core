@@ -1,9 +1,9 @@
 import { Transactions, Utils } from "@arkecosystem/crypto";
 import ByteBuffer from "bytebuffer";
 import Long from "long";
-import { unsTransactionGroup, unsTransactionStaticFees, UnsTransactionType } from "../enums";
-import { IDiscloseDemand, IDiscloseDemandCertification } from "../interfaces";
-import { unsSchemas } from "./utils";
+import { unsTransactionGroup, UnsTransactionStaticFees, UnsTransactionType } from "../../enums";
+import { IDiscloseDemand, IDiscloseDemandCertification } from "../../interfaces";
+import { unsDiscloseDemand } from "./schema";
 
 export class DiscloseExplicitTransaction extends Transactions.Transaction {
     public static typeGroup: number = unsTransactionGroup;
@@ -11,11 +11,19 @@ export class DiscloseExplicitTransaction extends Transactions.Transaction {
     public static key: string = "UnsDiscloseExplicit";
 
     public static getSchema(): Transactions.schemas.TransactionSchema {
-        return unsSchemas.discloseExplicit;
+        return Transactions.schemas.extend(Transactions.schemas.transactionBaseSchema, {
+            $id: "unsDiscloseExplicit",
+            required: ["asset"],
+            properties: {
+                type: { transactionType: UnsTransactionType.UnsDiscloseExplicit },
+                amount: { bignumber: { minimum: 0, maximum: 0 } },
+                ...unsDiscloseDemand,
+            },
+        });
     }
 
     protected static defaultStaticFee: Utils.BigNumber = Utils.BigNumber.make(
-        unsTransactionStaticFees.UnsDiscloseExplicit,
+        UnsTransactionStaticFees.UnsDiscloseExplicit,
     );
 
     public serialize(): ByteBuffer {

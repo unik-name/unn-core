@@ -2,13 +2,16 @@ import { app } from "@arkecosystem/core-container";
 import { Database, State, TransactionPool } from "@arkecosystem/core-interfaces";
 import { Handlers, TransactionReader } from "@arkecosystem/core-transactions";
 import { Identities, Interfaces, Transactions } from "@arkecosystem/crypto";
-import { getCurrentNftAsset, NftTransactions } from "@uns/core-nft-crypto";
-import { NftOwnedError } from "../../errors";
+import { getCurrentNftAsset, Transactions as NftTransactions } from "@uns/core-nft-crypto";
 import { INftWalletAttributes } from "../../interfaces";
 import { NftsManager } from "../../manager";
-import { NftTransactionHandler } from "./nft-handler";
+import { NftOwnedError, NftPropertyTooLongError } from "../../errors"
 
-export class NftMintTransactionHandler extends NftTransactionHandler {
+export class NftMintTransactionHandler extends Handlers.TransactionHandler {
+    public async isActivated(): Promise<boolean> {
+        return true;
+    }
+
     public getConstructor(): Transactions.TransactionConstructor {
         return NftTransactions.NftMintTransaction;
     }
@@ -80,7 +83,7 @@ export class NftMintTransactionHandler extends NftTransactionHandler {
         await super.applyToSender(transaction, walletManager);
         await this.applyNftMintWalletState(transaction.data, walletManager);
         if (updateDb) {
-            await this.applyNftMintDb(transaction.data);
+            return this.applyNftMintDb(transaction.data);
         }
     }
 
@@ -105,9 +108,21 @@ export class NftMintTransactionHandler extends NftTransactionHandler {
         walletManager.reindex(wallet);
 
         if (updateDb) {
-            await app.resolvePlugin<NftsManager>("core-nft").delete(tokenId);
+            return app.resolvePlugin<NftsManager>("core-nft").delete(tokenId);
         }
     }
+
+    public async applyToRecipient(
+        transaction: Interfaces.ITransaction,
+        walletManager: State.IWalletManager,
+        // tslint:disable-next-line: no-empty
+    ): Promise<void> {}
+
+    public async revertForRecipient(
+        transaction: Interfaces.ITransaction,
+        walletManager: State.IWalletManager,
+        // tslint:disable-next-line:no-empty
+    ): Promise<void> {}
 
     private async applyNftMintWalletState(
         transactionData: Interfaces.ITransactionData | Database.IBootstrapTransaction,
@@ -131,14 +146,23 @@ export class NftMintTransactionHandler extends NftTransactionHandler {
         transactionData: Interfaces.ITransactionData | Database.IBootstrapTransaction,
     ): Promise<void> {
         const { tokenId, properties } = getCurrentNftAsset(transactionData.asset);
-        const nftManager = app.resolvePlugin("core-nft");
         const senderAddr = Identities.Address.fromPublicKey(transactionData.senderPublicKey);
+        const nftManager = app.resolvePlugin<NftsManager>("core-nft");
         await nftManager.insert(tokenId, senderAddr);
 
         if (properties) {
-            await Promise.all(
-                Object.entries(properties).map(async ([key, value]) => nftManager.insertProperty(key, value, tokenId)),
-            );
+            return nftManager.insertProperties(properties, tokenId);
+        }
+    }
+
+    protected checkAssetPropertiesSize(properties) {
+        for (const propertyKey in properties) {
+            if (properties.hasOwnProperty(propertyKey)) {
+                const value = properties[propertyKey];
+                if (value && Buffer.from(value, "utf8").length > 255) {
+                    throw new NftPropertyTooLongError(propertyKey);
+                }
+            }
         }
     }
 }

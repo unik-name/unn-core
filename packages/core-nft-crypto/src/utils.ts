@@ -1,5 +1,5 @@
 import { Interfaces } from "@arkecosystem/crypto";
-import { NftInterfaces } from "./";
+import { Interfaces as NftInterfaces } from "./";
 
 // TODO: uns : remember to update here to handle multiple tokens
 export const getNftName = (asset: Interfaces.ITransactionAsset): string | undefined => {

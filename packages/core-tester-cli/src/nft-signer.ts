@@ -1,16 +1,16 @@
 import { Transactions, Utils } from "@arkecosystem/crypto";
-import { NftBuilders, NftTransactions } from "@uns/core-nft-crypto";
+import { Builders, Transactions as NftTransactions } from "@uns/core-nft-crypto";
 import { Signer } from "./signer";
 
 export class NftSigner extends Signer {
     public makeNftUpdate(opts: Record<string, any>): any {
         Transactions.TransactionRegistry.registerTransactionType(NftTransactions.NftUpdateTransaction);
-        return this.makeAbstractNftUpdate(opts, new NftBuilders.NftUpdateBuilder(opts.nftName, opts.id));
+        return this.makeAbstractNftUpdate(opts, new Builders.NftUpdateBuilder(opts.nftName, opts.id));
     }
 
     public makeNftMint(opts: Record<string, any>): any {
         Transactions.TransactionRegistry.registerTransactionType(NftTransactions.NftMintTransaction);
-        return this.makeAbstractNftUpdate(opts, new NftBuilders.NftMintBuilder(opts.nftName, opts.id));
+        return this.makeAbstractNftUpdate(opts, new Builders.NftMintBuilder(opts.nftName, opts.id));
     }
 
     private makeAbstractNftUpdate(opts: Record<string, any>, builder): any {

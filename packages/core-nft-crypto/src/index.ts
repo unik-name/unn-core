@@ -1,7 +1,7 @@
-import * as NftBuilders from "./builders";
-import * as NftEnums from "./enums";
-import * as NftInterfaces from "./interfaces";
-import * as NftTransactions from "./transactions";
+import * as Builders from "./builders";
+import * as Enums from "./enums";
+import * as Interfaces from "./interfaces";
+import * as Transactions from "./transactions";
 export * from "./utils";
 
-export { NftTransactions, NftBuilders, NftEnums, NftInterfaces };
+export { Transactions, Builders, Enums, Interfaces };

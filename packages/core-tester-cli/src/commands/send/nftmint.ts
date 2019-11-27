@@ -1,15 +1,15 @@
 import { flags } from "@oclif/command";
-import { getNftUpdateFlags, NFTUpdateCommand } from "./nftupdate";
+import { NftSendCommand } from "../../shared/nft-send";
+import { NFTUpdateCommand } from "./nftupdate";
 
 export class NFTMintCommand extends NFTUpdateCommand {
     public static description: string = "mint a non-fungible token and set properties";
 
-    // TODO why is it required ? Crashes at runtime: unexpected arguments
     public static flags = {
-        ...getNftUpdateFlags(false),
-        nftName: flags.string({
-            description: "NFT name",
-            required: true,
+        ...NftSendCommand.nftFlags,
+        props: flags.string({
+            description: "NFT properties to update key/value",
+            required: false,
         }),
     };
 

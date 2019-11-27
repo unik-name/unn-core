@@ -1,50 +1,31 @@
 import { Identities, Interfaces } from "@arkecosystem/crypto";
 import { flags } from "@oclif/command";
 import { getCurrentNftAsset } from "@uns/core-nft-crypto";
-import { satoshiFlag } from "../../flags";
 import { logger } from "../../logger";
 import { NftSendCommand } from "../../shared/nft-send";
-import { SendCommand } from "../../shared/send";
-
-export const getNftUpdateFlags = (propsRequired: boolean = true) => {
-    return {
-        ...SendCommand.flagsSend,
-        id: flags.string({
-            description: "token identifier",
-            required: true,
-        }),
-        owner: flags.string({
-            description: "NFT owner passphrase",
-            required: true,
-        }),
-        // --props has to be a json string
-        props: flags.string({
-            description: "NFT properties to update key/value",
-            required: propsRequired,
-        }),
-        nftFee: satoshiFlag({
-            description: "nft fee",
-            default: 1,
-        }),
-    };
-};
 
 export class NFTUpdateCommand extends NftSendCommand {
-    public static description: string = "update a non-fungible token properties from A to B";
+    public static description: string = "update non-fungible properties";
 
-    public static flags = getNftUpdateFlags();
+    public static flags = {
+        ...NftSendCommand.nftFlags,
+        props: flags.string({
+            description: "NFT properties to update key/value",
+            required: true,
+        }),
+    };
 
     protected getCommand(): any {
         return NFTUpdateCommand;
     }
 
     protected async createWalletsWithBalance(flags: Record<string, any>): Promise<any[]> {
-        const ownerAddress = Identities.Address.fromPassphrase(flags.owner);
+        const ownerAddress = Identities.Address.fromPassphrase(flags.passphrase);
 
         const wallets = [];
         wallets[ownerAddress] = {
             address: ownerAddress,
-            passphrase: flags.owner,
+            passphrase: flags.passphrase,
         };
         return wallets;
     }

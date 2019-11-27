@@ -1,6 +1,7 @@
 import { State } from "@arkecosystem/core-interfaces";
 import { Handlers } from "@arkecosystem/core-transactions";
 import { Interfaces as CryptoInterfaces } from "@arkecosystem/crypto";
+import { NftPropertyTooLongError } from "../../errors";
 
 export abstract class NftTransactionHandler extends Handlers.TransactionHandler {
     public async isActivated(): Promise<boolean> {
@@ -26,4 +27,15 @@ export abstract class NftTransactionHandler extends Handlers.TransactionHandler 
         walletManager: State.IWalletManager,
         // tslint:disable-next-line:no-empty
     ): Promise<void> {}
+
+    protected checkAssetPropertiesSize(properties) {
+        for (const propertyKey in properties) {
+            if (properties.hasOwnProperty(propertyKey)) {
+                const value = properties[propertyKey];
+                if (value && Buffer.from(value, "utf8").length > 255) {
+                    throw new NftPropertyTooLongError(propertyKey);
+                }
+            }
+        }
+    }
 }

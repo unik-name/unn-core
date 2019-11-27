@@ -12,3 +12,11 @@ export class NftOwnedError extends Errors.TransactionError {
         super(`Failed to apply transaction, because token '${token}' is already owned`);
     }
 }
+
+export class NftPropertyTooLongError extends Errors.TransactionError {
+    constructor(propertyKey?: string) {
+        super(
+            `Failed to apply transaction, because property '${propertyKey}' exceed the maximum allowed size of 255 bytes`,
+        );
+    }
+}

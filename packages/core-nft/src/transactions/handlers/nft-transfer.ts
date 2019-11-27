@@ -21,7 +21,7 @@ export class NftTransferTransactionHandler extends Handlers.TransactionHandler {
     }
 
     public walletAttributes(): ReadonlyArray<string> {
-        return ["tokens"];
+        return [];
     }
 
     public async bootstrap(connection: Database.IConnection, walletManager: State.IWalletManager): Promise<void> {

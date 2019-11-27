@@ -1,12 +1,12 @@
 import { Transactions, Utils } from "@arkecosystem/crypto";
 import ByteBuffer from "bytebuffer";
 import Long from "long";
-import { unsTransactionGroup, UnsTransactionStaticFees, UnsTransactionType } from "../../enums";
+import { UnsTransactionGroup, UnsTransactionStaticFees, UnsTransactionType } from "../../enums";
 import { IDiscloseDemand, IDiscloseDemandCertification } from "../../interfaces";
 import { unsDiscloseDemand } from "./schema";
 
 export class DiscloseExplicitTransaction extends Transactions.Transaction {
-    public static typeGroup: number = unsTransactionGroup;
+    public static typeGroup: number = UnsTransactionGroup;
     public static type: number = UnsTransactionType.UnsDiscloseExplicit;
     public static key: string = "UnsDiscloseExplicit";
 

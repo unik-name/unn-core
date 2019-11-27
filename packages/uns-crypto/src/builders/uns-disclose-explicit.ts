@@ -1,15 +1,17 @@
 import { Interfaces, Transactions, Utils } from "@arkecosystem/crypto";
+import { UnsTransactionGroup, UnsTransactionStaticFees, UnsTransactionType } from "../enums";
 import { IDiscloseDemand, IDiscloseDemandCertification } from "../interfaces";
 
 export class UNSDiscloseExplicitBuilder extends Transactions.TransactionBuilder<UNSDiscloseExplicitBuilder> {
     constructor() {
         super();
 
+        this.data.version = 2;
         this.data.amount = Utils.BigNumber.ZERO;
         this.data.senderPublicKey = undefined;
-
-        // this.data.type = this.type();
-        // this.data.fee = Utils.BigNumber.make(getNftTransactionFees(this.data.type));
+        this.data.type = UnsTransactionType.UnsDiscloseExplicit;
+        this.data.typeGroup = UnsTransactionGroup;
+        this.data.fee = Utils.BigNumber.make(UnsTransactionStaticFees.UnsDiscloseExplicit);
     }
 
     public getStruct(): Interfaces.ITransactionData {
@@ -32,9 +34,5 @@ export class UNSDiscloseExplicitBuilder extends Transactions.TransactionBuilder<
 
     protected instance(): UNSDiscloseExplicitBuilder {
         return this;
-    }
-
-    protected type() {
-        return; // UnsTransactionType.UnsDiscloseExplicit;
     }
 }

@@ -8,7 +8,7 @@ import { Managers, Transactions } from "@arkecosystem/crypto";
 
 let builder: NftBuilders.NftTransferBuilder;
 
-describe("Business update builder", () => {
+describe("NftTransfer builder", () => {
     Managers.configManager.setFromPreset("testnet");
     Transactions.TransactionRegistry.registerTransactionType(NftTransactions.NftTransferTransaction);
 

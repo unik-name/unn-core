@@ -38,7 +38,9 @@ export class NftMintTransactionHandler extends NftTransactionHandler {
         wallet: State.IWallet,
         walletManager: State.IWalletManager,
     ): Promise<void> {
-        const { tokenId } = getCurrentNftAsset(transaction.data.asset);
+        const { tokenId, properties } = getCurrentNftAsset(transaction.data.asset);
+
+        this.checkAssetPropertiesSize(properties);
 
         // check if token is already owned
         if (

@@ -1,4 +1,5 @@
 import { flags } from "@oclif/command";
+import { BaseCommand } from "../commands/command";
 import { satoshiFlag } from "../flags";
 import { NftSigner } from "../nft-signer";
 import { SendCommand } from "./send";
@@ -6,6 +7,8 @@ import { SendCommand } from "./send";
 export abstract class NftSendCommand extends SendCommand {
     public static nftFlags = {
         ...SendCommand.flagsSend,
+        ...BaseCommand.flagsConfig,
+        ...BaseCommand.flagsDebug,
         id: flags.string({
             description: "token identifier",
             required: true,

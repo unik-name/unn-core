@@ -1,6 +1,5 @@
 import { Crypto, Identities } from "@arkecosystem/crypto";
 import ByteBuffer from "bytebuffer";
-import Long from "long";
 import { IDiscloseDemandCertificationPayload, IDiscloseDemandPayload } from "../";
 
 class UnsCrypto {
@@ -38,12 +37,12 @@ class UnsCrypto {
             buf.writeUint8(payload.type);
             buf.append(payload.iss, "hex");
             buf.append(payload.sub, "hex");
-            buf.writeUint64(Long.fromValue(payload.iat));
+            buf.writeUint64(payload.iat);
         } else {
             buf = new ByteBuffer(32 /*iss*/ + 32 /*sub*/ + 8 /*iat*/, true);
             buf.append(payload.iss, "hex");
             buf.append(payload.sub, "hex");
-            buf.writeUint64(Long.fromValue(payload.iat));
+            buf.writeUint64(payload.iat);
         }
 
         return buf.flip().toBuffer();

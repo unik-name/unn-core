@@ -1,6 +1,5 @@
 import { Transactions, Utils } from "@arkecosystem/crypto";
 import ByteBuffer from "bytebuffer";
-import Long from "long";
 import { UnsTransactionGroup, UnsTransactionStaticFees, UnsTransactionType } from "../../enums";
 import { IDiscloseDemand, IDiscloseDemandCertification } from "../../interfaces";
 import { unsDiscloseDemand } from "./schema";
@@ -56,12 +55,12 @@ export class DiscloseExplicitTransaction extends Transactions.Transaction {
         buffer.writeUint8(discloseDemand.payload.type);
         buffer.append(discloseDemand.payload.iss, "hex");
         buffer.append(discloseDemand.payload.sub, "hex");
-        buffer.writeUint64(Long.fromValue(discloseDemand.payload.iat));
+        buffer.writeUint64(discloseDemand.payload.iat);
         buffer.append(discloseDemand.signature, "hex");
 
         buffer.append(discloseDemandCert.payload.sub, "hex");
         buffer.append(discloseDemandCert.payload.iss, "hex");
-        buffer.writeUint64(Long.fromValue(discloseDemandCert.payload.iat));
+        buffer.writeUint64(discloseDemandCert.payload.iat);
         buffer.append(discloseDemandCert.signature, "hex");
 
         return buffer;

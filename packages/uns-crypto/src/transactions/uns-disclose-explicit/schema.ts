@@ -1,4 +1,4 @@
-import { DIDTypes } from "../../models";
+import { DIDHelpers } from "../../models";
 
 export const unsDiscloseDemandCertificationPayload = {
     type: "object",
@@ -23,7 +23,7 @@ export const unsDiscloseDemandPayload = {
             items: { $ref: "alphanumeric" },
         },
         sub: { $ref: "tokenId" },
-        type: { type: "integer", enum: DIDTypes /*FIXME this statement has no effect*/ },
+        type: { type: "integer", enum: DIDHelpers.codes() /*FIXME this statement has no effect*/ },
         iss: { $ref: "tokenId" },
         iat: { type: "integer" },
     },

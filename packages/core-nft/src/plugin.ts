@@ -9,7 +9,8 @@ export const plugin: Container.IPluginDescriptor = {
     defaults,
     alias: "core-nft",
     async register(container: Container.IContainer, options) {
-        container.resolvePlugin<Logger.ILogger>("logger").info("Configuring NFT plugin");
+        container.resolvePlugin<Logger.ILogger>("logger").info("💎 - Starting NFT plugin");
+
         // Register transactions
         Handlers.Registry.registerTransactionHandler(NftMintTransactionHandler);
         Handlers.Registry.registerTransactionHandler(NftUpdateTransactionHandler);

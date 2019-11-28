@@ -9,6 +9,8 @@ module.exports = {
     },
     "@arkecosystem/core-state": {},
     "@arkecosystem/core-magistrate-transactions": {},
+    "@uns/core-nft":{},
+    "@uns/uns-transactions": {},
     "@arkecosystem/core-database-postgres": {
         connection: {
             host: process.env.CORE_DB_HOST || "localhost",
@@ -19,7 +21,6 @@ module.exports = {
         },
         estimateTotalCount: false // TODO: uns : otherwise total count of nfts was incorrect
     },
-    "@uns/core-nft":{},
     "@arkecosystem/core-transaction-pool": {
         enabled: true,
         maxTransactionsPerSender: process.env.CORE_TRANSACTION_POOL_MAX_PER_SENDER || 300,
@@ -50,6 +51,7 @@ module.exports = {
         port: process.env.CORE_API_PORT || 4003,
     },
     "@arkecosystem/core-wallet-api": {},
+    "@uns/chainmeta-plugin": {},
     "@arkecosystem/core-webhooks": {
         enabled: process.env.CORE_WEBHOOKS_ENABLED,
         server: {
@@ -67,6 +69,4 @@ module.exports = {
         whitelist: ["127.0.0.1", "::ffff:127.0.0.1"],
     },
     "@arkecosystem/core-snapshots": {},
-    "@uns/chainmeta-plugin": {},
-    "@uns/uns-transactions": {}
 };

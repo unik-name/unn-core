@@ -30,13 +30,13 @@
         "ignoreInvalidSecondSignatureField": false,
         "vendorFieldLength": 255,
         "ignoreExpiredTransactions": false,
-        "multiPaymentLimit": 128,
-        "aip11": true
+        "multiPaymentLimit": 128
     },
     {
         "height": 2,
         "block": {
             "idFullSha256": true
-        }
+        },
+        "aip11": true
     }
 ]

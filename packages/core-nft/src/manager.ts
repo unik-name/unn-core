@@ -5,16 +5,22 @@ import { Interfaces } from "@uns/core-nft-crypto";
 import { ConstraintsManager } from "./constraints/manager";
 import { IConstraintsConfig } from "./interfaces";
 
+export const nftRepository = (): NFT.INftsRepository => {
+    return (app.resolvePlugin<ConnectionManager>("database-manager").connection() as any).db.nfts;
+};
+
 export class NftsManager {
     public constraints: ConstraintsManager;
 
-    private repository: NFT.INftsRepository;
     private logger: Logger.ILogger;
 
     constructor(options) {
         this.logger = app.resolvePlugin<Logger.ILogger>("logger");
-        this.repository = (app.resolvePlugin<ConnectionManager>("database-manager").connection() as any).db.nfts;
-        this.constraints = new ConstraintsManager(options.constraints as IConstraintsConfig, this.repository); // TODO: uns : validate config
+        this.constraints = new ConstraintsManager(options.constraints as IConstraintsConfig); // TODO: uns : validate config
+    }
+
+    private get repository(): NFT.INftsRepository {
+        return nftRepository();
     }
 
     public async exists(tokenId: string) {

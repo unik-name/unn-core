@@ -1,4 +1,5 @@
 const tokenId = {
+    $id: "tokenId",
     allOf: [{ $ref: "hex" }, { minLength: 64, maxLength: 64 }],
 };
 

@@ -1,7 +1,6 @@
 import { IConstraint, IConstraintApplicationContext } from "../../../interfaces";
-import { Constraint } from "../../constraint";
 
-export class TypeConstraint extends Constraint {
+export class TypeConstraint implements IConstraint {
     private allowedTypes: IConstraint[] = [];
 
     public async apply(context: IConstraintApplicationContext, parameters?: any): Promise<void> {

@@ -1,9 +1,9 @@
 import { app } from "@arkecosystem/core-container";
-import { ConnectionManager, NftsBusinessRepository } from "@arkecosystem/core-database";
-import { Database, State, TransactionPool } from "@arkecosystem/core-interfaces";
+import { ConnectionManager } from "@arkecosystem/core-database";
+import { Database, NFT, State, TransactionPool } from "@arkecosystem/core-interfaces";
 import { Handlers, TransactionReader } from "@arkecosystem/core-transactions";
 import { Interfaces, Transactions } from "@arkecosystem/crypto";
-import { NftOwnerError } from "@uns/core-nft";
+import { NftOwnerError, nftRepository } from "@uns/core-nft";
 import { DiscloseExplicitTransaction, IDiscloseDemand, IDiscloseDemandCertification, unsCrypto } from "@uns/crypto";
 import {
     DiscloseDemandAlreadyExistsError,
@@ -14,7 +14,9 @@ import {
 } from "../errors";
 
 export class DiscloseExplicitTransactionHandler extends Handlers.TransactionHandler {
-    private nftsRepository: NftsBusinessRepository = new NftsBusinessRepository(this.getConnection());
+    private get nftsRepository(): NFT.INftsRepository {
+        return nftRepository();
+    }
 
     public getConstructor(): Transactions.TransactionConstructor {
         return DiscloseExplicitTransaction;
@@ -84,7 +86,7 @@ export class DiscloseExplicitTransactionHandler extends Handlers.TransactionHand
 
         // check if transaction already exists
         if (
-            (await this.nftsRepository.findProperty(discloseDemand.payload.sub, "explicitValues")) &&
+            (await this.nftsRepository.findPropertyByKey(discloseDemand.payload.sub, "explicitValues")) &&
             (await this.isTransactionsWithSameSubExists(discloseDemandCertif.payload.sub))
         ) {
             throw new DiscloseDemandAlreadyExistsError(transaction.id);
@@ -146,24 +148,21 @@ export class DiscloseExplicitTransactionHandler extends Handlers.TransactionHand
     public async applyToRecipient(
         transaction: Interfaces.ITransaction,
         walletManager: State.IWalletManager,
-    ): Promise<void> {
-        return;
-    }
+        // tslint:disable-next-line: no-empty
+    ): Promise<void> {}
 
     public async revertForRecipient(
         transaction: Interfaces.ITransaction,
         walletManager: State.IWalletManager,
-    ): Promise<void> {
-        return;
-    }
-
-    private getConnection(): Database.IConnection {
-        return app.resolvePlugin<ConnectionManager>("database-manager").connection();
-    }
+        // tslint:disable-next-line: no-empty
+    ): Promise<void> {}
 
     // TODO : uns: Optimization (with the NFTMint transaction date)
     private async isTransactionsWithSameSubExists(discloseDemandId: string): Promise<boolean> {
-        const reader: TransactionReader = await TransactionReader.create(this.getConnection(), this.getConstructor());
+        const reader: TransactionReader = await TransactionReader.create(
+            app.resolvePlugin<ConnectionManager>("database-manager").connection(),
+            this.getConstructor(),
+        );
 
         while (reader.hasNext()) {
             const transactions = await reader.read();

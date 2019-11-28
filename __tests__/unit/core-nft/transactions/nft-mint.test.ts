@@ -3,9 +3,9 @@ import "jest-extended";
 import { Managers, Transactions, Validation as Ajv } from "@arkecosystem/crypto";
 import { checkCommonFields, propertiesAssets } from "../helper";
 
-import { NftBuilders, NftTransactions } from "../../../../packages/core-nft-crypto/src";
+import { Builders, Transactions as NftTransactions } from "../../../../packages/core-nft-crypto/src";
 
-let builder: NftBuilders.NftMintBuilder;
+let builder: Builders.NftMintBuilder;
 const nftName = "myNft";
 const TOKEN_ID = "ee16f4b75f38f6e3d16635f72a8445e0ff8fbacfdfa8f05df077e73de79d6e4f";
 
@@ -14,7 +14,7 @@ describe("Business registration transaction", () => {
     Transactions.TransactionRegistry.registerTransactionType(NftTransactions.NftMintTransaction);
 
     beforeEach(() => {
-        builder = new NftBuilders.NftMintBuilder(nftName, TOKEN_ID);
+        builder = new Builders.NftMintBuilder(nftName, TOKEN_ID);
     });
 
     describe("Ser/deser", () => {

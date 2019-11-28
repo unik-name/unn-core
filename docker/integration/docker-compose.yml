@@ -33,36 +33,36 @@ services:
      - postgres
     depends_on:
      - postgres
-  # forger2:
-  #   extends:
-  #     file: forger-commons.yml
-  #     service: forger
-  #   container_name: uns_dalinet_forger2
-  #   environment:
-  #    FORGER_SECRET: "${FORGER2_SECRET}"
-  #    CORE_DB_DATABASE: uns_dalinet_forger2
-  #    BOOTNODE: forger1
-  #   links:
-  #    - forger1
-  #    - postgres
-  #   depends_on:
-  #    - forger1
-  #    - postgres
-  # forger3:
-  #   extends:
-  #     file: forger-commons.yml
-  #     service: forger
-  #   container_name: uns_dalinet_forger3
-  #   environment:
-  #    FORGER_SECRET: "${FORGER3_SECRET}"
-  #    CORE_DB_DATABASE: uns_dalinet_forger3
-  #    BOOTNODE: forger1
-  #   links:
-  #    - forger1
-  #    - postgres
-  #   depends_on:
-  #    - forger1
-  #    - postgres
+  forger2:
+    extends:
+      file: forger-commons.yml
+      service: forger
+    container_name: uns_dalinet_forger2
+    environment:
+     FORGER_SECRET: "${FORGER2_SECRET}"
+     CORE_DB_DATABASE: uns_dalinet_forger2
+     BOOTNODE: forger1
+    links:
+     - forger1
+     - postgres
+    depends_on:
+     - forger1
+     - postgres
+  forger3:
+    extends:
+      file: forger-commons.yml
+      service: forger
+    container_name: uns_dalinet_forger3
+    environment:
+     FORGER_SECRET: "${FORGER3_SECRET}"
+     CORE_DB_DATABASE: uns_dalinet_forger3
+     BOOTNODE: forger1
+    links:
+     - forger1
+     - postgres
+    depends_on:
+     - forger1
+     - postgres
 
 volumes:
   postgres:

@@ -3,7 +3,7 @@ import "jest-extended";
 import { Handlers } from "@arkecosystem/core-transactions";
 import { Managers, Utils } from "@arkecosystem/crypto";
 
-import { NftBuilders } from "@uns/core-nft-crypto";
+import { Builders } from "@uns/core-nft-crypto";
 import { NftTransactionGroup, NftTransactionType } from "@uns/core-nft-crypto/src/enums";
 import { NftMintTransactionHandler } from "../../../../packages/core-nft/src/transactions/";
 
@@ -27,7 +27,7 @@ describe("Registry test", () => {
                 handler.getConstructor().type === NftTransactionType.NftMint,
         )) {
             const addonBytes = 666;
-            const transaction = new NftBuilders.NftMintBuilder("myNft", TOKEN_ID)
+            const transaction = new Builders.NftMintBuilder("myNft", TOKEN_ID)
                 .nonce("1")
                 .sign("clay harbor enemy utility margin pretty hub comic piece aerobic umbrella acquire")
                 .build();

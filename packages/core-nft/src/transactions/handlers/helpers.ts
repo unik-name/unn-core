@@ -28,7 +28,7 @@ export const removeNftFromWallet = async (
 
     const walletTokens: INftWalletAttributes = wallet.getAttribute<INftWalletAttributes>("tokens");
     walletTokens.tokens = walletTokens.tokens.filter(t => t !== tokenId);
-    walletTokens.tokens.length > 1 ? wallet.setAttribute("tokens", walletTokens) : wallet.forgetAttribute("tokens");
+    walletTokens.tokens.length > 0 ? wallet.setAttribute("tokens", walletTokens) : wallet.forgetAttribute("tokens");
 
     walletManager.reindex(wallet);
 };

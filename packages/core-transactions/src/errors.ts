@@ -1,6 +1,5 @@
 import { State } from "@arkecosystem/core-interfaces";
-import { Utils } from "@arkecosystem/crypto";
-import { InternalTransactionType } from "@arkecosystem/crypto/dist/transactions";
+import { Transactions, Utils } from "@arkecosystem/crypto";
 
 // tslint:disable:max-classes-per-file
 
@@ -35,7 +34,7 @@ export class InvalidTransactionTypeError extends TransactionError {
 }
 
 export class DeactivatedTransactionHandlerError extends TransactionError {
-    constructor(type: InternalTransactionType) {
+    constructor(type: Transactions.InternalTransactionType) {
         super(`Transaction type ${type.toString()} is deactivated.`);
     }
 }

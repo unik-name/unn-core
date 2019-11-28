@@ -64,7 +64,7 @@
         "@arkecosystem/core-utils": "^2.6.0-next.4",
         "@arkecosystem/core-wallet-api": "^2.6.0-next.4",
         "@arkecosystem/core-webhooks": "^2.6.0-next.4",
-        "@arkecosystem/crypto": "^2.6.0-next.4",
+        "@uns/ark-crypto": "^4.0.0-dev",
         "@oclif/command": "^1.5.16",
         "@oclif/config": "^1.13.2",
         "@oclif/plugin-autocomplete": "^0.1.1",

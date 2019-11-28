@@ -21,7 +21,7 @@
         "prepublishOnly": "yarn build"
     },
     "dependencies": {
-        "@arkecosystem/crypto": "^2.6.0-next.4",
+        "@uns/ark-crypto": "^4.0.0-dev",
         "bytebuffer": "^5.0.1"
     },
     "publishConfig": {

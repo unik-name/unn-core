@@ -20,7 +20,7 @@
     "dependencies": {
         "@arkecosystem/core-container": "^2.6.0-next.4",
         "@arkecosystem/core-utils": "^2.6.0-next.4",
-        "@arkecosystem/crypto": "^2.6.0-next.4",
+        "@uns/ark-crypto": "^4.0.0-dev",
         "@hapi/boom": "^8.0.0",
         "@hapi/good": "^8.2.0",
         "@hapi/good-console": "^8.1.0",

@@ -30,8 +30,8 @@
     "dependencies": {
         "@arkecosystem/core-forger": "^2.6.0-next.4",
         "@arkecosystem/core-utils": "^2.6.0-next.4",
-        "@arkecosystem/crypto": "^2.6.0-next.4",
-        "@uns/core-nft-crypto": "^1.0.0-dev",
+        "@uns/ark-crypto": "^4.0.0-dev",
+        "@uns/core-nft-crypto": "^4.0.0-dev",
         "@oclif/command": "^1.5.16",
         "@oclif/config": "^1.13.2",
         "@oclif/plugin-help": "^2.2.0",

@@ -14,7 +14,7 @@ export const applyNftMintDb = async (senderPublicKey: string, assets: Interfaces
     await nftManager.insert(tokenId, senderAddr);
 
     if (properties) {
-        return nftManager.insertProperties(properties, tokenId);
+        await nftManager.insertProperties(properties, tokenId);
     }
 };
 

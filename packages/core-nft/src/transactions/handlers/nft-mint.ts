@@ -44,8 +44,6 @@ export class NftMintTransactionHandler extends Handlers.TransactionHandler {
     ): Promise<void> {
         const { tokenId, properties } = getCurrentNftAsset(transaction.data.asset);
 
-        checkAssetPropertiesSize(properties);
-
         // check if token is already owned
         if (
             wallet.hasAttribute("tokens") &&
@@ -59,6 +57,8 @@ export class NftMintTransactionHandler extends Handlers.TransactionHandler {
             throw new NftOwnedError(tokenId);
         }
 
+        checkAssetPropertiesSize(properties);
+
         const nftManager = app.resolvePlugin<NftsManager>("core-nft");
         nftManager.constraints.applyGenesisPropertyConstraint(transaction.data);
         await nftManager.constraints.applyConstraints(transaction.data);
@@ -70,10 +70,7 @@ export class NftMintTransactionHandler extends Handlers.TransactionHandler {
         pool: TransactionPool.IConnection,
         processor: TransactionPool.IProcessor,
     ): Promise<boolean> {
-        if (await this.typeFromSenderAlreadyInPool(data, pool, processor)) {
-            return false;
-        }
-        return true;
+        return !(await this.typeFromSenderAlreadyInPool(data, pool, processor));
     }
 
     public async applyToSender(

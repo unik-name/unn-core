@@ -21,6 +21,13 @@ export class RollbackCommand extends BaseCommand {
     public async run(): Promise<void> {
         const { flags, paths } = await this.parseWithNetwork(RollbackCommand);
 
+        // TODO: uns : remove when we'll be able to revert update transactions
+        // disable only for UNS networks
+        if (!["devnet", "mainnet", "testnet", "unitnet", undefined].includes(flags.network)) {
+            if (flags.height !== 1) {
+                this.error("You can't rollback to another height than 1");
+            }
+        }
         this.abortRunningProcess(`${flags.token}-core`);
         this.abortRunningProcess(`${flags.token}-forger`);
         this.abortRunningProcess(`${flags.token}-relay`);

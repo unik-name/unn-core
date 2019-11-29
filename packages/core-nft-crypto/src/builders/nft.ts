@@ -4,7 +4,6 @@ import { NftTransactionGroup, NftTransactionType } from "../enums";
 export abstract class NftBuilder<T extends NftBuilder<T>> extends Transactions.TransactionBuilder<NftBuilder<T>> {
     constructor(protected nftName: string, tokenId: string) {
         super();
-        this.data.version = 2;
 
         this.data.amount = Utils.BigNumber.ZERO;
         this.data.senderPublicKey = undefined;

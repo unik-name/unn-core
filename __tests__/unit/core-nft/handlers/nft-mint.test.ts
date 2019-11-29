@@ -45,7 +45,7 @@ describe("should nft transaction handlers", () => {
         });
 
         // TODO: uns : unskip this test
-        it.skip("should pass all handler methods", async () => {
+        it("should pass all handler methods", async () => {
             await expect(
                 nftMinthandler.throwIfCannotBeApplied(nftMintTransaction.build(), senderWallet, walletManager),
             ).toResolve();
@@ -59,7 +59,7 @@ describe("should nft transaction handlers", () => {
 
         for (const propertiesAsset of propertiesAssets) {
             // TODO: uns : unskip this test + identify each test case in for loop
-            it.skip("should pass all handler methods, with properties", async () => {
+            it("should pass all handler methods, with properties", async () => {
                 const transaction = nftMintTransaction.properties(propertiesAsset).build();
                 await expect(
                     nftMinthandler.throwIfCannotBeApplied(transaction, senderWallet, walletManager),

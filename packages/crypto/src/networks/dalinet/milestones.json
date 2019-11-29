@@ -30,7 +30,10 @@
         "ignoreInvalidSecondSignatureField": false,
         "vendorFieldLength": 255,
         "ignoreExpiredTransactions": false,
-        "multiPaymentLimit": 128
+        "multiPaymentLimit": 128,
+        "p2p": {
+            "minimumVersions": ["^4.0.0 || ^4.0.0-beta"]
+        }
     },
     {
         "height": 2,

@@ -58,8 +58,8 @@ export const applyNftTransferDb = async (
 };
 
 export const checkAssetPropertiesSize = (properties: INftProperties) => {
-    for (const [key, value] of Object.entries(properties)) {
-        if (Buffer.from(value, "utf8").length > 255) {
+    for (const [key, value] of Object.entries(properties || {})) {
+        if (value && Buffer.from(value, "utf8").length > 255) {
             throw new NftPropertyTooLongError(key);
         }
     }

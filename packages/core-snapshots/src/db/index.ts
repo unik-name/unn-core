@@ -65,15 +65,25 @@ export class Database {
 
         try {
             if (lastRemainingBlock) {
-                await Promise.all([
-                    this.db.none(queries.transactions.deleteFromTimestamp, {
-                        timestamp: lastRemainingBlock.timestamp,
-                    }),
-                    this.db.none(queries.blocks.deleteFromHeight, {
-                        height: lastRemainingBlock.height,
-                    }),
-                    this.db.none(queries.rounds.deleteFromRound, { round }),
-                ]);
+                // TODO: uns : remove when we'll be able to rollback all tables
+                // disable only for UNS networks
+                const rollbackUNS = [];
+                const networkName = app.getConfig().get("network.name");
+                if (!["devnet", "mainnet", "testnet", "unitnet", undefined].includes(networkName)) {
+                    rollbackUNS.push(this.db.none(queries.truncate("nfts")));
+                    rollbackUNS.push(this.db.none(queries.truncate("nftproperties")));
+                }
+                await Promise.all(
+                    [
+                        this.db.none(queries.transactions.deleteFromTimestamp, {
+                            timestamp: lastRemainingBlock.timestamp,
+                        }),
+                        this.db.none(queries.blocks.deleteFromHeight, {
+                            height: lastRemainingBlock.height,
+                        }),
+                        this.db.none(queries.rounds.deleteFromRound, { round }),
+                    ].concat(rollbackUNS),
+                );
             }
         } catch (error) {
             logger.error(error);

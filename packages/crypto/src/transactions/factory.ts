@@ -79,15 +79,11 @@ export class TransactionFactory {
         try {
             const transaction = Deserializer.deserialize(serialized);
             transaction.data.id = Utils.getId(transaction.data);
-
             const { value, error } = Verifier.verifySchema(transaction.data, strict);
-
             if (error && !isException(value)) {
                 throw new TransactionSchemaError(error);
             }
-
             transaction.isVerified = transaction.verify();
-
             return transaction;
         } catch (error) {
             if (
@@ -97,7 +93,6 @@ export class TransactionFactory {
             ) {
                 throw error;
             }
-
             throw new InvalidTransactionBytesError(error.message);
         }
     }

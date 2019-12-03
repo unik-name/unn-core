@@ -16,7 +16,10 @@
         "build:watch": "yarn clean && yarn compile -w",
         "clean": "del dist",
         "compile": "../../node_modules/typescript/bin/tsc",
-        "prepublishOnly": "yarn build"
+        "restore_backup": "mv package.json.back package.json",
+        "uns_rebrand": "../../scripts/uns_publish_rebrand.sh $PWD",
+        "prepublishOnly": "yarn build && yarn uns_rebrand",
+        "postpublish": "yarn restore_backup"
     },
     "dependencies": {
         "@arkecosystem/crypto": "^2.6.0-next.4",

@@ -17,6 +17,7 @@ export class NftUpdateTransaction extends Transactions.Transaction {
             required: ["asset"],
             properties: {
                 type: { transactionType: NftTransactionType.NftUpdate },
+                typeGroup: { const: NftTransactionGroup },
                 ...schemas.extend(
                     NftSchemas.nft,
                     schemas.extend(NftSchemas.nftProperties, NftSchemas.nftUpdateProperties),

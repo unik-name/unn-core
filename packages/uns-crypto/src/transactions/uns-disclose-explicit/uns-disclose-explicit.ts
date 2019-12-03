@@ -15,6 +15,7 @@ export class DiscloseExplicitTransaction extends Transactions.Transaction {
             required: ["asset"],
             properties: {
                 type: { transactionType: UnsTransactionType.UnsDiscloseExplicit },
+                typeGroup: { const: UnsTransactionGroup },
                 amount: { bignumber: { minimum: 0, maximum: 0 } },
                 ...unsDiscloseDemand,
             },

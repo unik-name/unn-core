@@ -1,6 +1,6 @@
 {
     "name": "@arkecosystem/core",
-    "version": "2.6.0-next.4",
+    "version": "4.0.0-dev.201912031635",
     "description": "Core of the ARK Blockchain",
     "license": "MIT",
     "contributors": [

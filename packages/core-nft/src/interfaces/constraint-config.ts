@@ -4,8 +4,8 @@ interface IConstraintConfig {
 }
 
 interface INftPropertyConstraintsConfig {
-    genesis: boolean | undefined;
-    constraints: Array<string | IConstraintConfig>;
+    genesis?: boolean;
+    constraints?: Array<string | IConstraintConfig>;
 }
 
 interface INftConstraintsConfig {

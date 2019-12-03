@@ -11,13 +11,7 @@ import {
 } from "../interfaces";
 import { EnumerationConstraint, ImmutableConstraint, NumberConstraint, TypeConstraint } from "./constraint/";
 import { ConstraintError } from "./error";
-
-const genesisPropertiesReducer = (acc, current): string[] => {
-    // current value is a property entry (a key and a value object containing genesis property)
-    const [key, { genesis }] = current;
-    // if genesis property of current nft property is true, add it to accumulator
-    return genesis ? acc.concat(key) : acc;
-};
+import { genesisPropertiesReducer } from "./utils";
 
 export class ConstraintsManager {
     private registeredConstraints: { [_: string]: IConstraint } = {};
@@ -100,13 +94,13 @@ export class ConstraintsManager {
     }
 
     private nftPropertyHasConstraints(config: INftConstraintsConfig, key: string): boolean {
-        return config && config[key] && config[key].constraints;
+        return config?.properties[key]?.constraints?.length > 0;
     }
 
     private getNftPropertyConstraints(config: INftConstraintsConfig, propertyKey: string): IConstraintConfig[] {
         let constraints: IConstraintConfig[] = [];
         if (this.nftPropertyHasConstraints(config, propertyKey)) {
-            const a: INftPropertyConstraintsConfig = config[propertyKey];
+            const a: INftPropertyConstraintsConfig = config.properties[propertyKey];
             constraints = a.constraints.map((constraint: string | IConstraintConfig) => {
                 return typeof constraint === "string" ? { name: constraint } : constraint;
             });

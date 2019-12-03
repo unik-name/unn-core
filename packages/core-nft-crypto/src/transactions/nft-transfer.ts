@@ -18,6 +18,7 @@ export class NftTransferTransaction extends Transactions.Transaction {
             required: ["asset", "recipientId"],
             properties: {
                 type: { transactionType: NftTransactionType.NftTransfer },
+                typeGroup: { const: NftTransactionGroup },
                 recipientId: { $ref: "address" },
                 ...NftSchemas.nft,
             },

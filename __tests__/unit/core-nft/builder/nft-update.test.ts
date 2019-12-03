@@ -8,17 +8,18 @@ import {
     NftTransactionStaticFees,
     NftTransactionType,
 } from "../../../../packages/core-nft-crypto/src/enums";
-import { network, nftId, nftName } from "../__fixtures__";
+import { network, nftId, nftName, properties } from "../__fixtures__";
 
-let builder: Builders.NftMintBuilder;
+let builder: Builders.NftUpdateBuilder;
 
-describe("Nft Mint Transaction", () => {
+describe("Nft Update Transaction", () => {
     Managers.configManager.setFromPreset(network);
     Managers.configManager.setHeight(2);
-    Transactions.TransactionRegistry.registerTransactionType(NftTransactions.NftMintTransaction);
+    Transactions.TransactionRegistry.registerTransactionType(NftTransactions.NftUpdateTransaction);
 
     beforeEach(() => {
-        builder = new Builders.NftMintBuilder(nftName, nftId);
+        builder = new Builders.NftUpdateBuilder(nftName, nftId);
+        builder.properties(properties);
     });
 
     describe("should test verification", () => {
@@ -34,26 +35,17 @@ describe("Nft Mint Transaction", () => {
             expect(actual.build().verified).toBeTrue();
             expect(actual.verify()).toBeTrue();
         });
-
-        it("should verify correctly properties", () => {
-            const actual = builder
-                .properties({ propKey: "propValue" })
-                .nonce("3")
-                .sign("passphrase");
-            expect(actual.build().verified).toBeTrue();
-            expect(actual.verify()).toBeTrue();
-        });
     });
 
     describe("should test properties", () => {
         it("should have its specific properties", () => {
-            expect(builder).toHaveProperty("data.type", NftTransactionType.NftMint);
+            expect(builder).toHaveProperty("data.type", NftTransactionType.NftUpdate);
             expect(builder).toHaveProperty("data.typeGroup", NftTransactionGroup);
             expect(builder).toHaveProperty("data.amount", Utils.BigNumber.ZERO);
             expect(builder).toHaveProperty("data.fee", Utils.BigNumber.make(NftTransactionStaticFees.NftMint));
             expect(builder).toHaveProperty("data.recipientId", undefined);
             expect(builder).toHaveProperty("data.senderPublicKey", undefined);
-            expect(builder).toHaveProperty("data.asset", { nft: { [nftName]: { tokenId: nftId } } });
+            expect(builder).toHaveProperty("data.asset", { nft: { [nftName]: { tokenId: nftId, properties } } });
             expect(builder).toHaveProperty("data.version", 2);
             expect(builder).toHaveProperty("data.nonce");
         });

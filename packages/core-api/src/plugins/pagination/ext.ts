@@ -41,6 +41,7 @@ export class Ext {
         { method: "post", path: "/api/wallets/search" },
 
         // TODO: uns : find better way to add routes to pagination plugin
+        { method: "get", path: "/api/{nft}s" },
         { method: "get", path: "/api/{nft}s/{id}/properties" },
     ];
 

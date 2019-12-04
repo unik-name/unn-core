@@ -81,8 +81,14 @@ export class NftsManager {
 
     public async updateProperties(properties: Interfaces.INftProperties, tokenId: string): Promise<any> {
         return Promise.all(
-            Object.entries<string>(properties).map(([key, value]) => {
-                return this.updateProperty(key, value, tokenId);
+            Object.entries<string>(properties).map(async ([key, value]) => {
+                if (await this.hasProperty(tokenId, key)) {
+                    return value === null
+                        ? this.deleteProperty(key, tokenId)
+                        : this.updateProperty(key, value, tokenId);
+                } else {
+                    return this.insertProperty(key, value, tokenId);
+                }
             }),
         );
     }

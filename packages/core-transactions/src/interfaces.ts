@@ -22,11 +22,14 @@ export interface ITransactionHandler {
         wallet: State.IWallet,
         walletManager: State.IWalletManager,
     ): Promise<void>;
+
+    // TODO: uns: find a better way to check state situation
     apply(
         transaction: Interfaces.ITransaction,
         walletManager: State.IWalletManager,
         applyInDb?: boolean,
     ): Promise<void>;
+    // TODO: uns: find a better way to check state situation
     revert(
         transaction: Interfaces.ITransaction,
         walletManager: State.IWalletManager,

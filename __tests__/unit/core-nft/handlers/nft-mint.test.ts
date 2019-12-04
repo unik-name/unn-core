@@ -8,7 +8,7 @@ import { Managers, Utils, Transactions } from "@arkecosystem/crypto";
 import { NftMintTransactionHandler } from "../../../../packages/core-nft/src/transactions/";
 import { Builders } from "@uns/core-nft-crypto";
 import { INftWalletAttributes } from "@uns/core-nft/src/interfaces";
-import { propertiesAssets } from "../helper";
+import { propertiesAssets } from "../__fixtures__";
 import { NftOwnedError, NftPropertyTooLongError } from "@uns/core-nft/src/errors";
 import { InvalidTransactionBytesError } from "@arkecosystem/crypto/dist/errors";
 

@@ -1,5 +1,11 @@
 import { Keys } from "@arkecosystem/crypto/src/identities";
-import { DIDTypes, IDiscloseDemandCertificationPayload, IDiscloseDemandPayload } from "@uns/crypto";
+import {
+    DIDTypes,
+    IDiscloseDemandCertificationPayload,
+    IDiscloseDemandPayload,
+    UNSDiscloseExplicitBuilder,
+} from "@uns/crypto";
+import { buildDiscloseDemand } from "../helpers";
 
 export const tokenId = "ee16f4b75f38f6e3d16635f72a8445e0ff8fbacfdfa8f05df077e73de79d6e4f";
 export const ownerPassphrase = "clay harbor enemy utility margin pretty hub comic piece aerobic umbrella acquire";
@@ -24,5 +30,13 @@ export const certificationPayload: IDiscloseDemandCertificationPayload = {
     iat: 12345678,
 };
 
+export const discloseDemand = buildDiscloseDemand(discloseDemandPayload, ownerPassphrase, issUnikId, issPassphrase);
+
+export const discloseExplicitTransaction = () =>
+    new UNSDiscloseExplicitBuilder()
+        .discloseDemand(discloseDemand["disclose-demand"], discloseDemand["disclose-demand-certification"])
+        .sign(ownerPassphrase);
+
 export const issKeys = Keys.fromPassphrase(issPassphrase);
 export const demanderKeys = Keys.fromPassphrase(ownerPassphrase);
+export * from "../../core-nft/__fixtures__";

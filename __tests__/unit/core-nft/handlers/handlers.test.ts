@@ -1,40 +1,74 @@
 import "jest-extended";
 
-import { Handlers } from "@arkecosystem/core-transactions";
-import { Managers, Utils } from "@arkecosystem/crypto";
+import { Handlers } from "../../../../packages/core-transactions";
+import { Managers, Utils } from "../../../../packages/crypto";
 
-import { Builders } from "@uns/core-nft-crypto";
-import { NftTransactionGroup, NftTransactionType } from "@uns/core-nft-crypto/src/enums";
-import { NftMintTransactionHandler } from "../../../../packages/core-nft/src/transactions/";
+import { Builders, Enums } from "../../../../packages/core-nft-crypto";
+import {
+    NftMintTransactionHandler,
+    NftTransferTransactionHandler,
+    NftUpdateTransactionHandler,
+} from "../../../../packages/core-nft/src/transactions/";
+import { network, nftId, nftName, recipient } from "../__fixtures__";
 
-const TOKEN_ID = "ee16f4b75f38f6e3d16635f72a8445e0ff8fbacfdfa8f05df077e73de79d6e4f";
+describe("Registry register nft transaction", () => {
+    Managers.configManager.setFromPreset(network);
+    Managers.configManager.setHeight(2);
 
-describe("Registry test", () => {
-    Managers.configManager.setFromPreset("testnet");
-
-    it("should not throw when registering nftMint transactions", () => {
+    beforeEach(() => {
         Handlers.Registry.registerTransactionHandler(NftMintTransactionHandler);
-
-        expect(async () => {
-            await Handlers.Registry.get(NftTransactionType.NftMint, NftTransactionGroup);
-        }).not.toThrowError();
+        Handlers.Registry.registerTransactionHandler(NftUpdateTransactionHandler);
+        Handlers.Registry.registerTransactionHandler(NftTransferTransactionHandler);
     });
 
-    it("should return nftMint dynamic fees", () => {
-        for (const handler of Handlers.Registry.getAll().filter(
-            handler =>
-                handler.getConstructor().typeGroup === NftTransactionGroup &&
-                handler.getConstructor().type === NftTransactionType.NftMint,
-        )) {
-            const addonBytes = 666;
-            const transaction = new Builders.NftMintBuilder("myNft", TOKEN_ID)
-                .nonce("1")
-                .sign("clay harbor enemy utility margin pretty hub comic piece aerobic umbrella acquire")
-                .build();
+    describe("nft-mint", () => {
+        it("should not throw when registering transactions", () => {
+            return expect(
+                Handlers.Registry.get(Enums.NftTransactionType.NftMint, Enums.NftTransactionGroup),
+            ).resolves.toBeDefined();
+        });
 
-            expect(handler.dynamicFee({ transaction, addonBytes, satoshiPerByte: 3, height: 1 })).toEqual(
-                Utils.BigNumber.make(addonBytes + transaction.serialized.length / 2).times(3),
+        it("should return dynamic fees", async () => {
+            const handler = await Handlers.Registry.get(Enums.NftTransactionType.NftMint, Enums.NftTransactionGroup);
+            const transaction = new Builders.NftMintBuilder(nftName, nftId).sign("passphrase").build();
+            expect(handler.dynamicFee({ transaction, satoshiPerByte: 0 } as any)).toEqual(Utils.BigNumber.make(81));
+        });
+    });
+
+    describe("nft-update", () => {
+        it("should not throw when registering transactions", () => {
+            return expect(
+                Handlers.Registry.get(Enums.NftTransactionType.NftUpdate, Enums.NftTransactionGroup),
+            ).resolves.toBeDefined();
+        });
+
+        it("should return dynamic fees", async () => {
+            const handler = await Handlers.Registry.get(Enums.NftTransactionType.NftUpdate, Enums.NftTransactionGroup);
+            const transaction = new Builders.NftUpdateBuilder(nftName, nftId)
+                .properties({ foo: "true" })
+                .sign("passphrase")
+                .build();
+            expect(handler.dynamicFee({ transaction, satoshiPerByte: 0 } as any)).toEqual(Utils.BigNumber.make(86));
+        });
+    });
+
+    describe("nft-transfer", () => {
+        it("should not throw when registering transactions", () => {
+            return expect(
+                Handlers.Registry.get(Enums.NftTransactionType.NftTransfer, Enums.NftTransactionGroup),
+            ).resolves.toBeDefined();
+        });
+
+        it("should return dynamic fees", async () => {
+            const handler = await Handlers.Registry.get(
+                Enums.NftTransactionType.NftTransfer,
+                Enums.NftTransactionGroup,
             );
-        }
+            const transaction = new Builders.NftTransferBuilder(nftName, nftId)
+                .recipientId(recipient)
+                .sign("passphrase")
+                .build();
+            expect(handler.dynamicFee({ transaction, satoshiPerByte: 0 } as any)).toEqual(Utils.BigNumber.make(91));
+        });
     });
 });

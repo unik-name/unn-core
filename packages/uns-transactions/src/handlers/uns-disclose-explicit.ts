@@ -12,6 +12,7 @@ import {
     DiscloseDemandSignatureError,
     DiscloseDemandSubInvalidError,
 } from "../errors";
+import { setExplicitValue } from "./utils/helpers";
 
 export class DiscloseExplicitTransactionHandler extends Handlers.TransactionHandler {
     private get nftsRepository(): NFT.INftsRepository {
@@ -119,30 +120,7 @@ export class DiscloseExplicitTransactionHandler extends Handlers.TransactionHand
         walletManager: State.IWalletManager,
     ): Promise<void> {
         await super.applyToSender(transaction, walletManager);
-
-        const tokenId = transaction.data.asset["disclose-demand"].payload.sub;
-        const explicitValues = transaction.data.asset["disclose-demand"].payload.explicitValue;
-
-        const nftManager = app.resolvePlugin("core-nft");
-
-        const currentValues = await nftManager.getProperty(tokenId, "explicitValues");
-        if (currentValues?.value) {
-            const currentValuesArray = currentValues.value.split(",");
-            const newValues = explicitValues.filter(explicitVal => {
-                return !currentValuesArray.includes(explicitVal);
-            });
-            if (newValues.length) {
-                return nftManager.updateProperty(
-                    "explicitValues",
-                    currentValues.value + "," + newValues.join(","),
-                    tokenId,
-                );
-            }
-        } else {
-            if (explicitValues.length) {
-                return nftManager.insertProperty("explicitValues", explicitValues.join(","), tokenId);
-            }
-        }
+        await setExplicitValue(transaction);
     }
 
     public async applyToRecipient(

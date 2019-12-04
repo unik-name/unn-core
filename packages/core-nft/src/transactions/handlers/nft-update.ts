@@ -69,7 +69,7 @@ export class NftUpdateTransactionHandler extends Handlers.TransactionHandler {
             const assets = getCurrentNftAsset(transaction.data.asset);
 
             if (assets.properties) {
-                return app.resolvePlugin<NftsManager>("core-nft").updateProperties(assets.properties, assets.tokenId);
+                return app.resolvePlugin<NftsManager>("core-nft").manageProperties(assets.properties, assets.tokenId);
             }
         }
     }

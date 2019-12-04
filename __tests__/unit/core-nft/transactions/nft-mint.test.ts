@@ -1,28 +1,25 @@
 import "jest-extended";
 
 import { Managers, Transactions, Validation as Ajv } from "@arkecosystem/crypto";
-import { checkCommonFields, propertiesAssets } from "../helper";
 
 import { Builders, Transactions as NftTransactions } from "../../../../packages/core-nft-crypto/src";
+import * as Fixtures from "../__fixtures__";
+import { checkCommonFields } from "../helpers";
 
 let builder: Builders.NftMintBuilder;
-const nftName = "myNft";
-const TOKEN_ID = "ee16f4b75f38f6e3d16635f72a8445e0ff8fbacfdfa8f05df077e73de79d6e4f";
 
-describe("Business registration transaction", () => {
-    Managers.configManager.setFromPreset("testnet");
+describe("Nft mint transaction", () => {
+    Managers.configManager.setFromPreset(Fixtures.network);
+    Managers.configManager.setHeight(2);
     Transactions.TransactionRegistry.registerTransactionType(NftTransactions.NftMintTransaction);
 
-    beforeEach(() => {
-        builder = new Builders.NftMintBuilder(nftName, TOKEN_ID);
-    });
-
     describe("Ser/deser", () => {
+        beforeEach(() => {
+            builder = new Builders.NftMintBuilder(Fixtures.nftName, Fixtures.nftId);
+        });
+
         it("should ser/deserialize without properties", () => {
-            const transaction = builder
-                .network(23)
-                .sign("passphrase")
-                .getStruct();
+            const transaction = builder.sign("passphrase").getStruct();
 
             const serialized = Transactions.TransactionFactory.fromData(transaction).serialized.toString("hex");
             const deserialized = Transactions.Deserializer.deserialize(serialized);
@@ -30,8 +27,8 @@ describe("Business registration transaction", () => {
             checkCommonFields(deserialized, transaction);
             const expectedAsset = {
                 nft: {
-                    [nftName]: {
-                        tokenId: TOKEN_ID,
+                    [Fixtures.nftName]: {
+                        tokenId: Fixtures.nftId,
                         properties: undefined,
                     },
                 },
@@ -39,11 +36,11 @@ describe("Business registration transaction", () => {
             expect(deserialized.data.asset).toStrictEqual(expectedAsset);
         });
 
-        for (const propertiesAsset of propertiesAssets) {
-            it("should ser/deserialize with properties", () => {
+        for (let i = 0; i < Fixtures.propertiesAssets.length; i++) {
+            const propertiesAsset = Fixtures.propertiesAssets[i];
+            it(`should ser/deserialize with properties (${i})`, () => {
                 const transaction = builder
                     .properties(propertiesAsset)
-                    .network(23)
                     .sign("passphrase")
                     .getStruct();
 
@@ -53,8 +50,8 @@ describe("Business registration transaction", () => {
                 checkCommonFields(deserialized, transaction);
                 const expectedAsset = {
                     nft: {
-                        [nftName]: {
-                            tokenId: TOKEN_ID,
+                        [Fixtures.nftName]: {
+                            tokenId: Fixtures.nftId,
                             properties: propertiesAsset,
                         },
                     },
@@ -63,6 +60,7 @@ describe("Business registration transaction", () => {
             });
         }
     });
+
     describe("Schema tests", () => {
         let transactionSchema;
 
@@ -70,48 +68,47 @@ describe("Business registration transaction", () => {
             transactionSchema = NftTransactions.NftMintTransaction.getSchema();
         });
 
-        it("should not throw any error ", () => {
-            const businessRegistration = builder.network(23).sign("passphrase");
+        beforeEach(() => {
+            builder = new Builders.NftMintBuilder(Fixtures.nftName, Fixtures.nftId);
+        });
 
-            const { error } = Ajv.validator.validate(transactionSchema, businessRegistration.getStruct());
+        it("should validate schema without properties", () => {
+            builder.sign("passphrase");
+            const { error } = Ajv.validator.validate(transactionSchema, builder.getStruct());
             expect(error).toBeUndefined();
         });
-        for (const propertiesAsset of propertiesAssets) {
-            it("should not throw any error ", () => {
-                const businessRegistration = builder
-                    .properties(propertiesAsset)
-                    .network(23)
-                    .sign("passphrase");
 
-                const { error } = Ajv.validator.validate(transactionSchema, businessRegistration.getStruct());
+        for (let i = 0; i < Fixtures.propertiesAssets.length; i++) {
+            const propertiesAsset = Fixtures.propertiesAssets[i];
+
+            it(`should  validate schema with properties (${i}) `, () => {
+                builder.properties(propertiesAsset).sign("passphrase");
+
+                const { error } = Ajv.validator.validate(transactionSchema, builder.getStruct());
                 expect(error).toBeUndefined();
             });
         }
 
-        describe("should test edge cases for properties", () => {
-            it("should fail because max length is 255 char", () => {
-                const businessRegistration = builder
-                    .properties({
-                        tooLong: "a".repeat(256),
-                    })
-                    .network(23)
-                    .sign("passphrase");
+        it("should return errors because property value max length is 255 char", () => {
+            builder
+                .properties({
+                    tooLong: "a".repeat(256),
+                })
+                .sign("passphrase");
 
-                const { error } = Ajv.validator.validate(transactionSchema, businessRegistration.getStruct());
-                expect(error).not.toBeUndefined();
-            });
+            const { error } = Ajv.validator.validate(transactionSchema, builder.getStruct());
+            expect(error).not.toBeUndefined();
+        });
 
-            it("should fail because max length is 255 char", () => {
-                const businessRegistration = builder
-                    .properties({
-                        ["a".repeat(256)]: "tooLong",
-                    })
-                    .network(23)
-                    .sign("passphrase");
+        it("should return errors because property key max length is 255 char", () => {
+            const businessRegistration = builder
+                .properties({
+                    ["a".repeat(256)]: "tooLong",
+                })
+                .sign("passphrase");
 
-                const { error } = Ajv.validator.validate(transactionSchema, businessRegistration.getStruct());
-                expect(error).not.toBeUndefined();
-            });
+            const { error } = Ajv.validator.validate(transactionSchema, businessRegistration.getStruct());
+            expect(error).not.toBeUndefined();
         });
     });
 });

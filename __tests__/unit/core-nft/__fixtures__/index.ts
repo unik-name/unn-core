@@ -40,3 +40,21 @@ export const constraints = {
 export const network = "dalinet";
 export const properties = { foo: "true" };
 export const recipient: string = "DA3BSpo52UqTnKVjZ4MhEVV2zzZT8WhVHf";
+export const propertiesAssets: any[] = [
+    {
+        propKey: "propValue",
+    },
+
+    {
+        propKey: "propValue",
+        propKey2: "propValue2",
+    },
+    {
+        phone: "+33612345678",
+        btc: "3Ayxz5xn9p2QRRTtohD28DjfJMGD5hQoGt",
+        url: "https://www.uns.network/",
+        // tslint:disable-next-line: no-null-keyword
+        null: null,
+        empty: "",
+    },
+];

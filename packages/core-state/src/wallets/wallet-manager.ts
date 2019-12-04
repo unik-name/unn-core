@@ -361,6 +361,7 @@ export class WalletManager implements State.IWalletManager {
             lockTransaction = lockWallet.getAttribute("htlc.locks", {})[lockId];
         }
 
+        // TODO: uns: find a better way to check state situation
         await transactionHandler.apply(transaction, this, true);
 
         const sender: State.IWallet = this.findByPublicKey(transaction.data.senderPublicKey);
@@ -379,6 +380,7 @@ export class WalletManager implements State.IWalletManager {
         const sender: State.IWallet = this.findByPublicKey(data.senderPublicKey);
         const recipient: State.IWallet = this.findByAddress(data.recipientId);
 
+        // TODO: uns: find a better way to check state situation
         await transactionHandler.revert(transaction, this, true);
 
         let lockWallet: State.IWallet;

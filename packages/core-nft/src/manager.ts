@@ -79,15 +79,13 @@ export class NftsManager {
         });
     }
 
-    public async updateProperties(properties: Interfaces.INftProperties, tokenId: string): Promise<any> {
+    public async manageProperties(properties: Interfaces.INftProperties, tokenId: string): Promise<any> {
         return Promise.all(
             Object.entries<string>(properties).map(async ([key, value]) => {
-                if (await this.hasProperty(tokenId, key)) {
-                    return value === null
-                        ? this.deleteProperty(key, tokenId)
-                        : this.updateProperty(key, value, tokenId);
+                if (value === null) {
+                    return this.deleteProperty(key, tokenId);
                 } else {
-                    return this.insertProperty(key, value, tokenId);
+                    return this.insertOrUpdateProperty(key, value, tokenId);
                 }
             }),
         );
@@ -96,6 +94,14 @@ export class NftsManager {
     public async deleteProperty(propertyKey: string, tokenId: string): Promise<any> {
         return this.repository.deletePropertyByKey(tokenId, propertyKey).then(_ => {
             this.logger.debug(`[💎] Property '${propertyKey}' deleted for tokenid ${tokenId}`);
+        });
+    }
+
+    public async insertOrUpdateProperty(propertyKey: string, propertyValue: string, tokenId: string): Promise<any> {
+        return this.repository.insertOrUpdateProperty(tokenId, propertyKey, propertyValue).then(_ => {
+            this.logger.debug(
+                `[💎] Property '${propertyKey}' replaced with value '${propertyValue}' for tokenid ${tokenId}`,
+            );
         });
     }
 }

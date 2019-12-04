@@ -86,6 +86,16 @@ export class NftsRepository extends Repository implements NFT.INftsRepository {
     }
 
     /**
+     * Inert or update nft token property
+     * @param nftid
+     * @param propertyKey
+     * @param propertyValue
+     */
+    public insertOrUpdateProperty(nftid: string, propertyKey: string, propertyValue: string): Promise<any> {
+        return this.db.none(sql.insertOrUpdateProperty, { nftid, key: propertyKey, value: propertyValue });
+    }
+
+    /**
      * Find nft token property by key
      * @param nftid
      * @param propertyKey

@@ -46,7 +46,6 @@ export class NftMintTransactionHandler extends Handlers.TransactionHandler {
 
         // check if token is already owned
         if (
-            wallet.hasAttribute("tokens") &&
             !!walletManager.allByAddress().find(wallet => {
                 if (wallet.hasAttribute("tokens")) {
                     return wallet.getAttribute<INftWalletAttributes>("tokens").tokens.includes(tokenId);

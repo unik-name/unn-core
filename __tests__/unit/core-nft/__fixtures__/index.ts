@@ -1,3 +1,6 @@
+import { Wallets } from "@arkecosystem/core-state";
+import { Utils } from "@arkecosystem/crypto";
+
 export const nftName: string = "mynft";
 export const nftId: string = "ee16f4b75f38f6e3d16635f72a8445e0ff8fbacfdfa8f05df077e73de79d6e4f";
 
@@ -58,3 +61,14 @@ export const propertiesAssets: any[] = [
         empty: "",
     },
 ];
+
+export const wallet = () => {
+    const wallet = new Wallets.Wallet("DA3BSpo52UqTnKVjZ4MhEVV2zzZT8WhVHf");
+    wallet.balance = Utils.BigNumber.make("500000000000000");
+    wallet.publicKey = "03d11c3889fbfbd0e991ce88d1af630afd501401c4e8e464a4400fc2b6cf1789f1";
+    return wallet;
+};
+export const walletPassphrase: string =
+    "enrich account dirt wedding noise acquire pipe rescue link quality laugh rough";
+
+export const tooLongPropertyValue: string = "💎".repeat(64);

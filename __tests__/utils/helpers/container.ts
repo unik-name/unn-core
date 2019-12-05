@@ -38,7 +38,7 @@ export const setUpContainer = async (options: any): Promise<Container.IContainer
         : path.resolve(__dirname, `../config/${options.network}`);
 
     await app.setUp(
-        "2.1.1",
+        options.version || "2.1.1",
         {
             token: options.token || "ark",
             network: options.network,

@@ -12,30 +12,35 @@ import { setUpContainer } from "../../../utils/helpers/container";
 jest.setTimeout(1200000);
 
 let app: Container.IContainer;
-export const setUp = async (): Promise<void> => {
+
+// TODO: uns : modified to add nft tests
+export const defaultInclude = [
+    "@arkecosystem/core-event-emitter",
+    "@arkecosystem/core-logger-pino",
+    "@arkecosystem/core-state",
+    "@arkecosystem/core-database-postgres",
+    "@arkecosystem/core-magistrate-transactions",
+    "@arkecosystem/core-transaction-pool",
+    "@arkecosystem/core-p2p",
+    "@arkecosystem/core-blockchain",
+    "@arkecosystem/core-api",
+    "@arkecosystem/core-forger",
+];
+
+export const setUp = async (options = undefined, include = defaultInclude, delegates = secrets): Promise<void> => {
     try {
         process.env.CORE_RESET_DATABASE = "1";
 
         app = await setUpContainer({
-            include: [
-                "@arkecosystem/core-event-emitter",
-                "@arkecosystem/core-logger-pino",
-                "@arkecosystem/core-state",
-                "@arkecosystem/core-database-postgres",
-                "@arkecosystem/core-magistrate-transactions",
-                "@arkecosystem/core-transaction-pool",
-                "@arkecosystem/core-p2p",
-                "@arkecosystem/core-blockchain",
-                "@arkecosystem/core-api",
-                "@arkecosystem/core-forger",
-            ],
+            include,
+            ...options,
         });
 
         const databaseService = app.resolvePlugin<Database.IDatabaseService>("database");
         await databaseService.reset();
         await databaseService.buildWallets();
         await databaseService.saveRound(
-            secrets.map(secret =>
+            delegates.map(secret =>
                 Object.assign(new Wallets.Wallet(Identities.Address.fromPassphrase(secret)), {
                     publicKey: Identities.PublicKey.fromPassphrase(secret),
                     attributes: {

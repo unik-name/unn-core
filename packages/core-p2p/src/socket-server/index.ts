@@ -17,7 +17,10 @@ export const startSocketServer = async (service: P2P.IPeerService, config: Recor
         ...{
             appName: "core-p2p",
             brokers: 1,
-            environment: process.env.CORE_NETWORK_NAME === "testnet" ? "dev" : "prod",
+            environment:
+                process.env.CORE_NETWORK_NAME === "testnet" || process.env.CORE_NETWORK_NAME === "dalinet"
+                    ? "dev"
+                    : "prod",
             rebootWorkerOnCrash: true,
             workerController: __dirname + `${relativeSocketPath}/worker.js`,
             workers: 2,

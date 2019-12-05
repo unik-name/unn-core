@@ -37,8 +37,6 @@ export class NftUpdateTransactionHandler extends Handlers.TransactionHandler {
     ): Promise<void> {
         const { tokenId, properties } = getCurrentNftAsset(transaction.data.asset);
 
-        checkAssetPropertiesSize(properties);
-
         // check if sender owns token
         if (
             !wallet.hasAttribute("tokens") ||
@@ -46,6 +44,8 @@ export class NftUpdateTransactionHandler extends Handlers.TransactionHandler {
         ) {
             throw new NftOwnerError(tokenId);
         }
+
+        checkAssetPropertiesSize(properties);
 
         await app.resolvePlugin<NftsManager>("core-nft").constraints.applyConstraints(transaction.data);
         return super.throwIfCannotBeApplied(transaction, wallet, walletManager);

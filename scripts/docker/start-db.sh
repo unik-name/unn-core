@@ -2,9 +2,9 @@
 
 set -e
 
-NETWORK=${1} # default testnet
+NETWORK=${1}
 
-if [ ! -e $NETWORK ]; then
+if [ -e $NETWORK ]; then
     echo "Missing network parameter"
     exit 1
 fi
@@ -20,5 +20,5 @@ docker run \
 
 echo "🎉 Successfully started DB container for $NETWORK (see id above)"
 
-echo "> Stop container with command 'docker stop uns_"$NETWORK"_postgres'"
-echo "> Remove container with command 'docker rm uns_"$NETWORK"_postgres'"
+echo "> Stop container with command 'docker stop uns-"$NETWORK"-postgres'"
+echo "> Remove container with command 'docker rm uns-"$NETWORK"-postgres'"

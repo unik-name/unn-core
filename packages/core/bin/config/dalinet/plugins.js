@@ -85,7 +85,14 @@ module.exports = {
             whitelist: ["127.0.0.1", "::ffff:127.0.0.1"],
         },
     },
-    "@arkecosystem/core-forger": {},
+    "@arkecosystem/core-forger": {
+        hosts: [
+            {
+                hostname: "127.0.0.1",
+                port: process.env.CORE_P2P_PORT || 4002,
+            },
+        ],
+    },
     "@arkecosystem/core-exchange-json-rpc": {
         enabled: process.env.CORE_EXCHANGE_JSON_RPC_ENABLED,
         host: process.env.CORE_EXCHANGE_JSON_RPC_HOST || "0.0.0.0",

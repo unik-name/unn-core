@@ -1,6 +1,6 @@
 /* tslint:disable:ordered-imports*/
 import "jest-extended";
-import "../__stubs__/core-container";
+import "../mocks/core-container";
 import { Interfaces } from "@arkecosystem/crypto";
 import { app } from "@arkecosystem/core-container";
 import { setExplicitValue } from "@uns/uns-transactions/src/handlers/utils/helpers";

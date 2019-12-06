@@ -1,3 +1,4 @@
+import { databaseManager } from "../../core-nft/mocks/database-manager";
 import { coreNft } from "./core-nft";
 
 jest.mock("@arkecosystem/core-container", () => {
@@ -15,6 +16,10 @@ jest.mock("@arkecosystem/core-container", () => {
 
                 if (name === "core-nft") {
                     return coreNft;
+                }
+
+                if (name === "database-manager") {
+                    return databaseManager;
                 }
                 return {};
             },

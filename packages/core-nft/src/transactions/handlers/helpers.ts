@@ -19,12 +19,11 @@ export const applyNftMintDb = async (senderPublicKey: string, assets: Interfaces
 };
 
 export const removeNftFromWallet = async (
-    walletId: string,
+    wallet: State.IWallet,
     assets: Interfaces.ITransactionAsset,
     walletManager: State.IWalletManager,
 ) => {
     const { tokenId } = getCurrentNftAsset(assets);
-    const wallet: State.IWallet = walletManager.findById(walletId);
 
     const walletTokens: INftWalletAttributes = wallet.getAttribute<INftWalletAttributes>("tokens");
     walletTokens.tokens = walletTokens.tokens.filter(t => t !== tokenId);
@@ -34,12 +33,11 @@ export const removeNftFromWallet = async (
 };
 
 export const addNftToWallet = async (
-    walletId: string,
+    wallet: State.IWallet,
     assets: Interfaces.ITransactionAsset,
     walletManager: State.IWalletManager,
 ) => {
     const { tokenId } = getCurrentNftAsset(assets);
-    const wallet: State.IWallet = walletManager.findById(walletId);
 
     const walletTokens: INftWalletAttributes = wallet.hasAttribute("tokens")
         ? wallet.getAttribute<INftWalletAttributes>("tokens")

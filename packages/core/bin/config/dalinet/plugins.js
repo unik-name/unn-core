@@ -66,7 +66,17 @@ module.exports = {
     },
     "@uns/chainmeta-plugin": {},
     "@arkecosystem/core-wallet-api": {},
-    "@uns/chainmeta-plugin": {},
+    "@uns/chainmeta-plugin": {
+        routes: [
+            { method: "get", path: "/api/transactions/{id}" },
+            { method: "get", path: "/api/wallets" },
+            { method: "get", path: "/api/wallets/{id}" },
+            { method: "get", path: "/api/{nft}s/{id}" },
+            { method: "get", path: "/api/{nft}s/{id}/properties" },
+            { method: "get", path: "/api/{nft}s/{id}/properties/{key}" },
+            { method: "get", path: "/api/wallets/{id}/{nft}s" },
+        ]
+    },
     "@arkecosystem/core-webhooks": {
         enabled: process.env.CORE_WEBHOOKS_ENABLED,
         server: {

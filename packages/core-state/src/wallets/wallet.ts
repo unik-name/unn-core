@@ -41,7 +41,8 @@ export class Wallet implements State.IWallet {
     }
 
     public isDelegate(): boolean {
-        return !!this.getAttribute("delegate");
+        // TODO: uns : fix an issue in tests
+        return !!this.getAttribute("delegate.username");
     }
 
     public hasVoted(): boolean {

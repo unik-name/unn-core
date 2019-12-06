@@ -39,7 +39,7 @@ services:
       service: forger
     container_name: uns_dalinet_forger2
     environment:
-     FORGER_SECRET: "${FORGER2_SECRET}"
+     FORGER_SECRET: "long blouse wagon huge range version owner marine raise surprise rhythm shy"
      CORE_DB_DATABASE: uns_dalinet_forger2
      BOOTNODE: forger1
     links:
@@ -54,7 +54,7 @@ services:
       service: forger
     container_name: uns_dalinet_forger3
     environment:
-     FORGER_SECRET: "${FORGER3_SECRET}"
+     FORGER_SECRET: "cactus cute please spirit reveal raw goose emotion latin subject forum panic"
      CORE_DB_DATABASE: uns_dalinet_forger3
      BOOTNODE: forger1
     links:

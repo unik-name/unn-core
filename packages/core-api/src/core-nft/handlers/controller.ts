@@ -57,4 +57,17 @@ export class NftController extends Controller {
             return Boom.badImplementation(error);
         }
     }
+
+    public async walletNfts(request: Hapi.Request, h: Hapi.ResponseToolkit) {
+        try {
+            request.query.ownerId = request.params.id;
+
+            // @ts-ignore
+            const data = await request.server.methods.v2.nfts.search(request);
+
+            return super.respondWithCache(data, h);
+        } catch (error) {
+            return Boom.badImplementation(error);
+        }
+    }
 }

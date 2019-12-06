@@ -31,7 +31,8 @@ export class WalletManager implements State.IWalletManager {
         });
 
         this.registerIndex(State.WalletIndexes.Usernames, (index: State.IWalletIndex, wallet: State.IWallet) => {
-            if (wallet.isDelegate()) {
+            // TODO: uns : fix an issue in tests
+            if (wallet.isDelegate() && wallet.hasAttribute("delegate.username")) {
                 index.set(wallet.getAttribute("delegate.username"), wallet);
             }
         });

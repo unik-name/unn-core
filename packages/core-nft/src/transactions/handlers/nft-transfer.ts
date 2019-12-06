@@ -32,8 +32,10 @@ export class NftTransferTransactionHandler extends Handlers.TransactionHandler {
 
             for (const transaction of transactions) {
                 const { asset, senderPublicKey, recipientId } = transaction;
-                await removeNftFromWallet(senderPublicKey, asset, walletManager);
-                await addNftToWallet(recipientId, asset, walletManager);
+                const senderWallet: State.IWallet = walletManager.findById(senderPublicKey);
+                await removeNftFromWallet(senderWallet, asset, walletManager);
+                const recipientWallet: State.IWallet = walletManager.findByAddress(recipientId);
+                await addNftToWallet(recipientWallet, asset, walletManager);
             }
         }
     }
@@ -71,7 +73,8 @@ export class NftTransferTransactionHandler extends Handlers.TransactionHandler {
     ): Promise<void> {
         await super.applyToSender(transaction, walletManager);
         const { senderPublicKey, asset, recipientId } = transaction.data;
-        await removeNftFromWallet(senderPublicKey, asset, walletManager);
+        const wallet: State.IWallet = walletManager.findById(senderPublicKey);
+        await removeNftFromWallet(wallet, asset, walletManager);
         if (updateDb) {
             return applyNftTransferDb(recipientId, asset);
         }
@@ -84,9 +87,10 @@ export class NftTransferTransactionHandler extends Handlers.TransactionHandler {
     ): Promise<void> {
         await super.revertForSender(transaction, walletManager);
         const { senderPublicKey, asset } = transaction.data;
-        await addNftToWallet(senderPublicKey, asset, walletManager);
+        const wallet: State.IWallet = walletManager.findById(senderPublicKey);
+        await addNftToWallet(wallet, asset, walletManager);
         if (updateDb) {
-            return applyNftTransferDb(senderPublicKey, asset);
+            return applyNftTransferDb(wallet.address, asset);
         }
     }
 
@@ -96,7 +100,8 @@ export class NftTransferTransactionHandler extends Handlers.TransactionHandler {
         // tslint:disable-next-line: no-empty
     ): Promise<void> {
         const { asset, recipientId } = transaction.data;
-        await addNftToWallet(recipientId, asset, walletManager);
+        const wallet: State.IWallet = walletManager.findByAddress(recipientId);
+        await addNftToWallet(wallet, asset, walletManager);
         // db update is done in applyToSender method
     }
 
@@ -106,6 +111,7 @@ export class NftTransferTransactionHandler extends Handlers.TransactionHandler {
         // tslint:disable-next-line:no-empty
     ): Promise<void> {
         const { asset, recipientId } = transaction.data;
-        await removeNftFromWallet(recipientId, asset, walletManager);
+        const wallet: State.IWallet = walletManager.findByAddress(recipientId);
+        await removeNftFromWallet(wallet, asset, walletManager);
     }
 }

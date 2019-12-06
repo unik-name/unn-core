@@ -1,6 +1,6 @@
 import Boom from "@hapi/boom";
 import Joi from "@hapi/joi";
-import { pagination } from "../../handlers/shared/schemas";
+import { pagination, walletId } from "../../handlers/shared/schemas";
 import { networkNfts } from "./utils";
 
 const nftsPathParameterFailAction = (_, __, err) => {
@@ -70,6 +70,20 @@ export const search: object = {
         ownerId: Joi.string()
             .alphanum()
             .length(34),
+    },
+    failAction: nftsPathParameterFailAction,
+};
+
+export const walletNfts: object = {
+    params: {
+        id: walletId,
+        nft: nftPathParameterScheme,
+    },
+    query: {
+        ...pagination,
+        ...{
+            orderBy: Joi.string(),
+        },
     },
     failAction: nftsPathParameterFailAction,
 };

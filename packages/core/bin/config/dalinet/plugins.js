@@ -50,7 +50,6 @@ module.exports = {
         host: process.env.CORE_API_HOST || "0.0.0.0",
         port: process.env.CORE_API_PORT || 4003,
     },
-    "@uns/chainmeta-plugin": {},
     "@arkecosystem/core-wallet-api": {},
     "@uns/chainmeta-plugin": {
         routes: [

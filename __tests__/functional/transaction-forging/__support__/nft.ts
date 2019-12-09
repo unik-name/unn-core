@@ -10,8 +10,8 @@ export const nftName: string = "unik";
 const token = "uns";
 export const network = "dalinet";
 const includes = defaultInclude.concat(["@uns/core-nft", "@uns/uns-transactions"]).map(include => {
-    // replace pino logger by signale
-    return include.endsWith("pino") ? "@arkecosystem/core-logger-signale" : include;
+    // replace ark pino logger by uns one
+    return include.endsWith("pino") ? "@uns/logger-pino" : include;
 });
 const corePackagePath: string = "../../../../packages/core";
 const config = path.resolve(__dirname, corePackagePath, `bin/config/${network}`);

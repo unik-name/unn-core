@@ -1,20 +1,6 @@
 module.exports = {
     "@arkecosystem/core-event-emitter": {},
-    "@arkecosystem/core-logger-signale": {
-        config: {
-            displayDate: true,
-            displayTimestamp: true,
-            displayBadge: false,
-        },
-        types: {
-            info: {
-                color: "green",
-            },
-            debug: {
-                color: "cyan",
-            },
-        }
-    },
+    "@uns/logger-pino": {},
     "@arkecosystem/core-p2p": {
         server: {
             port: process.env.CORE_P2P_PORT || 4002,

@@ -91,6 +91,7 @@ all_tests: &all_tests
   - F-second-signature-registration
   - F-transfer
   - F-vote
+  - F-nft
 
 test_requirements: &test_requirements
   requires:
@@ -270,6 +271,24 @@ jobs:
       - run: yarn test:coverage __tests__/functional/transaction-forging/vote.test.ts
       - *coverage
       - *notif 
+  F-nft:
+    docker: # Job config is duplicated because it doesn't use same db config
+      - image: circleci/node:12-browsers
+      - image: 'postgres:alpine'
+        environment:
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: uns_dalinet
+          POSTGRES_USER: uns
+    working_directory: *repo_path
+    environment:
+      CORE_DB_DATABASE: uns_dalinet
+      CORE_DB_USERNAME: uns
+    steps:
+      - *attach
+      - run: yarn test:coverage __tests__/functional/transaction-forging/nft.test.ts
+      - *coverage
+      - *notif
+
         
   # Temporary disabled because requires command modifications
   # e2e:
@@ -394,6 +413,9 @@ workflow: &workflow
       requires:
         - build
   - F-vote:
+      requires:
+        - build
+  - F-nft:
       requires:
         - build
   - docker_build_publish:

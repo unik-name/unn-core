@@ -17,7 +17,7 @@ export const setUpLite = async (options, paths: envPaths.Paths): Promise<Contain
             },
             include: [
                 "@arkecosystem/core-event-emitter",
-                "@arkecosystem/core-logger-pino",
+                "@uns/logger-pino",
                 "@arkecosystem/core-state",
                 "@arkecosystem/core-database-postgres",
                 "@arkecosystem/core-blockchain",

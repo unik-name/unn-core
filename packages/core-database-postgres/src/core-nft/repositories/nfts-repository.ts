@@ -1,5 +1,6 @@
 import { Database, NFT } from "@arkecosystem/core-interfaces";
 import { Repository } from "../../repositories/repository";
+import { INftStatus } from "../models";
 import { Nft } from "../models/nft";
 import { queries } from "../queries";
 
@@ -43,6 +44,15 @@ export class NftsRepository extends Repository implements NFT.INftsRepository {
         }
 
         return this.findManyWithCount(selectQuery, selectQueryCount, parameters.paginate, parameters.orderBy);
+    }
+
+    public async status(nftName: string): Promise<INftStatus | undefined> {
+        switch (nftName.toLowerCase()) {
+            case "unik":
+                return this.getUnikStatus();
+            default:
+                return undefined;
+        }
     }
 
     public delete(id: string) {
@@ -139,5 +149,13 @@ export class NftsRepository extends Repository implements NFT.INftsRepository {
      */
     public getModel() {
         return new Nft(this.pgp);
+    }
+
+    private async getUnikStatus() {
+        const status = await this.db.oneOrNone(sql.status, {});
+        return {
+            nftName: "UNIK",
+            ...status,
+        };
     }
 }

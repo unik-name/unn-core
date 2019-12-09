@@ -29,6 +29,10 @@ export class NftsBusinessRepository implements NFT.INftsBusinessRepository {
         return this.connection.db.nfts.search(this.parseSearchParams(params));
     }
 
+    public status(nftName: string) {
+        return this.connection.db.nfts.status(nftName);
+    }
+
     private parseSearchParams(params: Database.IParameters): Database.ISearchParameters {
         const nftsRepository = this.connection.db.nfts;
         const searchParameters = new SearchParameterConverter(nftsRepository.getModel()).convert(params);

@@ -85,5 +85,11 @@ export const walletNfts: object = {
             orderBy: Joi.string(),
         },
     },
+};
+
+export const status: object = {
+    params: {
+        nft: nftPathParameterScheme,
+    },
     failAction: nftsPathParameterFailAction,
 };

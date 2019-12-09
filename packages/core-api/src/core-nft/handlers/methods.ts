@@ -34,7 +34,6 @@ const show = async request => {
                 `and last:${transactions.last.id}.`,
         );
     }
-
     return respondWithResource({ ...nft, transactions }, "nft");
 };
 
@@ -63,6 +62,12 @@ const search = async request => {
     return toPagination(nfts, "nft");
 };
 
+const status = async request => {
+    return {
+        data: await nftsRepository.status(request.params.nft),
+    };
+};
+
 export const registerMethods = server => {
     ServerCache.make(server)
         .method("v2.nfts.index", index, 8, request => ({
@@ -80,5 +85,8 @@ export const registerMethods = server => {
             ...request.payload,
             ...request.query,
             ...paginate(request),
+        }))
+        .method("v2.nfts.status", status, 8, request => ({
+            ...request.query,
         }));
 };

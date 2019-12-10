@@ -5,3 +5,4 @@ export { unitnet } from "./unitnet";
 
 // TODO: uns : find better way to import new network
 export { dalinet } from "./dalinet";
+export { sandbox } from "./sandbox";

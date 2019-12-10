@@ -46,7 +46,11 @@
         "relay:dalinet": "cross-env CORE_PATH_CONFIG=./bin/config/dalinet yarn ark relay:run --token uns",
         "forger:dalinet": "cross-env CORE_PATH_CONFIG=./bin/config/dalinet yarn ark forger:run --token uns",
         "start:dalinet": "cross-env CORE_PATH_CONFIG=./bin/config/dalinet yarn ark core:run --token uns",
-        "full:dalinet": "cross-env CORE_PATH_CONFIG=./bin/config/dalinet yarn ark core:run --token uns --networkStart --env=test"
+        "full:dalinet": "cross-env CORE_PATH_CONFIG=./bin/config/dalinet yarn ark core:run --token uns --networkStart --env=test",
+        "relay:sandbox": "cross-env CORE_PATH_CONFIG=./bin/config/sandbox yarn ark relay:run --token uns",
+        "forger:sandbox": "cross-env CORE_PATH_CONFIG=./bin/config/sandbox yarn ark forger:run --token uns",
+        "start:sandbox": "cross-env CORE_PATH_CONFIG=./bin/config/sandbox yarn ark core:run --token uns",
+        "full:sandbox": "cross-env CORE_PATH_CONFIG=./bin/config/sandbox yarn ark core:run --token uns --networkStart --env=test"
     },
     "dependencies": {
         "@arkecosystem/core-api": "^2.6.0-next.4",

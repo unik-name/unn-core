@@ -1,9 +1,10 @@
 #!/bin/sh
 
-TOKEN="uns" # required for config path 
 NETWORK=${UNS_NET:-devnet} # default devnet
+TOKEN="uns"
 
-echo "network : $NETWORK" #devnet, mainnet, testnet
+echo "network : $NETWORK" 
+echo "token : $TOKEN"
 
 CONFIG_DIR=~/.config/uns-core/$NETWORK
 

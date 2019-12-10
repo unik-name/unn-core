@@ -59,6 +59,10 @@ if [[ -n "${BOOTNODE}" ]]; then
   IP=$(nslookup $BOOTNODE | cut -d ' ' -f 3)
   PEER_FILE=$CONFIG_DIR/peers.json
   echo $(jq --arg ip $IP '.list += [{"ip": $ip,"port":"4002"}]' $PEER_FILE ) > $PEER_FILE # warning 4002 port used
+
+  echo "wait bootnode to be up and forging (1min)"
+  sleep 1m
+
 fi
 
 FORGER=false # No forger by default

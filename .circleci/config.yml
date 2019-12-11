@@ -12,6 +12,12 @@ repo_path: &repo_path
   ~/core
 
 job_config: &job_config
+  working_directory: *repo_path
+  docker:
+    - image: circleci/node:12-browsers
+
+job_test_config: &job_test_config
+  working_directory: *repo_path
   docker:
     - image: circleci/node:12-browsers
     - image: 'postgres:alpine'
@@ -19,10 +25,29 @@ job_config: &job_config
         POSTGRES_PASSWORD: password
         POSTGRES_DB: ark_unitnet
         POSTGRES_USER: ark
-  working_directory: *repo_path
+  resource_class: medium+ # tests with DB require more resources
   environment:
     CORE_DB_DATABASE: ark_unitnet
     CORE_DB_USERNAME: ark
+
+job_test_config_unit_tests: &job_test_config_unit_tests
+  working_directory: *repo_path
+  docker:
+    - image: circleci/node:12-browsers
+
+job_test_config_f-nft_tests: &job_test_config_f-nft_tests
+  working_directory: *repo_path
+  docker: # Job config is duplicated because it doesn't use same db config
+    - image: circleci/node:12-browsers
+    - image: 'postgres:alpine'
+      environment:
+        POSTGRES_PASSWORD: password
+        POSTGRES_DB: uns_dalinet
+        POSTGRES_USER: uns
+  resource_class: medium+ # tests with DB require more resources
+  environment:
+    CORE_DB_DATABASE: uns_dalinet
+    CORE_DB_USERNAME: uns
 
 update_apt: &update_apt
   run:
@@ -67,7 +92,7 @@ attach: &attach
 persist: &persist
   persist_to_workspace:
     root: ~/
-    paths: 
+    paths:
       - core
       - .core/
 
@@ -105,7 +130,7 @@ notif: &notif
     fail_only: true
     only_for_branches: 'develop'
     failure_message: "\U0001F62D build failed > $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH:$CIRCLE_SHA1 ( \U0001F916 $CIRCLE_WORKFLOW_ID/$CIRCLE_JOB)"
-  
+
 ####################################
 ## Jobs
 ####################################
@@ -122,7 +147,7 @@ jobs:
       - *generate_cache_key
       - *persist
       - *notif
-      
+
   build:
     <<: *job_config
     steps:
@@ -135,161 +160,149 @@ jobs:
       - *notif
 
   Unit:
-    docker:
-      - image: circleci/node:12-browsers
-    working_directory: *repo_path
+    <<: *job_test_config_unit_tests
     steps:
       - *attach
-      - run: yarn test:unit:coverage --maxWorkers=2 
+      - run: yarn test:unit:coverage --maxWorkers=2
       - *coverage
       - *notif
 
   Integration:
-    <<: *job_config
+    <<: *job_test_config
     steps:
       - *attach
       - run: yarn test:integration:coverage
       - *coverage
-      - *notif 
+      - *notif
 
   F-bridgechain-registration:
-    <<: *job_config
+    <<: *job_test_config
     steps:
       - *attach
       - run: yarn test:coverage __tests__/functional/transaction-forging/bridgechain-registration.test.ts
       - *coverage
-      - *notif 
+      - *notif
   F-bridgechain-resignation:
-    <<: *job_config
+    <<: *job_test_config
     steps:
       - *attach
       - run: yarn test:coverage __tests__/functional/transaction-forging/bridgechain-resignation.test.ts
       - *coverage
-      - *notif 
+      - *notif
   F-bridgechain-update:
-    <<: *job_config
+    <<: *job_test_config
     steps:
       - *attach
       - run: yarn test:coverage __tests__/functional/transaction-forging/bridgechain-update.test.ts
       - *coverage
-      - *notif 
+      - *notif
   F-business-registration:
-    <<: *job_config
+    <<: *job_test_config
     steps:
       - *attach
       - run: yarn test:coverage __tests__/functional/transaction-forging/business-registration.test.ts
       - *coverage
-      - *notif 
+      - *notif
   F-business-resignation:
-    <<: *job_config
+    <<: *job_test_config
     steps:
       - *attach
       - run: yarn test:coverage __tests__/functional/transaction-forging/business-resignation.test.ts
       - *coverage
-      - *notif 
+      - *notif
   F-business-update:
-    <<: *job_config
+    <<: *job_test_config
     steps:
       - *attach
       - run: yarn test:coverage __tests__/functional/transaction-forging/business-update.test.ts
       - *coverage
-      - *notif 
+      - *notif
   F-delegate-registration:
-    <<: *job_config
+    <<: *job_test_config
     steps:
       - *attach
       - run: yarn test:coverage __tests__/functional/transaction-forging/delegate-registration.test.ts
       - *coverage
-      - *notif 
+      - *notif
   F-delegate-resignation:
-    <<: *job_config
+    <<: *job_test_config
     steps:
       - *attach
       - run: yarn test:coverage __tests__/functional/transaction-forging/bridgechain-resignation.test.ts
       - *coverage
-      - *notif 
+      - *notif
   F-htlc-claim:
-    <<: *job_config
+    <<: *job_test_config
     steps:
       - *attach
       - run: yarn test:coverage __tests__/functional/transaction-forging/htlc-claim.test.ts
       - *coverage
-      - *notif 
+      - *notif
   F-htlc-lock:
-    <<: *job_config
+    <<: *job_test_config
     steps:
       - *attach
       - run: yarn test:coverage __tests__/functional/transaction-forging/htlc-lock.test.ts
       - *coverage
-      - *notif 
+      - *notif
   F-htlc-refund:
-    <<: *job_config
+    <<: *job_test_config
     steps:
       - *attach
       - run: yarn test:coverage __tests__/functional/transaction-forging/htlc-refund.test.ts
       - *coverage
-      - *notif 
+      - *notif
   F-ipfs:
-    <<: *job_config
+    <<: *job_test_config
     steps:
       - *attach
       - run: yarn test:coverage __tests__/functional/transaction-forging/ipfs.test.ts
       - *coverage
-      - *notif 
+      - *notif
   F-multi-payment:
-    <<: *job_config
+    <<: *job_test_config
     steps:
       - *attach
       - run: yarn test:coverage __tests__/functional/transaction-forging/multi-payment.test.ts
       - *coverage
-      - *notif 
+      - *notif
   F-multi-signature-registration:
-    <<: *job_config
+    <<: *job_test_config
     steps:
       - *attach
       - run: yarn test:coverage __tests__/functional/transaction-forging/multi-signature-registration.test.ts
       - *coverage
-      - *notif 
+      - *notif
   F-second-signature-registration:
-    <<: *job_config
+    <<: *job_test_config
     steps:
       - *attach
       - run: yarn test:coverage __tests__/functional/transaction-forging/second-signature-registration.test.ts
       - *coverage
-      - *notif 
+      - *notif
   F-transfer:
-    <<: *job_config
+    <<: *job_test_config
     steps:
       - *attach
       - run: yarn test:coverage __tests__/functional/transaction-forging/transfer.test.ts
       - *coverage
-      - *notif 
+      - *notif
   F-vote:
-    <<: *job_config
+    <<: *job_test_config
     steps:
       - *attach
       - run: yarn test:coverage __tests__/functional/transaction-forging/vote.test.ts
       - *coverage
-      - *notif 
+      - *notif
   F-nft:
-    docker: # Job config is duplicated because it doesn't use same db config
-      - image: circleci/node:12-browsers
-      - image: 'postgres:alpine'
-        environment:
-          POSTGRES_PASSWORD: password
-          POSTGRES_DB: uns_dalinet
-          POSTGRES_USER: uns
-    working_directory: *repo_path
-    environment:
-      CORE_DB_DATABASE: uns_dalinet
-      CORE_DB_USERNAME: uns
+    <<: *job_test_config_f-nft_tests
     steps:
       - *attach
       - run: yarn test:coverage __tests__/functional/transaction-forging/nft.test.ts
       - *coverage
       - *notif
 
-        
+
   # Temporary disabled because requires command modifications
   # e2e:
   #   docker:
@@ -298,19 +311,19 @@ jobs:
   #   steps:
   #     - *attach
   #     - setup_remote_docker
-  #     - run: 
+  #     - run:
   #         name: Initialize docker swarm
   #         command: docker swarm init
-  #     - run: 
+  #     - run:
   #         name: Install and build e2e project
   #         command: cd __tests__/e2e && ../../node_modules/.bin/tsc && yarn cache clean && yarn install --frozen-lockfile
   #     - run:
   #         name: Generate files
   #         command: node --version && cd __tests__/e2e && yarn generate -c 3 -v 12.x
-  #     - run: 
+  #     - run:
   #         name: Make scripts executable
   #         command: sudo chmod +x __tests__/e2e/dist/docker* && sudo chmod +x __tests__/e2e/dist/node0/docker/testnet-e2e/entrypoint.sh && sudo chmod +x __tests__/e2e/dist/node1/docker/testnet-e2e/entrypoint.sh && sudo chmod +x __tests__/e2e/dist/node2/docker/testnet-e2e/entrypoint.sh && sudo chmod +x __tests__/e2e/dist/node0/ark.sh && sudo chmod +x __tests__/e2e/dist/node1/ark.sh && sudo chmod +x __tests__/e2e/dist/node2/ark.sh
-  #     - run: 
+  #     - run:
   #         name: Docker init and start
   #         command: cd __tests__/e2e/dist && ./docker-init.sh && ./docker-start.sh
   #     - run:
@@ -441,4 +454,3 @@ workflows:
   full:
     jobs:
       *workflow
-

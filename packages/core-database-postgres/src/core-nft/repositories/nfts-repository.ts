@@ -1,4 +1,5 @@
 import { Database, NFT } from "@arkecosystem/core-interfaces";
+import pgPromise = require("pg-promise");
 import { Repository } from "../../repositories/repository";
 import { INftStatus } from "../models";
 import { Nft } from "../models/nft";
@@ -7,17 +8,23 @@ import { queries } from "../queries";
 const { nfts: sql } = queries;
 
 export class NftsRepository extends Repository implements NFT.INftsRepository {
+
+    // Arguments with types is a protection!
+    constructor(protected db: pgPromise.IDatabase<any>, pgp: pgPromise.IMain, options) {
+        super(db, pgp, options);
+    }
+
     /**
      * Find a nft by its ID.
      * @param  {String} id
      * @return {Promise}
      */
-    public async findById(id) {
+    public findById(id): Promise<any> {
         return this.db.oneOrNone(sql.findById, { id });
     }
 
     /* copy of block-repository search method */
-    public async search(parameters: Database.ISearchParameters) {
+    public search(parameters: Database.ISearchParameters): Promise<any> {
         if (!parameters.paginate) {
             parameters.paginate = {
                 limit: 100,
@@ -55,11 +62,10 @@ export class NftsRepository extends Repository implements NFT.INftsRepository {
         }
     }
 
-    public delete(id: string) {
-        this.db.tx(t => {
+    public delete(id: string): Promise<any> {
+        return this.db.tx(t => {
             t.batch([t.none(sql.delete, { id }), t.none(sql.deleteProperties, { id })]);
         });
-        return this.db;
     }
 
     public updateOwnerId(id: string, newOwnerId: string): Promise<any> {

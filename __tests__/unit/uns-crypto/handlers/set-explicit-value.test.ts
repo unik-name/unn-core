@@ -2,6 +2,7 @@
 import "jest-extended";
 import "../__stubs__/core-container";
 import { Interfaces } from "@arkecosystem/crypto";
+import { Interfaces as NftInterface } from "@uns/core-nft-crypto";
 import { app } from "@arkecosystem/core-container";
 import { setExplicitValue } from "@uns/uns-transactions/src/handlers/utils/helpers";
 
@@ -24,11 +25,13 @@ describe("Disclose-explicit - setExplicitValue tests", () => {
 
     describe("No explicit value already disclosed", () => {
         beforeEach(() => {
-            jest.spyOn(nftManager, "insertProperty").mockImplementationOnce(async (_, explicitValuesStr, __) => {
-                return new Promise(resolve => {
-                    resolve(explicitValuesStr);
-                });
-            });
+            jest.spyOn(nftManager, "manageProperties").mockImplementationOnce(
+                async (properties: NftInterface.INftProperties, __) => {
+                    return new Promise(resolve => {
+                        resolve(properties.explicitValues);
+                    });
+                },
+            );
         });
 
         it("should insert single new property", async () => {
@@ -42,13 +45,6 @@ describe("Disclose-explicit - setExplicitValue tests", () => {
             explicitValueStr = await setExplicitValue(transaction);
             expect(explicitValueStr).toEqual(explicitValues.join(","));
         });
-
-        it("should do nothing", async () => {
-            const explicitValues = [];
-            transaction.data.asset["disclose-demand"].payload.explicitValue = explicitValues;
-            explicitValueStr = await setExplicitValue(transaction);
-            expect(explicitValueStr).toBeUndefined();
-        });
     });
 
     describe("update explicit values", () => {
@@ -60,11 +56,13 @@ describe("Disclose-explicit - setExplicitValue tests", () => {
                 });
             });
 
-            jest.spyOn(nftManager, "updateProperty").mockImplementationOnce(async (_, explicitValuesStr, __) => {
-                return new Promise(resolve => {
-                    resolve(explicitValuesStr);
-                });
-            });
+            jest.spyOn(nftManager, "manageProperties").mockImplementationOnce(
+                async (properties: NftInterface.INftProperties, __) => {
+                    return new Promise(resolve => {
+                        resolve(properties.explicitValues);
+                    });
+                },
+            );
         });
 
         it("should add property in first place", async () => {

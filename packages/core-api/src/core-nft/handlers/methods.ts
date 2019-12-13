@@ -64,7 +64,7 @@ const search = async request => {
 
 const status = async request => {
     return {
-        data: await nftsRepository.status(request.params.nft),
+        data: [await nftsRepository.status("UNIK")],
     };
 };
 

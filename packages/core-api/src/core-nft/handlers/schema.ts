@@ -86,10 +86,3 @@ export const walletNfts: object = {
         },
     },
 };
-
-export const status: object = {
-    params: {
-        nft: nftPathParameterScheme,
-    },
-    failAction: nftsPathParameterFailAction,
-};

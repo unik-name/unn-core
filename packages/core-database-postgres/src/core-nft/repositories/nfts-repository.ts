@@ -8,7 +8,6 @@ import { queries } from "../queries";
 const { nfts: sql } = queries;
 
 export class NftsRepository extends Repository implements NFT.INftsRepository {
-
     // Arguments with types is a protection!
     constructor(protected db: pgPromise.IDatabase<any>, pgp: pgPromise.IMain, options) {
         super(db, pgp, options);
@@ -54,12 +53,10 @@ export class NftsRepository extends Repository implements NFT.INftsRepository {
     }
 
     public async status(nftName: string): Promise<INftStatus | undefined> {
-        switch (nftName.toLowerCase()) {
-            case "unik":
-                return this.getUnikStatus();
-            default:
-                return undefined;
-        }
+        return {
+            nftName,
+            ...(await this.db.oneOrNone(sql[`${nftName.toLowerCase()}Status`], {})),
+        };
     }
 
     public delete(id: string): Promise<any> {
@@ -155,13 +152,5 @@ export class NftsRepository extends Repository implements NFT.INftsRepository {
      */
     public getModel() {
         return new Nft(this.pgp);
-    }
-
-    private async getUnikStatus() {
-        const status = await this.db.oneOrNone(sql.status, {});
-        return {
-            nftName: "UNIK",
-            ...status,
-        };
     }
 }

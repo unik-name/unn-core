@@ -1,7 +1,6 @@
 import Boom from "@hapi/boom";
 import Hapi from "@hapi/hapi";
 import { Controller } from "../../handlers/shared/controller";
-import { networkNfts } from "./utils";
 
 export class NftController extends Controller {
     public async index(request: Hapi.Request, h: Hapi.ResponseToolkit) {
@@ -73,16 +72,6 @@ export class NftController extends Controller {
 
     public async status(request: Hapi.Request, h: Hapi.ResponseToolkit) {
         try {
-            if (request.params.nft === "nft") {
-                return {
-                    data: networkNfts(),
-                };
-            }
-
-            if (!networkNfts().includes(request.params.nft)) {
-                return Boom.notFound();
-            }
-
             // @ts-ignore
             const data = await request.server.methods.v2.nfts.status(request);
             return super.respondWithCache(data, h);

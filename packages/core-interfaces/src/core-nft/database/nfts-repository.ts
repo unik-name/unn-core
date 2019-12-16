@@ -1,3 +1,4 @@
+import { Interfaces } from "@arkecosystem/crypto";
 import { Database } from "../..";
 
 export interface INftsRepository extends Database.IRepository {
@@ -15,4 +16,5 @@ export interface INftsRepository extends Database.IRepository {
     insertOrUpdateProperty(nftid: string, key: string, value: string): Promise<any>;
     findProperties(nftid: string): Promise<any>;
     findEdgeTransactions(id: string, nftName: string): Promise<any>;
+    findTransactionsByAsset(asset: any, types: number[], typeGroup: number): Promise<Interfaces.ITransactionData[]>;
 }

@@ -4,6 +4,7 @@ import { Database, NFT, State, TransactionPool } from "@arkecosystem/core-interf
 import { Handlers, TransactionReader } from "@arkecosystem/core-transactions";
 import { Interfaces, Transactions } from "@arkecosystem/crypto";
 import { NftOwnerError, nftRepository } from "@uns/core-nft";
+import { revertProperties } from "@uns/core-nft/src/transactions/handlers/helpers";
 import { DiscloseExplicitTransaction, IDiscloseDemand, IDiscloseDemandCertification, unsCrypto } from "@uns/crypto";
 import {
     DiscloseDemandAlreadyExistsError,
@@ -12,7 +13,7 @@ import {
     DiscloseDemandSignatureError,
     DiscloseDemandSubInvalidError,
 } from "../errors";
-import { setExplicitValue } from "./utils/helpers";
+import { EXPLICIT_PROP_KEY, getExplicitValue, setExplicitValue } from "./utils/helpers";
 
 export class DiscloseExplicitTransactionHandler extends Handlers.TransactionHandler {
     private get nftsRepository(): NFT.INftsRepository {
@@ -87,7 +88,7 @@ export class DiscloseExplicitTransactionHandler extends Handlers.TransactionHand
 
         // check if transaction already exists
         if (
-            (await this.nftsRepository.findPropertyByKey(discloseDemand.payload.sub, "explicitValues")) &&
+            (await this.nftsRepository.findPropertyByKey(discloseDemand.payload.sub, EXPLICIT_PROP_KEY)) &&
             (await this.isTransactionsWithSameSubExists(discloseDemandCertif.payload.sub))
         ) {
             throw new DiscloseDemandAlreadyExistsError(transaction.id);
@@ -118,9 +119,27 @@ export class DiscloseExplicitTransactionHandler extends Handlers.TransactionHand
     public async applyToSender(
         transaction: Interfaces.ITransaction,
         walletManager: State.IWalletManager,
+        updateDb = false,
     ): Promise<void> {
         await super.applyToSender(transaction, walletManager);
-        await setExplicitValue(transaction);
+        if (updateDb) {
+            await setExplicitValue(transaction);
+        }
+    }
+
+    public async revertForSender(
+        transaction: Interfaces.ITransaction,
+        walletManager: State.IWalletManager,
+        updateDb = false,
+    ): Promise<void> {
+        await super.revertForSender(transaction, walletManager);
+        if (updateDb) {
+            const tokenId = transaction.data.asset["disclose-demand"].payload.sub;
+            const asset = { "disclose-demand": { payload: { sub: tokenId } } };
+            await revertProperties(transaction.data, tokenId, asset, [transaction.type], transaction => {
+                return { [EXPLICIT_PROP_KEY]: getExplicitValue(transaction) };
+            });
+        }
     }
 
     public async applyToRecipient(

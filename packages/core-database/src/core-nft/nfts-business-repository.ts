@@ -1,4 +1,5 @@
 import { Database, NFT } from "@arkecosystem/core-interfaces";
+import { Interfaces } from "@arkecosystem/crypto";
 import limitRows from "../repositories/utils/limit-rows";
 import { SearchParameterConverter } from "../repositories/utils/search-parameter-converter";
 
@@ -31,6 +32,14 @@ export class NftsBusinessRepository implements NFT.INftsBusinessRepository {
 
     public status(nftName: string) {
         return this.connection.db.nfts.status(nftName);
+    }
+
+    public async findTransactionsByAsset(
+        asset: any,
+        types: number[],
+        typeGroup: number,
+    ): Promise<Interfaces.ITransactionData[]> {
+        return this.connection.db.nfts.findTransactionsByAsset(asset, types, typeGroup);
     }
 
     private parseSearchParams(params: Database.IParameters): Database.ISearchParameters {

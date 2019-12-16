@@ -1,4 +1,5 @@
 import { Database, NFT } from "@arkecosystem/core-interfaces";
+import { Interfaces } from "@arkecosystem/crypto";
 import pgPromise = require("pg-promise");
 import { Repository } from "../../repositories/repository";
 import { INftStatus } from "../models";
@@ -152,5 +153,25 @@ export class NftsRepository extends Repository implements NFT.INftsRepository {
      */
     public getModel() {
         return new Nft(this.pgp);
+    }
+
+    /**
+     * Find all transactions of specified type/group corresponding to a given asset.
+     * @param {string} id
+     * @param {any} asset
+     * @param {string[]} types
+     * @param {string} groupType
+     * @return {ITransactionData}
+     */
+    public async findTransactionsByAsset(
+        asset: any,
+        types: number[],
+        typeGroup: number,
+    ): Promise<Interfaces.ITransactionData[]> {
+        return await this.db.manyOrNone(sql.findTransactionsByAsset, {
+            asset: JSON.stringify(asset),
+            types,
+            typeGroup,
+        });
     }
 }

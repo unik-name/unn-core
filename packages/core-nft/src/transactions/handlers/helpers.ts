@@ -1,11 +1,10 @@
 import { app } from "@arkecosystem/core-container";
 import { State } from "@arkecosystem/core-interfaces";
 import { Identities, Interfaces } from "@arkecosystem/crypto";
-import { getCurrentNftAsset } from "@uns/core-nft-crypto";
-import { INftProperties } from "@uns/core-nft-crypto/dist/interfaces";
+import { getCurrentNftAsset, Interfaces as NftInterfaces } from "@uns/core-nft-crypto";
 import { NftPropertyTooLongError } from "../../errors";
 import { INftWalletAttributes } from "../../interfaces";
-import { NftsManager } from "../../manager";
+import { nftRepository, NftsManager } from "../../manager";
 
 export const applyNftMintDb = async (senderPublicKey: string, assets: Interfaces.ITransactionAsset): Promise<void> => {
     const { tokenId, properties } = getCurrentNftAsset(assets);
@@ -55,10 +54,49 @@ export const applyNftTransferDb = async (
     return app.resolvePlugin<NftsManager>("core-nft").updateOwner(getCurrentNftAsset(assets).tokenId, recipientAddress);
 };
 
-export const checkAssetPropertiesSize = (properties: INftProperties) => {
+export const checkAssetPropertiesSize = (properties: NftInterfaces.INftProperties) => {
     for (const [key, value] of Object.entries(properties || {})) {
         if (value && Buffer.from(value, "utf8").length > 255) {
             throw new NftPropertyTooLongError(key);
         }
     }
+};
+
+export const revertProperties = async (
+    transaction: Interfaces.ITransactionData,
+    tokenId: string,
+    asset: any,
+    types: number[],
+    getProperties,
+): Promise<void> => {
+    const nftsRepository = nftRepository();
+    const manager = app.resolvePlugin<NftsManager>("core-nft");
+    const retrievedProperties = {};
+
+    let modifiedPropertyKeys = Object.keys(getProperties(transaction));
+    const transactions = await nftsRepository.findTransactionsByAsset(asset, types, transaction.typeGroup);
+
+    // parse transactions from the last to first to get last value of modified keys
+    for (const tx of transactions) {
+        if (tx.id === transaction.id) {
+            continue;
+        }
+        for (const key of modifiedPropertyKeys) {
+            const txProperties = getProperties(tx);
+            if (txProperties.hasOwnProperty(key)) {
+                retrievedProperties[key] = txProperties[key];
+                modifiedPropertyKeys = modifiedPropertyKeys.filter(elt => elt !== key);
+            }
+        }
+        if (!modifiedPropertyKeys.length) {
+            break;
+        }
+    }
+
+    // delete the new created properties (no last known value)
+    for (const key of modifiedPropertyKeys) {
+        await manager.deleteProperty(key, tokenId);
+    }
+    // revert updated properties with last known value
+    await manager.manageProperties(retrievedProperties, tokenId);
 };

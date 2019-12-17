@@ -13,13 +13,9 @@ declare global {
     }
 }
 
-const nftPropertiesAreUpdated = async (transaction: Interfaces.ITransactionData): Promise<any> => {
+const nftPropertiesAreUpdated = async (tokenId: string, properties): Promise<any> => {
     let pass: boolean = true;
     let errorInfo: string;
-
-    const { asset } = transaction;
-    const nftAssets = asset.nft[NftSupport.nftName];
-    const { tokenId, properties } = nftAssets;
 
     for (const [key, value] of Object.entries(properties)) {
         try {
@@ -73,7 +69,7 @@ expect.extend({
             pass = data.id === tokenId && data.ownerId === owner && data.transactions.last.id === id;
 
             if (pass && properties) {
-                const result = await nftPropertiesAreUpdated(transaction);
+                const result = await nftPropertiesAreUpdated(tokenId, properties);
                 pass = result.pass;
                 if (!pass) {
                     errorInfo = result.errorInfo;

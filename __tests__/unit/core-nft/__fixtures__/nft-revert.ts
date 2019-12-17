@@ -1,7 +1,7 @@
 // tslint:disable:no-null-keyword
 import { Enums } from "@uns/core-nft-crypto";
 
-const NFT_NAME = "nftName";
+export const NFT_NAME = "nftName";
 export const testCases = [
     {
         scenario: "revert updated property",

@@ -74,12 +74,10 @@ export const mintAndWait = async nftId => {
 
     await expect(t).toBeAccepted();
     await snoozeForBlock(1);
+    return t;
 };
 
-export const addPropertyAndWait = async (nftId, key, value) => {
-    const properties = {};
-    properties[key] = value;
-
+export const addPropertiesAndWait = async (nftId, properties) => {
     const t = nftUpdateTransaction(nftId, properties)
         .withNetwork(network)
         .withPassphrase(defaultPassphrase)
@@ -87,4 +85,5 @@ export const addPropertyAndWait = async (nftId, key, value) => {
 
     await expect(t).toBeAccepted();
     await snoozeForBlock(1);
+    return t;
 };

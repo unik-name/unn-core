@@ -7,14 +7,7 @@ afterAll(support.tearDown);
 describe("Transaction Nft", () => {
     it("should mint new unik token with genesis property", async () => {
         const nftId = NftSupport.generateNftId();
-
-        const nftMint = NftSupport.nftMintTransaction(nftId, { type: "1" })
-            .withNetwork(NftSupport.network)
-            .withPassphrase(NftSupport.defaultPassphrase)
-            .createOne();
-
-        await expect(nftMint).toBeAccepted();
-        await support.snoozeForBlock(1);
+        const nftMint = await NftSupport.mintAndWait(nftId);
         await expect(nftMint.id).toBeForged();
         await expect(nftMint).toHaveValidNftPersistanceState();
     });
@@ -22,14 +15,7 @@ describe("Transaction Nft", () => {
     it("should add unik token property", async () => {
         const nftId = NftSupport.generateNftId();
         await NftSupport.mintAndWait(nftId);
-
-        const nftUpdate = NftSupport.nftUpdateTransaction(nftId, { foo: "foo" })
-            .withNetwork(NftSupport.network)
-            .withPassphrase(NftSupport.defaultPassphrase)
-            .createOne();
-
-        await expect(nftUpdate).toBeAccepted();
-        await support.snoozeForBlock(1);
+        const nftUpdate = await NftSupport.addPropertiesAndWait(nftId, { foo: "foo" });
         await expect(nftUpdate.id).toBeForged();
         await expect(nftUpdate).toHaveValidNftPersistanceState();
     });
@@ -37,15 +23,8 @@ describe("Transaction Nft", () => {
     it("should update unik token property", async () => {
         const nftId = NftSupport.generateNftId();
         await NftSupport.mintAndWait(nftId);
-        await NftSupport.addPropertyAndWait(nftId, "aKey", "aValue");
-
-        const nftUpdate = NftSupport.nftUpdateTransaction(nftId, { aKey: "foo" })
-            .withNetwork(NftSupport.network)
-            .withPassphrase(NftSupport.defaultPassphrase)
-            .createOne();
-
-        await expect(nftUpdate).toBeAccepted();
-        await support.snoozeForBlock(1);
+        await NftSupport.addPropertiesAndWait(nftId, { aKey: "aValue" });
+        const nftUpdate = await NftSupport.addPropertiesAndWait(nftId, { aKey: "foo" });
         await expect(nftUpdate.id).toBeForged();
         await expect(nftUpdate).toHaveValidNftPersistanceState();
     });
@@ -53,16 +32,10 @@ describe("Transaction Nft", () => {
     it("should remove unik token property", async () => {
         const nftId = NftSupport.generateNftId();
         await NftSupport.mintAndWait(nftId);
-        await NftSupport.addPropertyAndWait(nftId, "aKey", "aValue");
+        await NftSupport.addPropertiesAndWait(nftId, { aKey: "aValue" });
 
         // tslint:disable-next-line
-        const nftUpdate = NftSupport.nftUpdateTransaction(nftId, { aKey: null })
-            .withNetwork(NftSupport.network)
-            .withPassphrase(NftSupport.defaultPassphrase)
-            .createOne();
-
-        await expect(nftUpdate).toBeAccepted();
-        await support.snoozeForBlock(1);
+        const nftUpdate = await NftSupport.addPropertiesAndWait(nftId, { aKey: null });
         await expect(nftUpdate.id).toBeForged();
         await expect(nftUpdate).toHaveValidNftPersistanceState();
     });

@@ -1,7 +1,7 @@
 import { app } from "@arkecosystem/core-container";
 import { State } from "@arkecosystem/core-interfaces";
 import { Identities, Interfaces } from "@arkecosystem/crypto";
-import { getCurrentNftAsset, Interfaces as NftInterfaces } from "@uns/core-nft-crypto";
+import { Enums, getCurrentNftAsset, getNftName, Interfaces as NftInterfaces } from "@uns/core-nft-crypto";
 import { NftPropertyTooLongError } from "../../errors";
 import { INftWalletAttributes } from "../../interfaces";
 import { nftRepository, NftsManager } from "../../manager";
@@ -62,29 +62,26 @@ export const checkAssetPropertiesSize = (properties: NftInterfaces.INftPropertie
     }
 };
 
-// TODO: uns : move these helpers to nft-manager which is already exported
-// TODO: uns : refactor this method ?
-export const revertProperties = async (
-    transaction: Interfaces.ITransactionData,
-    tokenId: string,
-    asset: any,
-    types: number[],
-    getProperties,
-): Promise<void> => {
-    const nftsRepository = nftRepository();
-    const manager = app.resolvePlugin<NftsManager>("core-nft");
+export const revertProperties = async (transaction: Interfaces.ITransactionData): Promise<void> => {
+    const { tokenId, properties } = getCurrentNftAsset(transaction.asset);
+    const nftName: string = getNftName(transaction.asset);
+
+    const asset = { nft: { [nftName]: { tokenId } } };
+    const transactions = await nftRepository().findTransactionsByAsset(
+        asset,
+        [Enums.NftTransactionType.NftMint, transaction.type],
+        transaction.typeGroup,
+    );
+
     const retrievedProperties = {};
-
-    let modifiedPropertyKeys = Object.keys(getProperties(transaction));
-    const transactions = await nftsRepository.findTransactionsByAsset(asset, types, transaction.typeGroup);
-
+    let modifiedPropertyKeys = Object.keys(properties);
     // parse transactions from the last to first to get last value of modified keys
     for (const tx of transactions) {
         if (tx.id === transaction.id) {
             continue;
         }
         for (const key of modifiedPropertyKeys) {
-            const txProperties = getProperties(tx);
+            const txProperties = getCurrentNftAsset(tx.asset).properties;
             if (txProperties.hasOwnProperty(key)) {
                 retrievedProperties[key] = txProperties[key];
                 modifiedPropertyKeys = modifiedPropertyKeys.filter(elt => elt !== key);
@@ -95,6 +92,7 @@ export const revertProperties = async (
         }
     }
 
+    const manager = app.resolvePlugin<NftsManager>("core-nft");
     // delete the new created properties (no last known value)
     for (const key of modifiedPropertyKeys) {
         await manager.deleteProperty(key, tokenId);

@@ -1,11 +1,9 @@
 /* tslint:disable:ordered-imports*/
 import "jest-extended";
 import { revertProperties } from "@uns/core-nft/src/transactions/handlers/helpers";
-import { testCases } from "../__fixtures__/nft-revert";
+import { testCases, NFT_NAME } from "../__fixtures__/nft-revert";
 import { Interfaces } from "@arkecosystem/crypto";
 import { app } from "@arkecosystem/core-container";
-import { NftTransactionType } from "@uns/core-nft-crypto/dist/enums";
-import { getCurrentNftAsset } from "@uns/core-nft-crypto";
 
 let nftDbMock = {};
 
@@ -30,7 +28,7 @@ app.resolvePlugin = jest.fn(plugin => {
                     db: {
                         nfts: {
                             findTransactionsByAsset: asset => {
-                                const tokenId = asset.nft.unik.tokenId;
+                                const tokenId = asset.nft[NFT_NAME].tokenId;
                                 // slice() is used here to make a working copy of the tx array
                                 return testCases
                                     .find(element => element.tokenId === tokenId)
@@ -68,15 +66,7 @@ describe("nft revert tests", () => {
                 // set current nft state
                 nftDbMock = testCase.finalProperties;
                 const txToRevert = (testCase.transactions.slice(-1)[0] as unknown) as Interfaces.ITransactionData;
-                const types = [NftTransactionType.NftMint, NftTransactionType.NftUpdate];
-                const asset = { nft: { unik: { tokenId: testCase.tokenId } } };
-                await revertProperties(
-                    txToRevert,
-                    testCase.tokenId,
-                    asset,
-                    types,
-                    tx => getCurrentNftAsset(tx.asset).properties,
-                );
+                await revertProperties(txToRevert);
                 expect(nftDbMock).toEqual(testCase.afterRevertProperties);
             });
         }
@@ -86,15 +76,7 @@ describe("nft revert tests", () => {
                 // set current nft state
                 nftDbMock = { ...testCase.finalProperties, tata: "pwet" };
                 const txToRevert = (testCase.transactions.slice(-1)[0] as unknown) as Interfaces.ITransactionData;
-                const types = [NftTransactionType.NftMint, NftTransactionType.NftUpdate];
-                const asset = { nft: { unik: { tokenId: testCase.tokenId } } };
-                await revertProperties(
-                    txToRevert,
-                    testCase.tokenId,
-                    asset,
-                    types,
-                    tx => getCurrentNftAsset(tx.asset).properties,
-                );
+                await revertProperties(txToRevert);
                 expect(nftDbMock).toEqual({ ...testCase.afterRevertProperties, tata: "pwet" });
             });
         }

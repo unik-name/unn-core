@@ -38,7 +38,7 @@ export const revertExplicitValue = async (transaction: Interfaces.ITransactionDa
     );
     let retrievedExplicits = [];
 
-    for (const tx of transactions.reverse()) {
+    for (const tx of transactions) {
         if (tx.id === transaction.id) {
             continue;
         }

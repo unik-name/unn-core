@@ -38,8 +38,9 @@ export class NftsBusinessRepository implements NFT.INftsBusinessRepository {
         asset: any,
         types: number[],
         typeGroup: number,
+        order: string = "asc",
     ): Promise<Interfaces.ITransactionData[]> {
-        return this.connection.db.nfts.findTransactionsByAsset(asset, types, typeGroup);
+        return this.connection.db.nfts.findTransactionsByAsset(asset, types, typeGroup, order);
     }
 
     private parseSearchParams(params: Database.IParameters): Database.ISearchParameters {

@@ -3,8 +3,7 @@ import { ConnectionManager } from "@arkecosystem/core-database";
 import { Database, NFT, State, TransactionPool } from "@arkecosystem/core-interfaces";
 import { Handlers, TransactionReader } from "@arkecosystem/core-transactions";
 import { Interfaces, Transactions } from "@arkecosystem/crypto";
-import { NftOwnerError, nftRepository } from "@uns/core-nft";
-import { revertProperties } from "@uns/core-nft/src/transactions/handlers/helpers";
+import { NftOwnerError, nftRepository, revertProperties } from "@uns/core-nft";
 import { DiscloseExplicitTransaction, IDiscloseDemand, IDiscloseDemandCertification, unsCrypto } from "@uns/crypto";
 import {
     DiscloseDemandAlreadyExistsError,

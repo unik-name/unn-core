@@ -62,6 +62,8 @@ export const checkAssetPropertiesSize = (properties: NftInterfaces.INftPropertie
     }
 };
 
+// TODO: uns : move these helpers to nft-manager which is already exported
+// TODO: uns : refactor this method ?
 export const revertProperties = async (
     transaction: Interfaces.ITransactionData,
     tokenId: string,

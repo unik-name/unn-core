@@ -71,6 +71,7 @@ export const revertProperties = async (transaction: Interfaces.ITransactionData)
         asset,
         [Enums.NftTransactionType.NftMint, transaction.type],
         transaction.typeGroup,
+        "desc",
     );
 
     const retrievedProperties = {};

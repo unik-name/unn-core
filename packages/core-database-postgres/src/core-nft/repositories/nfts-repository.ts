@@ -167,11 +167,13 @@ export class NftsRepository extends Repository implements NFT.INftsRepository {
         asset: any,
         types: number[],
         typeGroup: number,
+        order: string = "asc",
     ): Promise<Interfaces.ITransactionData[]> {
         return await this.db.manyOrNone(sql.findTransactionsByAsset, {
             asset: JSON.stringify(asset),
             types,
             typeGroup,
+            order: order.toUpperCase(),
         });
     }
 }

@@ -6,10 +6,9 @@ import { app } from "@arkecosystem/core-container";
 import {
     setExplicitValue,
     EXPLICIT_PROP_KEY,
-    getExplicitValue,
+    revertExplicitValue,
 } from "@uns/uns-transactions/src/handlers/utils/helpers";
 import { UnsTransactionType, UnsTransactionGroup } from "@uns/crypto";
-import { revertProperties } from "@uns/core-nft/src/transactions/handlers/helpers";
 import { dummyTransaction } from "../__fixtures__";
 import { nftRepository } from "@uns/core-nft/src";
 
@@ -123,16 +122,18 @@ describe("Disclose-explicit - setExplicitValue tests", () => {
     describe("revert explicit values", () => {
         beforeEach(() => {
             nftManager.manageProperties.mockClear();
-            jest.spyOn(nftRepository(), "findTransactionsByAsset").mockImplementation(async () => {
-                return new Promise(resolve => {
-                    resolve([dummyTransaction]);
-                });
-            });
         });
 
         describe("revert newly disclosed", () => {
+            beforeEach(() => {
+                jest.spyOn(nftRepository(), "findTransactionsByAsset").mockImplementation(async () => {
+                    return new Promise(resolve => {
+                        resolve([dummyTransaction]);
+                    });
+                });
+            });
+
             it("revert nft property", async () => {
-                const asset = "unused";
                 await setExplicitValue(transaction);
                 expect(nftManager.manageProperties).toHaveBeenNthCalledWith(
                     1,
@@ -140,38 +141,30 @@ describe("Disclose-explicit - setExplicitValue tests", () => {
                     TOKEN_ID,
                 );
 
-                await revertProperties(transaction.data, TOKEN_ID, asset, [transaction.type], transaction => {
-                    return { [EXPLICIT_PROP_KEY]: getExplicitValue(transaction) };
-                });
+                await revertExplicitValue(transaction.data);
                 expect(nftManager.manageProperties).toHaveBeenNthCalledWith(
                     2,
-                    { [EXPLICIT_PROP_KEY]: "IamDisclosed" },
+                    { [EXPLICIT_PROP_KEY]: "dummyExplicit" },
                     TOKEN_ID,
                 );
             });
         });
 
         describe("revert update of disclosed values", () => {
-            const initialValues = "tata,titi";
             beforeEach(() => {
-                nftManager.getProperty.mockReturnValue({ value: initialValues });
-            });
-            // to unskip when revert of disclose will be fixed cf #tp-2005
-            it.skip("revert nft property", async () => {
-                const asset = "unused";
-                await setExplicitValue(transaction);
-                expect(nftManager.manageProperties).toHaveBeenNthCalledWith(
-                    1,
-                    { [EXPLICIT_PROP_KEY]: ["discloseMe", initialValues].join(",") },
-                    TOKEN_ID,
-                );
-
-                await revertProperties(transaction.data, TOKEN_ID, asset, [transaction.type], transaction => {
-                    return { [EXPLICIT_PROP_KEY]: getExplicitValue(transaction) };
+                transactionClone = JSON.parse(JSON.stringify(dummyTransaction));
+                transactionClone.asset["disclose-demand"].payload.explicitValue = ["tatapwet"];
+                jest.spyOn(nftRepository(), "findTransactionsByAsset").mockImplementation(async () => {
+                    return new Promise(resolve => {
+                        resolve([transactionClone, dummyTransaction]);
+                    });
                 });
-                expect(nftManager.manageProperties).toHaveBeenNthCalledWith(
-                    2,
-                    { [EXPLICIT_PROP_KEY]: initialValues },
+            });
+
+            it("revert nft property", async () => {
+                await revertExplicitValue(transaction.data);
+                expect(nftManager.manageProperties).toHaveBeenCalledWith(
+                    { [EXPLICIT_PROP_KEY]: "dummyExplicit,tatapwet" },
                     TOKEN_ID,
                 );
             });

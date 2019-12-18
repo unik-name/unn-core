@@ -47,12 +47,12 @@ export * from "../../core-nft/__fixtures__";
 export const dummyTransaction = ({
     type: UnsTransactionType.UnsDiscloseExplicit,
     typeGroup: UnsTransactionGroup,
-    id: "dummy",
+    id: "fromthepast",
     asset: {
         "disclose-demand": {
             payload: {
                 sub: tokenId,
-                explicitValue: ["IamDisclosed"],
+                explicitValue: ["dummyExplicit"],
             },
         },
     },

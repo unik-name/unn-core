@@ -3,7 +3,7 @@ import { ConnectionManager } from "@arkecosystem/core-database";
 import { Database, NFT, State, TransactionPool } from "@arkecosystem/core-interfaces";
 import { Handlers, TransactionReader } from "@arkecosystem/core-transactions";
 import { Interfaces, Transactions } from "@arkecosystem/crypto";
-import { NftOwnerError, nftRepository, revertProperties } from "@uns/core-nft";
+import { NftOwnerError, nftRepository } from "@uns/core-nft";
 import { DiscloseExplicitTransaction, IDiscloseDemand, IDiscloseDemandCertification, unsCrypto } from "@uns/crypto";
 import {
     DiscloseDemandAlreadyExistsError,
@@ -12,7 +12,7 @@ import {
     DiscloseDemandSignatureError,
     DiscloseDemandSubInvalidError,
 } from "../errors";
-import { EXPLICIT_PROP_KEY, getExplicitValue, setExplicitValue } from "./utils/helpers";
+import { EXPLICIT_PROP_KEY, revertExplicitValue, setExplicitValue } from "./utils/helpers";
 
 export class DiscloseExplicitTransactionHandler extends Handlers.TransactionHandler {
     private get nftsRepository(): NFT.INftsRepository {
@@ -133,11 +133,7 @@ export class DiscloseExplicitTransactionHandler extends Handlers.TransactionHand
     ): Promise<void> {
         await super.revertForSender(transaction, walletManager);
         if (updateDb) {
-            const tokenId = transaction.data.asset["disclose-demand"].payload.sub;
-            const asset = { "disclose-demand": { payload: { sub: tokenId } } };
-            await revertProperties(transaction.data, tokenId, asset, [transaction.type], transaction => {
-                return { [EXPLICIT_PROP_KEY]: getExplicitValue(transaction) };
-            });
+            await revertExplicitValue(transaction.data);
         }
     }
 

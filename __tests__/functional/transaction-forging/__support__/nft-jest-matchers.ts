@@ -1,4 +1,5 @@
 import { Identities, Interfaces } from "@arkecosystem/crypto";
+import { INftAsset } from "@uns/core-nft-crypto/dist/interfaces";
 import got from "got";
 import * as NftSupport from "./nft";
 
@@ -9,6 +10,7 @@ declare global {
         // tslint:disable-next-line:interface-name
         interface Matchers<R> {
             toHaveValidNftPersistanceState(): Promise<R>;
+            toMatchProperties(): Promise<R>;
         }
     }
 }
@@ -84,6 +86,30 @@ expect.extend({
         return {
             pass,
             message: () => `expected nft ${tokenId} ${this.isNot ? "not" : ""} to be persisted ${errorInfo}`,
+        };
+    },
+});
+
+expect.extend({
+    toMatchProperties: async (token: INftAsset) => {
+        let pass: boolean = false;
+        let errorInfo: string = "";
+        const { tokenId, properties } = token;
+
+        try {
+            const result = await nftPropertiesAreUpdated(tokenId, properties);
+            pass = result.pass;
+            if (!pass) {
+                errorInfo = result.errorInfo;
+            }
+        } catch (e) {
+            errorInfo = `(${e.message})`;
+        }
+
+        return {
+            pass,
+            message: () =>
+                `expected nft ${tokenId} ${this.isNot ? "not" : ""} match the expected properties: ${errorInfo}`,
         };
     },
 });

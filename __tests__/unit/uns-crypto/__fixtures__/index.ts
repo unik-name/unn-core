@@ -1,9 +1,12 @@
+import { Interfaces } from "@arkecosystem/crypto";
 import { Keys } from "@arkecosystem/crypto/src/identities";
 import {
     DIDTypes,
     IDiscloseDemandCertificationPayload,
     IDiscloseDemandPayload,
     UNSDiscloseExplicitBuilder,
+    UnsTransactionGroup,
+    UnsTransactionType,
 } from "@uns/crypto";
 import { buildDiscloseDemand } from "../helpers";
 
@@ -40,3 +43,17 @@ export const discloseExplicitTransaction = () =>
 export const issKeys = Keys.fromPassphrase(issPassphrase);
 export const demanderKeys = Keys.fromPassphrase(ownerPassphrase);
 export * from "../../core-nft/__fixtures__";
+
+export const dummyTransaction = ({
+    type: UnsTransactionType.UnsDiscloseExplicit,
+    typeGroup: UnsTransactionGroup,
+    id: "dummy",
+    asset: {
+        "disclose-demand": {
+            payload: {
+                sub: tokenId,
+                explicitValue: ["IamDisclosed"],
+            },
+        },
+    },
+} as unknown) as Interfaces.ITransactionData;

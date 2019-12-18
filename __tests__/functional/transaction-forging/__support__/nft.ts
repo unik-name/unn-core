@@ -63,7 +63,7 @@ export const nftTransferTransaction = (id: string, recipient: string) => {
 };
 
 export const generateNftId = () => {
-    return Crypto.HashAlgorithms.sha256(new Date().toISOString()).toString("hex");
+    return Crypto.HashAlgorithms.sha256(new Date().getTime().toString()).toString("hex");
 };
 
 export const mintAndWait = async nftId => {

@@ -20,7 +20,7 @@ export const unsDiscloseDemandPayload = {
             type: "array",
             minItems: 1,
             maxItems: 255,
-            items: { $ref: "alphanumeric" },
+            items: { type: "string" },
         },
         sub: { $ref: "tokenId" },
         type: { type: "integer", enum: DIDHelpers.codes() /*FIXME this statement has no effect*/ },

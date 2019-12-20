@@ -1,34 +1,3 @@
-import { DIDHelpers } from "../../models";
-
-export const unsDiscloseDemandCertificationPayload = {
-    type: "object",
-    required: ["sub", "iss", "iat"],
-    additionalProperties: false,
-    properties: {
-        sub: { $ref: "hex" },
-        iss: { $ref: "tokenId" },
-        iat: { type: "integer" },
-    },
-};
-
-export const unsDiscloseDemandPayload = {
-    type: "object",
-    required: ["explicitValue", "sub", "type", "iss", "iat"],
-    additionalProperties: false,
-    properties: {
-        explicitValue: {
-            type: "array",
-            minItems: 1,
-            maxItems: 255,
-            items: { type: "string" },
-        },
-        sub: { $ref: "tokenId" },
-        type: { type: "integer", enum: DIDHelpers.codes() /*FIXME this statement has no effect*/ },
-        iss: { $ref: "tokenId" },
-        iat: { type: "integer" },
-    },
-};
-
 export const unsDiscloseDemand = {
     asset: {
         type: "object",
@@ -39,7 +8,6 @@ export const unsDiscloseDemand = {
                 type: "object",
                 required: ["payload", "signature"],
                 properties: {
-                    payload: unsDiscloseDemandPayload,
                     signature: { $ref: "hex" },
                 },
             },
@@ -47,7 +15,6 @@ export const unsDiscloseDemand = {
                 type: "object",
                 required: ["payload", "signature"],
                 properties: {
-                    payload: unsDiscloseDemandCertificationPayload,
                     signature: { $ref: "hex" },
                 },
             },

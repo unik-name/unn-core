@@ -17,13 +17,13 @@ package_name=$(basename $1)
 case $package_name in
     uns-crypto|core-nft-crypto)
         #replace @arkecosystem/crypto by @uns/$uns_name in all .d.ts and .js of dist/
-        find dist \( -name "*.js" -o -name "*.d.ts" \) -exec sed -i "s/@arkecosystem\/crypto/@uns\/$uns_name/g" {} +
+        find dist \( -name "*.js" -o -name "*.d.ts" \) -exec sed -i.bak "s/@arkecosystem\/crypto/@uns\/$uns_name/g" {} +
         #get @uns/ark-crypto version
         uns_version=$(retrieve_uns_version "$1/../crypto/package.json")
         if [ -n "$uns_version" ]
         then
             echo "Set @uns/$uns_name dependency to version $uns_version"
-            sed -i "s/\"@arkecosystem\/crypto\": \".*\"/\"@uns\/$uns_name\": \"\^$uns_version\"/g" "$1/package.json"
+            sed -i.bak "s/\"@arkecosystem\/crypto\": \".*\"/\"@uns\/$uns_name\": \"\^$uns_version\"/g" "$1/package.json"
         else
             echo "Unable to retrieve @uns/$uns_name version"
             exit 1

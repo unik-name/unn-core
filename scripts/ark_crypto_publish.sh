@@ -20,9 +20,9 @@ then
     then
         echo "Publishing @uns/$uns_name $uns_version"
         #replace name in package.json
-        sed -i "s/\"name\": \"\(.*\)\"/\"name\": \"@uns\/$uns_name\"/g" "$1/package.json"
+        sed -i.bak "s/\"name\": \"\(.*\)\"/\"name\": \"@uns\/$uns_name\"/g" "$1/package.json"
         #replace version
-        sed -i "s/\"version\": \"\(.*\)\"/\"version\": \"$uns_version\"/g" "$1/package.json"
+        sed -i.bak "s/\"version\": \"\(.*\)\"/\"version\": \"$uns_version\"/g" "$1/package.json"
     else
         echo "Unable to retrieve @uns/$uns_base_package version"
         exit 1

@@ -15,6 +15,10 @@ export const unsDiscloseDemand = {
                 type: "object",
                 required: ["payload", "signature"],
                 properties: {
+                    payload: {
+                        type: "object",
+                        required: ["iss", "sub", "iat"],
+                    },
                     signature: { $ref: "hex" },
                 },
             },

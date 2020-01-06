@@ -1,5 +1,5 @@
 {
-    "name": "@uns/uns-badges",
+    "name": "@uns/badges",
     "version": "4.1.0",
     "description": "NFT Badges plugin for UNIKs token",
     "license": "MIT",
@@ -17,12 +17,15 @@
         "build:watch": "yarn clean && yarn compile -w",
         "clean": "del dist",
         "compile": "../../node_modules/typescript/bin/tsc",
-        "prepublishOnly": "yarn build"
+        "prepublishOnly": "yarn build",
+        "test": "jest --runInBand",
+        "test:coverage": "jest --coverage --coveragePathIgnorePatterns='/(defaults.ts|index.ts)$' --runInBand --forceExit"
     },
     "dependencies": {
         "@arkecosystem/core-api": "^2.6.0-next.4",
         "@arkecosystem/core-interfaces": "^2.6.0-next.4",
         "@uns/core-nft": "^4.1.0",
+        "@uns/crypto": "^4.1.0",
         "@hapi/boom": "^8.0.0",
         "@hapi/hapi": "^18.3.1"
     },
@@ -32,5 +35,26 @@
     },
     "publishConfig": {
         "access": "public"
+    },
+    "jest": {
+        "testEnvironment": "node",
+        "bail": true,
+        "verbose": true,
+        "transform": {
+            "^.+\\.tsx?$": "ts-jest"
+        },
+        "testMatch": [
+            "**/*.test.ts"
+        ],
+        "moduleFileExtensions": [
+            "ts",
+            "tsx",
+            "js",
+            "jsx",
+            "json",
+            "node"
+        ],
+        "collectCoverage": false,
+        "watchman": false
     }
 }

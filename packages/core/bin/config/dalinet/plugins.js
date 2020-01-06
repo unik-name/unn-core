@@ -63,7 +63,7 @@ module.exports = {
             { method: "get", path: "/api/wallets/{id}/{nft}s" },
         ]
     },
-    "@uns/uns-badges": {
+    "@uns/badges": {
         routes: [
             { method: "get", path: "/api/{nft}s/{id}/properties" },
             { method: "get", path: "/api/{nft}s/{id}/properties/{key}" },

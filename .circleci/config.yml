@@ -175,6 +175,14 @@ jobs:
       - *coverage
       - *notif
 
+  Badges:
+    <<: *job_test_config
+    steps:
+      - *attach
+      - run: yarn --cwd packages/uns-badges test:coverage
+      - *coverage
+      - *notif
+
   F-bridgechain-registration:
     <<: *job_test_config
     steps:
@@ -372,6 +380,9 @@ workflow: &workflow
       requires:
         - prepare
   - Unit:
+      requires:
+        - build
+  - Badges:
       requires:
         - build
   - Integration:

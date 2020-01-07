@@ -10,6 +10,9 @@ interface INftPropertyConstraintsConfig {
 
 interface INftConstraintsConfig {
     name: string;
+    propertyKey?: {
+        constraints?: IConstraintConfig[];
+    };
     properties: {
         [key: string]: INftPropertyConstraintsConfig;
     };

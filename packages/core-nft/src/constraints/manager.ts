@@ -9,7 +9,13 @@ import {
     INftConstraintsConfig,
     INftPropertyConstraintsConfig,
 } from "../interfaces";
-import { EnumerationConstraint, ImmutableConstraint, NumberConstraint, TypeConstraint } from "./constraint/";
+import {
+    EnumerationConstraint,
+    ImmutableConstraint,
+    NumberConstraint,
+    RegexConstraint,
+    TypeConstraint,
+} from "./constraint/";
 import { ConstraintError } from "./error";
 import { genesisPropertiesReducer } from "./utils";
 
@@ -59,6 +65,22 @@ export class ConstraintsManager {
         // Get constraint config of nft type modified in current transaction
         const nftConfig: INftConstraintsConfig = this.getNftConstraintsConfig(getNftName(context.transaction.asset));
         if (nftConfig) {
+            // Get property key constraints declared from configuration file
+            for (const constraint of this.getNftPropertyKeyConstraints(nftConfig)) {
+                // Get constraint logic instance
+                const constraintLogic = this.registeredConstraints[constraint.name];
+                // Check if the constraint has been registered
+                if (constraintLogic) {
+                    try {
+                        await constraintLogic.apply(context, constraint.parameters);
+                    } catch (error) {
+                        throw new ConstraintError(
+                            `Constraint violation on property '${context.key}' (${error.message})`,
+                        );
+                    }
+                }
+            }
+
             // Get constraints declared from configuration file
             for (const constraint of this.getNftPropertyConstraints(nftConfig, context.key)) {
                 // Get constraint logic instance
@@ -82,6 +104,7 @@ export class ConstraintsManager {
             new ImmutableConstraint(),
             new EnumerationConstraint(),
             new TypeConstraint().registerTypeConstraint(new NumberConstraint()),
+            new RegexConstraint(),
         ].map(constraint => this.registerConstraint(constraint));
     }
 
@@ -97,6 +120,10 @@ export class ConstraintsManager {
         return config?.properties[key]?.constraints?.length > 0;
     }
 
+    private nftPropertyHasKeyConstraints(config: INftConstraintsConfig): boolean {
+        return config?.propertyKey?.constraints?.length > 0;
+    }
+
     private getNftPropertyConstraints(config: INftConstraintsConfig, propertyKey: string): IConstraintConfig[] {
         let constraints: IConstraintConfig[] = [];
         if (this.nftPropertyHasConstraints(config, propertyKey)) {
@@ -104,6 +131,14 @@ export class ConstraintsManager {
             constraints = a.constraints.map((constraint: string | IConstraintConfig) => {
                 return typeof constraint === "string" ? { name: constraint } : constraint;
             });
+        }
+        return constraints;
+    }
+
+    private getNftPropertyKeyConstraints(config: INftConstraintsConfig): IConstraintConfig[] {
+        let constraints: IConstraintConfig[] = [];
+        if (this.nftPropertyHasKeyConstraints(config)) {
+            constraints = config?.propertyKey?.constraints;
         }
         return constraints;
     }

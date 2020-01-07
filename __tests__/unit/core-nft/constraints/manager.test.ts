@@ -118,4 +118,50 @@ describe("core-nft > constraint manager", () => {
             return expect(manager.applyConstraints(transaction)).rejects.toThrow(/enumeration/);
         });
     });
+
+    describe("regex constraint", () => {
+        let configMock;
+
+        beforeEach(() => {
+            configMock = {
+                mynft: {
+                    name: "mynft",
+                    propertyKey: {
+                        constraints: [
+                            {
+                                name: "regex",
+                                parameters: {
+                                    pattern: /[a-z\_+]/,
+                                    contextAttribute: "key",
+                                },
+                            },
+                        ],
+                    },
+                    properties: {},
+                },
+            };
+        });
+
+        it("should pass with matching", () => {
+            manager = new ConstraintsManager(configMock);
+            const properties = { ["matching_property+"]: "myPropertyValue" };
+            const transaction = NFTTransactionFactory.nftUpdate(nftName, nftId, properties).createOne();
+            expect(() => manager.applyConstraints(transaction)).not.toThrow();
+        });
+
+        it("should pass without regex constraint", () => {
+            delete configMock.mynft.propertyKey;
+            manager = new ConstraintsManager(configMock);
+            const properties = { ["#propertyKey"]: "myPropertyValue" };
+            const transaction = NFTTransactionFactory.nftUpdate(nftName, nftId, properties).createOne();
+            expect(() => manager.applyConstraints(transaction)).not.toThrow();
+        });
+
+        it("should throw regex exception", () => {
+            manager = new ConstraintsManager(configMock);
+            const properties = { ["#propertyKey"]: "myPropertyValue" };
+            const transaction = NFTTransactionFactory.nftUpdate(nftName, nftId, properties).createOne();
+            return expect(manager.applyConstraints(transaction)).rejects.toThrow(/key pattern regex/);
+        });
+    });
 });

@@ -15,11 +15,11 @@ echo -e "\nFetching sources"
 git fetch --prune
 DIFF=$(git diff $BRANCH origin/$BRANCH --shortstat)
 
-if [ -z $DIFF ]
+if [ -z "$DIFF" ]
 then
     echo "--> no updates."
     exit 0
-else 
+else
     git pull -s recursive -X theirs origin $BRANCH
     echo "--> source updated"
 fi

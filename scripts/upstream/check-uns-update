@@ -1,8 +1,8 @@
 #!/bin/sh
 
 ##########
-# Warning: If you update this file, you must copy to crond.d manually 
+# Warning: If you update this file, you must copy to crond.d manually
 # pm2 must be installed globally by unikname user.
 ##########
 
-*/30 7-9,12-16 * * MON-FRI ubuntu /home/ubuntu/uns-core/scripts/upstream/update-upstream.sh >> /home/ubuntu/cron-uns-core-update.log 2>&1
+*/30 7-9,12-16 * * MON-FRI ubuntu curl -fsS --retry 3 https://hc-ping.com/8ac26f25-cab4-49d5-aa6f-590855b0d344/start && /home/ubuntu/uns-core/scripts/upstream/update-upstream.sh >> /home/ubuntu/cron-uns-core-update.log 2>&1 && curl -fsS --retry 3 https://hc-ping.com/8ac26f25-cab4-49d5-aa6f-590855b0d344

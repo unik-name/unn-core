@@ -7,8 +7,10 @@ import { ConstraintError } from "../error";
 export class RegexConstraint implements IConstraint {
     public async apply(context: IConstraintApplicationContext, parameters?: any): Promise<void> {
         const toCheck: string = context[parameters.contextAttribute];
-        if (toCheck && toCheck.match(parameters.pattern)[0] !== toCheck) {
-            throw new ConstraintError(`${parameters.contextAttribute} pattern regex`);
+        if (!toCheck || !toCheck.match(parameters.pattern) || toCheck.match(parameters.pattern)[0] !== toCheck) {
+            throw new ConstraintError(
+                `pattern regex (${parameters.contextAttribute}: '${toCheck}', pattern: ${parameters.pattern})`,
+            );
         }
     }
 

@@ -131,7 +131,7 @@ describe("core-nft > constraint manager", () => {
                             {
                                 name: "regex",
                                 parameters: {
-                                    pattern: /[a-z\_+]/,
+                                    pattern: /^[a-z\_+]$/,
                                     contextAttribute: "key",
                                 },
                             },
@@ -161,7 +161,27 @@ describe("core-nft > constraint manager", () => {
             manager = new ConstraintsManager(configMock);
             const properties = { ["#propertyKey"]: "myPropertyValue" };
             const transaction = NFTTransactionFactory.nftUpdate(nftName, nftId, properties).createOne();
-            return expect(manager.applyConstraints(transaction)).rejects.toThrow(/key pattern regex/);
+            return expect(manager.applyConstraints(transaction)).rejects.toThrow(
+                "Constraint violation on property '#propertyKey' (pattern regex (key: '#propertyKey', pattern: /^[a-z\\_+]$/))",
+            );
+        });
+
+        it("should throw regex exception (starting space)", () => {
+            manager = new ConstraintsManager(configMock);
+            const properties = { [" propertyKey"]: "myPropertyValue" };
+            const transaction = NFTTransactionFactory.nftUpdate(nftName, nftId, properties).createOne();
+            return expect(manager.applyConstraints(transaction)).rejects.toThrow(
+                "Constraint violation on property ' propertyKey' (pattern regex (key: ' propertyKey', pattern: /^[a-z\\_+]$/))",
+            );
+        });
+
+        it("should throw regex exception (ending space)", () => {
+            manager = new ConstraintsManager(configMock);
+            const properties = { ["propertyKey "]: "myPropertyValue" };
+            const transaction = NFTTransactionFactory.nftUpdate(nftName, nftId, properties).createOne();
+            return expect(manager.applyConstraints(transaction)).rejects.toThrow(
+                "Constraint violation on property 'propertyKey ' (pattern regex (key: 'propertyKey ', pattern: /^[a-z\\_+]$/))",
+            );
         });
     });
 });

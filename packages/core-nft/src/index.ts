@@ -1,3 +1,4 @@
 export * from "./plugin";
 export * from "./errors";
-export { nftRepository } from "./manager";
+export * from "./transactions";
+export * from "./manager";

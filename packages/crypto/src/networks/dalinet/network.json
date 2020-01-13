@@ -14,5 +14,6 @@
         "token": "DUNS",
         "symbol": "DUNS",
         "explorer": "https://dalinet.explorer.uns.network"
-    }
+    },
+    "transactionsConfig": { "delegateRegistration": { "enable": false } }
 }

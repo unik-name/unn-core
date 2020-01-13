@@ -93,6 +93,7 @@ export class TransactionHandlerRegistry {
         const walletAttributes: ReadonlyArray<string> = service.walletAttributes();
         for (const attribute of walletAttributes) {
             assert(!this.knownWalletAttributes.has(attribute), `Wallet attribute is already known: ${attribute}`);
+
             this.knownWalletAttributes.set(attribute, true);
         }
 

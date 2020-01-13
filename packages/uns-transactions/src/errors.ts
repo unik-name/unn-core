@@ -34,3 +34,27 @@ export class DiscloseDemandIssuerError extends Errors.TransactionError {
         super(`Failed to apply transaction, because the disclose demand issuer is not allowed to`);
     }
 }
+
+export class UnikNameNotDisclosedError extends Errors.TransactionError {
+    constructor(tokenId) {
+        super(`Failed to apply transaction because the UnikName of token "${tokenId}" is not disclosed`);
+    }
+}
+
+export class InvalidUnikTypeError extends Errors.TransactionError {
+    constructor(type, tokenId) {
+        super(`Failed to apply transaction because the type "${type}" Unik "${tokenId}" is not disclosed`);
+    }
+}
+
+export class CryptoAccountAlreadyDelegateError extends Errors.TransactionError {
+    constructor() {
+        super(`Failed to apply transaction because crypto-account has already a registered UNIK as delegate`);
+    }
+}
+
+export class CryptoAccountNotADelegateError extends Errors.TransactionError {
+    constructor() {
+        super(`Failed to apply transaction because crypto-account has no UNIK registered as delegate`);
+    }
+}

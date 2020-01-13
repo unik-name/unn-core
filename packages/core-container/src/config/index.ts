@@ -89,6 +89,7 @@ export class Config {
                         symbol: Joi.string().required(),
                         explorer: Joi.string().required(),
                     }),
+                    transactionsConfig: Joi.object(),
                 }).required(),
             }),
         );

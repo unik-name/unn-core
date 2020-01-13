@@ -50,6 +50,10 @@ export class NftsManager {
         return this.repository.findPropertyByKey(tokenId, propertyKey);
     }
 
+    public async getProperties(tokenId: string) {
+        return this.repository.findProperties(tokenId);
+    }
+
     public async hasProperty(tokenId: string, propertyKey: string): Promise<boolean> {
         const property = await this.getProperty(tokenId, propertyKey);
         return property && property !== null;

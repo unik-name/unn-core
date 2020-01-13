@@ -279,4 +279,9 @@ export abstract class TransactionHandler implements ITransactionHandler {
 
         return false;
     }
+
+    public isTransactionActivated(): boolean {
+        const isEnabled = Managers.configManager.get(`network.transactionsConfig.${this.getConstructor().key}.enable`);
+        return isEnabled === undefined ? true : isEnabled;
+    }
 }

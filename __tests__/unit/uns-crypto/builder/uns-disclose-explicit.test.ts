@@ -1,13 +1,13 @@
 import { Managers, Transactions, Utils } from "@arkecosystem/crypto";
 import { Transactions as NftTransactions } from "@uns/core-nft-crypto";
-import "jest-extended";
 import {
     DiscloseExplicitTransaction,
     unsCrypto,
     UnsTransactionGroup,
     UnsTransactionStaticFees,
     UnsTransactionType,
-} from "../../../../packages/uns-crypto/src";
+} from "@uns/crypto";
+import "jest-extended";
 import * as Fixtures from "../__fixtures__";
 
 describe("Uns Disclose Explicit Transaction", () => {

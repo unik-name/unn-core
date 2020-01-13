@@ -1,5 +1,6 @@
 import { app } from "@arkecosystem/core-container";
 import { Interfaces } from "@arkecosystem/crypto";
+import { NftsManager } from "@uns/core-nft";
 import { nftRepository } from "@uns/core-nft/";
 
 export const EXPLICIT_PROP_KEY = "explicitValues";
@@ -8,14 +9,17 @@ export const getCurrentTokenId = (transaction: Interfaces.ITransactionData): str
     return transaction.asset["disclose-demand"].payload.sub;
 };
 
+export const getNftsManager = (): NftsManager => {
+    return app.resolvePlugin<NftsManager>("core-nft");
+};
+
 export const setExplicitValue = async (transaction: Interfaces.ITransaction): Promise<any> => {
     const tokenId = getCurrentTokenId(transaction.data);
     let explicitValues = transaction.data.asset["disclose-demand"].payload.explicitValue;
 
-    const nftManager = app.resolvePlugin("core-nft");
-    const currentValues = await nftManager.getProperty(tokenId, EXPLICIT_PROP_KEY);
+    const currentValues = await getNftsManager().getProperty(tokenId, EXPLICIT_PROP_KEY);
     explicitValues = manageNewExplicitValues(currentValues?.value.split(","), explicitValues);
-    nftManager.manageProperties({ [EXPLICIT_PROP_KEY]: explicitValues.join(",") }, tokenId);
+    await getNftsManager().manageProperties({ [EXPLICIT_PROP_KEY]: explicitValues.join(",") }, tokenId);
 };
 
 const manageNewExplicitValues = (currents: string[], newValues: string[]): string[] => {
@@ -28,7 +32,6 @@ const manageNewExplicitValues = (currents: string[], newValues: string[]): strin
 
 export const revertExplicitValue = async (transaction: Interfaces.ITransactionData): Promise<void> => {
     const tokenId = getCurrentTokenId(transaction);
-    const manager = app.resolvePlugin("core-nft");
 
     const asset = { "disclose-demand": { payload: { sub: tokenId } } };
     const transactions = await nftRepository().findTransactionsByAsset(
@@ -46,5 +49,5 @@ export const revertExplicitValue = async (transaction: Interfaces.ITransactionDa
         retrievedExplicits = manageNewExplicitValues(retrievedExplicits, txValues);
     }
     // revert updated properties with last known value
-    await manager.manageProperties({ [EXPLICIT_PROP_KEY]: retrievedExplicits.join(",") }, tokenId);
+    await getNftsManager().manageProperties({ [EXPLICIT_PROP_KEY]: retrievedExplicits.join(",") }, tokenId);
 };

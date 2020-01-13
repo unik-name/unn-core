@@ -2,22 +2,21 @@ import "jest-extended";
 
 import { Handlers } from "@arkecosystem/core-transactions";
 import { Managers, Utils } from "@arkecosystem/crypto";
-import { UnsTransactionGroup, UnsTransactionType } from "@uns/crypto";
-import { DiscloseExplicitTransactionHandler } from "@uns/uns-transactions";
+import { UNSDelegateRegisterBuilder, UnsTransactionGroup, UnsTransactionType } from "@uns/crypto";
+import { DelegateRegisterTransactionHandler, DiscloseExplicitTransactionHandler } from "@uns/uns-transactions";
 import { NftMintTransactionHandler } from "../../../../packages/core-nft/src/transactions";
 import * as Fixtures from "../__fixtures__";
 
-describe("Registry register nft transaction", () => {
+describe("Registry register uns transaction", () => {
     Managers.configManager.setFromPreset(Fixtures.network);
     Managers.configManager.setHeight(2);
 
-    beforeEach(() => {
-        Handlers.Registry.registerTransactionHandler(DiscloseExplicitTransactionHandler);
-        // TODO: uns : we must register nft-mint type because disclose explicit requires schema reference token id
-        Handlers.Registry.registerTransactionHandler(NftMintTransactionHandler);
-    });
+    // TODO: uns : we must register nft-mint type because disclose explicit requires "token" wallet attribute
+    Handlers.Registry.registerTransactionHandler(NftMintTransactionHandler);
+    Handlers.Registry.registerTransactionHandler(DiscloseExplicitTransactionHandler);
+    Handlers.Registry.registerTransactionHandler(DelegateRegisterTransactionHandler);
 
-    describe("nft-mint", () => {
+    describe("Disclose Explicit", () => {
         it("should not throw when registering transactions", () => {
             return expect(
                 Handlers.Registry.get(UnsTransactionType.UnsDiscloseExplicit, UnsTransactionGroup),
@@ -29,6 +28,24 @@ describe("Registry register nft transaction", () => {
             const transaction = Fixtures.discloseExplicitTransaction().build();
             expect(handler.dynamicFee({ addonBytes: 0, satoshiPerByte: 0, transaction } as any)).toEqual(
                 Utils.BigNumber.make(221),
+            );
+        });
+    });
+    describe("Delegate register", () => {
+        it("should not throw when registering transactions", () => {
+            return expect(
+                Handlers.Registry.get(UnsTransactionType.UnsDelegateRegister, UnsTransactionGroup),
+            ).resolves.toBeDefined();
+        });
+
+        it("should return dynamic fees", async () => {
+            const handler = await Handlers.Registry.get(UnsTransactionType.UnsDelegateRegister, UnsTransactionGroup);
+            const transaction = new UNSDelegateRegisterBuilder()
+                .usernameAsset(Fixtures.tokenId)
+                .sign(Fixtures.ownerPassphrase)
+                .build();
+            expect(handler.dynamicFee({ addonBytes: 0, satoshiPerByte: 0, transaction } as any)).toEqual(
+                Utils.BigNumber.make(94),
             );
         });
     });

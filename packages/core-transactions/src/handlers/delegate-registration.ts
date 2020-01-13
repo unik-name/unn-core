@@ -59,6 +59,11 @@ export class DelegateRegistrationTransactionHandler extends TransactionHandler {
             }
         }
 
+        // UNS hack: When registering child class UnsDelegateRegister we must ensure that the code below is executed only once
+        if (!(await this.isActivated())) {
+            return;
+        }
+
         for (const block of forgedBlocks) {
             const wallet: State.IWallet = walletManager.findByPublicKey(block.generatorPublicKey);
             const delegate: State.IWalletDelegateAttributes = wallet.getAttribute("delegate");
@@ -80,7 +85,7 @@ export class DelegateRegistrationTransactionHandler extends TransactionHandler {
     }
 
     public async isActivated(): Promise<boolean> {
-        return true;
+        return this.isTransactionActivated();
     }
 
     public async throwIfCannotBeApplied(

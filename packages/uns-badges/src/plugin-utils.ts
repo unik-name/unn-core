@@ -67,16 +67,19 @@ export const handlePropertiesRequest = (properties: Array<{ [_: string]: string 
                     value = hasSecondPassphrase(nft.ownerId, container);
                     break;
                 default:
-                    value = properties.find(elt => Object.getOwnPropertyNames(elt)[0] === propertyKey)?.propertyKey;
+                    value = properties.find(elt => Object.getOwnPropertyNames(elt)[0] === propertyKey)?.[propertyKey];
                     if (value === undefined) {
                         const nftType = properties.find(elt => Object.getOwnPropertyNames(elt)[0] === "type").type;
                         value = getDefaultValue(badgeName, parseInt(nftType));
                     }
                     break;
             }
-            properties.push({
-                [propertyKey]: value,
-            });
+
+            if (value !== undefined) {
+                properties.push({
+                    [propertyKey]: value,
+                });
+            }
         }
     }
     return properties;

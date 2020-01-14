@@ -29,15 +29,21 @@ export class DiscloseDemandAlreadyExistsError extends Errors.TransactionError {
     }
 }
 
-export class DiscloseDemandIssuerError extends Errors.TransactionError {
-    constructor() {
-        super(`Failed to apply transaction, because the disclose demand issuer is not allowed to`);
+export class CertifiedDemandIssuerNotFound extends Errors.TransactionError {
+    constructor(txId, message) {
+        super(`Failed to apply transaction ${txId}, because ${message}`);
+    }
+}
+
+export class CertifiedDemandNotAllowedIssuerError extends Errors.TransactionError {
+    constructor(txId, issuerId) {
+        super(`Failed to apply transaction ${txId}, because the demand issuer of id ${issuerId} is not allowed to`);
     }
 }
 
 export class UnikNameNotDisclosedError extends Errors.TransactionError {
     constructor(tokenId) {
-        super(`Failed to apply transaction because the UnikName of token "${tokenId}" is not disclosed`);
+        super(`Failed to apply transaction because the @unikname of token "${tokenId}" is not disclosed`);
     }
 }
 
@@ -56,5 +62,29 @@ export class CryptoAccountAlreadyDelegateError extends Errors.TransactionError {
 export class CryptoAccountNotADelegateError extends Errors.TransactionError {
     constructor() {
         super(`Failed to apply transaction: crypto-account has no delegate Unik`);
+    }
+}
+
+export abstract class NftMintCertificationError extends Errors.TransactionError {
+    constructor(message: string) {
+        super("Failed to apply transaction Certified NFT Mint: " + message);
+    }
+}
+
+export class NftMintCertificationBadSignatureError extends NftMintCertificationError {
+    constructor() {
+        super("fail to check certification signature");
+    }
+}
+
+export class NftMintCertificationBadPayloadSubjectError extends NftMintCertificationError {
+    constructor() {
+        super("fail to check certification payload subject");
+    }
+}
+
+export abstract class NftMintCertificationTimedError extends NftMintCertificationError {
+    constructor(transactionId: string, time: number, suffix: string) {
+        super(`Certification of transaction ${transactionId} is ${time} seconds ${suffix}`);
     }
 }

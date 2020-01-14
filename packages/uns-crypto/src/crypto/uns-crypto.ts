@@ -22,8 +22,12 @@ class UnsCrypto {
         return Crypto.Hash.verifyECDSA(this.getPayloadHashBuffer(payload), signature, publicKey);
     }
 
-    public verifyIssuerCredentials(issuerId) {
+    /**
+     * Return false if the issuer is not allowed to
+     */
+    public verifyIssuerCredentials(issuerId): boolean {
         // TODO
+
         return true;
     }
 

@@ -47,19 +47,37 @@ describe("Nft Mint Transaction", () => {
 
     describe("should test properties", () => {
         it("should have its specific properties", () => {
-            expect(builder).toHaveProperty("data.type", NftTransactionType.NftMint);
-            expect(builder).toHaveProperty("data.typeGroup", NftTransactionGroup);
-            expect(builder).toHaveProperty("data.amount", Utils.BigNumber.ZERO);
-            expect(builder).toHaveProperty("data.fee", Utils.BigNumber.make(NftTransactionStaticFees.NftMint));
-            expect(builder).toHaveProperty("data.recipientId", undefined);
-            expect(builder).toHaveProperty("data.senderPublicKey", undefined);
-            expect(builder).toHaveProperty("data.asset", { nft: { [nftName]: { tokenId: nftId } } });
-            expect(builder).toHaveProperty("data.version", 2);
-            expect(builder).toHaveProperty("data.nonce");
+            checkProperties(builder, "data");
         });
 
         it("should not have properties", () => {
             expect(builder).not.toHaveProperty("data.nft");
         });
     });
+
+    describe("getAsset tests", () => {
+        it("getAsset should be callable without calling sign()", () => {
+            const result = builder.getCurrentAsset();
+            expect(result).toStrictEqual({ nft: { [nftName]: { tokenId: nftId } } });
+        });
+    });
 });
+
+const checkProperties = (object: any, path?: string) => {
+    expect(object).toHaveProperty(getPath("type", path), NftTransactionType.NftMint);
+    expect(object).toHaveProperty(getPath("typeGroup", path), NftTransactionGroup);
+    expect(object).toHaveProperty(getPath("amount", path), Utils.BigNumber.ZERO);
+    expect(object).toHaveProperty(getPath("fee", path), Utils.BigNumber.make(NftTransactionStaticFees.NftMint));
+    expect(object).toHaveProperty(getPath("recipientId", path), undefined);
+    expect(object).toHaveProperty(getPath("senderPublicKey", path), undefined);
+    expect(object).toHaveProperty(getPath("asset", path), { nft: { [nftName]: { tokenId: nftId } } });
+    expect(object).toHaveProperty(getPath("version", path), 2);
+    expect(object).toHaveProperty(getPath("nonce", path));
+};
+
+const getPath = (suffix: string, path?: string): string => {
+    if (path) {
+        return `${path}.${suffix}`;
+    }
+    return suffix;
+};

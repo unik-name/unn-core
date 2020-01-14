@@ -26,7 +26,8 @@
         "postpublish": "yarn restore_backup"
     },
     "dependencies": {
-        "@arkecosystem/crypto": "^2.6.0-next.4"
+        "@arkecosystem/crypto": "^2.6.0-next.4",
+        "@uns/core-nft-crypto": "^4.1.0"
     },
     "devDependencies": {
         "rollup": "^1.17.0",

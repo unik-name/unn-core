@@ -1,6 +1,7 @@
 import { Container, Logger } from "@arkecosystem/core-interfaces";
 import { Handlers } from "@arkecosystem/core-transactions";
 import {
+    CertifiedNftMintTransactionHandler,
     DelegateRegisterTransactionHandler,
     DelegateResignTransactionHandler,
     DiscloseExplicitTransactionHandler,
@@ -15,6 +16,7 @@ export const plugin: Container.IPluginDescriptor = {
         Handlers.Registry.registerTransactionHandler(DiscloseExplicitTransactionHandler);
         Handlers.Registry.registerTransactionHandler(DelegateRegisterTransactionHandler);
         Handlers.Registry.registerTransactionHandler(DelegateResignTransactionHandler);
+        Handlers.Registry.registerTransactionHandler(CertifiedNftMintTransactionHandler);
     },
     async deregister(container: Container.IContainer, options) {
         container.resolvePlugin<Logger.ILogger>("logger").info("Stopping UNS Transactions plugin");

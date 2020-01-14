@@ -3,11 +3,11 @@ import { NftTransactionStaticFees, NftTransactionType } from "../enums";
 import { NftBuilder } from "./nft";
 
 export class NftTransferBuilder extends NftBuilder<NftTransferBuilder> {
-    protected instance(): NftTransferBuilder {
+    protected instance(): this {
         return this;
     }
 
-    protected type() {
+    protected type(): number {
         return NftTransactionType.NftTransfer;
     }
 

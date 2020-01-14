@@ -1,7 +1,7 @@
 import { app } from "@arkecosystem/core-container";
 import { Database, State, TransactionPool } from "@arkecosystem/core-interfaces";
 import { Handlers, TransactionReader } from "@arkecosystem/core-transactions";
-import { Interfaces, Transactions } from "@arkecosystem/crypto";
+import { Interfaces, Managers, Transactions } from "@arkecosystem/crypto";
 import { getCurrentNftAsset, Transactions as NftTransactions } from "@uns/core-nft-crypto";
 import { NftOwnedError } from "../../errors";
 import { INftWalletAttributes } from "../../interfaces";
@@ -10,7 +10,7 @@ import { addNftToWallet, applyNftMintDb, checkAssetPropertiesSize, removeNftFrom
 
 export class NftMintTransactionHandler extends Handlers.TransactionHandler {
     public async isActivated(): Promise<boolean> {
-        return true;
+        return !Managers.configManager.getMilestone().certifiedNFTsOnly && this.isTransactionActivated();
     }
 
     public getConstructor(): Transactions.TransactionConstructor {

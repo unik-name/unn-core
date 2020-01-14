@@ -29,7 +29,6 @@ describe("Nft mint transaction", () => {
                 nft: {
                     [Fixtures.nftName]: {
                         tokenId: Fixtures.nftId,
-                        properties: undefined,
                     },
                 },
             };

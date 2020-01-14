@@ -3,7 +3,7 @@ import "jest-extended";
 import { Handlers } from "@arkecosystem/core-transactions";
 import { Managers, Utils } from "@arkecosystem/crypto";
 import { UNSDelegateRegisterBuilder, UnsTransactionGroup, UnsTransactionType } from "@uns/crypto";
-import { DelegateRegisterTransactionHandler, DiscloseExplicitTransactionHandler } from "@uns/uns-transactions";
+import { CertifiedNftMintTransactionHandler, DelegateRegisterTransactionHandler, DiscloseExplicitTransactionHandler } from "@uns/uns-transactions";
 import * as Fixtures from "../__fixtures__";
 
 describe("Registry register uns transaction", () => {
@@ -12,6 +12,7 @@ describe("Registry register uns transaction", () => {
 
     Handlers.Registry.registerTransactionHandler(DiscloseExplicitTransactionHandler);
     Handlers.Registry.registerTransactionHandler(DelegateRegisterTransactionHandler);
+    Handlers.Registry.registerTransactionHandler(CertifiedNftMintTransactionHandler);
 
     describe("Disclose Explicit", () => {
         it("should not throw when registering transactions", () => {
@@ -43,6 +44,22 @@ describe("Registry register uns transaction", () => {
                 .build();
             expect(handler.dynamicFee({ addonBytes: 0, satoshiPerByte: 0, transaction } as any)).toEqual(
                 Utils.BigNumber.make(94),
+            );
+        });
+    });
+
+    describe("Certified Nft Mint", () => {
+        it("should not throw when registering transactions", () => {
+            return expect(
+                Handlers.Registry.get(UnsTransactionType.UnsCertifiedNftMint, UnsTransactionGroup),
+            ).resolves.toBeDefined();
+        });
+
+        it("should return dynamic fees", async () => {
+            const handler = await Handlers.Registry.get(UnsTransactionType.UnsCertifiedNftMint, UnsTransactionGroup);
+            const transaction = Fixtures.unsCertifiedNftMinTransaction().build();
+            expect(handler.dynamicFee({ addonBytes: 0, satoshiPerByte: 0, transaction } as any)).toEqual(
+                Utils.BigNumber.make(152),
             );
         });
     });

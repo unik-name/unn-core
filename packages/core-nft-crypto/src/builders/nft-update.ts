@@ -3,11 +3,11 @@ import { NftTransactionStaticFees, NftTransactionType } from "../enums";
 import { AbstractNftUpdateBuilder } from "./abstract-nft-update";
 
 export class NftUpdateBuilder extends AbstractNftUpdateBuilder<NftUpdateBuilder> {
-    protected instance(): NftUpdateBuilder {
+    protected instance(): this {
         return this;
     }
 
-    protected type() {
+    protected type(): number {
         return NftTransactionType.NftUpdate;
     }
 

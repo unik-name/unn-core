@@ -26,13 +26,9 @@ export class NftUpdateTransaction extends Transactions.Transaction {
         });
     }
 
-    protected static defaultStaticFee: Utils.BigNumber = Utils.BigNumber.make(NftTransactionStaticFees.NftUpdate);
-
-    public serialize(): ByteBuffer {
-        const { data } = this;
-
-        const nftAsset = getCurrentNftAsset(data.asset);
-        const nftNameBuf = Buffer.from(getNftName(data.asset), "utf8");
+    public static serializePayload(payload: any) {
+        const nftAsset = getCurrentNftAsset(payload);
+        const nftNameBuf = Buffer.from(getNftName(payload), "utf8");
         const properties: { [_: string]: string } = nftAsset.properties || {};
         const bufferSize = 32 + 1 + computePropertiesSize(properties) + nftNameBuf.length;
         const buffer = new ByteBuffer(bufferSize, true);
@@ -64,35 +60,46 @@ export class NftUpdateTransaction extends Transactions.Transaction {
         return buffer;
     }
 
+    protected static defaultStaticFee: Utils.BigNumber = Utils.BigNumber.make(NftTransactionStaticFees.NftUpdate);
+
+    public serialize(): ByteBuffer {
+        const { data } = this;
+
+        return NftUpdateTransaction.serializePayload(data.asset);
+    }
+
     public deserialize(buf: ByteBuffer): void {
         const { data } = this;
         const nftNameSize = buf.readUint8();
         const nftName = buf.readBytes(nftNameSize).toUTF8();
         const tokenId = buf.readBytes(32).toString("hex");
 
-        // Use unsigned Int to serialize nb properties max 255 properties (max with signed 8 bits int is 127)
-        const propertiesLength = buf.readUint8();
-        const properties: { [_: string]: string } = propertiesLength > 0 ? {} : undefined;
-
-        for (let i = 0; i < propertiesLength; i++) {
-            const propertyKeyLength = buf.readUint8();
-            const propertyKey = buf.readBytes(propertyKeyLength).toUTF8();
-
-            const propertyValueLength = buf.readInt16();
-            const propertyValue: string =
-                // null is needed for property deletion
-                // tslint:disable-next-line: no-null-keyword
-                propertyValueLength === -1 ? null : buf.readBytes(propertyValueLength).toUTF8();
-
-            properties[propertyKey] = propertyValue;
-        }
         data.asset = {
             nft: {
                 [nftName]: {
                     tokenId,
-                    properties,
                 },
             },
         };
+
+        // Use unsigned Int to serialize nb properties max 255 properties (max with signed 8 bits int is 127)
+        const propertiesLength = buf.readUint8();
+
+        if (propertiesLength > 0) {
+            const properties: { [_: string]: string } = {};
+            for (let i = 0; i < propertiesLength; i++) {
+                const propertyKeyLength = buf.readUint8();
+                const propertyKey = buf.readBytes(propertyKeyLength).toUTF8();
+
+                const propertyValueLength = buf.readInt16();
+                const propertyValue: string =
+                    // null is needed for property deletion
+                    // tslint:disable-next-line: no-null-keyword
+                    propertyValueLength === -1 ? null : buf.readBytes(propertyValueLength).toUTF8();
+
+                properties[propertyKey] = propertyValue;
+            }
+            data.asset.nft[nftName].properties = properties;
+        }
     }
 }

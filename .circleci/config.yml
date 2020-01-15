@@ -13,6 +13,7 @@ repo_path: &repo_path
 
 job_config: &job_config
   working_directory: *repo_path
+  resource_class: medium
   docker:
     - image: circleci/node:12-browsers
 
@@ -170,9 +171,7 @@ jobs:
     <<: *job_test_config_unit_tests
     steps:
       - *attach
-      # 2020-01-15: disable --maxWorkers=2 as it too often fail tests
-      # - run: yarn test:unit:coverage --maxWorkers=2
-      - run: yarn test:unit:coverage  --runInBand
+      - run: yarn test:unit:coverage --maxWorkers=2
       - *coverage
       - *notif
 
@@ -383,6 +382,11 @@ orbs:
 ## Workflows
 ####################################
 
+arksTestsBranches: &arksTestsBranches
+  branches:
+    only:
+      - develop
+
 workflow: &workflow
   - prepare
   - build:
@@ -403,54 +407,88 @@ workflow: &workflow
         - build
 # Ark's tests
   - F-bridgechain-registration:
+      filters:
+        *arksTestsBranches
       requires:
         *nft_uns_related_tests
   - F-bridgechain-resignation:
+      filters:
+        *arksTestsBranches
       requires:
         *nft_uns_related_tests
   - F-bridgechain-update:
+      filters:
+        *arksTestsBranches
       requires:
         *nft_uns_related_tests
   - F-business-registration:
+      filters:
+        *arksTestsBranches
       requires:
         *nft_uns_related_tests
   - F-business-resignation:
+      filters:
+        *arksTestsBranches
       requires:
         *nft_uns_related_tests
   - F-business-update:
+      filters:
+        *arksTestsBranches
       requires:
         *nft_uns_related_tests
   - F-delegate-registration:
+      filters:
+        *arksTestsBranches
       requires:
         *nft_uns_related_tests
   - F-delegate-resignation:
+      filters:
+        *arksTestsBranches
       requires:
         *nft_uns_related_tests
   - F-htlc-claim:
+      filters:
+        *arksTestsBranches
       requires:
         *nft_uns_related_tests
   - F-htlc-lock:
+      filters:
+        *arksTestsBranches
       requires:
         *nft_uns_related_tests
   - F-htlc-refund:
+      filters:
+        *arksTestsBranches
       requires:
         *nft_uns_related_tests
   - F-ipfs:
+      filters:
+        *arksTestsBranches
       requires:
         *nft_uns_related_tests
   - F-multi-payment:
+      filters:
+        *arksTestsBranches
       requires:
         *nft_uns_related_tests
   - F-multi-signature-registration:
+      filters:
+        *arksTestsBranches
       requires:
         *nft_uns_related_tests
   - F-second-signature-registration:
+      filters:
+        *arksTestsBranches
       requires:
         *nft_uns_related_tests
   - F-transfer:
+      filters:
+        *arksTestsBranches
       requires:
         *nft_uns_related_tests
   - F-vote:
+      filters:
+        *arksTestsBranches
       requires:
         *nft_uns_related_tests
 # Post-tests operations

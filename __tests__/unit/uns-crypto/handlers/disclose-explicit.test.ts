@@ -9,7 +9,6 @@ import { State } from "@arkecosystem/core-interfaces";
 import * as Fixtures from "../__fixtures__";
 import { Wallets } from "@arkecosystem/core-state";
 import { Handlers } from "@arkecosystem/core-transactions";
-import { NftMintTransactionHandler } from "@uns/core-nft/src/transactions";
 import { IWallet } from "@arkecosystem/core-interfaces/dist/core-state";
 import { INftAsset } from "@uns/core-nft-crypto/dist/interfaces";
 import { nftRepository } from "@uns/core-nft";
@@ -25,8 +24,6 @@ describe("UnsDiscloseExplicit Transaction", () => {
     Managers.configManager.setHeight(2);
 
     Handlers.Registry.registerTransactionHandler(DiscloseExplicitTransactionHandler);
-    // TODO: uns : we must register nft-mint type because disclose explicit requires schema reference token id
-    Handlers.Registry.registerTransactionHandler(NftMintTransactionHandler);
 
     const DEMANDER_PASSPHRASE = "owner passphrase";
     const TOKEN_ID = "ee16f4b75f38f6e3d16635f72a8445e0ff8fbacfdfa8f05df077e73de79d6e4f";

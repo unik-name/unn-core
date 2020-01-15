@@ -4,6 +4,7 @@ import { Database, NFT, State, TransactionPool } from "@arkecosystem/core-interf
 import { Handlers, TransactionReader } from "@arkecosystem/core-transactions";
 import { Interfaces, Transactions } from "@arkecosystem/crypto";
 import { NftOwnerError, nftRepository } from "@uns/core-nft";
+import { NftMintTransactionHandler } from "@uns/core-nft";
 import { DiscloseExplicitTransaction, IDiscloseDemand, IDiscloseDemandCertification, unsCrypto } from "@uns/crypto";
 import {
     DiscloseDemandAlreadyExistsError,
@@ -24,7 +25,7 @@ export class DiscloseExplicitTransactionHandler extends Handlers.TransactionHand
     }
 
     public dependencies(): ReadonlyArray<Handlers.TransactionHandlerConstructor> {
-        return [];
+        return [NftMintTransactionHandler];
     }
 
     public walletAttributes(): ReadonlyArray<string> {

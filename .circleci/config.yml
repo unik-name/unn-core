@@ -163,7 +163,9 @@ jobs:
     <<: *job_test_config_unit_tests
     steps:
       - *attach
-      - run: yarn test:unit:coverage --maxWorkers=2
+      # 2020-01-15: disable --maxWorkers=2 as it too often fail tests
+      # - run: yarn test:unit:coverage --maxWorkers=2
+      - run: yarn test:unit:coverage  --runInBand
       - *coverage
       - *notif
 

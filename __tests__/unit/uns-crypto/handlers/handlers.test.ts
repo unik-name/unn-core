@@ -4,15 +4,12 @@ import { Handlers } from "@arkecosystem/core-transactions";
 import { Managers, Utils } from "@arkecosystem/crypto";
 import { UNSDelegateRegisterBuilder, UnsTransactionGroup, UnsTransactionType } from "@uns/crypto";
 import { DelegateRegisterTransactionHandler, DiscloseExplicitTransactionHandler } from "@uns/uns-transactions";
-import { NftMintTransactionHandler } from "../../../../packages/core-nft/src/transactions";
 import * as Fixtures from "../__fixtures__";
 
 describe("Registry register uns transaction", () => {
     Managers.configManager.setFromPreset(Fixtures.network);
     Managers.configManager.setHeight(2);
 
-    // TODO: uns : we must register nft-mint type because disclose explicit requires "token" wallet attribute
-    Handlers.Registry.registerTransactionHandler(NftMintTransactionHandler);
     Handlers.Registry.registerTransactionHandler(DiscloseExplicitTransactionHandler);
     Handlers.Registry.registerTransactionHandler(DelegateRegisterTransactionHandler);
 

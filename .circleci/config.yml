@@ -117,6 +117,13 @@ all_tests: &all_tests
   - F-transfer
   - F-vote
   - F-nft
+  - Badges
+
+nft_uns_related_tests: &nft_uns_related_tests
+  - Unit
+  - Integration
+  - F-nft
+  - Badges
 
 test_requirements: &test_requirements
   requires:
@@ -381,6 +388,7 @@ workflow: &workflow
   - build:
       requires:
         - prepare
+# NFT, UNS and related tests
   - Unit:
       requires:
         - build
@@ -390,60 +398,62 @@ workflow: &workflow
   - Integration:
       requires:
         - build
-  - F-bridgechain-registration:
-      requires:
-        - build
-  - F-bridgechain-resignation:
-      requires:
-        - build
-  - F-bridgechain-update:
-      requires:
-        - build
-  - F-business-registration:
-      requires:
-        - build
-  - F-business-resignation:
-      requires:
-        - build
-  - F-business-update:
-      requires:
-        - build
-  - F-delegate-registration:
-      requires:
-        - build
-  - F-delegate-resignation:
-      requires:
-        - build
-  - F-htlc-claim:
-      requires:
-        - build
-  - F-htlc-lock:
-      requires:
-        - build
-  - F-htlc-refund:
-      requires:
-        - build
-  - F-ipfs:
-      requires:
-        - build
-  - F-multi-payment:
-      requires:
-        - build
-  - F-multi-signature-registration:
-      requires:
-        - build
-  - F-second-signature-registration:
-      requires:
-        - build
-  - F-transfer:
-      requires:
-        - build
-  - F-vote:
-      requires:
-        - build
   - F-nft:
       requires:
         - build
+# Ark's tests
+  - F-bridgechain-registration:
+      requires:
+        *nft_uns_related_tests
+  - F-bridgechain-resignation:
+      requires:
+        *nft_uns_related_tests
+  - F-bridgechain-update:
+      requires:
+        *nft_uns_related_tests
+  - F-business-registration:
+      requires:
+        *nft_uns_related_tests
+  - F-business-resignation:
+      requires:
+        *nft_uns_related_tests
+  - F-business-update:
+      requires:
+        *nft_uns_related_tests
+  - F-delegate-registration:
+      requires:
+        *nft_uns_related_tests
+  - F-delegate-resignation:
+      requires:
+        *nft_uns_related_tests
+  - F-htlc-claim:
+      requires:
+        *nft_uns_related_tests
+  - F-htlc-lock:
+      requires:
+        *nft_uns_related_tests
+  - F-htlc-refund:
+      requires:
+        *nft_uns_related_tests
+  - F-ipfs:
+      requires:
+        *nft_uns_related_tests
+  - F-multi-payment:
+      requires:
+        *nft_uns_related_tests
+  - F-multi-signature-registration:
+      requires:
+        *nft_uns_related_tests
+  - F-second-signature-registration:
+      requires:
+        *nft_uns_related_tests
+  - F-transfer:
+      requires:
+        *nft_uns_related_tests
+  - F-vote:
+      requires:
+        *nft_uns_related_tests
+# Post-tests operations
   - docker_build_publish:
      filters:
        branches:

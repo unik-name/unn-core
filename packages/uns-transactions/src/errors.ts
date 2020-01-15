@@ -42,19 +42,19 @@ export class UnikNameNotDisclosedError extends Errors.TransactionError {
 }
 
 export class InvalidUnikTypeError extends Errors.TransactionError {
-    constructor(type, tokenId) {
-        super(`Failed to apply transaction because the type "${type}" Unik "${tokenId}" is not disclosed`);
+    constructor(type) {
+        super(`Failed to register Unik as delegate: Unik of type "${type}" are not allowed to be delegate`);
     }
 }
 
 export class CryptoAccountAlreadyDelegateError extends Errors.TransactionError {
     constructor() {
-        super(`Failed to apply transaction because crypto-account has already a registered UNIK as delegate`);
+        super(`Failed to register Unik as delegate: crypto-account has already a delegate Unik`);
     }
 }
 
 export class CryptoAccountNotADelegateError extends Errors.TransactionError {
     constructor() {
-        super(`Failed to apply transaction because crypto-account has no UNIK registered as delegate`);
+        super(`Failed to apply transaction: crypto-account has no delegate Unik`);
     }
 }

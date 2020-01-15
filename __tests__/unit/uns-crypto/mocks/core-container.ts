@@ -1,3 +1,5 @@
+import { Wallets } from "@arkecosystem/core-state";
+import { Managers } from "@arkecosystem/crypto";
 import { coreNft } from "./core-nft";
 import { nftDatabase } from "./database";
 
@@ -24,6 +26,20 @@ jest.mock("@arkecosystem/core-container", () => {
                                     nfts: nftDatabase,
                                 },
                             };
+                        },
+                    };
+                }
+                if (name === "database") {
+                    const requiredDelegates = Managers.configManager.getMilestone().activeDelegates + 1;
+                    return {
+                        walletManager: {
+                            allByUsername: jest
+                                .fn()
+                                .mockReturnValue(
+                                    new Array(requiredDelegates).fill(
+                                        new Wallets.Wallet("ANBkoGqWeTSiaEVgVzSKZd3jS7UWzv9PSo"),
+                                    ),
+                                ),
                         },
                     };
                 }

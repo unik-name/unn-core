@@ -15,5 +15,5 @@
         "symbol": "DUNS",
         "explorer": "https://dalinet.explorer.uns.network"
     },
-    "transactionsConfig": { "delegateRegistration": { "enable": false } }
+    "transactionsConfig": { "delegateRegistration": { "enable": false }, "delegateResignation": { "enable": false } }
 }

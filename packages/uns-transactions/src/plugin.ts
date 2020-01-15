@@ -1,6 +1,10 @@
 import { Container, Logger } from "@arkecosystem/core-interfaces";
 import { Handlers } from "@arkecosystem/core-transactions";
-import { DelegateRegisterTransactionHandler, DiscloseExplicitTransactionHandler } from "./handlers";
+import {
+    DelegateRegisterTransactionHandler,
+    DelegateResignTransactionHandler,
+    DiscloseExplicitTransactionHandler,
+} from "./handlers";
 
 export const plugin: Container.IPluginDescriptor = {
     pkg: require("../package.json"),
@@ -10,6 +14,7 @@ export const plugin: Container.IPluginDescriptor = {
         // Register transactions
         Handlers.Registry.registerTransactionHandler(DiscloseExplicitTransactionHandler);
         Handlers.Registry.registerTransactionHandler(DelegateRegisterTransactionHandler);
+        Handlers.Registry.registerTransactionHandler(DelegateResignTransactionHandler);
     },
     async deregister(container: Container.IContainer, options) {
         container.resolvePlugin<Logger.ILogger>("logger").info("Stopping UNS Transactions plugin");

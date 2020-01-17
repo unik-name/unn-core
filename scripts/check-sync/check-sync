@@ -1,0 +1,7 @@
+#!/bin/sh
+
+##########
+# Warning: If you update this file, you must copy to crond.d manually
+##########
+
+*/30 * * * * ubuntu /home/ubuntu/uns-core/scripts/check-sync/check-sync.sh >> /home/ubuntu/cron-check-sync.log 2>&1

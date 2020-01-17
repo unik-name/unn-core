@@ -30,6 +30,6 @@ DOCKER_COMPOSE_FILE_PATH=$SOURCES_PATH/docker/integration/docker-compose.yml
 
 docker-compose -f $DOCKER_COMPOSE_FILE_PATH up --build -d
 
-docker image prune -f
+docker image prune -f --filter "until 168h" # 7 days
 
 exit 0

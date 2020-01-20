@@ -1,3 +1,4 @@
+import { Managers } from "@arkecosystem/crypto";
 import { Keys } from "@arkecosystem/crypto/src/identities";
 import { unsCrypto } from "@uns/crypto";
 import "jest-extended";
@@ -69,6 +70,20 @@ describe("uns-crypto.ts", () => {
                 Fixtures.demanderKeys.publicKey,
             );
             expect(res).toBeFalse();
+        });
+    });
+
+    describe("verifyIssuerCredentials", () => {
+        Managers.configManager.setFromPreset(Fixtures.network);
+
+        it("should return true if Issuer id corresponds to authorized unikname forge factory", () => {
+            expect(
+                unsCrypto.verifyIssuerCredentials("2b9799c35cbe4e8fb93c79c83aebe229f9f9909d7d13138ba837fca932dada76"),
+            ).toBeTrue();
+        });
+
+        it("should return false if Issuer id not corresponds to authorized unikname forge factory", () => {
+            expect(unsCrypto.verifyIssuerCredentials("badissuerid")).toBeFalse();
         });
     });
 });

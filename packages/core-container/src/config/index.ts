@@ -90,6 +90,9 @@ export class Config {
                         explorer: Joi.string().required(),
                     }),
                     transactionsConfig: Joi.object(),
+                    forgeFactory: Joi.object({
+                        unikidWhiteList: Joi.array().items(Joi.string()),
+                    }),
                 }).required(),
             }),
         );

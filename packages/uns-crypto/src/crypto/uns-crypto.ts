@@ -1,4 +1,4 @@
-import { Crypto, Identities } from "@arkecosystem/crypto";
+import { Crypto, Identities, Managers } from "@arkecosystem/crypto";
 import ByteBuffer from "bytebuffer";
 import { IDiscloseDemandCertificationPayload, IDiscloseDemandPayload } from "../";
 
@@ -26,9 +26,8 @@ class UnsCrypto {
      * Return false if the issuer is not allowed to
      */
     public verifyIssuerCredentials(issuerId): boolean {
-        // TODO
-
-        return true;
+        const forgeFactoryWhiteList: string[] = Managers.configManager.get("network.forgeFactory.unikidWhiteList");
+        return forgeFactoryWhiteList.includes(issuerId);
     }
 
     public serializeDiscloseDemand(payload: IDiscloseDemandPayload | IDiscloseDemandCertificationPayload): Buffer {

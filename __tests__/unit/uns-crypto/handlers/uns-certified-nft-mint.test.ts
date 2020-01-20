@@ -80,6 +80,11 @@ describe("CertifiedNtfMint Transaction", () => {
     });
 
     describe("throwIfCannotBeApplied", () => {
+        beforeAll(() => {
+            // Allow Fixtures.tokenId to forge unikname
+            Managers.configManager.set("network.forgeFactory.unikidWhiteList", [Fixtures.tokenId]);
+        });
+
         it("should not throw", async () => {
             await expect(handler.throwIfCannotBeApplied(builder.build(), senderWallet, walletManager)).toResolve();
         });

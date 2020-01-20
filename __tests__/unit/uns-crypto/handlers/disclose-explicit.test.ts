@@ -96,6 +96,10 @@ describe("UnsDiscloseExplicit Transaction", () => {
                 return Promise.resolve({ tokenId, ownerId });
             },
         );
+        // beforeEach(() => {
+        // Allow ISS_UNIK_ID to forge unikname
+        Managers.configManager.set("network.forgeFactory.unikidWhiteList", [ISS_UNIK_ID]);
+        // });
     });
 
     describe("throwIfCannotBeApplied", () => {
@@ -134,6 +138,13 @@ describe("UnsDiscloseExplicit Transaction", () => {
             await expect(
                 handler.throwIfCannotBeApplied(transaction.build(), senderWallet, walletManager),
             ).rejects.toThrow(Errors.DiscloseDemandSubInvalidError);
+        });
+
+        it("should throw CertifiedDemandNotAllowedIssuerError", async () => {
+            Managers.configManager.set("network.forgeFactory.unikidWhiteList", []);
+            await expect(
+                handler.throwIfCannotBeApplied(transaction.build(), senderWallet, walletManager),
+            ).rejects.toThrow(Errors.CertifiedDemandNotAllowedIssuerError);
         });
     });
 

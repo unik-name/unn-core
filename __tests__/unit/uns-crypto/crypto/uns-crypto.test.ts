@@ -78,7 +78,7 @@ describe("uns-crypto.ts", () => {
 
         it("should return true if Issuer id corresponds to authorized unikname forge factory", () => {
             expect(
-                unsCrypto.verifyIssuerCredentials("2b9799c35cbe4e8fb93c79c83aebe229f9f9909d7d13138ba837fca932dada76"),
+                unsCrypto.verifyIssuerCredentials("5f96dd359ab300e2c702a54760f4d74a11db076aa17575179d36e06d75c96511"),
             ).toBeTrue();
         });
 

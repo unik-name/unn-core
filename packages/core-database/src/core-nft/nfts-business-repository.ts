@@ -22,6 +22,10 @@ export class NftsBusinessRepository implements NFT.INftsBusinessRepository {
         return this.connection.db.nfts.findPropertyByKey(id, key);
     }
 
+    public findPropertyBatch(ids: string[], key: string) {
+        return this.connection.db.nfts.findPropertyBatch(ids, key);
+    }
+
     public findEdgeTransactions(id: string, nftName: string): Promise<any> {
         return this.connection.db.nfts.findEdgeTransactions(id, nftName);
     }

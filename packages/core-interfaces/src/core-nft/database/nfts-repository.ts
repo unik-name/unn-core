@@ -11,6 +11,7 @@ export interface INftsRepository extends Database.IRepository {
     updateOwnerId(id: string, newOwnerId: string): Promise<any>;
     insertProperty(nftid: string, key: string, value: string): Promise<any>;
     findPropertyByKey(nftid: string, key: string): Promise<any>;
+    findPropertyBatch(nftids: string[], key: string): Promise<any>;
     deletePropertyByKey(nftid: string, key: string): Promise<any>;
     updateProperty(nftid: string, key: string, value: string): Promise<any>;
     insertOrUpdateProperty(nftid: string, key: string, value: string): Promise<any>;

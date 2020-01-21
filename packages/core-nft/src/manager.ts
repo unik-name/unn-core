@@ -50,6 +50,10 @@ export class NftsManager {
         return this.repository.findPropertyByKey(tokenId, propertyKey);
     }
 
+    public async getPropertyBatch(tokenIds: string[], propertyKey: string) {
+        return this.repository.findPropertyBatch(tokenIds, propertyKey);
+    }
+
     public async getProperties(tokenId: string) {
         return this.repository.findProperties(tokenId);
     }

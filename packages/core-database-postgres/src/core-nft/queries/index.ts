@@ -12,6 +12,7 @@ export const queries = {
         updateProperty: loadQueryFile(__dirname, "./nftproperties/update-property.sql"),
         insertOrUpdateProperty: loadQueryFile(__dirname, "./nftproperties/insert-or-update-property.sql"),
         findByKey: loadQueryFile(__dirname, "./nftproperties/findByKey.sql"),
+        findPropertyBatch: loadQueryFile(__dirname, "./nftproperties/findByKeyBatch.sql"),
         deleteByKey: loadQueryFile(__dirname, "./nftproperties/deleteByKey.sql"),
         findProperties: loadQueryFile(__dirname, "./nftproperties/find-by-nft-id.sql"),
         unikStatus: loadQueryFile(__dirname, "./nftproperties/unikStatus.sql"),

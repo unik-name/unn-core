@@ -23,8 +23,11 @@
         "@arkecosystem/core-interfaces": "^2.6.0-next.4",
         "@arkecosystem/core-transactions": "^2.6.0-next.4",
         "@arkecosystem/crypto": "^2.6.0-next.4",
+        "@arkecosystem/core-api": "^2.6.0-next.4",
         "@uns/crypto": "^4.1.0",
-        "@uns/core-nft": "^4.1.0"
+        "@uns/core-nft": "^4.1.0",
+        "@hapi/boom": "^8.0.0",
+        "@hapi/hapi": "^18.3.1"
     },
     "publishConfig": {
         "access": "public"

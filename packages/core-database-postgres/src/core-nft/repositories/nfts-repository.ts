@@ -118,6 +118,10 @@ export class NftsRepository extends Repository implements NFT.INftsRepository {
         return this.db.oneOrNone(sql.findByKey, { nftid, key: propertyKey });
     }
 
+    public findPropertyBatch(nftids: string[], key: string): Promise<any> {
+        return this.db.many(sql.findPropertyBatch, { nftids, key });
+    }
+
     public findProperties(nftid: string): Promise<any> {
         return this.db.any(sql.findProperties, { nftid });
     }

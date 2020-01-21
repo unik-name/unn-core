@@ -5,6 +5,7 @@ export interface INftsBusinessRepository {
     findById(id: string): Promise<any>;
     findProperties(id: string, params?: Database.IParameters): Promise<any>;
     findProperty(id: string, key: string): Promise<any>;
+    findPropertyBatch(nftid: string[], key: string): Promise<any>;
     findEdgeTransactions(id: string, nftName: string): Promise<any>;
     search(params: Database.IParameters): Promise<any>;
     findTransactionsByAsset(

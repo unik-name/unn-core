@@ -12,7 +12,7 @@ const schemaIdentifier = Joi.string()
 const schemaUsername = Joi.string()
     .regex(/^[a-z0-9!@$&_.]+$/)
     .min(1)
-    .max(20);
+    .max(64);
 
 const schemaIntegerBetween = Joi.object().keys({
     from: Joi.number()

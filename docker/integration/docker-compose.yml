@@ -33,38 +33,38 @@ services:
      - postgres
     depends_on:
      - postgres
-  forger2:
-    extends:
-      file: forger-commons.yml
-      service: forger
-    container_name: uns_dalinet_forger2
-    environment:
-     FORGER_SECRET: "long blouse wagon huge range version owner marine raise surprise rhythm shy"
-     CORE_DB_DATABASE: uns_dalinet_forger2
-     BOOTNODE: forger1
-     STARTING_DELAY: 1m
-    links:
-     - forger1
-     - postgres
-    depends_on:
-     - forger1
-     - postgres
-  forger3:
-    extends:
-      file: forger-commons.yml
-      service: forger
-    container_name: uns_dalinet_forger3
-    environment:
-     FORGER_SECRET: "cactus cute please spirit reveal raw goose emotion latin subject forum panic"
-     CORE_DB_DATABASE: uns_dalinet_forger3
-     BOOTNODE: forger1
-     STARTING_DELAY: 2m
-    links:
-     - forger1
-     - postgres
-    depends_on:
-     - forger2
-     - postgres
+  # forger2:
+  #   extends:
+  #     file: forger-commons.yml
+  #     service: forger
+  #   container_name: uns_dalinet_forger2
+  #   environment:
+  #    FORGER_SECRET: "long blouse wagon huge range version owner marine raise surprise rhythm shy"
+  #    CORE_DB_DATABASE: uns_dalinet_forger2
+  #    BOOTNODE: forger1
+  #    STARTING_DELAY: 1m
+  #   links:
+  #    - forger1
+  #    - postgres
+  #   depends_on:
+  #    - forger1
+  #    - postgres
+  # forger3:
+  #   extends:
+  #     file: forger-commons.yml
+  #     service: forger
+  #   container_name: uns_dalinet_forger3
+  #   environment:
+  #    FORGER_SECRET: "cactus cute please spirit reveal raw goose emotion latin subject forum panic"
+  #    CORE_DB_DATABASE: uns_dalinet_forger3
+  #    BOOTNODE: forger1
+  #    STARTING_DELAY: 2m
+  #   links:
+  #    - forger1
+  #    - postgres
+  #   depends_on:
+  #    - forger2
+  #    - postgres
 
 volumes:
   postgres:

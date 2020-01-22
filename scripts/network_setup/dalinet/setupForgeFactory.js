@@ -14,11 +14,14 @@ const ISSUER_ID="5f96dd359ab300e2c702a54760f4d74a11db076aa17575179d36e06d75c9651
 const timeout = 10;
 console.log("Check forge factory unik presence");
 
+//const apiUrl = "https://forger1.dalinet.uns.network/api";
+const apiUrl = "http://localhost:4003/api";
+
 const hasNftIssuer = async () => {
     let elapsed = 0;
     while (true) {
         try {
-            await got.get(`http://localhost:4003/api/uniks/${ISSUER_ID}`);
+            await got.get(`${apiUrl}/uniks/${ISSUER_ID}`);
             return true;
         } catch (error){
             if (error.statusCode && error.statusCode === 404) {
@@ -50,7 +53,7 @@ const main = async () => {
         .sign(ISSUER_PASSPHRASE)
         .getStruct();
 
-        const response = await utils.httpie.post("http://localhost:4003/api/transactions", { body: {transactions: [transaction]} });
+        const response = await utils.httpie.post(`${apiUrl}/transactions`, { body: {transactions: [transaction]} });
         if(response.status !== 200) {
             console.error(response)
         }

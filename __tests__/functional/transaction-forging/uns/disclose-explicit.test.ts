@@ -1,7 +1,7 @@
 import { EXPLICIT_PROP_KEY } from "@uns/uns-transactions/src/handlers/utils/helpers";
-import * as support from "./__support__";
-import * as NftSupport from "./__support__/nft";
-import * as UnsSupport from "./__support__/uns";
+import * as support from "../__support__";
+import * as NftSupport from "../__support__/nft";
+import * as UnsSupport from "../__support__/uns";
 
 beforeAll(NftSupport.setUp);
 afterAll(support.tearDown);

@@ -119,12 +119,13 @@ all_tests: &all_tests
   - F-vote
   - F-nft
   - Badges
-
+  - F-UNS
 nft_uns_related_tests: &nft_uns_related_tests
   - Unit
   - Integration
   - F-nft
   - Badges
+  - F-UNS
 
 test_requirements: &test_requirements
   requires:
@@ -188,6 +189,14 @@ jobs:
     steps:
       - *attach
       - run: yarn --cwd packages/uns-badges test:coverage
+      - *coverage
+      - *notif
+
+  F-UNS:
+    <<: *job_test_config
+    steps:
+      - *attach
+      - run: yarn test:coverage __tests__/functional/transaction-forging/uns/
       - *coverage
       - *notif
 
@@ -403,6 +412,9 @@ workflow: &workflow
       requires:
         - build
   - F-nft:
+      requires:
+        - build
+  - F-UNS:
       requires:
         - build
 # Ark's tests

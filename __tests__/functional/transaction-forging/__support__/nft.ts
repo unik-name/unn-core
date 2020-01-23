@@ -88,8 +88,29 @@ export const addPropertiesAndWait = async (nftId, properties) => {
     return t;
 };
 
+// Ark transactions
 export const transferAndWait = async (recipient, amount, passphrase = defaultPassphrase) => {
     const t = TransactionFactory.transfer(recipient, amount * 1e8)
+        .withNetwork(network)
+        .withPassphrase(passphrase)
+        .createOne();
+    await expect(t).toBeAccepted();
+    await snoozeForBlock(1);
+    return t;
+};
+
+export const voteAndWait = async (delegatePubKey, passphrase = defaultPassphrase) => {
+    const t = TransactionFactory.vote(delegatePubKey)
+        .withNetwork(network)
+        .withPassphrase(passphrase)
+        .createOne();
+    await expect(t).toBeAccepted();
+    await snoozeForBlock(1);
+    return t;
+};
+
+export const unvoteAndWait = async (delegatePubKey, passphrase = defaultPassphrase) => {
+    const t = TransactionFactory.unvote(delegatePubKey)
         .withNetwork(network)
         .withPassphrase(passphrase)
         .createOne();

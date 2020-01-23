@@ -1,5 +1,10 @@
 import { Identities } from "@arkecosystem/crypto";
-import { DIDTypes, UNSDiscloseExplicitBuilder } from "@uns/crypto";
+import {
+    DIDTypes,
+    UNSDelegateRegisterBuilder,
+    UNSDelegateResignBuilder,
+    UNSDiscloseExplicitBuilder,
+} from "@uns/crypto";
 import { snoozeForBlock } from ".";
 import { TransactionFactory } from "../../../helpers";
 import { buildDiscloseDemand } from "../../../unit/uns-crypto/helpers";
@@ -17,10 +22,10 @@ export const discloseExplicitTransaction = discloseDemand => {
     return new TransactionFactory(discloseBuilder);
 };
 
-export const discloseAndWait = async discloseDemand => {
+export const discloseAndWait = async (discloseDemand, passphrase = NftSupport.defaultPassphrase) => {
     const t = discloseExplicitTransaction(discloseDemand)
         .withNetwork(NftSupport.network)
-        .withPassphrase(NftSupport.defaultPassphrase)
+        .withPassphrase(passphrase)
         .createOne();
 
     await expect(t).toBeAccepted();
@@ -28,9 +33,28 @@ export const discloseAndWait = async discloseDemand => {
     return t;
 };
 
+export const delegateRegisterAndWait = async (tokenId, passphrase = NftSupport.defaultPassphrase) => {
+    const t = new TransactionFactory(new UNSDelegateRegisterBuilder().usernameAsset(tokenId))
+        .withNetwork(NftSupport.network)
+        .withPassphrase(passphrase)
+        .createOne();
+
+    await expect(t).toBeAccepted();
+    await snoozeForBlock(1);
+    return t;
+};
+
+export const delegateResignAndWait = async (passphrase = NftSupport.defaultPassphrase) => {
+    const t = new TransactionFactory(new UNSDelegateResignBuilder())
+        .withNetwork(NftSupport.network)
+        .withPassphrase(passphrase)
+        .createOne();
+    await expect(t).toBeAccepted();
+    await snoozeForBlock(1);
+    return t;
+};
+
 export const discloseDemand = async (tokenId, demanderPassphrase, explicitValues: string[]) => {
-    console.log("forgerPublicKey", Identities.PublicKey.fromPassphrase(forgerFactoryPassphrase));
-    console.log("forger adress", Identities.Address.fromPassphrase(forgerFactoryPassphrase));
     /* Build Disclose demand */
     const discloseDemandPayload = {
         explicitValue: explicitValues,

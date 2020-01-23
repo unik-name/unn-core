@@ -1,10 +1,7 @@
-import { DIDTypes } from "@uns/crypto";
 import { EXPLICIT_PROP_KEY } from "@uns/uns-transactions/src/handlers/utils/helpers";
-import delay from "delay";
-import { buildDiscloseDemand } from "../../unit/uns-crypto/helpers";
 import * as support from "./__support__";
 import * as NftSupport from "./__support__/nft";
-import { discloseAndWait } from "./__support__/uns";
+import * as UnsSupport from "./__support__/uns";
 
 beforeAll(NftSupport.setUp);
 afterAll(support.tearDown);
@@ -12,33 +9,22 @@ afterAll(support.tearDown);
 describe("disclose transaction Nft ", () => {
     let discloseDemand;
     let tokenId;
-    let issuerTokenId;
+
+    beforeAll(async () => {
+        await UnsSupport.setupForgeFactory();
+    });
+
     beforeEach(async () => {
         tokenId = NftSupport.generateNftId();
-        // delay to ensure generation of differents token ids
-        await delay(2);
-        issuerTokenId = NftSupport.generateNftId();
-
-        /* Build Disclose demand */
-        const discloseDemandPayload = {
-            explicitValue: ["explicitValue1", "explicitValue2"],
-            sub: tokenId,
-            type: DIDTypes.INDIVIDUAL,
-            iss: tokenId,
-            iat: Date.now(),
-        };
-        discloseDemand = buildDiscloseDemand(
-            discloseDemandPayload,
-            NftSupport.genesisPassphrase,
-            issuerTokenId,
-            NftSupport.genesisPassphrase,
-        );
         await NftSupport.mintAndWait(tokenId);
-        await NftSupport.mintAndWait(issuerTokenId);
+        discloseDemand = await UnsSupport.discloseDemand(tokenId, NftSupport.defaultPassphrase, [
+            "explicitValue1",
+            "explicitValue2",
+        ]);
     });
 
     it("disclose explicit values", async () => {
-        const disclose = await discloseAndWait(discloseDemand);
+        const disclose = await UnsSupport.discloseAndWait(discloseDemand);
         await expect(disclose.id).toBeForged();
         await expect({
             tokenId,
@@ -47,29 +33,17 @@ describe("disclose transaction Nft ", () => {
     });
 
     it("update with new disclosed value", async () => {
-        let disclose = await discloseAndWait(discloseDemand);
+        let disclose = await UnsSupport.discloseAndWait(discloseDemand);
         await expect(disclose.id).toBeForged();
 
-        const discloseDemandPayload = {
-            explicitValue: ["explicitValue3"],
-            sub: tokenId,
-            type: DIDTypes.INDIVIDUAL,
-            iss: tokenId,
-            iat: Date.now(),
-        };
-        const newDiscloseDemand = buildDiscloseDemand(
-            discloseDemandPayload,
-            NftSupport.genesisPassphrase,
-            issuerTokenId,
-            NftSupport.genesisPassphrase,
-        );
+        const newDiscloseDemand = await UnsSupport.discloseDemand(tokenId, NftSupport.defaultPassphrase, [
+            "explicitValue3",
+        ]);
 
-        disclose = await discloseAndWait(newDiscloseDemand);
+        disclose = await UnsSupport.discloseAndWait(newDiscloseDemand);
         await expect(disclose.id).toBeForged();
 
-        const expectedValues = discloseDemandPayload.explicitValue.concat(
-            discloseDemand["disclose-demand"].payload.explicitValue,
-        );
+        const expectedValues = ["explicitValue3"].concat(discloseDemand["disclose-demand"].payload.explicitValue);
         await expect({
             tokenId,
             properties: { [EXPLICIT_PROP_KEY]: expectedValues.join(",") },
@@ -77,24 +51,14 @@ describe("disclose transaction Nft ", () => {
     });
 
     it("change order of disclosed values", async () => {
-        let disclose = await discloseAndWait(discloseDemand);
+        let disclose = await UnsSupport.discloseAndWait(discloseDemand);
         await expect(disclose.id).toBeForged();
 
-        const discloseDemandPayload = {
-            explicitValue: ["explicitValue2"],
-            sub: tokenId,
-            type: DIDTypes.INDIVIDUAL,
-            iss: tokenId,
-            iat: Date.now(),
-        };
-        const newDiscloseDemand = buildDiscloseDemand(
-            discloseDemandPayload,
-            NftSupport.genesisPassphrase,
-            issuerTokenId,
-            NftSupport.genesisPassphrase,
-        );
+        const newDiscloseDemand = await UnsSupport.discloseDemand(tokenId, NftSupport.defaultPassphrase, [
+            "explicitValue2",
+        ]);
 
-        disclose = await discloseAndWait(newDiscloseDemand);
+        disclose = await UnsSupport.discloseAndWait(newDiscloseDemand);
         await expect(disclose.id).toBeForged();
 
         const expectedValues = ["explicitValue2", "explicitValue1"];

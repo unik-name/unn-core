@@ -55,7 +55,6 @@ describe("Transaction Nft", () => {
         await support.snoozeForBlock(1);
         await expect(nftUpdate.id).toBeForged();
         await expect(nftUpdate).toHaveValidNftPersistanceState();
-        // await expect(true).toBe(false)
     });
 
     it("should transfer unik token", async () => {

@@ -66,10 +66,10 @@ export const generateNftId = () => {
     return Crypto.HashAlgorithms.sha256(new Date().getTime().toString()).toString("hex");
 };
 
-export const mintAndWait = async nftId => {
+export const mintAndWait = async (nftId, passphrase = defaultPassphrase) => {
     const t = nftMintTransaction(nftId, { type: "1" })
         .withNetwork(network)
-        .withPassphrase(defaultPassphrase)
+        .withPassphrase(passphrase)
         .createOne();
 
     await expect(t).toBeAccepted();
@@ -83,6 +83,16 @@ export const addPropertiesAndWait = async (nftId, properties) => {
         .withPassphrase(defaultPassphrase)
         .createOne();
 
+    await expect(t).toBeAccepted();
+    await snoozeForBlock(1);
+    return t;
+};
+
+export const transferAndWait = async (recipient, amount, passphrase = defaultPassphrase) => {
+    const t = TransactionFactory.transfer(recipient, amount * 1e8)
+        .withNetwork(network)
+        .withPassphrase(passphrase)
+        .createOne();
     await expect(t).toBeAccepted();
     await snoozeForBlock(1);
     return t;

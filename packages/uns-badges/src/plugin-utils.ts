@@ -49,7 +49,7 @@ export const hasSecondPassphrase = (id: string, container: Container.IContainer)
     return false;
 };
 
-const getDefaultValue = (badgeName: string, nftType: DIDTypes) => {
+const getDefaultValue = (badgeName: string, nftType: DIDTypes): string => {
     if (badges[badgeName]?.types) {
         return badges[badgeName].types?.[nftType];
     }
@@ -59,23 +59,23 @@ const getDefaultValue = (badgeName: string, nftType: DIDTypes) => {
 export const handlePropertiesRequest = (properties: Array<{ [_: string]: string }>, nft, container) => {
     for (const badgeName in badges) {
         if (badgeName) {
-            let value;
+            let value: string;
             const category = badges[badgeName].category;
             const propertyKey = "Badges/" + (category ? `${category}/` : "") + badgeName;
-            switch (badgeName) {
-                case "SecondPassphrase":
-                    value = hasSecondPassphrase(nft.ownerId, container);
-                    break;
-                default:
-                    value = properties.find(elt => Object.getOwnPropertyNames(elt)[0] === propertyKey)?.[propertyKey];
-                    if (value === undefined) {
+
+            if (!properties.find(elt => Object.getOwnPropertyNames(elt)[0] === propertyKey)) {
+                switch (badgeName) {
+                    case "SecondPassphrase":
+                        value = hasSecondPassphrase(nft.ownerId, container).toString();
+                        break;
+                    default:
                         const nftType = properties.find(elt => Object.getOwnPropertyNames(elt)[0] === "type").type;
                         value = getDefaultValue(badgeName, parseInt(nftType));
-                    }
-                    break;
-            }
 
-            if (value !== undefined) {
+                        break;
+                }
+            }
+            if (value) {
                 properties.push({
                     [propertyKey]: value,
                 });
@@ -103,4 +103,5 @@ export const handlePropertyValueRequest = async (propertyKey, nft, container) =>
             }
         }
     }
+    return undefined;
 };

@@ -12,7 +12,7 @@ const utils = require("../../../packages/core-utils");
 const ISSUER_PASSPHRASE="cactus cute please spirit reveal raw goose emotion latin subject forum panic";
 const ISSUER_ID="5f96dd359ab300e2c702a54760f4d74a11db076aa17575179d36e06d75c96511";
 const timeout = 10;
-console.log("Check forge factory unik presence");
+console.log("🚧 Network setup: Check forge factory unik presence");
 
 //const apiUrl = "https://forger1.dalinet.uns.network/api";
 const apiUrl = "http://localhost:4003/api";
@@ -22,6 +22,7 @@ const hasNftIssuer = async () => {
     while (true) {
         try {
             await got.get(`${apiUrl}/uniks/${ISSUER_ID}`);
+            console.log("🚧 Network setup: Forge factory is already here. Nothing to do!");
             return true;
         } catch (error){
             if (error.statusCode && error.statusCode === 404) {
@@ -43,11 +44,16 @@ const main = async () => {
     if (!(await hasNftIssuer())) {
         crypto.Managers.configManager.setFromPreset("dalinet");
         crypto.Managers.configManager.setHeight(2);
+
+        // wait for block height to be to ensure genesis block is provisioned > 2
+        while(JSON.parse((await got.get(`${apiUrl}/blockchain`)).body).data.block.height < 3) {
+            await delay(500);
+        }
         crypto.Transactions.TransactionRegistry.registerTransactionType(nftCrypto.Transactions.NftMintTransaction);
-        console.log("Registering new Nft issuer");
+        console.log("🚧 Network setup: Registering new Nft issuer");
 
         const transaction = new nftCrypto.Builders.NftMintBuilder("unik", ISSUER_ID)
-        .properties({type: "2"})
+        .properties({type: "2", "Badges/NP/UNIKIssuer": "true"})
         .fee(`${nftCrypto.Enums.NftTransactionStaticFees.NftMint}`)
         .nonce("2")
         .sign(ISSUER_PASSPHRASE)

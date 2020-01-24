@@ -35,15 +35,15 @@ describe("Badges tests", () => {
         });
 
         it("should keep already set property", () => {
-            let properties = [{ type: "2" }, { "Badges/NP/StorageProvider": true }];
+            let properties = [{ type: "2" }, { "Badges/NP/StorageProvider": "true" }];
             properties = plugin.handlePropertiesRequest(properties, NFT, containerMock);
-            expect(properties).toIncludeAllMembers([{ "Badges/NP/StorageProvider": true }]);
+            expect(properties).toIncludeAllMembers([{ "Badges/NP/StorageProvider": "true" }]);
         });
 
         it("should contains secondPassphrase badge", () => {
             let properties = [{ type: "2" }];
             properties = plugin.handlePropertiesRequest(properties, NFT, containerMock);
-            expect(properties).toIncludeAllMembers([{ "Badges/Security/SecondPassphrase": true }]);
+            expect(properties).toIncludeAllMembers([{ "Badges/Security/SecondPassphrase": "true" }]);
         });
     });
 
@@ -75,12 +75,12 @@ describe("Badges tests", () => {
 
         it("should return XPLevel badge default value", async () => {
             const value = await plugin.handlePropertyValueRequest("Badges/XPLevel", NFT, containerMock);
-            expect(value).toEqual(1);
+            expect(value).toEqual("1");
         });
 
         it("should return Multisig badge default value", async () => {
             const value = await plugin.handlePropertyValueRequest("Badges/Security/Multisig", NFT, containerMock);
-            expect(value).toBeFalse();
+            expect(value).toEqual("false");
         });
 
         it("should return undefined for Verified badge for Individual UNIK", async () => {

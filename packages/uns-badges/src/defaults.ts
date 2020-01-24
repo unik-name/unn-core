@@ -8,49 +8,49 @@ export const badges = {
     },
     Multisig: {
         category: "Security",
-        default: false,
+        default: "false",
     },
     BackupPassphrase: {
         category: "Security",
-        default: false,
+        default: "false",
     },
     Verified: {
         category: "Rightness",
         types: {
-            [DIDTypes.ORGANIZATION]: false,
+            [DIDTypes.ORGANIZATION]: "false",
         },
     },
     Everlasting: {
         category: "Rightness",
         types: {
-            [DIDTypes.INDIVIDUAL]: false,
-            [DIDTypes.ORGANIZATION]: false,
-            [DIDTypes.NETWORK]: true,
+            [DIDTypes.INDIVIDUAL]: "false",
+            [DIDTypes.ORGANIZATION]: "false",
+            [DIDTypes.NETWORK]: "true",
         },
     },
     XPLevel: {
         // tslint:disable-next-line: no-null-keyword
         category: null,
-        default: 1,
+        default: "1",
     },
     TrustIn: {
         category: "Trust",
-        default: 0,
+        default: "0",
     },
     TrustOut: {
         category: "Trust",
-        default: 0,
+        default: "0",
     },
     BlocksForger: {
         category: "NP",
-        default: false,
+        default: "false",
     },
     StorageProvider: {
         category: "NP",
-        default: false,
+        default: "false",
     },
     UNIKIssuer: {
         category: "NP",
-        default: false,
+        default: "false",
     },
 };

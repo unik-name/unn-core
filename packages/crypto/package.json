@@ -2,7 +2,7 @@
     "name": "@arkecosystem/crypto",
     "version": "2.6.0-next.4",
     "uns_name": "ark-crypto",
-    "uns_version": "4.1.0",
+    "uns_version": "4.1.1",
     "description": "Crypto utilities for the ARK Blockchain",
     "license": "MIT",
     "contributors": [

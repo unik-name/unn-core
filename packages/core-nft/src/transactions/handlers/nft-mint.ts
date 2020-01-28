@@ -10,7 +10,7 @@ import { addNftToWallet, applyNftMintDb, checkAssetPropertiesSize, removeNftFrom
 
 export class NftMintTransactionHandler extends Handlers.TransactionHandler {
     public async isActivated(): Promise<boolean> {
-        return !Managers.configManager.getMilestone().certifiedNFTsOnly && this.isTransactionActivated();
+        return !Managers.configManager.getMilestone().certifiedNFTsOnly;
     }
 
     public getConstructor(): Transactions.TransactionConstructor {

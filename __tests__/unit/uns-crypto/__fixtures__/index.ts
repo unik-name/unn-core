@@ -7,6 +7,7 @@ import {
     IDiscloseDemandPayload,
     INftMintDemand,
     INftMintDemandCertificationPayload,
+    INftMintDemandPayload,
     UNSCertifiedNftMintBuilder,
     UNSDiscloseExplicitBuilder,
     UnsTransactionGroup,
@@ -87,7 +88,18 @@ const certification: ICertifiedDemand<ICertificationable> = {
     signature: payloadNftMintDemandCertificationSignature,
 };
 
-export const payloadNftMintDemandHashBuffer = "8d80772828bb3419aa9f540e7a544c32f64fb550fa814973ade4c81d658cefc1";
+export const payloadNftMintDemandHashBuffer = "4176fa8a30501e7f97974d7f83492811ebb615c13ef111605a9a600bf7303e39";
+
+export const nftMintDemandDemand: ICertifiedDemand<INftMintDemandPayload> = {
+    payload: {
+        iss: "0035a40470021425558f5cbb7b5f056e51b694db5cc6c336abdc6b777fc9d051",
+        sub: "0035a40470021425558f5cbb7b5f056e51b694db5cc6c336abdc6b777fc9d051",
+        iat: 1579165954,
+        cryptoAccountAddress: "DQLiVPs2b6rHYCANjVk7vWVfQqdo5rLvDU",
+    },
+    signature:
+        "aa45022100b35054087451d1c78c0df95c963449ad7cb9cec5d725b3b708eac06dfd93c24e022075b8d635b79feb37636e13950dc89c702640f8cef56881b49cae4417b55caa2e",
+};
 
 export const nftMintDemandHashBufferPayload: INftMintDemand = {
     nft: {
@@ -99,10 +111,12 @@ export const nftMintDemandHashBufferPayload: INftMintDemand = {
             },
         },
     },
+    demand: nftMintDemandDemand,
 };
 
 export const unsCertifiedNftMinTransaction = () =>
     new UNSCertifiedNftMintBuilder("unik", certification.payload.sub)
+        .demand(nftMintDemandDemand)
         .certification(certification)
         .sign(ownerPassphrase);
 

@@ -1,11 +1,16 @@
 import { Utils } from "@arkecosystem/crypto";
 import { Builders } from "@uns/core-nft-crypto";
 import { UnsTransactionGroup, UnsTransactionStaticFees, UnsTransactionType } from "../enums";
-import { INftMintDemandCertification } from "../interfaces";
+import { ICertifiedDemand, INftMintDemandCertification, INftMintDemandPayload } from "../interfaces";
 
 export class UNSCertifiedNftMintBuilder extends Builders.NftMintBuilder {
     constructor(protected nftName: string, tokenId: string) {
         super(nftName, tokenId);
+    }
+
+    public demand(demand: ICertifiedDemand<INftMintDemandPayload>) {
+        this.data.asset.demand = demand;
+        return this;
     }
 
     public certification(certification: INftMintDemandCertification): this {

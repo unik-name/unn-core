@@ -57,9 +57,17 @@ module.exports = {
             { method: "get", path: "/api/wallets" },
             { method: "get", path: "/api/wallets/{id}" },
             { method: "get", path: "/api/{nft}s/{id}" },
+            { method: "get", path: "/api/nfts/status" },
             { method: "get", path: "/api/{nft}s/{id}/properties" },
             { method: "get", path: "/api/{nft}s/{id}/properties/{key}" },
             { method: "get", path: "/api/wallets/{id}/{nft}s" },
+        ]
+    },
+    "@uns/uns-transactions/dist/api": {},
+    "@uns/badges": {
+        routes: [
+            { method: "get", path: "/api/{nft}s/{id}/properties" },
+            { method: "get", path: "/api/{nft}s/{id}/properties/{key}" },
         ]
     },
     "@arkecosystem/core-webhooks": {

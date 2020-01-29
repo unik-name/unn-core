@@ -20,6 +20,9 @@
         "delegateResignation": { "enable": false }
     },
     "forgeFactory": {
-        "unikidWhiteList": ["f917ef3f3fa65cd8744a67570692844e5032eb9e26aff575567c7a7d63ed8cca"]
+        "unikidWhiteList": [
+            "ccfc4d91da9a5f96211415f4270485c2d7a0b8de8f1f603d8577ec02de93e8c0",
+            "16af6b0aebafabc75e67a25bf78d7d7005b0e67f17e1ea19619a8599a5d65450"
+        ]
     }
 }

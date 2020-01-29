@@ -1,3 +1,4 @@
 export * from "./signers";
 export * from "./NftMintDemandCertificationSigner";
-export * from "./NftMintDemandCertificationHashBuffer";
+export * from "./NftMintDemandSigner";
+export * from "./NftMintDemandHashBuffer";

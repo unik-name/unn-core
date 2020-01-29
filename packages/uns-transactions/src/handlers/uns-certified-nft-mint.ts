@@ -6,7 +6,7 @@ import {
     CertifiedNftMintTransaction,
     INftMintDemand,
     NftMintDemandCertificationSigner,
-    NftMintDemandPayloadHashBuffer,
+    NftMintDemandHashBuffer,
     unsCrypto,
 } from "@uns/crypto";
 import {
@@ -74,7 +74,7 @@ export class CertifiedNftMintTransactionHandler extends NftMintTransactionHandle
 
         // Check the sub content generated from the "payload" of the transaction: the asset itself, without the "certification property"
         const certifiedContent = { ...transaction.data.asset } as INftMintDemand;
-        const payloadHashBuffer = new NftMintDemandPayloadHashBuffer(certifiedContent);
+        const payloadHashBuffer = new NftMintDemandHashBuffer(certifiedContent);
         if (payloadHashBuffer.getPayloadHashBuffer() !== certification.payload.sub) {
             throw new NftMintCertificationBadPayloadSubjectError();
         }

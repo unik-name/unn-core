@@ -9,4 +9,9 @@ export interface INftMintDemand {
     nft: {
         [_: string]: INftAsset;
     };
+    demand: ICertifiedDemand<INftMintDemandPayload>;
 }
+
+export type INftMintDemandPayload = ICertificationable & {
+    cryptoAccountAddress: string;
+};

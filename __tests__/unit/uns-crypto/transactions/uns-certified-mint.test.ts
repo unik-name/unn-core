@@ -79,6 +79,7 @@ describe("Uns Certified Nft Mint Transaction", () => {
             it("certification payload with additional attribute", () => {
                 trx.asset = {
                     ...nft,
+                    demand: Fixtures.nftMintDemandDemand,
                     certification: {
                         ...certification,
                         anotherAttribute: "",

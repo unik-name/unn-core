@@ -8,7 +8,7 @@ import { Managers, Identities } from "@arkecosystem/crypto";
 import {
     INftMintDemand,
     NftMintDemandCertificationSigner,
-    NftMintDemandPayloadHashBuffer,
+    NftMintDemandHashBuffer,
     UNSCertifiedNftMintBuilder,
 } from "@uns/crypto";
 import { CertifiedNftMintTransactionHandler, Errors } from "@uns/uns-transactions";
@@ -37,9 +37,11 @@ describe("CertifiedNtfMint Transaction", () => {
         const issuerPubKey = Identities.PublicKey.fromPassphrase(Fixtures.ownerPassphrase);
         const issuerAddress = Identities.Address.fromPublicKey(issuerPubKey);
 
-        builder = new UNSCertifiedNftMintBuilder("unik", Fixtures.nftMintDemandCertificationPayload.sub);
+        builder = new UNSCertifiedNftMintBuilder("unik", Fixtures.nftMintDemandCertificationPayload.sub).demand(
+            Fixtures.nftMintDemandDemand,
+        );
 
-        const expectedSub = new NftMintDemandPayloadHashBuffer(
+        const expectedSub = new NftMintDemandHashBuffer(
             builder.getCurrentAsset() as INftMintDemand,
         ).getPayloadHashBuffer();
 

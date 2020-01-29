@@ -4,6 +4,6 @@ import { AbstractPayloadSigner } from "./signers";
 
 export class NftMintDemandCertificationSigner extends AbstractPayloadSigner<INftMintDemandCertificationPayload> {
     public serialize(): ByteBuffer {
-        return CertifiedNftMintTransaction.serializePayload(this.payload);
+        return CertifiedNftMintTransaction.serializeCertificationPayload(this.payload);
     }
 }

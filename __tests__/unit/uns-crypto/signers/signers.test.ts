@@ -3,7 +3,7 @@ import {
     IPayloadHashBuffer,
     IPayloadSigner,
     NftMintDemandCertificationSigner,
-    NftMintDemandPayloadHashBuffer,
+    NftMintDemandHashBuffer,
 } from "@uns/crypto";
 import { ICertificationable } from "@uns/crypto/dist/interfaces/certification";
 import "jest-extended";
@@ -78,7 +78,7 @@ describe("Signers", () => {
         const payload = Fixtures.nftMintDemandHashBufferPayload;
 
         beforeEach(() => {
-            payloadHashBuffer = new NftMintDemandPayloadHashBuffer(payload);
+            payloadHashBuffer = new NftMintDemandHashBuffer(payload);
         });
 
         it("should get payload hash", () => {

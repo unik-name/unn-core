@@ -41,7 +41,7 @@ export const badges = {
         category: "Trust",
         default: "0",
     },
-    BlocksForger: {
+    Delegate: {
         category: "NP",
         default: "false",
     },

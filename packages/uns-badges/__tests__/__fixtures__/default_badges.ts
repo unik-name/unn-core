@@ -4,7 +4,7 @@ export const individualDefaultBadges = [
     { "Badges/XPLevel": "1" },
     { "Badges/Trust/TrustIn": "0" },
     { "Badges/Trust/TrustOut": "0" },
-    { "Badges/NP/BlocksForger": "false" },
+    { "Badges/NP/Delegate": "false" },
     { "Badges/NP/StorageProvider": "false" },
     { "Badges/NP/UNIKIssuer": "false" },
 ];
@@ -16,7 +16,7 @@ export const organizationDefaultBadges = [
     { "Badges/XPLevel": "1" },
     { "Badges/Trust/TrustIn": "0" },
     { "Badges/Trust/TrustOut": "0" },
-    { "Badges/NP/BlocksForger": "false" },
+    { "Badges/NP/Delegate": "false" },
     { "Badges/NP/StorageProvider": "false" },
     { "Badges/NP/UNIKIssuer": "false" },
 ];
@@ -27,7 +27,7 @@ export const networkDefaultBadges = [
     { "Badges/XPLevel": "1" },
     { "Badges/Trust/TrustIn": "0" },
     { "Badges/Trust/TrustOut": "0" },
-    { "Badges/NP/BlocksForger": "false" },
+    { "Badges/NP/Delegate": "false" },
     { "Badges/NP/StorageProvider": "false" },
     { "Badges/NP/UNIKIssuer": "false" },
 ];

@@ -1,5 +1,6 @@
 import { app } from "@arkecosystem/core-container";
-import { NFT, State } from "@arkecosystem/core-interfaces";
+import { Database, NFT, State } from "@arkecosystem/core-interfaces";
+import { IWalletManager } from "@arkecosystem/core-interfaces/dist/core-state";
 import { Interfaces } from "@arkecosystem/crypto";
 import { NftsManager } from "@uns/core-nft";
 import { nftRepository } from "@uns/core-nft/";
@@ -13,6 +14,10 @@ export const getCurrentTokenId = (transaction: Interfaces.ITransactionData): str
 
 export const getNftsManager = (): NftsManager => {
     return app.resolvePlugin<NftsManager>("core-nft");
+};
+
+export const getWalletManager = (): IWalletManager => {
+    return app.resolvePlugin<Database.IDatabaseService>("database").walletManager;
 };
 
 export const setExplicitValue = async (transaction: Interfaces.ITransaction): Promise<any> => {

@@ -120,12 +120,14 @@ all_tests: &all_tests
   - F-nft
   - Badges
   - F-UNS
+
 nft_uns_related_tests: &nft_uns_related_tests
-  - Unit
-  - Integration
-  - F-nft
-  - Badges
-  - F-UNS
+#   - Unit
+#   - Integration
+#   - F-nft
+#   - Badges
+#   - F-UNS
+  - build
 
 test_requirements: &test_requirements
   requires:
@@ -381,6 +383,13 @@ jobs:
       - run: ./scripts/docker/publish.sh integration
       - *notif
 
+  publish_dev_build:
+    <<: *job_config
+    steps:
+      - *attach
+      - run: ./scripts/publish/uns-dev.sh
+      - *notif
+
 ####################################
 ## Orbs
 ####################################
@@ -505,6 +514,12 @@ workflow: &workflow
         *nft_uns_related_tests
 # Post-tests operations
   - docker_build_publish:
+     filters:
+       branches:
+         only: develop
+     requires:
+       *all_tests
+  - publish_dev_build:
      filters:
        branches:
          only: develop

@@ -3,7 +3,11 @@ import "jest-extended";
 import { Handlers } from "@arkecosystem/core-transactions";
 import { Managers, Utils } from "@arkecosystem/crypto";
 import { UNSDelegateRegisterBuilder, UnsTransactionGroup, UnsTransactionType } from "@uns/crypto";
-import { CertifiedNftMintTransactionHandler, DelegateRegisterTransactionHandler, DiscloseExplicitTransactionHandler } from "@uns/uns-transactions";
+import {
+    CertifiedNftMintTransactionHandler,
+    DelegateRegisterTransactionHandler,
+    DiscloseExplicitTransactionHandler,
+} from "@uns/uns-transactions";
 import * as Fixtures from "../__fixtures__";
 
 describe("Registry register uns transaction", () => {
@@ -59,7 +63,7 @@ describe("Registry register uns transaction", () => {
             const handler = await Handlers.Registry.get(UnsTransactionType.UnsCertifiedNftMint, UnsTransactionGroup);
             const transaction = Fixtures.unsCertifiedNftMinTransaction().build();
             expect(handler.dynamicFee({ addonBytes: 0, satoshiPerByte: 0, transaction } as any)).toEqual(
-                Utils.BigNumber.make(152),
+                Utils.BigNumber.make(234),
             );
         });
     });

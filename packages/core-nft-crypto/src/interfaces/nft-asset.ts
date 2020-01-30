@@ -6,3 +6,9 @@ export interface INftAsset {
 export interface INftProperties {
     [_: string]: string;
 }
+
+export interface ITransactionNftAssetData {
+    nft: {
+        [_: string]: INftAsset;
+    };
+}

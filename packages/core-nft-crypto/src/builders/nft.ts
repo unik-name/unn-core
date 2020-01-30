@@ -1,11 +1,12 @@
 import { Interfaces, Transactions, Utils } from "@arkecosystem/crypto";
 import { NftTransactionGroup } from "../enums";
+import { ITransactionNftAssetData } from "../interfaces";
 
 export interface IAssetBuilder {
     /**
      * Allow to get the current "asset" of the builder
      */
-    getCurrentAsset(): Interfaces.ITransactionAsset;
+    getCurrentAsset(): ITransactionNftAssetData;
 }
 
 export abstract class NftBuilder<T extends NftBuilder<T>> extends Transactions.TransactionBuilder<NftBuilder<T>>
@@ -37,8 +38,8 @@ export abstract class NftBuilder<T extends NftBuilder<T>> extends Transactions.T
         return struct;
     }
 
-    public getCurrentAsset(): Interfaces.ITransactionAsset {
-        return this.data.asset;
+    public getCurrentAsset(): ITransactionNftAssetData {
+        return this.data.asset as ITransactionNftAssetData;
     }
     protected abstract type(): number;
     protected abstract fees(): Utils.BigNumber;

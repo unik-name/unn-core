@@ -1,7 +1,7 @@
 import { Server } from "@arkecosystem/core-api";
 import { Container, Logger } from "@arkecosystem/core-interfaces";
 import * as Hapi from "@hapi/hapi";
-import { registerPlugin } from "./delegates";
+import { registerPlugin } from "./handle-routes";
 
 export const plugin: Container.IPluginDescriptor = {
     pkg: require("../../package.json"),

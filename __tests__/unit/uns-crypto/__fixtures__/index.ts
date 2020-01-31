@@ -114,7 +114,7 @@ export const nftMintDemandHashBufferPayload: INftMintDemand = {
     demand: nftMintDemandDemand,
 };
 
-export const unsCertifiedNftMinTransaction = () =>
+export const unsCertifiedNftMintTransaction = () =>
     new UNSCertifiedNftMintBuilder("unik", certification.payload.sub)
         .demand(nftMintDemandDemand)
         .certification(certification)

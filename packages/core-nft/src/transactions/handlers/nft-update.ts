@@ -11,7 +11,7 @@ import { NftMintTransactionHandler } from "./nft-mint";
 
 export class NftUpdateTransactionHandler extends Handlers.TransactionHandler {
     public async isActivated(): Promise<boolean> {
-        return true;
+        return this.isTransactionActivated();
     }
 
     public getConstructor(): Transactions.TransactionConstructor {

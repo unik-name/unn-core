@@ -11,11 +11,11 @@ describe("Uns Certified NFT Mint", () => {
 
     describe("should verify", () => {
         it("with a signature", () => {
-            expect(Fixtures.unsCertifiedNftMinTransaction().build().verified).toBeTrue();
-            expect(Fixtures.unsCertifiedNftMinTransaction().verify()).toBeTrue();
+            expect(Fixtures.unsCertifiedNftMintTransaction().build().verified).toBeTrue();
+            expect(Fixtures.unsCertifiedNftMintTransaction().verify()).toBeTrue();
         });
         it("with second signature", () => {
-            const transaction = Fixtures.unsCertifiedNftMinTransaction().secondSign("second passphrase");
+            const transaction = Fixtures.unsCertifiedNftMintTransaction().secondSign("second passphrase");
             expect(transaction.build().verified).toBeTrue();
             expect(transaction.verify()).toBeTrue();
         });

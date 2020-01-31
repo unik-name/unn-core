@@ -1,24 +1,24 @@
 import { State } from "@arkecosystem/core-interfaces";
 import { Handlers } from "@arkecosystem/core-transactions";
 import { Interfaces, Transactions } from "@arkecosystem/crypto";
-import { NftMintTransactionHandler } from "@uns/core-nft";
+import { NftUpdateTransactionHandler } from "@uns/core-nft";
 import {
     applyMixins,
-    CertifiedNftMintTransaction,
+    CertifiedNftUpdateTransaction,
     ICertificationable,
     INftDemand,
-    NftMintDemandCertificationSigner,
-    NftMintDemandHashBuffer,
+    NftUpdateDemandCertificationSigner,
+    NftUpdateDemandHashBuffer,
 } from "@uns/crypto";
 import { CertifiedTransactionHandler } from "./uns-certified-handler";
 
-export class CertifiedNftMintTransactionHandler extends NftMintTransactionHandler {
+export class CertifiedNftUpdateTransactionHandler extends NftUpdateTransactionHandler {
     public async isActivated(): Promise<boolean> {
         return true;
     }
 
     public dependencies(): ReadonlyArray<Handlers.TransactionHandlerConstructor> {
-        return [NftMintTransactionHandler];
+        return [NftUpdateTransactionHandler];
     }
 
     public walletAttributes(): ReadonlyArray<string> {
@@ -26,7 +26,7 @@ export class CertifiedNftMintTransactionHandler extends NftMintTransactionHandle
     }
 
     public getConstructor(): Transactions.TransactionConstructor {
-        return CertifiedNftMintTransaction;
+        return CertifiedNftUpdateTransaction;
     }
 
     public async throwIfCannotBeApplied(
@@ -39,16 +39,18 @@ export class CertifiedNftMintTransactionHandler extends NftMintTransactionHandle
         await this.throwIfCannotBeCertified(transaction, walletManager);
     }
 
-    protected getPayloadSigner(payload: ICertificationable): NftMintDemandCertificationSigner {
-        return new NftMintDemandCertificationSigner(payload);
+    protected getPayloadSigner(payload: ICertificationable): NftUpdateDemandCertificationSigner {
+        return new NftUpdateDemandCertificationSigner(payload);
     }
 
-    protected getPayloadHashBuffer(demand: INftDemand): NftMintDemandHashBuffer {
-        return new NftMintDemandHashBuffer(demand);
+    protected getPayloadHashBuffer(demand: INftDemand): NftUpdateDemandHashBuffer {
+        return new NftUpdateDemandHashBuffer(demand);
     }
 }
 
 // Mixins must have the same interface name as the class
 // tslint:disable-next-line:interface-name
-export interface CertifiedNftMintTransactionHandler extends NftMintTransactionHandler, CertifiedTransactionHandler {}
-applyMixins(CertifiedNftMintTransactionHandler, [CertifiedTransactionHandler]);
+export interface CertifiedNftUpdateTransactionHandler
+    extends NftUpdateTransactionHandler,
+        CertifiedTransactionHandler {}
+applyMixins(CertifiedNftUpdateTransactionHandler, [CertifiedTransactionHandler]);

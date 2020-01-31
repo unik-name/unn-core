@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+
+set -e
+
 . "$1/../../scripts/utils.sh"
 
 if [ "$(basename $1)" == "crypto" ]

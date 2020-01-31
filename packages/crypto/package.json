@@ -28,7 +28,7 @@
         "compile": "../../node_modules/typescript/bin/tsc",
         "uns_prepublish": "../../scripts/ark_crypto_publish.sh $PWD",
         "restore_backup": "mv package.json.back package.json",
-        "prepublishOnly": "yarn build && yarn uns_prepublish",
+        "prepublishOnly": "yarn uns_prepublish && yarn build",
         "postpublish": "yarn restore_backup"
     },
     "dependencies": {

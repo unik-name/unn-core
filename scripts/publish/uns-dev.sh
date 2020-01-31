@@ -21,13 +21,13 @@ DATE=$(date -u +%Y%m%d%H%M%S)
 new_version="${actual_uns_version}-dev.$DATE"
 
 sed -i.bak "s/\"uns_version\": \"\(.*\)\"/\"uns_version\": \"$new_version\"/g" "./package.json"
-npm publish $PUBLISH_OPTS
+npm publish --tag=dev $PUBLISH_OPTS
 
 cd ../core-nft-crypto
-npm publish $PUBLISH_OPTS
+npm publish --tag=dev $PUBLISH_OPTS
 
 cd ../uns-crypto
-npm publish $PUBLISH_OPTS
+npm publish --tag=dev $PUBLISH_OPTS
 
 cd ..
 

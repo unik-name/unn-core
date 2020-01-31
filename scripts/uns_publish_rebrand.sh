@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+
+set -e
+
 . "$1/../../scripts/utils.sh"
 
 uns_name=$(retrieve_uns_name "$1/../crypto/package.json")

@@ -91,19 +91,19 @@ describe("CertifiedNtfMint Transaction", () => {
             await expect(handler.throwIfCannotBeApplied(builder.build(), senderWallet, walletManager)).toResolve();
         });
 
-        it("should throw NftMintCertificationBadSignatureError payload modification", async () => {
+        it("should throw NftCertificationBadSignatureError payload modification", async () => {
             // Payload hacking attempt
             builder.data.asset.certification.payload.iat = 666666;
             await expect(handler.throwIfCannotBeApplied(builder.build(), senderWallet, walletManager)).rejects.toThrow(
-                Errors.NftMintCertificationBadSignatureError,
+                Errors.NftCertificationBadSignatureError,
             );
         });
 
-        it("should throw NftMintCertificationBadPayloadSubjectError asset Nft Demand modification", async () => {
+        it("should throw NftCertificationBadPayloadSubjectError asset Nft Demand modification", async () => {
             // Payload hacking attempt
             builder.data.asset.nft.unik.tokenId = Fixtures.tokenId;
             await expect(handler.throwIfCannotBeApplied(builder.build(), senderWallet, walletManager)).rejects.toThrow(
-                Errors.NftMintCertificationBadPayloadSubjectError,
+                Errors.NftCertificationBadPayloadSubjectError,
             );
         });
     });

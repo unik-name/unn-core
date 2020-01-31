@@ -1,14 +1,11 @@
-import { Interfaces } from "@uns/core-nft-crypto";
-import { ICertificationable, ICertifiedDemand } from "./certification";
+import { ICertificationable, ICertifiedDemand, INftDemand, INftDemandPayload } from "./certification";
 
+export type INftMintDemand = INftDemand;
+export type INftMintDemandPayload = INftDemandPayload;
+export type INftMintDemandCertification = ICertifiedDemand<ICertificationable>;
 export type INftMintDemandCertificationPayload = ICertificationable;
 
-export type INftMintDemandCertification = ICertifiedDemand<ICertificationable>;
-
-export type INftMintDemand = Interfaces.ITransactionNftAssetData & {
-    demand: ICertifiedDemand<INftMintDemandPayload>;
-};
-
-export type INftMintDemandPayload = ICertificationable & {
-    cryptoAccountAddress: string;
-};
+export type INftUpdateDemand = INftDemand;
+export type INftUpdateDemandPayload = INftDemandPayload;
+export type INftUpdateDemandCertification = ICertifiedDemand<ICertificationable>;
+export type INftUpdateDemandCertificationPayload = ICertificationable;

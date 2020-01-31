@@ -1,11 +1,10 @@
 import { Transactions, Utils } from "@arkecosystem/crypto";
 import { NftTransactionGroup, NftTransactionStaticFees, NftTransactionType } from "../enums";
-import { NftUpdateTransaction } from "./nft-update";
+import { AbstractNftWithPropertiesTransaction } from "./abstract-nft-with-properties";
 import { NftSchemas } from "./utils";
 
 const { schemas } = Transactions;
-
-export class NftMintTransaction extends NftUpdateTransaction {
+export class NftMintTransaction extends AbstractNftWithPropertiesTransaction {
     public static typeGroup: number = NftTransactionGroup;
     public static type: number = NftTransactionType.NftMint;
     public static key: string = "NftMint";
@@ -14,8 +13,8 @@ export class NftMintTransaction extends NftUpdateTransaction {
             $id: "nftMint",
             required: ["asset"],
             properties: {
-                type: { transactionType: NftTransactionType.NftMint },
-                typeGroup: { const: NftTransactionGroup },
+                type: { transactionType: NftMintTransaction.type },
+                typeGroup: { const: NftMintTransaction.typeGroup },
                 ...schemas.extend(NftSchemas.nft, NftSchemas.nftProperties),
             },
         });

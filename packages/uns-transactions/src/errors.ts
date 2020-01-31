@@ -70,26 +70,25 @@ export class CryptoAccountHasSeveralUniksError extends Errors.TransactionError {
         super(`Failed to apply transaction: crypto-account has several Uniks`);
     }
 }
-
-export abstract class NftMintCertificationError extends Errors.TransactionError {
+export abstract class NftCertificationError extends Errors.TransactionError {
     constructor(message: string) {
         super("Failed to apply transaction Certified NFT Mint: " + message);
     }
 }
 
-export class NftMintCertificationBadSignatureError extends NftMintCertificationError {
+export class NftCertificationBadSignatureError extends NftCertificationError {
     constructor() {
         super("Failed to check certification signature");
     }
 }
 
-export class NftMintCertificationBadPayloadSubjectError extends NftMintCertificationError {
+export class NftCertificationBadPayloadSubjectError extends NftCertificationError {
     constructor() {
         super("Failed to check certification payload subject");
     }
 }
 
-export abstract class NftMintCertificationTimedError extends NftMintCertificationError {
+export abstract class NftCertificationTimedError extends NftCertificationError {
     constructor(transactionId: string, time: number, suffix: string) {
         super(`Certification of transaction ${transactionId} is ${time} seconds ${suffix}`);
     }

@@ -1,8 +1,8 @@
 import { Utils } from "@arkecosystem/crypto";
 import { NftTransactionStaticFees, NftTransactionType } from "../enums";
-import { AbstractNftUpdateBuilder } from "./abstract-nft-update";
+import { AbstractNftWithPropertiesBuilder } from "./abstract-nft";
 
-export class NftUpdateBuilder extends AbstractNftUpdateBuilder<NftUpdateBuilder> {
+export class NftUpdateBuilder extends AbstractNftWithPropertiesBuilder<NftUpdateBuilder> {
     protected instance(): this {
         return this;
     }

@@ -7,7 +7,7 @@ import {
 } from "../../../../packages/uns-crypto/src";
 import { checkCommonFields } from "../../core-nft/helpers";
 import * as Fixtures from "../__fixtures__";
-import { payloadNftMintDemandCertificationSignature, tokenId, unsCertifiedNftMinTransaction } from "../__fixtures__";
+import { payloadNftMintDemandCertificationSignature, tokenId, unsCertifiedNftMintTransaction } from "../__fixtures__";
 
 describe("Uns Certified Nft Mint Transaction", () => {
     Managers.configManager.setFromPreset(Fixtures.network);
@@ -17,7 +17,7 @@ describe("Uns Certified Nft Mint Transaction", () => {
 
     describe("Ser/deser", () => {
         it("should ser/deserialize without error", () => {
-            const transaction = unsCertifiedNftMinTransaction().getStruct();
+            const transaction = unsCertifiedNftMintTransaction().getStruct();
             const serialized = Transactions.TransactionFactory.fromData(transaction).serialized.toString("hex");
             const deserialized = Transactions.Deserializer.deserialize(serialized);
 
@@ -72,7 +72,7 @@ describe("Uns Certified Nft Mint Transaction", () => {
             };
 
             it("should validate schema for nominal case without errors", () => {
-                const transaction = unsCertifiedNftMinTransaction().getStruct();
+                const transaction = unsCertifiedNftMintTransaction().getStruct();
                 validateSchema(transaction);
             });
 

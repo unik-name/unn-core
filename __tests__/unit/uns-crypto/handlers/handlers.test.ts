@@ -61,7 +61,7 @@ describe("Registry register uns transaction", () => {
 
         it("should return dynamic fees", async () => {
             const handler = await Handlers.Registry.get(UnsTransactionType.UnsCertifiedNftMint, UnsTransactionGroup);
-            const transaction = Fixtures.unsCertifiedNftMinTransaction().build();
+            const transaction = Fixtures.unsCertifiedNftMintTransaction().build();
             expect(handler.dynamicFee({ addonBytes: 0, satoshiPerByte: 0, transaction } as any)).toEqual(
                 Utils.BigNumber.make(234),
             );

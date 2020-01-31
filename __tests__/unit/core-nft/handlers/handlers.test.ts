@@ -39,7 +39,7 @@ describe("Registry register nft transaction", () => {
         it("should not throw when registering transactions", () => {
             return expect(
                 Handlers.Registry.get(Enums.NftTransactionType.NftUpdate, Enums.NftTransactionGroup),
-            ).resolves.toBeDefined();
+            ).resolves.not.toThrow();
         });
 
         it("should return dynamic fees", async () => {

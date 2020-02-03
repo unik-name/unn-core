@@ -4,7 +4,7 @@ import { DelegateRegistrationTransactionHandler } from "@arkecosystem/core-trans
 import { Interfaces, Transactions } from "@arkecosystem/crypto";
 import { NftMintTransactionHandler, NftOwnerError } from "@uns/core-nft";
 import { DelegateRegisterTransaction, DIDHelpers, DIDTypes } from "@uns/crypto";
-import { CryptoAccountAlreadyDelegateError, InvalidUnikTypeError, UnikNameNotDisclosedError } from "../errors";
+import { CryptoAccountHasSeveralUniksError, InvalidUnikTypeError, UnikNameNotDisclosedError } from "../errors";
 import { EXPLICIT_PROP_KEY, getNftsManager } from "./utils/helpers";
 
 export const DELEGATE_BADGE = "Badges/NP/Delegate";
@@ -37,6 +37,11 @@ export class DelegateRegisterTransactionHandler extends DelegateRegistrationTran
             throw new NftOwnerError(wallet.address, nftId);
         }
 
+        // assert wallet has only 1 Unik
+        if (wallet.getAttribute("tokens").tokens.length > 1) {
+            throw new CryptoAccountHasSeveralUniksError();
+        }
+
         const properties = await getNftsManager().getProperties(nftId);
 
         // check disclose status of unikname
@@ -49,18 +54,6 @@ export class DelegateRegisterTransactionHandler extends DelegateRegistrationTran
 
         if (!(nftType === DIDTypes.INDIVIDUAL || nftType === DIDTypes.ORGANIZATION)) {
             throw new InvalidUnikTypeError(DIDHelpers.fromCode(nftType));
-        }
-
-        // check other UNIKs in wallet for BlockForger badge
-        for (const unikId of wallet.getAttribute("tokens").tokens) {
-            if (unikId === nftId) {
-                continue;
-            }
-            const badge = await getNftsManager().getProperty(unikId, DELEGATE_BADGE);
-
-            if (badge?.value === "true") {
-                throw new CryptoAccountAlreadyDelegateError();
-            }
         }
 
         return super.throwIfCannotBeApplied(transaction, wallet, walletManager);

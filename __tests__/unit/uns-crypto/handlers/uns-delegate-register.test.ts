@@ -11,7 +11,7 @@ import { Wallets } from "@arkecosystem/core-state";
 import { Handlers } from "@arkecosystem/core-transactions";
 import { EXPLICIT_PROP_KEY } from "@uns/uns-transactions/src/handlers/utils/helpers";
 import { NftOwnerError } from "@uns/core-nft";
-import { CryptoAccountAlreadyDelegateError } from "@uns/uns-transactions/dist/errors";
+import { CryptoAccountHasSeveralUniksError } from "@uns/uns-transactions/dist/errors";
 
 let transaction;
 let handler: DelegateRegisterTransactionHandler;
@@ -85,18 +85,12 @@ describe("UnsDelegateRegister Transaction", () => {
             ).rejects.toThrow(Errors.InvalidUnikTypeError);
         });
 
-        it("should throw CryptoAccountAlreadyDelegateError", async () => {
-            nftManager.getProperties.mockReturnValueOnce([
-                { key: "type", value: "2" },
-                { key: EXPLICIT_PROP_KEY, value: "tatalol" },
-            ]);
-            senderWallet.setAttribute("tokens", { tokens: [TOKEN_ID, "secondDelegateToken"] });
+        it("should throw CryptoAccountHasSeveralUniksError", async () => {
+            senderWallet.setAttribute("tokens", { tokens: [TOKEN_ID, "anotherTokenId"] });
             walletManager.reindex(senderWallet);
-            nftManager.getProperty.mockReturnValueOnce({ value: "true" });
-
             await expect(
                 handler.throwIfCannotBeApplied(transaction.build(), senderWallet, walletManager),
-            ).rejects.toThrow(CryptoAccountAlreadyDelegateError);
+            ).rejects.toThrow(CryptoAccountHasSeveralUniksError);
         });
     });
 

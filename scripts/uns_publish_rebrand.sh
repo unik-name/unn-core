@@ -11,14 +11,13 @@ then
     exit 1
 fi
 
-echo "Remapping @arkecosystem/crypto to @uns/$uns_name"
-
 #backup package.json
 cp "$1/package.json" "$1/package.json.back"
 
 package_name=$(basename $1)
 case $package_name in
     uns-crypto|core-nft-crypto)
+        echo "In module '$package_name', remapping '@arkecosystem/crypto' to '@uns/$uns_name'"
         #replace @arkecosystem/crypto by @uns/$uns_name in all .d.ts and .js of dist/
         find dist \( -name "*.js" -o -name "*.d.ts" \) -exec sed -i'' "s/@arkecosystem\/crypto/@uns\/$uns_name/g" {} +
         #get @uns/ark-crypto version

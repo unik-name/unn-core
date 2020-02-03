@@ -4,12 +4,6 @@ PUBLISH_OPTS=$1
 
 set -e
 
-# Check new commits since 24h
-if [ $(git log --since="1 day" | wc -l) -eq 0 ]; then
-    echo "Nothing to publish since 1 day.";
-    exit 0;
-fi
-
 if [[ -n "$CI" ]];then
     echo "Authenticate with registry."
     if [[ -z "$NPM_TOKEN" ]];then

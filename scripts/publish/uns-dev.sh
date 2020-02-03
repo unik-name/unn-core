@@ -40,7 +40,8 @@ echo
 echo "Build and publish @uns/core-nft-crypto"
 echo
 cd ../core-nft-crypto
-npm publish --tag=dev $PUBLISH_OPTS
+# It is mandatory to rebuild the module afterward to satisfy next modules dependency
+npm publish --tag=dev $PUBLISH_OPTS && yarn build
 
 echo
 echo "Build and publish @uns/uns-crypto"

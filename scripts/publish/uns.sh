@@ -9,7 +9,7 @@ npm publish
 
 cd ../core-nft-crypto
 yarn version --no-git-tag-version --new-version $version 
-npm publish
+npm publish && yarn build
 
 cd ../uns-crypto
 yarn version --no-git-tag-version --new-version $version

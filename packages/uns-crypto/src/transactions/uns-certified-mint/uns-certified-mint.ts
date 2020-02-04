@@ -1,7 +1,6 @@
 import { Transactions, Utils } from "@arkecosystem/crypto";
-import { Address } from "@arkecosystem/crypto/dist/identities";
+import { Identities } from "@arkecosystem/crypto";
 import { Transactions as NftTransactions } from "@uns/core-nft-crypto";
-import { NftMintTransaction } from "@uns/core-nft-crypto/dist/transactions";
 import ByteBuffer from "bytebuffer";
 import { UnsTransactionGroup, UnsTransactionStaticFees, UnsTransactionType } from "../../enums";
 import { INftMintDemand, INftMintDemandCertification, INftMintDemandCertificationPayload } from "../../interfaces";
@@ -35,13 +34,13 @@ export class CertifiedNftMintTransaction extends NftTransactions.NftMintTransact
 
     public static serializeDemandPayload(mintDemand: INftMintDemand): ByteBuffer {
         // Serialize nft part
-        const bb: ByteBuffer = NftMintTransaction.serializePayload({ nft: mintDemand.nft });
+        const bb: ByteBuffer = NftTransactions.NftMintTransaction.serializePayload({ nft: mintDemand.nft });
         // Serialize demand part
         // Payload
         bb.append(mintDemand.demand.payload.iss, "hex");
         bb.append(mintDemand.demand.payload.sub, "hex");
         bb.writeUint64(mintDemand.demand.payload.iat);
-        bb.append(Address.toBuffer(mintDemand.demand.payload.cryptoAccountAddress).addressBuffer);
+        bb.append(Identities.Address.toBuffer(mintDemand.demand.payload.cryptoAccountAddress).addressBuffer);
 
         // Signature
         bb.append(mintDemand.demand.signature, "hex");
@@ -94,7 +93,7 @@ export class CertifiedNftMintTransaction extends NftTransactions.NftMintTransact
         data.asset.demand.payload.iss = buf.readBytes(32).toString("hex");
         data.asset.demand.payload.sub = buf.readBytes(32).toString("hex");
         data.asset.demand.payload.iat = buf.readUint64().toNumber();
-        data.asset.demand.payload.cryptoAccountAddress = Address.fromBuffer(buf.readBytes(21).toBuffer());
+        data.asset.demand.payload.cryptoAccountAddress = Identities.Address.fromBuffer(buf.readBytes(21).toBuffer());
 
         // Demand signature
         const signatureLength: number = this.getSignatureLength(buf);

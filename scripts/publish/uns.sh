@@ -5,7 +5,7 @@ commit=$2
 
 cd packages/crypto
 sed -i.bak "s/\"uns_version\": \"\(.*\)\"/\"uns_version\": \"$version\"/g" "./package.json"
-npm publish
+npm publish 
 
 cd ../core-nft-crypto
 yarn version --no-git-tag-version --new-version $version 
@@ -13,7 +13,7 @@ npm publish && yarn build
 
 cd ../uns-crypto
 yarn version --no-git-tag-version --new-version $version
-npm publish
+npm publish 
 
 cd ../core
 yarn version --no-git-tag-version --new-version $version

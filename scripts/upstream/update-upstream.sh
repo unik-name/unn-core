@@ -5,7 +5,7 @@ set -e
 wait_for_sync () {
   timeout_sec=300
   i=0
-  until /home/ubuntu/uns-core/scripts/check-sync/check-sync.sh >/dev/null; do
+  until /home/ubuntu/uns-core/scripts/check-sync/check-sync >/dev/null; do
     ((i=i+10))
     if [ $i -gt $timeout_sec ]; then
       echo "sync timeout reached"

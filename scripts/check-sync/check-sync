@@ -1,7 +1,37 @@
-#!/bin/sh
+#!/usr/bin/env node
 
-##########
-# Warning: If you update this file, you must copy to crond.d manually
-##########
+const got = require("got");
 
-*/30 * * * * ubuntu curl -fsS --retry 3 https://hc-ping.com/89a3c92a-8f7b-402b-b5dc-982101cf1fd4/start && /home/ubuntu/uns-core/scripts/check-sync/check-sync.sh >> /home/ubuntu/cron-check-sync.log 2>&1 && curl -fsS --retry 3 https://hc-ping.com/89a3c92a-8f7b-402b-b5dc-982101cf1fd4
+const roundFromHeight = (height, activeDelegates) => {
+    return Math.floor(height / activeDelegates) + (height % activeDelegates > 0 ? 1 : 0);
+  };
+
+const main = async () => {
+    const networkHeight = JSON.parse((await got.get(`http://localhost:4003/api/node/status`)).body).data.now;
+    const delegates = JSON.parse((await got.get(`http://localhost:4003/api/delegates`)).body);
+    let activeDelegates = 0;
+    for (delegate of delegates.data) {
+        if ( delegate.resigned === undefined && delegate.rank > 0) {
+            activeDelegates++;
+        }
+    }
+    const networkRound = roundFromHeight(networkHeight, activeDelegates);
+    let notSynced = 0;
+    for (delegate of delegates.data) {
+        if ( delegate.resigned === undefined && delegate.rank > 0) {
+            const lastBlockRound = roundFromHeight(delegate.blocks.last.height, activeDelegates)
+            const roundDelta = networkRound - lastBlockRound;
+
+            if (roundDelta > 2) {
+                console.log(`WARNING: delegate ${delegate.username} is not synced with network. Last forged block at ${delegate.blocks.last.timestamp.human}`)
+                notSynced++;
+            }
+
+        }
+    }
+    if( notSynced > 0) {
+        process.exit(1);
+    }
+}
+main()
+

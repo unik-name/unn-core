@@ -42,17 +42,17 @@ cd $WORKDIR
 DOCKER_COMPOSE_FILE_PATH=$SOURCES_PATH/docker/integration/docker-compose.yml
 #upgrade forger 1
 echo upgrade forger 1
-docker-compose -f $DOCKER_COMPOSE_FILE_PATH up --no-deps --no-recreate --build -d forger1
+docker-compose -f $DOCKER_COMPOSE_FILE_PATH up --build -d forger1
 
 #upgrade forger 2
 echo upgrade forger 2
 wait_for_sync
-docker-compose -f $DOCKER_COMPOSE_FILE_PATH up --no-deps  --no-recreate --build -d forger2
+docker-compose -f $DOCKER_COMPOSE_FILE_PATH up --build -d forger2
 
 #upgrade forger 3
 echo upgrade forger 3
 wait_for_sync
-docker-compose -f $DOCKER_COMPOSE_FILE_PATH up --no-deps --no-recreate --build -d forger3
+docker-compose -f $DOCKER_COMPOSE_FILE_PATH up --build -d forger3
 
 docker image prune -f --filter "until=168h" # 7 days
 

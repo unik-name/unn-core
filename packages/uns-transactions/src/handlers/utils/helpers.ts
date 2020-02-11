@@ -31,10 +31,10 @@ export const setExplicitValue = async (transaction: Interfaces.ITransaction): Pr
 
 const manageNewExplicitValues = (currents: string[], newValues: string[]): string[] => {
     if (currents?.length) {
-        // concat current & new values and remove duplicates with Set
-        newValues = [...new Set(newValues.concat(currents))];
+        newValues = newValues.concat(currents);
     }
-    return newValues;
+    // remove duplicates
+    return [...new Set(newValues)];
 };
 
 export const revertExplicitValue = async (transaction: Interfaces.ITransactionData): Promise<void> => {

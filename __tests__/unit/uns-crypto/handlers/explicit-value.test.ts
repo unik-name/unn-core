@@ -58,6 +58,13 @@ describe("Disclose-explicit - setExplicitValue tests", () => {
             await setExplicitValue(transactionClone);
             expect(nftManager.manageProperties).toHaveBeenCalledWith({ [EXPLICIT_PROP_KEY]: "" }, TOKEN_ID);
         });
+
+        it("should not set duplicate values", async () => {
+            const explicitValues = ["value", "value"];
+            transactionClone.data.asset["disclose-demand"].payload.explicitValue = explicitValues;
+            await setExplicitValue(transactionClone);
+            expect(nftManager.manageProperties).toHaveBeenCalledWith({ [EXPLICIT_PROP_KEY]: "value" }, TOKEN_ID);
+        });
     });
 
     describe("update explicit values", () => {

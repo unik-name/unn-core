@@ -26,6 +26,7 @@ case $package_name in
         then
             echo "Set @uns/$uns_name dependency to version $uns_version"
             sed -i.bak "s/\"@arkecosystem\/crypto\": \".*\"/\"@uns\/$uns_name\": \"\^$uns_version\"/g" "$1/package.json"
+            sed -i.bak "s/\"@uns\/core-nft-crypto\": \".*\"/\"@uns\/core-nft-crypto\": \"\^$uns_version\"/g" "$1/package.json"
             #replace version
             sed -i.bak "s/\"version\": \"\(.*\)\"/\"version\": \"$uns_version\"/g" "$1/package.json"
         else

@@ -53,4 +53,8 @@ export const badges = {
         category: "NP",
         default: "false",
     },
+    CosmicNonce: {
+        category: "Authentication",
+        default: "1",
+    },
 };

@@ -1,0 +1,7 @@
+#!/bin/sh
+
+##########
+# Warning: If you update this file, you must copy to crond.d manually
+##########
+
+*/10 * * * * ubuntu curl -fsS --retry 3 https://hc-ping.com/89a3c92a-8f7b-402b-b5dc-982101cf1fd4/start && /home/ubuntu/uns-core/scripts/check-sync/check-sync >> /home/ubuntu/cron-check-sync.log 2>&1 && curl -fsS --retry 3 https://hc-ping.com/89a3c92a-8f7b-402b-b5dc-982101cf1fd4

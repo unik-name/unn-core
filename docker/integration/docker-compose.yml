@@ -26,6 +26,7 @@ services:
      FORGER_SECRET: "square climb witness lecture shoot unveil change afford license mesh chair regret"
     #  BOOTSTRAP: "true"
      CORE_DB_DATABASE: uns_dalinet_forger1
+     BOOTNODE: forger3
     ports:
      - "4002:4002"
      - "4003:4003"

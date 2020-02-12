@@ -57,7 +57,7 @@ fi
 
 if [[ -n "${BOOTNODE}" ]]; then
   echo "uses bootnode : ${BOOTNODE}"
-  IP=$(nslookup $BOOTNODE | cut -d ' ' -f 3)
+  IP=$(getent hosts  $BOOTNODE | cut -d ' ' -f 1)
   PEER_FILE=$CONFIG_DIR/peers.json
   echo $(jq --arg ip $IP '.list += [{"ip": $ip,"port":"4002"}]' $PEER_FILE ) > $PEER_FILE # warning 4002 port used
 

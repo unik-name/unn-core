@@ -58,9 +58,10 @@ fi
 if [[ -n "${BOOTNODE}" ]]; then
   echo "uses bootnode : ${BOOTNODE}"
   IP=$(getent hosts  $BOOTNODE | cut -d ' ' -f 1)
-  PEER_FILE=$CONFIG_DIR/peers.json
-  echo $(jq --arg ip $IP '.list += [{"ip": $ip,"port":"4002"}]' $PEER_FILE ) > $PEER_FILE # warning 4002 port used
-
+  if [[ -n "${IP}" ]]; then
+    PEER_FILE=$CONFIG_DIR/peers.json
+    echo $(jq --arg ip $IP '.list += [{"ip": $ip,"port":"4002"}]' $PEER_FILE ) > $PEER_FILE # warning 4002 port used
+  fi
   echo "wait bootnode to be up and forging ($STARTING_DELAY)"
   sleep $STARTING_DELAY
 

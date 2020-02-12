@@ -26,7 +26,7 @@ services:
      FORGER_SECRET: "square climb witness lecture shoot unveil change afford license mesh chair regret"
     #  BOOTSTRAP: "true"
      CORE_DB_DATABASE: uns_dalinet_forger1
-     BOOTNODE: forger3
+     BOOTNODE: forger3 # If BOOTNODE is filled with a not running forger, the retrieve of its IP will fail, thus the the node will start base on its original peer file
     ports:
      - "4002:4002"
      - "4003:4003"

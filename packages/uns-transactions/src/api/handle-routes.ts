@@ -9,20 +9,13 @@ export const registerPlugin = (server: Hapi.Server) => {
         server.ext({
             type: "onPreResponse",
             async method(request: Hapi.Request, h: Hapi.ResponseToolkit) {
-                if (isDelegatesdRoute(request)) {
-                    await handleRoute(request, handleDelegatesdRoute);
-                } else if (isTransactionsRoute(request)) {
+                if (isTransactionsRoute(request)) {
                     await handleRoute(request, handleTransactionsRoute);
                 }
                 return h.continue;
             },
         });
     }
-};
-
-const isDelegatesdRoute = (request: Hapi.Request): boolean => {
-    const { method, path } = request.route;
-    return method === "get" && /^\/api\/delegates$/.test(path);
 };
 
 const isTransactionsRoute = (request: Hapi.Request): boolean => {
@@ -35,21 +28,6 @@ const handleRoute = async (request, handler) => {
     if (isResponse(response)) {
         const source = response.source as any;
         source.data = await handler(source.data);
-    }
-};
-
-const handleDelegatesdRoute = async delegates => {
-    // Get the list of delegates Uniks
-    const delegatesUniks = delegates.filter(delegate => isUnikId(delegate.username)).map(delegate => delegate.username);
-    if (delegatesUniks.length) {
-        // Retrieve explicit values
-        const explicitValuesBatch = await getExplicitValuesByUnik(delegatesUniks);
-        return delegates.map(delegate => {
-            addUniknameToApiItem(delegate, delegate.username, explicitValuesBatch);
-            return delegate;
-        });
-    } else {
-        return delegates;
     }
 };
 

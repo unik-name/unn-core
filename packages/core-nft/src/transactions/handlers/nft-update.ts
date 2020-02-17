@@ -7,7 +7,6 @@ import { NftOwnerError } from "../../errors";
 import { INftWalletAttributes } from "../../interfaces";
 import { NftsManager } from "../../manager";
 import { checkAssetPropertiesSize, revertProperties } from "./helpers";
-import { NftMintTransactionHandler } from "./nft-mint";
 
 export class NftUpdateTransactionHandler extends Handlers.TransactionHandler {
     public async isActivated(): Promise<boolean> {
@@ -19,7 +18,9 @@ export class NftUpdateTransactionHandler extends Handlers.TransactionHandler {
     }
 
     public dependencies(): ReadonlyArray<Handlers.TransactionHandlerConstructor> {
-        return [NftMintTransactionHandler];
+        return [
+            require("@uns/uns-transactions/dist/handlers/uns-certified-nft-mint").CertifiedNftMintTransactionHandler,
+        ];
     }
 
     public walletAttributes(): ReadonlyArray<string> {

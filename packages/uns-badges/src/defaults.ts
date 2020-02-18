@@ -45,4 +45,7 @@ export const systemProperties: Record<string, IProperyInfo> = {
     "Badges/NP/UNIKIssuer": {
         default: "false",
     },
+    "Authentications/CosmicNonce": {
+        default: "1",
+    },
 };

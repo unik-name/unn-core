@@ -7,6 +7,7 @@ export const individualDefaultBadges = [
     { "Badges/NP/Delegate": "false" },
     { "Badges/NP/StorageProvider": "false" },
     { "Badges/NP/UNIKIssuer": "false" },
+    { "Authentications/CosmicNonce": "1" },
 ];
 
 export const organizationDefaultBadges = [
@@ -19,6 +20,7 @@ export const organizationDefaultBadges = [
     { "Badges/NP/Delegate": "false" },
     { "Badges/NP/StorageProvider": "false" },
     { "Badges/NP/UNIKIssuer": "false" },
+    { "Authentications/CosmicNonce": "1" },
 ];
 
 export const networkDefaultBadges = [
@@ -30,4 +32,5 @@ export const networkDefaultBadges = [
     { "Badges/NP/Delegate": "false" },
     { "Badges/NP/StorageProvider": "false" },
     { "Badges/NP/UNIKIssuer": "false" },
+    { "Authentications/CosmicNonce": "1" },
 ];

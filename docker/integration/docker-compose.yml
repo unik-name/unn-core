@@ -23,10 +23,9 @@ services:
       service: forger
     container_name: uns_dalinet_forger1
     environment:
-     FORGER_SECRET: "square climb witness lecture shoot unveil change afford license mesh chair regret"
+     FORGERS_SECRETS: '"square climb witness lecture shoot unveil change afford license mesh chair regret","long blouse wagon huge range version owner marine raise surprise rhythm shy","cactus cute please spirit reveal raw goose emotion latin subject forum panic"'
     #  BOOTSTRAP: "true"
      CORE_DB_DATABASE: uns_dalinet_forger1
-     BOOTNODE: forger3 # If BOOTNODE is filled with a not running forger, the retrieve of its IP will fail, thus the the node will start base on its original peer file
     ports:
      - "4002:4002"
      - "4003:4003"
@@ -34,36 +33,36 @@ services:
      - postgres
     depends_on:
      - postgres
-  forger2:
-    extends:
-      file: forger-commons.yml
-      service: forger
-    container_name: uns_dalinet_forger2
-    environment:
-     FORGER_SECRET: "long blouse wagon huge range version owner marine raise surprise rhythm shy"
-     CORE_DB_DATABASE: uns_dalinet_forger2
-     BOOTNODE: forger1
-    links:
-     - forger1
-     - postgres
-    depends_on:
-     - forger1
-     - postgres
-  forger3:
-    extends:
-      file: forger-commons.yml
-      service: forger
-    container_name: uns_dalinet_forger3
-    environment:
-     FORGER_SECRET: "cactus cute please spirit reveal raw goose emotion latin subject forum panic"
-     CORE_DB_DATABASE: uns_dalinet_forger3
-     BOOTNODE: forger1
-    links:
-     - forger1
-     - postgres
-    depends_on:
-     - forger2
-     - postgres
+#   forger2:
+#     extends:
+#       file: forger-commons.yml
+#       service: forger
+#     container_name: uns_dalinet_forger2
+#     environment:
+#      FORGER_SECRET: "long blouse wagon huge range version owner marine raise surprise rhythm shy"
+#      CORE_DB_DATABASE: uns_dalinet_forger2
+#      BOOTNODE: forger1
+#     links:
+#      - forger1
+#      - postgres
+#     depends_on:
+#      - forger1
+#      - postgres
+#   forger3:
+#     extends:
+#       file: forger-commons.yml
+#       service: forger
+#     container_name: uns_dalinet_forger3
+#     environment:
+#      FORGER_SECRET: "cactus cute please spirit reveal raw goose emotion latin subject forum panic"
+#      CORE_DB_DATABASE: uns_dalinet_forger3
+#      BOOTNODE: forger1
+#     links:
+#      - forger1
+#      - postgres
+#     depends_on:
+#      - forger2
+#      - postgres
 
 volumes:
   postgres:

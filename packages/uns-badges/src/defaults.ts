@@ -2,59 +2,47 @@ import { DIDTypes } from "@uns/crypto";
 
 export const defaults = {};
 
-export const badges = {
-    SecondPassphrase: {
-        category: "Security",
-    },
-    Multisig: {
-        category: "Security",
+export interface IProperyInfo {
+    default?: string;
+    defaultByType?: { [Didtype: string]: string };
+}
+
+export const systemProperties: Record<string, IProperyInfo> = {
+    "Badges/Security/SecondPassphrase": {},
+    "Badges/Security/Multisig": {
         default: "false",
     },
-    BackupPassphrase: {
-        category: "Security",
+    "Badges/Security/BackupPassphrase": {
         default: "false",
     },
-    Verified: {
-        category: "Rightness",
-        types: {
+    "Badges/Rightness/Verified": {
+        defaultByType: {
             [DIDTypes.ORGANIZATION]: "false",
         },
     },
-    Everlasting: {
-        category: "Rightness",
-        types: {
+    "Badges/Rightness/Everlasting": {
+        defaultByType: {
             [DIDTypes.INDIVIDUAL]: "false",
             [DIDTypes.ORGANIZATION]: "false",
             [DIDTypes.NETWORK]: "true",
         },
     },
-    XPLevel: {
-        // tslint:disable-next-line: no-null-keyword
-        category: null,
+    "Badges/XPLevel": {
         default: "1",
     },
-    TrustIn: {
-        category: "Trust",
+    "Badges/Trust/TrustIn": {
         default: "0",
     },
-    TrustOut: {
-        category: "Trust",
+    "Badges/Trust/TrustOut": {
         default: "0",
     },
-    Delegate: {
-        category: "NP",
+    "Badges/NP/Delegate": {
         default: "false",
     },
-    StorageProvider: {
-        category: "NP",
+    "Badges/NP/StorageProvider": {
         default: "false",
     },
-    UNIKIssuer: {
-        category: "NP",
+    "Badges/NP/UNIKIssuer": {
         default: "false",
-    },
-    CosmicNonce: {
-        category: "Authentication",
-        default: "1",
     },
 };

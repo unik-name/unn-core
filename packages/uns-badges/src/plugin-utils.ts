@@ -2,7 +2,7 @@ import { Container, Database } from "@arkecosystem/core-interfaces";
 import * as Hapi from "@hapi/hapi";
 import { nftRepository } from "@uns/core-nft";
 import { DIDTypes } from "@uns/crypto";
-import { badges } from "./defaults";
+import { IProperyInfo, systemProperties } from "./defaults";
 import { IRoutesManager } from "./routes";
 
 export const registerPlugin = (container: Container.IContainer, server: Hapi.Server, routesManager: IRoutesManager) => {
@@ -49,58 +49,45 @@ export const hasSecondPassphrase = (id: string, container: Container.IContainer)
     return false;
 };
 
-const getDefaultValue = (badgeName: string, nftType: DIDTypes): string => {
-    if (badges[badgeName]?.types) {
-        return badges[badgeName].types?.[nftType];
+const getDefaultValue = (propertyInfos: IProperyInfo, nftType: DIDTypes): string => {
+    if (propertyInfos.defaultByType !== undefined) {
+        return propertyInfos.defaultByType[nftType];
     }
-    return badges[badgeName]?.default;
+    return propertyInfos?.default;
 };
 
 export const handlePropertiesRequest = (properties: Array<{ [_: string]: string }>, nft, container) => {
-    for (const badgeName in badges) {
-        if (badgeName) {
-            let value: string;
-            const category = badges[badgeName].category;
-            const propertyKey = "Badges/" + (category ? `${category}/` : "") + badgeName;
-
-            if (!properties.find(elt => Object.getOwnPropertyNames(elt)[0] === propertyKey)) {
-                switch (badgeName) {
-                    case "SecondPassphrase":
-                        value = hasSecondPassphrase(nft.ownerId, container).toString();
-                        break;
-                    default:
-                        const nftType = properties.find(elt => Object.getOwnPropertyNames(elt)[0] === "type").type;
-                        value = getDefaultValue(badgeName, parseInt(nftType));
-
-                        break;
-                }
+    // tslint:disable-next-line: forin
+    for (const propertyStr in systemProperties) {
+        let value: string;
+        if (!properties.find(elt => Object.getOwnPropertyNames(elt)[0] === propertyStr)) {
+            switch (propertyStr) {
+                case "Badges/Security/SecondPassphrase":
+                    value = hasSecondPassphrase(nft.ownerId, container).toString();
+                    break;
+                default:
+                    const nftType = properties.find(elt => Object.getOwnPropertyNames(elt)[0] === "type").type;
+                    value = getDefaultValue(systemProperties[propertyStr], parseInt(nftType));
+                    break;
             }
-            if (value) {
-                properties.push({
-                    [propertyKey]: value,
-                });
-            }
+        }
+        if (value) {
+            properties.push({
+                [propertyStr]: value,
+            });
         }
     }
     return properties;
 };
 
 export const handlePropertyValueRequest = async (propertyKey, nft, container) => {
-    const badge = propertyKey.split("/");
-    // Check if requested property is a badge
-    if (badge[0] === "Badges") {
-        const badgeName = badge.pop();
-        const category = badges[badgeName]?.category;
-        // Check badge category
-        // Handle special case category = null for route without category
-        if (category === null || badge[1] === category) {
-            switch (badgeName) {
-                case "SecondPassphrase":
-                    return hasSecondPassphrase(nft.ownerId, container);
-                default:
-                    const nftType = await nftRepository().findPropertyByKey(nft.id, "type");
-                    return getDefaultValue(badgeName, parseInt(nftType.value));
-            }
+    if (systemProperties.hasOwnProperty(propertyKey)) {
+        switch (propertyKey) {
+            case "Badges/Security/SecondPassphrase":
+                return hasSecondPassphrase(nft.ownerId, container);
+            default:
+                const nftType = await nftRepository().findPropertyByKey(nft.id, "type");
+                return getDefaultValue(systemProperties[propertyKey], parseInt(nftType.value));
         }
     }
     return undefined;

@@ -23,7 +23,7 @@ services:
       service: forger
     container_name: uns_dalinet_forger1
     environment:
-     FORGERS_SECRETS: '"square climb witness lecture shoot unveil change afford license mesh chair regret","long blouse wagon huge range version owner marine raise surprise rhythm shy","cactus cute please spirit reveal raw goose emotion latin subject forum panic"'
+     FORGERS_SECRET: '"square climb witness lecture shoot unveil change afford license mesh chair regret","long blouse wagon huge range version owner marine raise surprise rhythm shy","cactus cute please spirit reveal raw goose emotion latin subject forum panic"'
     #  BOOTSTRAP: "true"
      CORE_DB_DATABASE: uns_dalinet_forger1
     ports:

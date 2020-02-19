@@ -27,7 +27,6 @@ popd
 echo -e "\nFetching Docker image"
 DOCKER_COMPOSE_FILE_PATH=$SOURCES_PATH/docker/integration/docker-compose.yml
 
-docker-compose -f $DOCKER_COMPOSE_FILE_PATH down forger1
 PULL=$(docker-compose -f $DOCKER_COMPOSE_FILE_PATH pull forger1)
 
 if [[ $PULL != *"up to date"* ]]; then

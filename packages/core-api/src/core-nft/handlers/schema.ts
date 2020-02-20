@@ -63,10 +63,17 @@ export const search: object = {
     params: {
         nft: nftPathParameterScheme,
     },
-    query: pagination,
+    query: {
+        ...pagination,
+    },
     payload: {
         orderBy: Joi.string(),
-        id: nftId,
+        id: Joi.alternatives(
+            nftId,
+            Joi.array()
+                .items(nftId)
+                .min(1),
+        ),
         ownerId: Joi.string()
             .alphanum()
             .length(34),

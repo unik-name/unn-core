@@ -6,8 +6,8 @@ import { SearchParameterConverter } from "../repositories/utils/search-parameter
 export class NftsBusinessRepository implements NFT.INftsBusinessRepository {
     constructor(private connection) {} // TODO: uns : connection is voluntarily not typed to prevent cast to PostgresConnection. Warning : it won't work if it's not postgres connection or if `db` became private
 
-    public findById(id: string) {
-        return this.connection.db.nfts.findById(id);
+    public findById(id: string, nftName?: string) {
+        return this.connection.db.nfts.findById(id, nftName);
     }
 
     public async findProperties(id: string, params: Database.IParameters = {}) {

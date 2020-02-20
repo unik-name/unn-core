@@ -1,12 +1,15 @@
 import { Database, NFT } from "@arkecosystem/core-interfaces";
+// import { ISearchParameter } from "@arkecosystem/core-interfaces/dist/core-database";
 import { Interfaces } from "@arkecosystem/crypto";
 import pgPromise = require("pg-promise");
+import { isArray } from "util";
 import { Repository } from "../../repositories/repository";
 import { INftStatus } from "../models";
 import { Nft } from "../models/nft";
 import { queries } from "../queries";
 
 const { nfts: sql } = queries;
+const DEFAULT_UNIK_PROPERTIES = ["type", "explicitValues"];
 
 export class NftsRepository extends Repository implements NFT.INftsRepository {
     // Arguments with types is a protection!
@@ -19,36 +22,54 @@ export class NftsRepository extends Repository implements NFT.INftsRepository {
      * @param  {String} id
      * @return {Promise}
      */
-    public findById(id): Promise<any> {
-        return this.db.oneOrNone(sql.findById, { id });
+    public async findById(id: string, nftName?: string): Promise<any> {
+        if (nftName === "unik") {
+            const uniks = await this.getNftsWithProperties([
+                { field: "id", operator: Database.SearchOperator.OP_LIKE, value: id },
+            ]);
+            return uniks.length ? uniks[0] : undefined;
+        } else {
+            return this.db.oneOrNone(sql.findById, { id });
+        }
     }
 
     /* copy of block-repository search method */
-    public search(parameters: Database.ISearchParameters): Promise<any> {
+    public async search(parameters: Database.ISearchParameters): Promise<any> {
         if (!parameters.paginate) {
             parameters.paginate = {
                 limit: 100,
                 offset: 0,
             };
         }
-        const selectQuery = this.query.select().from(this.query);
-        const selectQueryCount = this.query.select(this.query.count().as("cnt")).from(this.query);
+
         // Blocks repo atm, doesn't search using any custom parameters
         const parameterList = parameters.parameters.filter(o => o.operator !== Database.SearchOperator.OP_CUSTOM);
-        if (parameterList.length) {
-            let first;
-            do {
-                first = parameterList.shift();
-                // ignore params whose operator is unknown
-            } while (!first.operator && parameterList.length);
 
-            if (first) {
-                selectQuery.where(this.query[this.propToColumnName(first.field)][first.operator](first.value));
-                for (const param of parameterList) {
-                    selectQuery.and(this.query[this.propToColumnName(param.field)][param.operator](param.value));
-                }
-            }
+        const isUnikRequest: boolean =
+            parameters.parameters.filter(
+                o => o.operator === Database.SearchOperator.OP_CUSTOM && o.field === "nftName" && o.value === "unik",
+            ).length > 0;
+
+        if (isUnikRequest) {
+            const nftList = await this.getNftsWithProperties(
+                this.getWhereStatementParams(parameterList),
+                parameters.paginate,
+            );
+            return {
+                rows: nftList,
+                count: nftList.length,
+                countIsEstimate: false,
+            };
         }
+
+        const selectQuery = this.query.select().from(this.query);
+
+        const selectQueryCount = this.query.select(this.query.count().as("cnt")).from(this.query);
+
+        this.getWhereStatementParams(parameterList).reduce((sQuery, param, index) => {
+            const query: any = this.query[this.propToColumnName(param.field)][param.operator](param.value);
+            return index === 0 ? sQuery.where(query) : sQuery.and(query);
+        }, selectQuery);
 
         return this.findManyWithCount(selectQuery, selectQueryCount, parameters.paginate, parameters.orderBy);
     }
@@ -178,6 +199,69 @@ export class NftsRepository extends Repository implements NFT.INftsRepository {
             types,
             typeGroup,
             order: order.toUpperCase(),
+        });
+    }
+
+    private getWhereStatementParams(parameterList: Database.ISearchParameter[]): Database.ISearchParameter[] {
+        let whereParams: Database.ISearchParameter[] = [];
+        if (parameterList.length) {
+            let first;
+            do {
+                first = parameterList.shift();
+                // ignore params whose operator is unknown
+            } while (!first.operator && parameterList.length);
+
+            if (first) {
+                whereParams = [first, ...parameterList];
+            }
+        }
+        return whereParams;
+    }
+
+    private async getNftsWithProperties(
+        wheres: Database.ISearchParameter[],
+        paginate?: Database.ISearchPaginate,
+    ): Promise<any[]> {
+        const offset = paginate?.offset || 0;
+        const limit = paginate?.limit || 100;
+
+        const queryWheres = wheres.reduce((sQuery, param, index) => {
+            const query: any = this.query[this.propToColumnName(param.field)][param.operator](param.value);
+            return `${sQuery}${index === 0 ? "where " : " and "}${query.left.property} ${query.operator ||
+                param.operator} ${
+                isArray(param.value) ? `(${param.value.map(p => `'${p}'`).join(",")})` : `'${param.value}'`
+            }`;
+        }, "");
+
+        const nftsRows = await this.db.manyOrNone(sql.searchNftsWithProperties, {
+            wheres: queryWheres,
+            properties: [...DEFAULT_UNIK_PROPERTIES],
+            offset,
+            limit,
+        });
+        return this.mapNftsWithProperties(nftsRows);
+    }
+
+    private mapNftsWithProperties(nftsRows: any[]): any[] {
+        return Object.values(
+            nftsRows.reduce((nfts, row) => {
+                if (!nfts[row.id]) {
+                    nfts[row.id] = {
+                        id: row.id,
+                        ownerId: row.ownerId,
+                        [row.key]: row.value,
+                    };
+                } else {
+                    nfts[row.id][row.key] = row.value;
+                }
+                return nfts;
+            }, {}),
+        ).map((nft: any) => {
+            if (nft.explicitValues) {
+                nft.explicitValues = nft.explicitValues.split(",");
+                nft.defaultExplicitValue = nft.explicitValues[0];
+            }
+            return nft;
         });
     }
 }

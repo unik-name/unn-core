@@ -10,15 +10,18 @@ const nftsRepository: NftsBusinessRepository = new NftsBusinessRepository(
 );
 
 const index = async request => {
-    const nfts = await nftsRepository.search({
+    let nfts;
+
+    nfts = await nftsRepository.search({
         ...request.query,
         ...paginate(request),
+        nftName: request.params.nft,
     });
     return toPagination(nfts, "nft");
 };
 
 const show = async request => {
-    const nft = await nftsRepository.findById(request.params.id);
+    const nft = await nftsRepository.findById(request.params.id, request.params.nft);
 
     if (!nft) {
         return Boom.notFound(`Non fungible token ${request.params.id} not found`);
@@ -57,6 +60,7 @@ const search = async request => {
         ...request.payload,
         ...request.query,
         ...paginate(request),
+        nftName: request.params.nft,
     });
 
     return toPagination(nfts, "nft");

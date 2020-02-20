@@ -2,8 +2,11 @@ export const transformNft = model => {
     return {
         id: model.id,
         ownerId: model.ownerId,
-        properties: model.properties,
-        transactions: model.transactions,
+        properties: model.properties, // TO REMOVE??
+        transactions: model.transactions, // TO REMOVE??
+        type: model.type,
+        explicitValues: model.explicitValues,
+        defaultExplicitValue: model.defaultExplicitValue,
     };
 };
 

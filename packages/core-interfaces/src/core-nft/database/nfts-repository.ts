@@ -5,7 +5,7 @@ export interface INftsRepository extends Database.IRepository {
     /**
      * Find a nft by its ID.
      */
-    findById(id: string): Promise<any>;
+    findById(id: string, nftName?: string): Promise<any>;
     search(params: Database.ISearchParameters): Promise<any>;
     delete(id: string): Promise<any>;
     updateOwnerId(id: string, newOwnerId: string): Promise<any>;

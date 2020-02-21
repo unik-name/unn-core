@@ -12,7 +12,7 @@ export const systemProperties: Record<string, IProperyInfo> = {
     "Badges/Security/Multisig": {
         default: "false",
     },
-    "Badges/Security/BackupPassphrase": {
+    "Badges/Security/Passphrase/Backup": {
         default: "false",
     },
     "Badges/Rightness/Verified": {

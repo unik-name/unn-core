@@ -11,7 +11,7 @@ fi
 
 docker run \
     --name uns-$NETWORK-postgres \
-    -v /tmp/uns-$NETWORK-pgdata:/var/lib/postgresql/data \
+    -v $(pwd)/.pg-data/uns-$NETWORK:/var/lib/postgresql/data \
     -e POSTGRES_PASSWORD=password \
     -e POSTGRES_DB=uns_$NETWORK \
     -e POSTGRES_USER=uns \

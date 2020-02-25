@@ -93,3 +93,9 @@ export abstract class NftCertificationTimedError extends NftCertificationError {
         super(`Certification of transaction ${transactionId} is ${time} seconds ${suffix}`);
     }
 }
+
+export class NftTransactionParametersError extends NftCertificationError {
+    constructor(parameter: string) {
+        super(`Failed to apply transaction: invalid parameter \"${parameter}\"`);
+    }
+}

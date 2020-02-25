@@ -63,7 +63,7 @@ describe("Registry register uns transaction", () => {
             const handler = await Handlers.Registry.get(UnsTransactionType.UnsCertifiedNftMint, UnsTransactionGroup);
             const transaction = Fixtures.unsCertifiedNftMintTransaction().build();
             expect(handler.dynamicFee({ addonBytes: 0, satoshiPerByte: 0, transaction } as any)).toEqual(
-                Utils.BigNumber.make(234),
+                Utils.BigNumber.make(264),
             );
         });
     });

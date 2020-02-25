@@ -1,8 +1,8 @@
-import { Identities } from "@arkecosystem/crypto";
-import { Interfaces } from "@arkecosystem/crypto";
+import { Identities, Interfaces, Utils } from "@arkecosystem/crypto";
 import ByteBuffer from "bytebuffer";
+import Long from "long";
+
 import {
-    ICertificationable,
     ICertifiedDemand,
     INftMintDemandCertification,
     INftMintDemandCertificationPayload,
@@ -15,12 +15,13 @@ interface ICertifiedTransactionPayloadSerializable {
 }
 
 export abstract class CertifiedNftTransaction implements ICertifiedTransactionPayloadSerializable {
-    public static serializeCertificationPayload(payload: ICertificationable): ByteBuffer {
+    public static serializeCertificationPayload(payload: INftMintDemandCertificationPayload): ByteBuffer {
         const payloadBufferSize: number = 32 /*iss*/ + 32 /*sub*/ + 8 /*iat*/;
         const buffer = new ByteBuffer(payloadBufferSize, true);
         buffer.append(payload.sub, "hex");
         buffer.append(payload.iss, "hex");
         buffer.writeUint64(payload.iat);
+        buffer.writeUint64(Long.fromString(payload.cost.toString()));
         return buffer;
     }
 
@@ -63,11 +64,11 @@ export abstract class CertifiedNftTransaction implements ICertifiedTransactionPa
         const certificationPayloadBuffer: ByteBuffer = CertifiedNftTransaction.serializeCertificationPayload(
             certificationPayload,
         );
-
-        // buffer.append(certificationPayloadBuffer.buffer);
         buffer.append(certificationPayloadBuffer.flip().toBuffer());
 
         buffer.append(certification.signature, "hex");
+
+        buffer.append(Identities.Address.toBuffer(data.recipientId).addressBuffer);
 
         return buffer;
     }
@@ -76,6 +77,9 @@ export abstract class CertifiedNftTransaction implements ICertifiedTransactionPa
         this.deserializePayload(buf);
         this.deserializeDemand(buf);
         this.deserializeCertification(buf);
+
+        // Recipient (forger factory)
+        this.data.recipientId = Identities.Address.fromBuffer(buf.readBytes(21).toBuffer());
     }
 
     protected deserializeDemand(buf: ByteBuffer): void {
@@ -88,8 +92,7 @@ export abstract class CertifiedNftTransaction implements ICertifiedTransactionPa
         // Demand payload
         data.asset.demand.payload.iss = buf.readBytes(32).toString("hex");
         data.asset.demand.payload.sub = buf.readBytes(32).toString("hex");
-        const aaa = buf.readUint64();
-        data.asset.demand.payload.iat = aaa.toNumber();
+        data.asset.demand.payload.iat = buf.readUint64().toNumber();
         data.asset.demand.payload.cryptoAccountAddress = Identities.Address.fromBuffer(buf.readBytes(21).toBuffer());
 
         // Demand signature
@@ -106,6 +109,7 @@ export abstract class CertifiedNftTransaction implements ICertifiedTransactionPa
         data.asset.certification.payload.sub = buf.readBytes(32).toString("hex");
         data.asset.certification.payload.iss = buf.readBytes(32).toString("hex");
         data.asset.certification.payload.iat = buf.readUint64().toNumber();
+        data.asset.certification.payload.cost = data.amount = Utils.BigNumber.make(buf.readUint64().toString());
 
         const signatureLength: number = this.getSignatureLength(buf);
 
@@ -127,6 +131,8 @@ export abstract class CertifiedNftTransaction implements ICertifiedTransactionPa
 }
 
 export const unsCertifiedBaseTransactionSchema = {
+    recipientId: { $ref: "address" },
+    amount: { bignumber: { minimum: 0 } },
     asset: {
         required: ["certification", "demand"],
         properties: {
@@ -136,7 +142,7 @@ export const unsCertifiedBaseTransactionSchema = {
                 properties: {
                     payload: {
                         type: "object",
-                        required: ["iss", "sub", "iat"],
+                        required: ["iss", "sub", "iat", "cost"],
                     },
                     signature: { $ref: "hex" },
                 },

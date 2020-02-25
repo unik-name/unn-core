@@ -12,7 +12,6 @@ const nftToken = {
 };
 
 export const nft = {
-    amount: { bignumber: { minimum: 0, maximum: 0 } },
     asset: {
         type: "object",
         required: ["nft"],

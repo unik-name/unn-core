@@ -4,17 +4,23 @@ import { UnsTransactionGroup, UnsTransactionStaticFees, UnsTransactionType } fro
 import { applyMixins } from "../../utils";
 import { CertifiedNftTransaction, unsCertifiedBaseTransactionSchema } from "../certified-nft-transaction";
 
+const { schemas } = Transactions;
+const { NftSchemas } = NftTransactions;
 export class CertifiedNftUpdateTransaction extends NftTransactions.NftUpdateTransaction {
     public static typeGroup: number = UnsTransactionGroup;
     public static type: number = UnsTransactionType.UnsCertifiedNftUpdate;
     public static key: string = "UnsCertifiedNftUpdate";
 
     public static getSchema(): Transactions.schemas.TransactionSchema {
-        return Transactions.schemas.extend(NftTransactions.NftUpdateTransaction.getSchema(), {
+        return schemas.extend(schemas.transactionBaseSchema, {
             $id: "unsCertifiedNftUpdate",
             properties: {
                 type: { transactionType: CertifiedNftUpdateTransaction.type },
                 typeGroup: { const: CertifiedNftUpdateTransaction.typeGroup },
+                ...schemas.extend(
+                    NftSchemas.nft,
+                    schemas.extend(NftSchemas.nftProperties, NftSchemas.nftUpdateProperties),
+                ),
                 ...unsCertifiedBaseTransactionSchema,
             },
         });

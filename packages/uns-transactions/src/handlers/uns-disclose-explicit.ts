@@ -6,14 +6,13 @@ import { Interfaces, Transactions } from "@arkecosystem/crypto";
 import { NftMintTransactionHandler, NftOwnerError, nftRepository } from "@uns/core-nft";
 import { DiscloseExplicitTransaction, IDiscloseDemand, IDiscloseDemandCertification, unsCrypto } from "@uns/crypto";
 import {
-    CertifiedDemandIssuerNotFound,
     CertifiedDemandNotAllowedIssuerError,
     DiscloseDemandAlreadyExistsError,
     DiscloseDemandCertificationSignatureError,
     DiscloseDemandSignatureError,
     DiscloseDemandSubInvalidError,
 } from "../errors";
-import { checkAndfindPublicKeyIssuer, EXPLICIT_PROP_KEY, revertExplicitValue, setExplicitValue } from "./utils/helpers";
+import { checkAndGetIssuerPublicKey, EXPLICIT_PROP_KEY, revertExplicitValue, setExplicitValue } from "./utils/helpers";
 
 export class DiscloseExplicitTransactionHandler extends Handlers.TransactionHandler {
     private get nftsRepository(): NFT.INftsRepository {
@@ -53,28 +52,20 @@ export class DiscloseExplicitTransactionHandler extends Handlers.TransactionHand
         }
 
         // ISSUER FOR CERTIFICATION (FORGE FACTORY)
-        const [certificationResult, certificationPublicKeyOrError] = await checkAndfindPublicKeyIssuer(
-            discloseDemandCertif,
+        const certificationPublicKey = await checkAndGetIssuerPublicKey(
+            discloseDemandCertif.payload.iss,
+            transaction,
             walletManager,
-            this.nftsRepository,
+            nftRepository(),
         );
-        // check existence of certification issuer UNIK
-        if (!certificationResult) {
-            throw new CertifiedDemandIssuerNotFound(transaction.id, certificationPublicKeyOrError);
-        }
-        const certificationPublicKey = certificationPublicKeyOrError;
 
         // ISSUER FOR DEMAND (CLIENT)
-        const [demandResult, demandPublicKeyOrError] = await checkAndfindPublicKeyIssuer(
-            discloseDemand,
+        const demandPublicKey = await checkAndGetIssuerPublicKey(
+            discloseDemand.payload.iss,
+            transaction,
             walletManager,
-            this.nftsRepository,
+            nftRepository(),
         );
-        // check existence of certification issuer UNIK
-        if (!demandResult) {
-            throw new CertifiedDemandIssuerNotFound(transaction.id, demandPublicKeyOrError);
-        }
-        const demandPublicKey = demandPublicKeyOrError;
 
         // check disclose demand certification signature
         if (

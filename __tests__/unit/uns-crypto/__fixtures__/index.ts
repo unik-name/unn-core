@@ -1,11 +1,12 @@
 import { Wallets } from "@arkecosystem/core-state";
 import { Identities, Interfaces, Utils } from "@arkecosystem/crypto";
-import { Keys } from "@arkecosystem/crypto/src/identities";
 import {
     DIDTypes,
+    ICertifiedDemand,
     IDiscloseDemandCertificationPayload,
     IDiscloseDemandPayload,
     INftMintDemand,
+    INftMintDemandCertification,
     INftMintDemandCertificationPayload,
     INftMintDemandPayload,
     UNSCertifiedNftMintBuilder,
@@ -13,7 +14,6 @@ import {
     UnsTransactionGroup,
     UnsTransactionType,
 } from "@uns/crypto";
-import { ICertificationable, ICertifiedDemand } from "@uns/crypto/dist/interfaces/certification";
 import { buildDiscloseDemand } from "../helpers";
 
 export const tokenId = "ee16f4b75f38f6e3d16635f72a8445e0ff8fbacfdfa8f05df077e73de79d6e4f";
@@ -21,8 +21,8 @@ export const ownerPassphrase = "clay harbor enemy utility margin pretty hub comi
 
 export const issUnikId = "0035a40470021425558f5cbb7b5f056e51b694db5cc6c336abdc6b777fc9d051";
 export const issPassphrase = "iss secret";
-export const issKeys = Keys.fromPassphrase(issPassphrase);
-export const demanderKeys = Keys.fromPassphrase(ownerPassphrase);
+export const issKeys = Identities.Keys.fromPassphrase(issPassphrase);
+export const demanderKeys = Identities.Keys.fromPassphrase(ownerPassphrase);
 
 /**
  * Disclose data
@@ -75,54 +75,61 @@ export const dummyTransaction = ({
  */
 
 export const payloadNftMintDemandCertificationSignature =
-    "3044022078a12f10b230b123748870da6a79cfa80aec4190255bad698411ba5d6b226277022053fd2b55b506d71840cf527849b577e10e91ccebbbbd9f4154521bbc540de8e9";
+    "304502210095126b529b51634f9d0126b788d83b7d5af529995b271bb02d8a8b64e6a6fd1b022008a776a6da2c3886c651b4cba4ab9c648225971210cfdd533190a2cfb06c2759";
 
+export const cost = new Utils.BigNumber(1234);
+export const certifIat = 12345678;
 export const nftMintDemandCertificationPayload: INftMintDemandCertificationPayload = {
-    sub: "bb32f4b75f38f6e3d16635f72a8445e0ff8fbacfdfa8f05df077e73de79d6a3d", // 32 bytes
-    iss: tokenId,
+    sub: "78df95c0eb364043499c83ee6045e3395f21dbfb5f8bfe58590f59cb639ab8e1", // 32 bytes
+    iss: issUnikId,
     iat: 12345678,
+    cost,
 };
 
-const certification: ICertifiedDemand<ICertificationable> = {
+const certification: INftMintDemandCertification = {
     payload: nftMintDemandCertificationPayload,
     signature: payloadNftMintDemandCertificationSignature,
 };
 
-export const payloadNftMintDemandHashBuffer = "4176fa8a30501e7f97974d7f83492811ebb615c13ef111605a9a600bf7303e39";
+export const payloadNftMintDemandHashBuffer = "78df95c0eb364043499c83ee6045e3395f21dbfb5f8bfe58590f59cb639ab8e1";
+export const cryptoAccountAddress = "DQLiVPs2b6rHYCANjVk7vWVfQqdo5rLvDU";
 
-export const nftMintDemandDemand: ICertifiedDemand<INftMintDemandPayload> = {
+export const nftMintDemand: ICertifiedDemand<INftMintDemandPayload> = {
     payload: {
-        iss: "0035a40470021425558f5cbb7b5f056e51b694db5cc6c336abdc6b777fc9d051",
-        sub: "0035a40470021425558f5cbb7b5f056e51b694db5cc6c336abdc6b777fc9d051",
+        iss: tokenId,
+        sub: tokenId,
         iat: 1579165954,
-        cryptoAccountAddress: "DQLiVPs2b6rHYCANjVk7vWVfQqdo5rLvDU",
+        cryptoAccountAddress,
     },
     signature:
-        "aa45022100b35054087451d1c78c0df95c963449ad7cb9cec5d725b3b708eac06dfd93c24e022075b8d635b79feb37636e13950dc89c702640f8cef56881b49cae4417b55caa2e",
+        "3045022100ab032a9b879dabcf0fc8792126d9db1501ad4ee8007f84bc299ef113ec036b5102200aa1678357d0885da7346d21aa27b3b18f37f49033de73e1ce6bb1263b2c231a",
 };
-
+const mintProperties = {
+    type: "1",
+    anotherProperty: "12345",
+};
 export const nftMintDemandHashBufferPayload: INftMintDemand = {
     nft: {
         unik: {
             tokenId,
-            properties: {
-                type: "1",
-                anotherProperty: "12345",
-            },
+            properties: mintProperties,
         },
     },
-    demand: nftMintDemandDemand,
+    demand: nftMintDemand,
 };
 
 export const unsCertifiedNftMintTransaction = () =>
-    new UNSCertifiedNftMintBuilder("unik", certification.payload.sub)
-        .demand(nftMintDemandDemand)
-        .certification(certification)
+    new UNSCertifiedNftMintBuilder("unik", tokenId)
+        .properties(mintProperties)
+        .demand(nftMintDemand)
+        .certification(certification, Identities.Address.fromPublicKey(issKeys.publicKey))
+        .nonce("1")
         .sign(ownerPassphrase);
 
+export const walletBalance = Utils.BigNumber.make("500000000000000");
 export const wallet = () => {
     const wallet = new Wallets.Wallet(Identities.Address.fromPassphrase(ownerPassphrase));
-    wallet.balance = Utils.BigNumber.make("500000000000000");
+    wallet.balance = walletBalance;
     wallet.publicKey = Identities.Keys.fromPassphrase(ownerPassphrase).publicKey;
     return wallet;
 };

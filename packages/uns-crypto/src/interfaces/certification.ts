@@ -1,3 +1,4 @@
+import { Utils } from "@arkecosystem/crypto";
 import { Interfaces } from "@uns/core-nft-crypto";
 
 /*ts-lint:disable:interface-over-type-literal*/
@@ -16,6 +17,14 @@ export type INftDemandPayload = ICertificationable & {
     cryptoAccountAddress: string;
 };
 
+export type INftDemandCertificationPayload = ICertificationable & {
+    cost: Utils.BigNumber;
+};
+
 export type INftDemand = Interfaces.ITransactionNftAssetData & {
     demand: ICertifiedDemand<INftDemandPayload>;
+};
+
+export type INftDemandCertification = Interfaces.ITransactionNftAssetData & {
+    certification: ICertifiedDemand<INftDemandCertificationPayload>;
 };

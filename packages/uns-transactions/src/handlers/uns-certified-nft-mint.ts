@@ -5,8 +5,8 @@ import { NftMintTransactionHandler } from "@uns/core-nft";
 import {
     applyMixins,
     CertifiedNftMintTransaction,
-    ICertificationable,
     INftDemand,
+    INftMintDemandCertificationPayload,
     NftMintDemandCertificationSigner,
     NftMintDemandHashBuffer,
 } from "@uns/crypto";
@@ -39,7 +39,21 @@ export class CertifiedNftMintTransactionHandler extends NftMintTransactionHandle
         await this.throwIfCannotBeCertified(transaction, walletManager);
     }
 
-    protected getPayloadSigner(payload: ICertificationable): NftMintDemandCertificationSigner {
+    public async applyToRecipient(
+        transaction: Interfaces.ITransaction,
+        walletManager: State.IWalletManager,
+    ): Promise<void> {
+        this.applyCostToRecipient(transaction, walletManager);
+    }
+
+    public async revertForRecipient(
+        transaction: Interfaces.ITransaction,
+        walletManager: State.IWalletManager,
+    ): Promise<void> {
+        this.revertCostToRecipient(transaction, walletManager);
+    }
+
+    protected getPayloadSigner(payload: INftMintDemandCertificationPayload): NftMintDemandCertificationSigner {
         return new NftMintDemandCertificationSigner(payload);
     }
 

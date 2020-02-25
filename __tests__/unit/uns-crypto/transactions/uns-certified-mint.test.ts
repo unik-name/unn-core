@@ -50,6 +50,7 @@ describe("Uns Certified Nft Mint Transaction", () => {
                 iss: "",
                 sub: "",
                 iat: "",
+                cost: "",
             },
             signature: payloadNftMintDemandCertificationSignature,
         };
@@ -79,7 +80,7 @@ describe("Uns Certified Nft Mint Transaction", () => {
             it("certification payload with additional attribute", () => {
                 trx.asset = {
                     ...nft,
-                    demand: Fixtures.nftMintDemandDemand,
+                    demand: Fixtures.nftMintDemand,
                     certification: {
                         ...certification,
                         anotherAttribute: "",

@@ -5,8 +5,8 @@ import { NftUpdateTransactionHandler } from "@uns/core-nft";
 import {
     applyMixins,
     CertifiedNftUpdateTransaction,
-    ICertificationable,
     INftDemand,
+    INftUpdateDemandCertificationPayload,
     NftUpdateDemandCertificationSigner,
     NftUpdateDemandHashBuffer,
 } from "@uns/crypto";
@@ -39,7 +39,7 @@ export class CertifiedNftUpdateTransactionHandler extends NftUpdateTransactionHa
         await this.throwIfCannotBeCertified(transaction, walletManager);
     }
 
-    protected getPayloadSigner(payload: ICertificationable): NftUpdateDemandCertificationSigner {
+    protected getPayloadSigner(payload: INftUpdateDemandCertificationPayload): NftUpdateDemandCertificationSigner {
         return new NftUpdateDemandCertificationSigner(payload);
     }
 

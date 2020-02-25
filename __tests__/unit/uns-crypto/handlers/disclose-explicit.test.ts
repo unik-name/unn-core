@@ -96,10 +96,8 @@ describe("UnsDiscloseExplicit Transaction", () => {
                 return Promise.resolve({ tokenId, ownerId });
             },
         );
-        // beforeEach(() => {
         // Allow ISS_UNIK_ID to forge unikname
         Managers.configManager.set("network.forgeFactory.unikidWhiteList", [ISS_UNIK_ID]);
-        // });
     });
 
     describe("throwIfCannotBeApplied", () => {

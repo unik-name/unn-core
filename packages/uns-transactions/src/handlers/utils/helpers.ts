@@ -4,7 +4,7 @@ import { IWalletManager } from "@arkecosystem/core-interfaces/dist/core-state";
 import { Interfaces } from "@arkecosystem/crypto";
 import { NftsManager } from "@uns/core-nft";
 import { nftRepository } from "@uns/core-nft/";
-import { ICertificationable, ICertifiedDemand } from "@uns/crypto";
+import { CertifiedDemandIssuerNotFound } from "../../errors";
 
 export const EXPLICIT_PROP_KEY = "explicitValues";
 
@@ -62,23 +62,27 @@ export const revertExplicitValue = async (transaction: Interfaces.ITransactionDa
 /**
  * Check and find the issuer public key in the current Blockchain.
  *
- * @returns Success `[true, publicKey]` or Failure `[false, errorMessage]`
+ * @returns publicKey
  *
  */
-export const checkAndfindPublicKeyIssuer = async <T extends ICertificationable>(
-    certification: ICertifiedDemand<T>,
+export const checkAndGetIssuerPublicKey = async (
+    issuerNftId: string,
+    transaction: Interfaces.ITransaction,
     walletManager: State.IWalletManager,
     nftsRepository: NFT.INftsRepository,
-): Promise<[boolean, string]> => {
+): Promise<string> => {
     // check existence of certification issuer UNIK
-    const issuer = await nftsRepository.findById(certification.payload.iss);
+    const issuer = await nftsRepository.findById(issuerNftId);
     if (!issuer) {
-        return [false, `issuer UNIK not found for UNIK ID: ${certification.payload.iss}`];
+        throw new CertifiedDemandIssuerNotFound(transaction.id, `issuer UNIK not found for UNIK ID: ${issuerNftId}`);
     }
     const foundPublicKey = walletManager.findByAddress(issuer.ownerId)?.publicKey;
 
     if (!foundPublicKey) {
-        return [false, `issuer publicKey not found for UNIK ID: ${certification.payload.iss}]`];
+        throw new CertifiedDemandIssuerNotFound(
+            transaction.id,
+            `issuer publicKey not found for UNIK ID: ${issuerNftId}]`,
+        );
     }
-    return [true, foundPublicKey];
+    return foundPublicKey;
 };

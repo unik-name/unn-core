@@ -15,6 +15,7 @@ export class NftMintTransaction extends AbstractNftWithPropertiesTransaction {
             properties: {
                 type: { transactionType: NftMintTransaction.type },
                 typeGroup: { const: NftMintTransaction.typeGroup },
+                amount: { bignumber: { minimum: 0, maximum: 0 } },
                 ...schemas.extend(NftSchemas.nft, NftSchemas.nftProperties),
             },
         });

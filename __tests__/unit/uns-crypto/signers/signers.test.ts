@@ -1,12 +1,11 @@
-import { Keys } from "@arkecosystem/crypto/dist/identities";
+import { Identities } from "@arkecosystem/crypto";
 import {
+    INftMintDemandCertificationPayload,
     IPayloadHashBuffer,
     IPayloadSigner,
     NftMintDemandCertificationSigner,
     NftMintDemandHashBuffer,
 } from "@uns/crypto";
-import { ICertificationable } from "@uns/crypto/dist/interfaces/certification";
-import "jest-extended";
 import * as Fixtures from "../__fixtures__";
 
 describe("Signers", () => {
@@ -14,15 +13,13 @@ describe("Signers", () => {
     // Theses tests can handle all type of *Signers
 
     describe("Validate xxxSigner functions", () => {
-        const payload: Required<ICertificationable> = Fixtures.nftMintDemandCertificationPayload;
+        const payload: INftMintDemandCertificationPayload = Fixtures.nftMintDemandCertificationPayload;
 
         let signer: IPayloadSigner;
 
-        const passphrase = Fixtures.ownerPassphrase;
-
         const payloadSignature = Fixtures.payloadNftMintDemandCertificationSignature;
 
-        const publicKey = Fixtures.demanderKeys.publicKey;
+        const issuerPublicKey = Fixtures.issKeys.publicKey;
 
         let payloadCopy;
 
@@ -32,13 +29,13 @@ describe("Signers", () => {
 
         describe("Should pass", () => {
             it("sign payload", () => {
-                const signature = signer.sign(passphrase);
+                const signature = signer.sign(Fixtures.issPassphrase);
                 expect(signature).toBeString();
                 expect(signature).toBe(payloadSignature);
             });
 
             it("verify payload", () => {
-                const res = signer.verify(payloadSignature, publicKey);
+                const res = signer.verify(payloadSignature, issuerPublicKey);
                 expect(res).toBeTrue();
             });
         });
@@ -52,12 +49,12 @@ describe("Signers", () => {
                 payloadCopy.iat = 456123;
 
                 const signer: IPayloadSigner = new NftMintDemandCertificationSigner(payloadCopy);
-                const res = signer.verify(payloadSignature, publicKey);
+                const res = signer.verify(payloadSignature, issuerPublicKey);
                 expect(res).toBeFalse();
             });
 
             it("wrong public key: should fail to verify signature", () => {
-                const wrongKeys = Keys.fromPassphrase("wrong passphrase");
+                const wrongKeys = Identities.Keys.fromPassphrase("wrong passphrase");
                 const res = signer.verify(payloadSignature, wrongKeys.publicKey);
                 expect(res).toBeFalse();
             });
@@ -65,7 +62,7 @@ describe("Signers", () => {
             it("wrong signature: should fail to verify signature", () => {
                 const res = signer.verify(
                     "3045022100e69c81d47ccdb0692b235f7249036be9edf871db81c0f981b9c583e6bb0f3f54022017906822f3095b1d01418b3f0086ccd419263a2f13590e7aa32d7c37deadbeef",
-                    publicKey,
+                    issuerPublicKey,
                 );
                 expect(res).toBeFalse();
             });

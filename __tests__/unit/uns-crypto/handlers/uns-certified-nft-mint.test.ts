@@ -1,25 +1,18 @@
 /* tslint:disable:ordered-imports*/
 import "../mocks/core-container";
-import "jest-extended";
 import { State } from "@arkecosystem/core-interfaces";
 import { Wallets } from "@arkecosystem/core-state";
 import { Handlers } from "@arkecosystem/core-transactions";
-import { Managers, Identities } from "@arkecosystem/crypto";
-import {
-    INftMintDemand,
-    NftMintDemandCertificationSigner,
-    NftMintDemandHashBuffer,
-    UNSCertifiedNftMintBuilder,
-} from "@uns/crypto";
-import { CertifiedNftMintTransactionHandler, Errors } from "@uns/uns-transactions";
+import { Managers, Identities, Utils } from "@arkecosystem/crypto";
+import { CertifiedNftMintTransactionHandler, Errors as unsErrors } from "@uns/uns-transactions";
 import * as Fixtures from "../__fixtures__";
-import { IWallet } from "@arkecosystem/core-interfaces/dist/core-state";
-import { INftAsset } from "@uns/core-nft-crypto/dist/interfaces";
 import { nftRepository } from "@uns/core-nft";
+import { Errors } from "@arkecosystem/core-transactions";
 
 let handler;
-let builder: UNSCertifiedNftMintBuilder;
+let builder;
 let senderWallet: Wallets.Wallet;
+let forgeFactoryWallet: Wallets.Wallet;
 let walletManager: State.IWalletManager;
 
 describe("CertifiedNtfMint Transaction", () => {
@@ -34,60 +27,43 @@ describe("CertifiedNtfMint Transaction", () => {
         senderWallet = Fixtures.wallet();
         walletManager.reindex(senderWallet);
 
-        const issuerPubKey = Identities.PublicKey.fromPassphrase(Fixtures.ownerPassphrase);
+        const issuerPubKey = Fixtures.issKeys.publicKey;
         const issuerAddress = Identities.Address.fromPublicKey(issuerPubKey);
 
-        builder = new UNSCertifiedNftMintBuilder("unik", Fixtures.nftMintDemandCertificationPayload.sub).demand(
-            Fixtures.nftMintDemandDemand,
+        forgeFactoryWallet = new Wallets.Wallet(issuerAddress);
+        forgeFactoryWallet.balance = Utils.BigNumber.ZERO;
+        forgeFactoryWallet.publicKey = issuerPubKey;
+        walletManager.reindex(forgeFactoryWallet);
+
+        jest.spyOn(nftRepository(), "findById").mockReturnValue(
+            Promise.resolve({ tokenId: Fixtures.issUnikId, ownerId: issuerAddress }),
         );
 
-        const expectedSub = new NftMintDemandHashBuffer(
-            builder.getCurrentAsset() as INftMintDemand,
-        ).getPayloadHashBuffer();
+        builder = Fixtures.unsCertifiedNftMintTransaction();
 
-        const payload = Fixtures.nftMintDemandCertificationPayload;
-        // Update the calculated sub
-        payload.sub = expectedSub;
-
-        const signer = new NftMintDemandCertificationSigner(payload);
-        const signature = signer.sign(Fixtures.ownerPassphrase);
-
-        builder
-            .certification({ payload, signature })
-            .nonce("1")
-            .sign(Fixtures.ownerPassphrase);
-
-        jest.spyOn(walletManager, "findByAddress").mockImplementation((ownerId: string) => {
-            switch (ownerId) {
-                case issuerAddress:
-                    return { publicKey: issuerPubKey } as IWallet;
-                default:
-                    return undefined;
-            }
-        });
-
-        jest.spyOn(nftRepository(), "findById").mockImplementation(
-            (tokenId): Promise<INftAsset> => {
-                let ownerId;
-                switch (tokenId) {
-                    case Fixtures.nftMintDemandCertificationPayload.iss:
-                        ownerId = issuerAddress;
-                        break;
-                    default:
-                        return undefined;
-                }
-                return Promise.resolve({ tokenId, ownerId });
-            },
-        );
+        // Allow Fixtures.tokenId to forge unikname
+        Managers.configManager.set("network.forgeFactory.unikidWhiteList", [Fixtures.issUnikId]);
     });
 
     describe("throwIfCannotBeApplied", () => {
-        beforeAll(() => {
-            // Allow Fixtures.tokenId to forge unikname
-            Managers.configManager.set("network.forgeFactory.unikidWhiteList", [Fixtures.tokenId]);
+        it("should not throw", async () => {
+            await expect(handler.throwIfCannotBeApplied(builder.build(), senderWallet, walletManager)).toResolve();
         });
 
-        it("should not throw", async () => {
+        it("should not throw with cost = 0", async () => {
+            const nftMintDemandCertificationPayload = {
+                sub: "78df95c0eb364043499c83ee6045e3395f21dbfb5f8bfe58590f59cb639ab8e1", // 32 bytes
+                iss: Fixtures.issUnikId,
+                iat: 12345678,
+                cost: Utils.BigNumber.ZERO,
+            };
+            const certification = {
+                payload: nftMintDemandCertificationPayload,
+                signature:
+                    "3045022100baf5775e078d4c4ef805c06c885b407b6cd3354dd65888e6bfffde230b59f76102204bf4dd10eb5332f6175348d007bf27cbc58d8e366a143bd23beca852eb02a583",
+            };
+            builder = Fixtures.unsCertifiedNftMintTransaction(certification);
+
             await expect(handler.throwIfCannotBeApplied(builder.build(), senderWallet, walletManager)).toResolve();
         });
 
@@ -95,15 +71,66 @@ describe("CertifiedNtfMint Transaction", () => {
             // Payload hacking attempt
             builder.data.asset.certification.payload.iat = 666666;
             await expect(handler.throwIfCannotBeApplied(builder.build(), senderWallet, walletManager)).rejects.toThrow(
-                Errors.NftCertificationBadSignatureError,
+                unsErrors.NftCertificationBadSignatureError,
             );
+            // restore builder
+            builder.data.asset.certification.payload.iat = Fixtures.certifIat;
         });
 
         it("should throw NftCertificationBadPayloadSubjectError asset Nft Demand modification", async () => {
             // Payload hacking attempt
-            builder.data.asset.nft.unik.tokenId = Fixtures.tokenId;
+            builder.data.asset.nft.unik.tokenId = "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef";
             await expect(handler.throwIfCannotBeApplied(builder.build(), senderWallet, walletManager)).rejects.toThrow(
-                Errors.NftCertificationBadPayloadSubjectError,
+                unsErrors.NftCertificationBadPayloadSubjectError,
+            );
+            // restore builder
+            builder.data.asset.nft.unik.tokenId = Fixtures.tokenId;
+        });
+
+        it("should throw InsufficientBalanceError", async () => {
+            senderWallet.balance = Utils.BigNumber.make("10000000");
+            walletManager.reindex(senderWallet);
+            await expect(handler.throwIfCannotBeApplied(builder.build(), senderWallet, walletManager)).rejects.toThrow(
+                Errors.InsufficientBalanceError,
+            );
+        });
+
+        // Amount is deducted from builder.data.asset.certification.payload.cost when deserializing. It should be impossible to fake it.
+        it("should resolve with faked amount NftTransactionParametersError for amount", async () => {
+            builder.data.amount = Utils.BigNumber.make("0");
+            await expect(handler.throwIfCannotBeApplied(builder.build(), senderWallet, walletManager)).toResolve();
+        });
+
+        it("should throw NftTransactionParametersError for recipient", async () => {
+            builder.data.recipientId = Identities.Address.fromPassphrase("trololol");
+            await expect(handler.throwIfCannotBeApplied(builder.build(), senderWallet, walletManager)).rejects.toThrow(
+                unsErrors.NftTransactionParametersError,
+            );
+        });
+    });
+
+    describe("apply", () => {
+        it("should apply service costs", async () => {
+            await expect(handler.apply(builder.build(), walletManager)).toResolve();
+            expect(forgeFactoryWallet.balance).toStrictEqual(Fixtures.cost);
+            expect(senderWallet.balance).toStrictEqual(
+                Fixtures.walletBalance.minus(Fixtures.cost).minus(builder.data.fee),
+            );
+        });
+    });
+
+    describe("revert", () => {
+        it("should revert service cost", async () => {
+            senderWallet.nonce = Utils.BigNumber.make(1);
+            senderWallet.setAttribute("tokens", { tokens: [Fixtures.nftMintDemand.payload.sub] });
+            walletManager.reindex(senderWallet);
+            forgeFactoryWallet.balance = Fixtures.cost;
+            walletManager.reindex(forgeFactoryWallet);
+
+            await expect(handler.revert(builder.build(), walletManager)).toResolve();
+            expect(forgeFactoryWallet.balance).toStrictEqual(Utils.BigNumber.ZERO);
+            expect(senderWallet.balance).toStrictEqual(
+                Fixtures.walletBalance.plus(Fixtures.cost).plus(builder.data.fee),
             );
         });
     });

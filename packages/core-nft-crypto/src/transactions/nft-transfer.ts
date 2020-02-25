@@ -19,6 +19,7 @@ export class NftTransferTransaction extends Transactions.Transaction {
             properties: {
                 type: { transactionType: NftTransactionType.NftTransfer },
                 typeGroup: { const: NftTransactionGroup },
+                amount: { bignumber: { minimum: 0, maximum: 0 } },
                 recipientId: { $ref: "address" },
                 ...NftSchemas.nft,
             },

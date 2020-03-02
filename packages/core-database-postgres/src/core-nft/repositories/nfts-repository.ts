@@ -49,21 +49,23 @@ export class NftsRepository extends Repository implements NFT.INftsRepository {
                 o => o.operator === Database.SearchOperator.OP_CUSTOM && o.field === "nftName" && o.value === "unik",
             ).length > 0;
 
+        const selectQuery = this.query.select().from(this.query);
+
+        const selectQueryCount = this.query.select(this.query.count().as("cnt")).from(this.query);
+
         if (isUnikRequest) {
             const nftList = await this.getNftsWithProperties(
                 this.getWhereStatementParams(parameterList),
                 parameters.paginate,
             );
+
+            const countRow = await this.find(selectQueryCount);
             return {
                 rows: nftList,
-                count: nftList.length,
+                count: Number(countRow.cnt),
                 countIsEstimate: false,
             };
         }
-
-        const selectQuery = this.query.select().from(this.query);
-
-        const selectQueryCount = this.query.select(this.query.count().as("cnt")).from(this.query);
 
         this.getWhereStatementParams(parameterList).reduce((sQuery, param, index) => {
             const query: any = this.query[this.propToColumnName(param.field)][param.operator](param.value);

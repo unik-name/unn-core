@@ -1,5 +1,4 @@
 import { Database, NFT } from "@arkecosystem/core-interfaces";
-// import { ISearchParameter } from "@arkecosystem/core-interfaces/dist/core-database";
 import { Interfaces } from "@arkecosystem/crypto";
 import pgPromise = require("pg-promise");
 import { isArray } from "util";

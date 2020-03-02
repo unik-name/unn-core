@@ -72,7 +72,8 @@ export const search: object = {
             nftId,
             Joi.array()
                 .items(nftId)
-                .min(1),
+                .min(1)
+                .max(100),
         ),
         ownerId: Joi.string()
             .alphanum()

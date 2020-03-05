@@ -9,7 +9,9 @@ import {
     INftMintDemandCertification,
     INftMintDemandCertificationPayload,
     INftMintDemandPayload,
+    INftUpdateDemandCertification,
     UNSCertifiedNftMintBuilder,
+    UNSCertifiedNftUpdateBuilder,
     UNSDiscloseExplicitBuilder,
     UnsTransactionGroup,
     UnsTransactionType,
@@ -53,8 +55,6 @@ export const discloseExplicitTransaction = () =>
     new UNSDiscloseExplicitBuilder()
         .discloseDemand(discloseDemand["disclose-demand"], discloseDemand["disclose-demand-certification"])
         .sign(ownerPassphrase);
-
-export * from "../../core-nft/__fixtures__";
 
 export const dummyTransaction = ({
     type: UnsTransactionType.UnsDiscloseExplicit,
@@ -130,6 +130,18 @@ export const unsCertifiedNftMintTransaction = (cert: INftMintDemandCertification
         .sign(ownerPassphrase);
 };
 
+export const unsCertifiedNftupdateTransaction = (cert: INftUpdateDemandCertification = undefined) => {
+    if (!cert) {
+        cert = certification;
+    }
+    return new UNSCertifiedNftUpdateBuilder("unik", tokenId)
+        .properties(mintProperties)
+        .demand(nftMintDemand)
+        .certification(cert, Identities.Address.fromPublicKey(issKeys.publicKey))
+        .nonce("1")
+        .sign(ownerPassphrase);
+};
+
 export const walletBalance = Utils.BigNumber.make("500000000000000");
 export const wallet = () => {
     const wallet = new Wallets.Wallet(Identities.Address.fromPassphrase(ownerPassphrase));
@@ -137,3 +149,5 @@ export const wallet = () => {
     wallet.publicKey = Identities.Keys.fromPassphrase(ownerPassphrase).publicKey;
     return wallet;
 };
+
+export * from "../../core-nft/__fixtures__";

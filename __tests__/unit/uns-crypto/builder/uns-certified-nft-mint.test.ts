@@ -1,41 +1,15 @@
-import { Identities, Managers, Transactions } from "@arkecosystem/crypto";
+import { Managers, Transactions } from "@arkecosystem/crypto";
 import { CertifiedNftMintTransaction } from "@uns/crypto";
+import { testNftAssetSchema } from "../../core-nft/transactions/schemas-utils";
 import * as Fixtures from "../__fixtures__";
+import { testCertifiedBuilder } from "./uns-certified-nft-utils";
 
 describe("Uns Certified NFT Mint", () => {
-    let builder;
+    Managers.configManager.setFromPreset(Fixtures.network);
+    Managers.configManager.setHeight(2);
+    Transactions.TransactionRegistry.registerTransactionType(CertifiedNftMintTransaction);
 
-    beforeAll(() => {
-        Managers.configManager.setFromPreset(Fixtures.network);
-        Managers.configManager.setHeight(2);
-        Transactions.TransactionRegistry.registerTransactionType(CertifiedNftMintTransaction);
-        builder = Fixtures.unsCertifiedNftMintTransaction();
-    });
+    testCertifiedBuilder(Fixtures.unsCertifiedNftMintTransaction());
 
-    describe("should verify", () => {
-        it("with a signature", () => {
-            expect(builder.build().verified).toBeTrue();
-            expect(builder.verify()).toBeTrue();
-        });
-        it("with second signature", () => {
-            const transaction = builder.secondSign("second passphrase");
-            expect(transaction.build().verified).toBeTrue();
-            expect(transaction.verify()).toBeTrue();
-        });
-    });
-
-    describe("should have properties", () => {
-        it("specific", () => {
-            expect(builder).toHaveProperty("data.asset.certification.payload.cost", Fixtures.cost);
-            expect(builder).toHaveProperty("data.amount", Fixtures.cost);
-            expect(builder).toHaveProperty(
-                "data.recipientId",
-                Identities.Address.fromPublicKey(Fixtures.issKeys.publicKey),
-            );
-            expect(builder).toHaveProperty(
-                "data.asset.demand.payload.cryptoAccountAddress",
-                Fixtures.cryptoAccountAddress,
-            );
-        });
-    });
+    testNftAssetSchema(CertifiedNftMintTransaction, Fixtures.unsCertifiedNftMintTransaction());
 });

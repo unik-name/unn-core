@@ -2,7 +2,7 @@ import { Transactions, Utils } from "@arkecosystem/crypto";
 import { Transactions as NftTransactions } from "@uns/core-nft-crypto";
 import { UnsTransactionGroup, UnsTransactionStaticFees, UnsTransactionType } from "../../enums";
 import { applyMixins } from "../../utils";
-import { CertifiedNftTransaction, unsCertifiedBaseTransactionSchema } from "../certified-nft-transaction";
+import { CertifiedNftTransaction, unsCertifiedProperties } from "../certified-nft-transaction";
 
 const { schemas } = Transactions;
 const { NftSchemas } = NftTransactions;
@@ -18,8 +18,7 @@ export class CertifiedNftMintTransaction extends NftTransactions.NftMintTransact
             properties: {
                 type: { transactionType: CertifiedNftMintTransaction.type },
                 typeGroup: { const: CertifiedNftMintTransaction.typeGroup },
-                ...schemas.extend(NftSchemas.nft, NftSchemas.nftProperties),
-                ...unsCertifiedBaseTransactionSchema,
+                ...schemas.extend(NftSchemas.nft, schemas.extend(NftSchemas.nftProperties, unsCertifiedProperties)),
             },
         });
     }

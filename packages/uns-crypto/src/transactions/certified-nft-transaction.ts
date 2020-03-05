@@ -130,7 +130,7 @@ export abstract class CertifiedNftTransaction implements ICertifiedTransactionPa
     }
 }
 
-export const unsCertifiedBaseTransactionSchema = {
+export const unsCertifiedProperties = {
     recipientId: { $ref: "address" },
     amount: { bignumber: { minimum: 0 } },
     asset: {

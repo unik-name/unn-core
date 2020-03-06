@@ -48,4 +48,7 @@ export const systemProperties: Record<string, IProperyInfo> = {
     "Authentications/CosmicNonce": {
         default: "1",
     },
+    "LifeCycle/Status": {
+        default: "2",
+    },
 };

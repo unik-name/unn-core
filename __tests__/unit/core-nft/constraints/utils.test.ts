@@ -1,4 +1,4 @@
-import { genesisPropertiesReducer } from "../../../../packages/core-nft/src/constraints/utils";
+import { genesisPropertiesReducer } from "@uns/core-nft/src/constraints/utils";
 import { constraints } from "../__fixtures__";
 
 describe("core-nft > constraint utilities ", () => {

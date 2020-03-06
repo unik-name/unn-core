@@ -1,0 +1,30 @@
+{
+    "name": "@uns/core-nft-crypto",
+    "version": "4.3.0",
+    "description": "Utilities for NFT plugin using ARK Core",
+    "license": "MIT",
+    "contributors": [
+        "Pierre Seznec <pierre.seznec@spacelephant.org>"
+    ],
+    "files": [
+        "dist"
+    ],
+    "main": "dist/index",
+    "types": "dist/index",
+    "scripts": {
+        "build": "yarn clean && yarn compile",
+        "build:watch": "yarn clean && yarn compile -w",
+        "clean": "del dist",
+        "compile": "../../../node_modules/typescript/bin/tsc",
+        "restore_backup": "mv package.json.back package.json",
+        "uns_rebrand": "../../../scripts/uns_publish_rebrand.sh $PWD",
+        "prepublishOnly": "yarn build && yarn uns_rebrand",
+        "postpublish": "yarn restore_backup"
+    },
+    "dependencies": {
+        "@arkecosystem/crypto": "^2.6.25"
+    },
+    "publishConfig": {
+        "access": "public"
+    }
+}

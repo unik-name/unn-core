@@ -3,12 +3,12 @@ import "jest-extended";
 import { Handlers } from "../../../../packages/core-transactions";
 import { Managers, Utils } from "../../../../packages/crypto";
 
-import { Builders, Enums } from "../../../../packages/core-nft-crypto";
+import { Builders, Enums } from "@uns/core-nft-crypto";
 import {
     NftMintTransactionHandler,
     NftTransferTransactionHandler,
     NftUpdateTransactionHandler,
-} from "../../../../packages/core-nft/src/transactions/";
+} from "@uns/core-nft/src/transactions/";
 import { network, nftId, nftName, recipient } from "../__fixtures__";
 
 describe("Registry register nft transaction", () => {

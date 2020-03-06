@@ -69,7 +69,7 @@ create_db_dir: &create_db_dir
 
 generate_cache_key: &generate_cache_key
   run: >-
-    find ./packages/ -name package.json -print0 | sort -z | xargs -r0
+    find ./packages/ ./plugins/ -name package.json -print0 | sort -z | xargs -r0
     echo ./package.json | xargs md5sum | md5sum - > checksum.txt
 
 cache_key: &cache_key
@@ -84,6 +84,8 @@ save: &save
     key: *cache_key
     paths:
       - ./packages/*/node_modules
+      - ./plugins/nft/*/node_modules
+      - ./plugins/uns/*/node_modules
       - ./node_modules
 
 attach: &attach
@@ -190,7 +192,7 @@ jobs:
     <<: *job_test_config
     steps:
       - *attach
-      - run: yarn --cwd packages/uns-badges test:coverage
+      - run: yarn --cwd plugins/uns/uns-badges test:coverage
       - *coverage
       - *notif
 

@@ -1,10 +1,6 @@
 import { Interfaces, Managers, Transactions, Utils, Validation as Ajv } from "@arkecosystem/crypto";
+import { CertifiedNftMintTransaction, UnsTransactionGroup, UnsTransactionType } from "@uns/crypto";
 import "jest-extended";
-import {
-    CertifiedNftMintTransaction,
-    UnsTransactionGroup,
-    UnsTransactionType,
-} from "../../../../packages/uns-crypto/src";
 import { checkCommonFields } from "../../core-nft/helpers";
 import * as Fixtures from "../__fixtures__";
 import { payloadNftMintDemandCertificationSignature, tokenId, unsCertifiedNftMintTransaction } from "../__fixtures__";

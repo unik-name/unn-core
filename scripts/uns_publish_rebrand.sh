@@ -1,15 +1,7 @@
 #!/usr/bin/env bash
 
 set -e
-
-. "$1/../../scripts/utils.sh"
-
-uns_name=$(retrieve_uns_name "$1/../crypto/package.json")
-if [ -z "$uns_name" ]
-then
-    echo "Unable to retrieve uns package name"
-    exit 1
-fi
+ROOT_DIR="$1/../../../"
 
 #backup package.json
 cp "$1/package.json" "$1/package.json.back"
@@ -21,7 +13,7 @@ case $package_name in
         #replace @arkecosystem/crypto by @uns/$uns_name in all .d.ts and .js of dist/
         find dist \( -name "*.js" -o -name "*.d.ts" \) -exec sed -i'' "s/@arkecosystem\/crypto/@uns\/$uns_name/g" {} +
         #get @uns/ark-crypto version
-        uns_version=$(retrieve_uns_version "$1/../crypto/package.json")
+        uns_version=$(awk -F '"' '/version/{print $4}' "$ROOT_DIR/plugins/uns/ark-crypto/package.json")
         if [ -n "$uns_version" ]
         then
             echo "Set @uns/$uns_name dependency to version $uns_version"

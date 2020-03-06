@@ -5,7 +5,7 @@ import {
     Builders as MagistrateBuilders,
     Interfaces as MagistrateInterfaces,
 } from "@arkecosystem/core-magistrate-crypto";
-import { businessIndexer, MagistrateIndex } from "@arkecosystem/core-magistrate-transactions/src/wallet-manager";
+import { businessIndexer, MagistrateIndex } from "@arkecosystem/core-magistrate-transactions/dist/wallet-manager";
 import { Wallets } from "@arkecosystem/core-state";
 import { Handlers } from "@arkecosystem/core-transactions";
 import { Managers, Utils } from "@arkecosystem/crypto";

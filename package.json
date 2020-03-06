@@ -98,12 +98,48 @@
         "tslint-config-prettier": "^1.18.0",
         "typescript": "^3.7.2",
         "typesync": "^0.6.1",
-        "uuid": "^3.3.3"
+        "uuid": "^3.3.3",
+        "@arkecosystem/core-jest-matchers": "2.6.25",
+        "@arkecosystem/core-vote-report": "2.6.25",
+        "@arkecosystem/core-elasticsearch": "2.6.25",
+        "@arkecosystem/core-logger-winston": "2.6.25",
+        "@arkecosystem/core-logger-signale": "2.6.25",
+        "random-seed": "^0.3.0",
+        "@types/capture-console": "^1.0.0",
+        "capture-console": "^1.0.1",
+        "@types/pino": "^5.8.8"
     },
     "workspaces": [
-        "packages/*",
-        "plugins/*"
+        "packages/crypto",
+        "packages/core-container",
+        "packages/core-database-postgres",
+        "packages/core-database",
+        "packages/core-forger",
+        "packages/core-interfaces",
+        "packages/core-p2p",
+        "packages/core-snapshots",
+        "packages/core-state",
+        "packages/core-tester-cli",
+        "packages/core-transactions",
+        "packages/core",
+        "packages/core-api",
+        "plugins/uns/*",
+        "plugins/nft/*"
     ],
+    "resolutions": {
+        "@arkecosystem/core-event-emitter": "2.6.25",
+        "@arkecosystem/core-blockchain": "2.6.25",
+        "@arkecosystem/core-exchange-json-rpc": "2.6.25",
+        "@arkecosystem/core-http-utils": "2.6.25",
+        "@arkecosystem/core-logger": "2.6.25",
+        "@arkecosystem/core-logger-pino": "2.6.25",
+        "@arkecosystem/core-magistrate-crypto": "2.6.25",
+        "@arkecosystem/core-magistrate-transactions": "2.6.25",
+        "@arkecosystem/core-transaction-pool": "2.6.25",
+        "@arkecosystem/core-wallet-api": "2.6.25",
+        "@arkecosystem/core-webhooks": "2.6.25",
+        "@arkecosystem/core-utils": "2.6.25"
+    },
     "husky": {
         "hooks": {
             "pre-commit": "lint-staged"

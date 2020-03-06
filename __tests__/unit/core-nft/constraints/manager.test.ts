@@ -1,10 +1,10 @@
+/* tslint:disable:ordered-imports*/
+import "../mocks/core-container";
 import { Transactions as NFTTransactions } from "@uns/core-nft-crypto";
 import { ConstraintsManager } from "@uns/core-nft/src/constraints/manager";
-import "jest-extended";
 import { Managers, Transactions } from "../../../../packages/crypto";
 import { NFTTransactionFactory } from "../../../helpers/nft-transaction-factory";
 import { constraints, network, nftId, nftName } from "../__fixtures__";
-import "../mocks/core-container";
 import { nftsFindPropertyByKeyMock } from "../mocks/database-manager";
 
 describe("core-nft > constraint manager", () => {

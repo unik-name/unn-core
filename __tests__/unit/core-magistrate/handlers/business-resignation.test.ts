@@ -6,13 +6,13 @@ import {
     BridgechainsAreNotResignedError,
     BusinessIsNotRegisteredError,
     BusinessIsResignedError,
-} from "@arkecosystem/core-magistrate-transactions/src/errors";
+} from "@arkecosystem/core-magistrate-transactions/dist/errors";
 import {
     BridgechainRegistrationTransactionHandler,
     BusinessRegistrationTransactionHandler,
     BusinessResignationTransactionHandler,
-} from "@arkecosystem/core-magistrate-transactions/src/handlers";
-import { businessIndexer, MagistrateIndex } from "@arkecosystem/core-magistrate-transactions/src/wallet-manager";
+} from "@arkecosystem/core-magistrate-transactions/dist/handlers";
+import { businessIndexer, MagistrateIndex } from "@arkecosystem/core-magistrate-transactions/dist/wallet-manager";
 import { Wallets } from "@arkecosystem/core-state";
 import { Handlers } from "@arkecosystem/core-transactions";
 import { Identities, Managers, Utils } from "@arkecosystem/crypto";

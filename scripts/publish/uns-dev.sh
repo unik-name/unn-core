@@ -29,7 +29,7 @@ DATE=$(date -u +%Y%m%d%H%M%S)
 new_version="${actual_uns_version}-dev.$DATE"
 echo "New version: ${new_version}"
 
-sed -i.bak "s/\"uns_version\": \"\(.*\)\"/\"uns_version\": \"$new_version\"/g" "./package.json"
+sed -i.bak "s/\"version\": \"\(.*\)\"/\"version\": \"$new_version\"/g" "./package.json"
 
 echo
 echo "Build and publish @uns/ark-crypto"
@@ -52,6 +52,5 @@ pushd plugins/uns/uns-crypto
 npm publish --tag=dev $PUBLISH_OPTS
 popd
 
-rm -f packages/core-nft-crypto/package.json.bak \
-    packages/crypto/package.json.bak \
-    packages/uns-crypto/package.json.bak
+#restore backup
+mv "./plugins/uns/ark-crypto/package.json.bak" "./plugins/uns/ark-crypto/package.json"

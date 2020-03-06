@@ -2,10 +2,10 @@ import "jest-extended";
 
 import { app } from "@arkecosystem/core-container";
 import { ApplicationEvents } from "@arkecosystem/core-event-emitter";
+import { database } from "@arkecosystem/core-webhooks/dist/database";
+import { startServer } from "@arkecosystem/core-webhooks/dist/server";
 import { Server } from "http";
 import { tmpdir } from "os";
-import { database } from "../../../packages/core-webhooks/src/database";
-import { startServer } from "../../../packages/core-webhooks/src/server";
 
 const postData = {
     event: ApplicationEvents.BlockForged,

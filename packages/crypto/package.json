@@ -1,8 +1,6 @@
 {
     "name": "@arkecosystem/crypto",
     "version": "2.6.25",
-    "uns_name": "ark-crypto",
-    "uns_version": "4.3.0",
     "description": "Crypto utilities for the ARK Blockchain",
     "license": "MIT",
     "contributors": [
@@ -25,11 +23,7 @@
         "build:rollup": "yarn clean && tsc && rollup -c",
         "build:watch": "yarn clean && yarn compile -w",
         "clean": "del dist",
-        "compile": "../../node_modules/typescript/bin/tsc",
-        "uns_prepublish": "../../scripts/ark_crypto_publish.sh $PWD",
-        "restore_backup": "mv package.json.back package.json",
-        "prepublishOnly": "yarn uns_prepublish && yarn build",
-        "postpublish": "yarn restore_backup"
+        "compile": "../../node_modules/typescript/bin/tsc"
     },
     "dependencies": {
         "@arkecosystem/utils": "0.8.3",

@@ -1,4 +1,4 @@
-import { BusinessRegistrationTransactionHandler } from "@arkecosystem/core-magistrate-transactions/src/handlers";
+import { BusinessRegistrationTransactionHandler } from "@arkecosystem/core-magistrate-transactions/dist/handlers";
 import { Wallets } from "@arkecosystem/core-state";
 import { Handlers } from "@arkecosystem/core-transactions";
 import { IBusinessWalletAttributes } from "../../../packages/core-magistrate-transactions/src/interfaces";

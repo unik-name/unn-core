@@ -2,7 +2,7 @@ import "jest-extended";
 
 import { State } from "@arkecosystem/core-interfaces";
 import { Builders as MagistrateBuilders } from "@arkecosystem/core-magistrate-crypto";
-import { IBusinessWalletAttributes } from "@arkecosystem/core-magistrate-transactions/src/interfaces";
+import { IBusinessWalletAttributes } from "@arkecosystem/core-magistrate-transactions/dist/interfaces";
 import { Wallets } from "@arkecosystem/core-state";
 import { Handlers } from "@arkecosystem/core-transactions";
 import { Managers, Utils } from "@arkecosystem/crypto";

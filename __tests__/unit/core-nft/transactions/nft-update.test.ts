@@ -1,5 +1,5 @@
 import { Managers, Transactions } from "@arkecosystem/crypto";
-import { Builders, Transactions as NftTransactions } from "../../../../packages/core-nft-crypto/src";
+import { Builders, Transactions as NftTransactions } from "@uns/core-nft-crypto";
 import * as Fixtures from "../__fixtures__";
 import { checkCommonFields } from "../helpers";
 import { testNftAssetSchema } from "./schemas-utils";

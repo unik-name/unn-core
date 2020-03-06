@@ -2,12 +2,8 @@ import "jest-extended";
 import "../mocks/core-container";
 
 import { Managers, Transactions, Utils } from "@arkecosystem/crypto";
-import { Builders, Transactions as NftTransactions } from "../../../../packages/core-nft-crypto/src";
-import {
-    NftTransactionGroup,
-    NftTransactionStaticFees,
-    NftTransactionType,
-} from "../../../../packages/core-nft-crypto/src/enums";
+import { Builders, Transactions as NftTransactions } from "@uns/core-nft-crypto";
+import { NftTransactionGroup, NftTransactionStaticFees, NftTransactionType } from "@uns/core-nft-crypto/src/enums";
 import { network, nftId, nftName, properties } from "../__fixtures__";
 
 let builder: Builders.NftUpdateBuilder;

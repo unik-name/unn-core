@@ -1,12 +1,11 @@
+import { Transactions as NFTTransactions } from "@uns/core-nft-crypto";
+import { ConstraintsManager } from "@uns/core-nft/src/constraints/manager";
 import "jest-extended";
-import "../mocks/core-container";
-import { nftsFindPropertyByKeyMock } from "../mocks/database-manager";
-
-import { Transactions as NFTTransactions } from "../../../../packages/core-nft-crypto/src/";
-import { ConstraintsManager } from "../../../../packages/core-nft/src/constraints/manager";
 import { Managers, Transactions } from "../../../../packages/crypto";
 import { NFTTransactionFactory } from "../../../helpers/nft-transaction-factory";
 import { constraints, network, nftId, nftName } from "../__fixtures__";
+import "../mocks/core-container";
+import { nftsFindPropertyByKeyMock } from "../mocks/database-manager";
 
 describe("core-nft > constraint manager", () => {
     // TODO: uns : find a way to prevent transaction register just for creating transaction

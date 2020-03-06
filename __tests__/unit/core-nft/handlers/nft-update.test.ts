@@ -5,8 +5,8 @@ import { Wallets } from "@arkecosystem/core-state";
 import { Handlers } from "@arkecosystem/core-transactions";
 import { Managers } from "@arkecosystem/crypto";
 import { Builders } from "@uns/core-nft-crypto";
-import { NftOwnerError, NftPropertyTooLongError } from "../../../../packages/core-nft/src/";
-import { NftUpdateTransactionHandler } from "../../../../packages/core-nft/src/transactions";
+import { NftOwnerError, NftPropertyTooLongError } from "@uns/core-nft/src/";
+import { NftUpdateTransactionHandler } from "@uns/core-nft/src/transactions";
 import * as Fixtures from "../__fixtures__";
 
 describe("Nft update handler", () => {

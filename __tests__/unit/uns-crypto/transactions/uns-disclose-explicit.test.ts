@@ -1,6 +1,6 @@
 import { Interfaces, Managers, Transactions, Utils, Validation as Ajv } from "@arkecosystem/crypto";
+import { DiscloseExplicitTransaction } from "@uns/crypto";
 import "jest-extended";
-import { DiscloseExplicitTransaction } from "../../../../packages/uns-crypto/src";
 import { checkCommonFields } from "../../core-nft/helpers";
 import * as Fixtures from "../__fixtures__";
 import { discloseExplicitTransaction } from "../__fixtures__";

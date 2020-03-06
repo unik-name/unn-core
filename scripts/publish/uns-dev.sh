@@ -16,9 +16,9 @@ if [[ -n "$CI" ]];then
     set -x
 fi
 
-cd packages/crypto
 
-actual_uns_version=$(grep '"uns_version":' package.json | cut -d\" -f4)
+pushd plugins/uns/ark-crypto
+actual_uns_version=$(grep '"version":' package.json | cut -d\" -f4)
 if [[ $actual_uns_version =~ "-" ]]; then
     echo "Version format is not X.Y.Z ($actual_uns_version)"
     exit 1
@@ -35,21 +35,22 @@ echo
 echo "Build and publish @uns/ark-crypto"
 echo
 npm publish --tag=dev $PUBLISH_OPTS
+popd
 
 echo
 echo "Build and publish @uns/core-nft-crypto"
 echo
-cd ../core-nft-crypto
+pushd plugins/nft/nft-crypto
 # It is mandatory to rebuild the module afterward to satisfy next modules dependency
 npm publish --tag=dev $PUBLISH_OPTS && yarn build
+popd
 
 echo
 echo "Build and publish @uns/uns-crypto"
 echo
-cd ../uns-crypto
+pushd plugins/uns/uns-crypto
 npm publish --tag=dev $PUBLISH_OPTS
-
-cd ../..
+popd
 
 rm -f packages/core-nft-crypto/package.json.bak \
     packages/crypto/package.json.bak \

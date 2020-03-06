@@ -5,8 +5,8 @@ import { Wallets } from "@arkecosystem/core-state";
 import { Handlers } from "@arkecosystem/core-transactions";
 import { Managers } from "@arkecosystem/crypto";
 import { Builders } from "@uns/core-nft-crypto";
-import { NftOwnerError } from "../../../../packages/core-nft/src/";
-import { NftTransferTransactionHandler } from "../../../../packages/core-nft/src/transactions";
+import { NftOwnerError } from "@uns/core-nft/src/";
+import { NftTransferTransactionHandler } from "@uns/core-nft/src/transactions";
 import * as Fixtures from "../__fixtures__";
 
 describe("Nft transfer handler", () => {

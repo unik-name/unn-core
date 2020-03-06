@@ -7,15 +7,16 @@ cd packages/crypto
 sed -i.bak "s/\"uns_version\": \"\(.*\)\"/\"uns_version\": \"$version\"/g" "./package.json"
 npm publish
 
-cd ../core-nft-crypto
-yarn version --no-git-tag-version --new-version $version 
-npm publish && yarn build
+pushd plugins/uns/ark-crypto
+sed -i.bak "s/\"version\": \"\(.*\)\"/\"version\": \"$version\"/g" "./package.json"
+npm publish --dry-run
+popd
 
-cd ../uns-crypto
+pushd plugins/nft/nft-crypto
 yarn version --no-git-tag-version --new-version $version
 npm publish
 
-cd ../core
+pushd plugins/uns/uns-crypto
 yarn version --no-git-tag-version --new-version $version
 
 cd ../..
@@ -25,7 +26,7 @@ sed -i.bak "s/\"@uns\/crypto\": \"\(.*\)\"/\"@uns\/crypto\": \"^$version\"/g" ".
 sed -i.bak "s/\"@uns\/core-nft-crypto\": \"\(.*\)\"/\"@uns\/core-nft-crypto\": \"^$version\"/g" "./packages/core-tester-cli/package.json"
 
 # remove all `.bak` files
-git clean -f 
+git clean -f
 
 if [[ $commit == '--commit' ]];then
     git add -u

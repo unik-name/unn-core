@@ -13,7 +13,7 @@ IMAGE=$ORG"/"$REPO
 
 COMMIT=$(git rev-parse --short HEAD)
 
-docker build -t "$IMAGE":"$COMMIT" -f ./docker/Dockerfile .
+DOCKER_BUILDKIT=1 docker build -t "$IMAGE":"$COMMIT" -f ./docker/Dockerfile .
 
 echo "🎉 Successfully built UNS image : $IMAGE:$COMMIT"
 

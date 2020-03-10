@@ -1,6 +1,6 @@
 {
     "name": "@uns/crypto",
-    "version": "4.2.5",
+    "version": "4.2.6",
     "description": "Crypto utilities for the UNS.network Blockchain",
     "license": "MIT",
     "contributors": [
@@ -27,7 +27,7 @@
     },
     "dependencies": {
         "@arkecosystem/crypto": "^2.6.25",
-        "@uns/core-nft-crypto": "^4.2.4"
+        "@uns/core-nft-crypto": "^4.2.6"
     },
     "devDependencies": {
         "rollup": "^1.17.0",

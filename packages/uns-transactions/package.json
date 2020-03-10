@@ -19,11 +19,11 @@
         "prepublishOnly": "yarn build"
     },
     "dependencies": {
-        "@arkecosystem/core-container": "^2.6.0-next.4",
-        "@arkecosystem/core-interfaces": "^2.6.0-next.4",
-        "@arkecosystem/core-transactions": "^2.6.0-next.4",
-        "@arkecosystem/crypto": "^2.6.0-next.4",
-        "@arkecosystem/core-api": "^2.6.0-next.4",
+        "@arkecosystem/core-container": "^2.6.25",
+        "@arkecosystem/core-interfaces": "^2.6.25",
+        "@arkecosystem/core-transactions": "^2.6.25",
+        "@arkecosystem/crypto": "^2.6.25",
+        "@arkecosystem/core-api": "^2.6.25",
         "@uns/crypto": "^4.2.4",
         "@uns/core-nft": "^4.2.0 || ^4.2.0-dev",
         "@hapi/boom": "^8.0.0",

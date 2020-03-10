@@ -13,7 +13,10 @@ import { generateRound } from "./utils/generate-round";
 import { sortBy } from "@arkecosystem/utils";
 import { asValue } from "awilix";
 
-const round = generateRound(delegates.map(delegate => delegate.publicKey), 1);
+const round = generateRound(
+    delegates.map(delegate => delegate.publicKey),
+    1,
+);
 
 const options = {
     enabled: true,
@@ -58,20 +61,20 @@ const tearDown = async () => {
 const calculateRanks = async () => {
     const databaseService = app.resolvePlugin<Database.IDatabaseService>("database");
 
-    const delegateWallets = Object.values(databaseService.walletManager.allByUsername()).sort(
-        (a: State.IWallet, b: State.IWallet) =>
-            b
-                .getAttribute<Utils.BigNumber>("delegate.voteBalance")
-                .comparedTo(a.getAttribute<Utils.BigNumber>("delegate.voteBalance")),
+    const delegateWallets = Object.values(
+        databaseService.walletManager.allByUsername(),
+    ).sort((a: State.IWallet, b: State.IWallet) =>
+        b
+            .getAttribute<Utils.BigNumber>("delegate.voteBalance")
+            .comparedTo(a.getAttribute<Utils.BigNumber>("delegate.voteBalance")),
     );
 
-    // tslint:disable-next-line: ban
-    sortBy(delegateWallets, "publicKey").forEach((delegate, i) => {
+    for (const delegate of sortBy(delegateWallets, "publicKey")) {
         const wallet = databaseService.walletManager.findByPublicKey(delegate.publicKey);
-        wallet.setAttribute("delegate.rank", i + 1);
+        wallet.setAttribute("delegate.rank", delegateWallets.indexOf(delegate) + 1);
 
         databaseService.walletManager.reindex(wallet);
-    });
+    }
 };
 
 export { calculateRanks, setUp, tearDown };

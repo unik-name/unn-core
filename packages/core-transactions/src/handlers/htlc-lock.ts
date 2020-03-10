@@ -52,7 +52,8 @@ export class HtlcLockTransactionHandler extends TransactionHandler {
     }
 
     public async isActivated(): Promise<boolean> {
-        return Managers.configManager.getMilestone().aip11 === true;
+        const milestone = Managers.configManager.getMilestone();
+        return milestone.aip11 === true && milestone.htlcEnabled === true;
     }
 
     public async throwIfCannotBeApplied(
@@ -91,8 +92,8 @@ export class HtlcLockTransactionHandler extends TransactionHandler {
         data: Interfaces.ITransactionData,
         pool: TransactionPool.IConnection,
         processor: TransactionPool.IProcessor,
-    ): Promise<boolean> {
-        return true;
+    ): Promise<{ type: string; message: string } | null> {
+        return null;
     }
 
     public async applyToSender(
@@ -107,9 +108,7 @@ export class HtlcLockTransactionHandler extends TransactionHandler {
             amount: transaction.data.amount,
             recipientId: transaction.data.recipientId,
             timestamp: transaction.timestamp,
-            vendorField: transaction.data.vendorField
-                ? Buffer.from(transaction.data.vendorField, "hex").toString("utf8")
-                : undefined,
+            vendorField: transaction.data.vendorField,
             ...transaction.data.asset.lock,
         };
         sender.setAttribute("htlc.locks", locks);

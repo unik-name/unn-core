@@ -11,6 +11,7 @@ import { constraints, network, nftId, nftName } from "../__fixtures__";
 describe("core-nft > constraint manager", () => {
     // TODO: uns : find a way to prevent transaction register just for creating transaction
     Managers.configManager.setFromPreset(network);
+    Managers.configManager.setHeight(2);
     Transactions.TransactionRegistry.registerTransactionType(NFTTransactions.NftMintTransaction);
     Transactions.TransactionRegistry.registerTransactionType(NFTTransactions.NftUpdateTransaction);
 

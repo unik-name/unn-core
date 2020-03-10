@@ -56,7 +56,7 @@ const addBlocks = async untilHeight => {
     const lastHeight = blockchain.getLastHeight();
 
     for (let height = lastHeight + 1; height < untilHeight && height < 155; height++) {
-        const blockToProcess = Blocks.BlockFactory.fromData(allBlocks[height - 2]);
+        const blockToProcess = allBlocks[height - 2];
         await blockchain.processBlocks([blockToProcess], () => undefined);
     }
 };
@@ -82,7 +82,10 @@ describe("Blockchain", () => {
 
         // Workaround: Add genesis transactions to the exceptions list, because they have a fee of 0
         // and otherwise don't pass validation.
-        configManager.set("exceptions.transactions", genesisBlock.transactions.map(tx => tx.id));
+        configManager.set(
+            "exceptions.transactions",
+            genesisBlock.transactions.map(tx => tx.id),
+        );
     });
 
     afterAll(async () => {
@@ -218,7 +221,9 @@ describe("Blockchain", () => {
                 transactions,
             };
 
-            return Blocks.BlockFactory.make(data, Identities.Keys.fromPassphrase(generatorKeys.secret));
+            const blockInstance = Blocks.BlockFactory.make(data, Identities.Keys.fromPassphrase(generatorKeys.secret));
+
+            return { ...blockInstance.data, transactions: blockInstance.transactions.map(tx => tx.data) };
         };
 
         it("should restore vote balances after a rollback", async () => {
@@ -302,6 +307,18 @@ describe("Blockchain", () => {
             // Wallet is now a cold wallet and the initial vote balance has been restored.
             expect(wallet.balance).toEqual(Utils.BigNumber.ZERO);
             expect(walletForger.getAttribute<Utils.BigNumber>("delegate.voteBalance")).toEqual(initialVoteBalance);
+        });
+    });
+
+    describe("getActiveDelegates", () => {
+        it("should retrieve the active delegates of the latest round", async () => {
+            await resetToHeight1();
+
+            // Go to arbitrary height in round 2.
+            await addBlocks(55);
+
+            const forgingDelegates = await blockchain.database.getActiveDelegates();
+            expect(forgingDelegates).toHaveLength(51);
         });
     });
 

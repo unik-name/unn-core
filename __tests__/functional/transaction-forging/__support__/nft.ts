@@ -1,3 +1,4 @@
+import { Container } from "@arkecosystem/core-interfaces";
 import { Crypto, Managers } from "@arkecosystem/crypto";
 import { Builders } from "@uns/core-nft-crypto";
 import * as path from "path";
@@ -27,7 +28,7 @@ export const genesisPassphrase: string =
     "enrich account dirt wedding noise acquire pipe rescue link quality laugh rough";
 export const defaultPassphrase: string = genesisPassphrase;
 
-export const setUp = async (): Promise<void> => {
+export const setUp = async (): Promise<Container.IContainer> => {
     process.env.CORE_P2P_PORT = "4002";
     Managers.configManager.setFromPreset(network);
 

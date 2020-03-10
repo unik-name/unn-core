@@ -16,8 +16,21 @@ const index = async request => {
 };
 
 const show = async request => {
+    let publicKey: string;
+
+    if (request.params.id.length === 66) {
+        publicKey = request.params.id;
+    } else {
+        try {
+            publicKey = databaseService.wallets.findById(Database.SearchScope.Wallets, request.params.id).publicKey;
+        } catch (error) {
+            return Boom.notFound("Business not found");
+        }
+    }
+
     const business = databaseService.wallets.search(Database.SearchScope.Businesses, {
-        businessId: request.params.id,
+        publicKey,
+        ...request.query,
     }).rows[0];
 
     if (!business) {
@@ -28,21 +41,34 @@ const show = async request => {
 };
 
 const bridgechains = async request => {
-    const business = databaseService.wallets.search(Database.SearchScope.Businesses, {
-        businessId: request.params.id,
-    });
+    const wallet = databaseService.wallets.findById(Database.SearchScope.Wallets, request.params.id);
 
-    if (!business) {
+    if (!wallet || !wallet.hasAttribute("business")) {
         return Boom.notFound("Business not found");
     }
 
     const bridgechains = databaseService.wallets.search(Database.SearchScope.Bridgechains, {
-        businessId: request.params.id,
+        publicKey: wallet.publicKey,
         ...request.query,
         ...paginate(request),
     });
 
     return toPagination(bridgechains, "bridgechain");
+};
+
+const bridgechain = async request => {
+    const wallet = databaseService.wallets.findById(Database.SearchScope.Wallets, request.params.businessId);
+
+    if (!wallet || !wallet.hasAttribute("business")) {
+        return Boom.notFound("Business not found");
+    }
+
+    const bridgechains = wallet.getAttribute("business.bridgechains");
+    if (!bridgechains || !bridgechains[request.params.bridgechainId]) {
+        return Boom.notFound("Bridgechain not found");
+    }
+
+    return respondWithResource(bridgechains[request.params.bridgechainId], "bridgechain");
 };
 
 const search = async request => {
@@ -66,6 +92,10 @@ export const registerMethods = server => {
             id: request.params.id,
             ...request.query,
             ...paginate(request),
+        }))
+        .method("v2.businesses.bridgechain", bridgechain, 8, request => ({
+            businessId: request.params.businessId,
+            bridgechainId: request.params.bridgechainId,
         }))
         .method("v2.businesses.search", search, 30, request => ({
             ...request.payload,

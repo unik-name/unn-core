@@ -6,13 +6,14 @@ import {
     BridgechainAlreadyRegisteredError,
     BusinessIsResignedError,
     GenesisHashAlreadyRegisteredError,
+    PortKeyMustBeValidPackageNameError,
     WalletIsNotBusinessError,
 } from "../errors";
 import { MagistrateApplicationEvents } from "../events";
 import { IBridgechainWalletAttributes, IBusinessWalletAttributes } from "../interfaces";
-import { MagistrateIndex } from "../wallet-manager";
 import { BusinessRegistrationTransactionHandler } from "./business-registration";
 import { MagistrateTransactionHandler } from "./magistrate-handler";
+import { packageNameRegex } from "./utils";
 
 export class BridgechainRegistrationTransactionHandler extends MagistrateTransactionHandler {
     public getConstructor(): Transactions.TransactionConstructor {
@@ -42,9 +43,8 @@ export class BridgechainRegistrationTransactionHandler extends MagistrateTransac
                     businessAttributes.bridgechains = {};
                 }
 
-                const bridgechainId: number = this.getBridgechainId(walletManager);
-                businessAttributes.bridgechains[bridgechainId.toString()] = {
-                    bridgechainId,
+                const bridgechainId: string = transaction.asset.bridgechainRegistration.genesisHash;
+                businessAttributes.bridgechains[bridgechainId] = {
                     bridgechainAsset: transaction.asset.bridgechainRegistration,
                 };
 
@@ -76,29 +76,22 @@ export class BridgechainRegistrationTransactionHandler extends MagistrateTransac
 
         if (
             bridgechains &&
-            Object.values(bridgechains).some(bridgechain => {
-                return (
+            Object.values(bridgechains).some(
+                bridgechain =>
                     bridgechain.bridgechainAsset.name.toLowerCase() ===
-                    data.asset.bridgechainRegistration.name.toLowerCase()
-                );
-            })
+                    data.asset.bridgechainRegistration.name.toLowerCase(),
+            )
         ) {
             throw new BridgechainAlreadyRegisteredError();
         }
 
-        for (const wallet of walletManager.getIndex("businesses").values()) {
-            const bridgechains: Record<string, IBridgechainWalletAttributes> = wallet.getAttribute(
-                "business.bridgechains",
-            );
+        if (bridgechains && bridgechains[data.asset.bridgechainRegistration.genesisHash]) {
+            throw new GenesisHashAlreadyRegisteredError();
+        }
 
-            if (bridgechains) {
-                const bridgechainValues: IBridgechainWalletAttributes[] = Object.values(bridgechains);
-
-                for (const bridgechain of bridgechainValues) {
-                    if (bridgechain.bridgechainAsset.genesisHash === data.asset.bridgechainRegistration.genesisHash) {
-                        throw new GenesisHashAlreadyRegisteredError();
-                    }
-                }
+        for (const portKey of Object.keys(data.asset.bridgechainRegistration.ports)) {
+            if (!packageNameRegex.test(portKey)) {
+                throw new PortKeyMustBeValidPackageNameError();
             }
         }
 
@@ -113,8 +106,8 @@ export class BridgechainRegistrationTransactionHandler extends MagistrateTransac
         data: Interfaces.ITransactionData,
         pool: TransactionPool.IConnection,
         processor: TransactionPool.IProcessor,
-    ): Promise<boolean> {
-        return true;
+    ): Promise<{ type: string; message: string } | null> {
+        return null;
     }
 
     public async applyToSender(
@@ -131,9 +124,8 @@ export class BridgechainRegistrationTransactionHandler extends MagistrateTransac
             businessAttributes.bridgechains = {};
         }
 
-        const bridgechainId: number = this.getBridgechainId(walletManager);
-        businessAttributes.bridgechains[bridgechainId.toString()] = {
-            bridgechainId,
+        const bridgechainId: string = transaction.data.asset.bridgechainRegistration.genesisHash;
+        businessAttributes.bridgechains[bridgechainId] = {
             bridgechainAsset: transaction.data.asset.bridgechainRegistration,
         };
 
@@ -169,8 +161,4 @@ export class BridgechainRegistrationTransactionHandler extends MagistrateTransac
         walletManager: State.IWalletManager,
         // tslint:disable-next-line:no-empty
     ): Promise<void> {}
-
-    private getBridgechainId(walletManager: State.IWalletManager): number {
-        return walletManager.getIndex(MagistrateIndex.Bridgechains).values().length + 1;
-    }
 }

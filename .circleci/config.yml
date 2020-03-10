@@ -566,11 +566,11 @@ workflows:
       - prepare
     # Run only on tags with a specific format
       - docker_build_sandbox_release:
-        requires:
-          - prepare
-        filters:
-          tags:
-            # /!\ this tag is duplicated in 'docker_build_sandbox_release' job description
-            only: /^core-[0-9]+\.[0-9]+\.[0-9]+$/
-          branches:
-            ignore: /.*/
+          requires:
+            - prepare
+          filters:
+            tags:
+              # /!\ this tag is duplicated in 'docker_build_sandbox_release' job description
+              only: /^core-[0-9]+\.[0-9]+\.[0-9]+$/
+            branches:
+              ignore: /.*/

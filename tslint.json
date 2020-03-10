@@ -37,7 +37,21 @@
             "packages/core-p2p/src/socket-server/versions/peer.ts",
             "packages/core-p2p/src/socket-server/worker.ts",
             "packages/core/src/commands/config/cli.ts",
-            "packages/core/src/commands/update.ts"
+            "packages/core/src/commands/update.ts",
+            "packages/core-magistrate-transactions/src/handlers/bridgechain-registration.ts",
+            "packages/core-magistrate-transactions/src/handlers/bridgechain-resignation.ts",
+            "packages/core-magistrate-transactions/src/handlers/bridgechain-update.ts",
+            "packages/core-magistrate-transactions/src/handlers/business-registration.ts",
+            "packages/core-magistrate-transactions/src/handlers/business-resignation.ts",
+            "packages/core-magistrate-transactions/src/handlers/business-update.ts",
+            "packages/core-transactions/src/handlers/delegate-registration.ts",
+            "packages/core-transactions/src/handlers/htlc-claim.ts",
+            "packages/core-transactions/src/handlers/htlc-lock.ts",
+            "packages/core-transactions/src/handlers/htlc-refund.ts",
+            "packages/core-transactions/src/handlers/ipfs.ts",
+            "packages/core-transactions/src/handlers/multi-payment.ts",
+            "packages/core-transactions/src/handlers/transaction.ts",
+            "packages/core-transactions/src/handlers/transfer.ts"
         ]
     }
 }

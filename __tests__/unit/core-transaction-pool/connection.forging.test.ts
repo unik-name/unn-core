@@ -7,7 +7,6 @@ import ByteBuffer from "bytebuffer";
 import { Wallets } from "@arkecosystem/core-state";
 import { Handlers } from "@arkecosystem/core-transactions";
 import { Constants, Crypto, Enums, Identities, Interfaces, Managers, Transactions, Utils } from "@arkecosystem/crypto";
-import Long from "long";
 import { Connection } from "../../../packages/core-transaction-pool/src/connection";
 import { defaults } from "../../../packages/core-transaction-pool/src/defaults";
 import { Memory } from "../../../packages/core-transaction-pool/src/memory";
@@ -115,7 +114,8 @@ describe("Connection", () => {
         const writeUint32 = (txField, value) =>
             options[txField] ? options[txField](buffer) : buffer.writeUint32(value);
         const writeUint64 = (txField, value) =>
-            options[txField] ? options[txField](buffer) : buffer.writeUint64(Long.fromString(value.toFixed()));
+            // @ts-ignore - The ByteBuffer types say we can't use strings but the code actually handles them.
+            options[txField] ? options[txField](buffer) : buffer.writeUint64(value.toFixed());
         const append = (txField, value, encoding = "utf8") =>
             options[txField] ? options[txField](buffer) : buffer.append(value, encoding);
 
@@ -176,7 +176,9 @@ describe("Connection", () => {
 
     describe("getTransactionsForForging", () => {
         it("should call `TransactionFactory.fromBytes`", async () => {
-            const transactions = TransactionFactory.transfer().build(5);
+            const transactions = TransactionFactory.transfer()
+                .withVersion(2)
+                .build(5);
             const spy = jest.spyOn(Transactions.TransactionFactory, "fromBytes");
             await expectForgingTransactions(transactions, 5);
             expect(spy).toHaveBeenCalled();
@@ -639,6 +641,21 @@ describe("Connection", () => {
                 });
             }
             await expectForgingTransactions(transactions, 1, true);
+        });
+
+        it("should get all transactions for a new sender (with wallet only indexed by address)", async () => {
+            const newSenderPassphrase = "this is a brand new passphrase";
+            const newSenderAddress = Identities.Address.fromPassphrase(newSenderPassphrase);
+            const transactions = TransactionFactory.transfer()
+                .withPassphrase(newSenderPassphrase)
+                .build(5);
+
+            // findByAddress is important here so that sender wallet is not indexed by public key
+            // which did cause an issue when getting transactions for forging
+            const sender = databaseWalletManager.findByAddress(newSenderAddress);
+            sender.balance = transactions[0].data.amount.plus(transactions[0].data.fee).times(5);
+
+            await expectForgingTransactions(transactions, 5);
         });
     });
 });

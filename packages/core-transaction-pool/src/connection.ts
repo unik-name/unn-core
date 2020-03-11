@@ -11,6 +11,7 @@ import { ITransactionsProcessed } from "./interfaces";
 import { Memory } from "./memory";
 import { Processor } from "./processor";
 import { Storage } from "./storage";
+import { getMaxTransactionBytes } from "./utils";
 import { WalletManager } from "./wallet-manager";
 
 export class Connection implements TransactionPool.IConnection {
@@ -60,7 +61,7 @@ export class Connection implements TransactionPool.IConnection {
             this.syncToPersistentStorage();
         });
 
-        this.emitter.on("internal.milestone.changed", () => this.purgeInvalidTransactions());
+        this.emitter.on(ApplicationEvents.InternalMilestoneChanged, () => this.purgeInvalidTransactions());
 
         return this;
     }
@@ -72,6 +73,10 @@ export class Connection implements TransactionPool.IConnection {
 
     public makeProcessor(): TransactionPool.IProcessor {
         return new Processor(this);
+    }
+
+    public getAllTransactions(): Interfaces.ITransaction[] {
+        return this.memory.allSortedByFee();
     }
 
     public async getTransactionsByType(type: number, typeGroup?: number): Promise<Set<Interfaces.ITransaction>> {
@@ -148,13 +153,13 @@ export class Connection implements TransactionPool.IConnection {
     }
 
     public async getTransactionsForForging(blockSize: number): Promise<string[]> {
-        return (await this.getValidatedTransactions(0, blockSize, this.options.maxTransactionBytes)).map(transaction =>
+        return (await this.getValidatedTransactions(0, blockSize, getMaxTransactionBytes())).map(transaction =>
             transaction.serialized.toString("hex"),
         );
     }
 
     public async getTransactionIdsForForging(start: number, size: number): Promise<string[]> {
-        return (await this.getValidatedTransactions(start, size, this.options.maxTransactionBytes)).map(
+        return (await this.getValidatedTransactions(start, size, getMaxTransactionBytes())).map(
             (transaction: Interfaces.ITransaction) => transaction.id,
         );
     }
@@ -173,7 +178,7 @@ export class Connection implements TransactionPool.IConnection {
             if (!this.loggedAllowedSenders.includes(senderPublicKey)) {
                 this.logger.debug(
                     `Transaction pool: allowing sender public key ${senderPublicKey} ` +
-                    `(listed in options.allowedSenders), thus skipping throttling.`,
+                        `(listed in options.allowedSenders), thus skipping throttling.`,
                 );
 
                 this.loggedAllowedSenders.push(senderPublicKey);
@@ -219,9 +224,7 @@ export class Connection implements TransactionPool.IConnection {
                 ? this.walletManager.findByAddress(data.recipientId)
                 : undefined;
 
-            if (recipientWallet) {
-                await transactionHandler.applyToRecipient(transaction, this.walletManager);
-            }
+            await transactionHandler.applyToRecipient(transaction, this.walletManager);
 
             if (exists) {
                 this.removeTransaction(transaction);
@@ -244,7 +247,7 @@ export class Connection implements TransactionPool.IConnection {
 
                     this.logger.error(
                         `[Pool] Cannot apply transaction ${transaction.id} when trying to accept ` +
-                        `block ${block.data.id}: ${error.message}`,
+                            `block ${block.data.id}: ${error.message}`,
                     );
 
                     continue;
@@ -401,7 +404,7 @@ export class Connection implements TransactionPool.IConnection {
             }
 
             if (maxBytes > 0) {
-                const transactionSize: number = JSON.stringify(transaction.data).length;
+                const transactionSize: number = transaction.serialized.byteLength;
 
                 if (transactionBytes + transactionSize > maxBytes) {
                     return data;
@@ -422,7 +425,7 @@ export class Connection implements TransactionPool.IConnection {
         if (await this.has(transaction.id)) {
             this.logger.debug(
                 "Transaction pool: ignoring attempt to add a transaction that is already " +
-                `in the pool, id: ${transaction.id}`,
+                    `in the pool, id: ${transaction.id}`,
             );
 
             return { transaction, type: "ERR_ALREADY_IN_POOL", message: "Already in pool" };
@@ -513,13 +516,6 @@ export class Connection implements TransactionPool.IConnection {
 
                 strictEqual(transaction.id, deserialized.id);
 
-                const sender: State.IWallet = walletManager.findByPublicKey(transaction.data.senderPublicKey);
-
-                let recipient: State.IWallet | undefined;
-                if (transaction.data.recipientId) {
-                    recipient = walletManager.findByAddress(transaction.data.recipientId);
-                }
-
                 const handler: Handlers.TransactionHandler = await Handlers.Registry.get(
                     transaction.type,
                     transaction.typeGroup,
@@ -527,9 +523,7 @@ export class Connection implements TransactionPool.IConnection {
 
                 await handler.applyToSender(transaction, walletManager);
 
-                if (recipient && sender.address !== recipient.address) {
-                    await handler.applyToRecipient(transaction, walletManager);
-                }
+                await handler.applyToRecipient(transaction, walletManager);
 
                 validTransactions.push(transaction);
             } catch (error) {

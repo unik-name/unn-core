@@ -7,7 +7,7 @@ import {
 import { Handlers, TransactionReader } from "@arkecosystem/core-transactions";
 import { Interfaces, Transactions } from "@arkecosystem/crypto";
 import {
-    BridgechainIsNotRegisteredError,
+    BridgechainIsNotRegisteredByWalletError,
     BridgechainIsResignedError,
     BusinessIsResignedError,
     WalletIsNotBusinessError,
@@ -67,13 +67,16 @@ export class BridgechainResignationTransactionHandler extends MagistrateTransact
         if (businessAttributes.resigned) {
             throw new BusinessIsResignedError();
         }
+        if (!businessAttributes.bridgechains) {
+            throw new BridgechainIsNotRegisteredByWalletError();
+        }
 
         const bridgechainResignation: MagistrateInterfaces.IBridgechainResignationAsset =
             transaction.data.asset.bridgechainResignation;
         const bridgechainAttributes: IBridgechainWalletAttributes =
-            businessAttributes.bridgechains[bridgechainResignation.bridgechainId.toString()];
+            businessAttributes.bridgechains[bridgechainResignation.bridgechainId];
         if (!bridgechainAttributes) {
-            throw new BridgechainIsNotRegisteredError();
+            throw new BridgechainIsNotRegisteredByWalletError();
         }
 
         if (bridgechainAttributes.resigned) {
@@ -91,8 +94,8 @@ export class BridgechainResignationTransactionHandler extends MagistrateTransact
         data: Interfaces.ITransactionData,
         pool: TransactionPool.IConnection,
         processor: TransactionPool.IProcessor,
-    ): Promise<boolean> {
-        const { bridgechainId }: { bridgechainId: number } = data.asset.bridgechainResignation;
+    ): Promise<{ type: string; message: string } | null> {
+        const { bridgechainId }: { bridgechainId: string } = data.asset.bridgechainResignation;
 
         const bridgechainResignationsInPool: Interfaces.ITransactionData[] = Array.from(
             await pool.getTransactionsByType(
@@ -108,15 +111,13 @@ export class BridgechainResignationTransactionHandler extends MagistrateTransact
                     resignation.asset.bridgechainResignation.bridgechainId === bridgechainId,
             )
         ) {
-            processor.pushError(
-                data,
-                "ERR_PENDING",
-                `Bridgechain resignation for bridgechainId "${bridgechainId}" already in the pool`,
-            );
-            return false;
+            return {
+                type: "ERR_PENDING",
+                message: `Bridgechain resignation for bridgechainId "${bridgechainId}" already in the pool`,
+            };
         }
 
-        return true;
+        return null;
     }
 
     public async applyToSender(
@@ -132,7 +133,7 @@ export class BridgechainResignationTransactionHandler extends MagistrateTransact
 
         const bridgechainResignation: MagistrateInterfaces.IBridgechainResignationAsset =
             transaction.data.asset.bridgechainResignation;
-        businessAttributes.bridgechains[bridgechainResignation.bridgechainId.toString()].resigned = true;
+        businessAttributes.bridgechains[bridgechainResignation.bridgechainId].resigned = true;
     }
 
     public async revertForSender(
@@ -148,7 +149,7 @@ export class BridgechainResignationTransactionHandler extends MagistrateTransact
 
         const bridgechainResignation: MagistrateInterfaces.IBridgechainResignationAsset =
             transaction.data.asset.bridgechainResignation;
-        businessAttributes.bridgechains[bridgechainResignation.bridgechainId.toString()].resigned = false;
+        businessAttributes.bridgechains[bridgechainResignation.bridgechainId].resigned = false;
     }
 
     public async applyToRecipient(

@@ -37,7 +37,6 @@ export class BusinessRegistrationTransactionHandler extends MagistrateTransactio
                 const wallet: State.IWallet = walletManager.findByPublicKey(transaction.senderPublicKey);
                 const asset: IBusinessWalletAttributes = {
                     businessAsset: transaction.asset.businessRegistration,
-                    businessId: this.getBusinessId(walletManager),
                 };
 
                 wallet.setAttribute<IBusinessWalletAttributes>("business", asset);
@@ -66,7 +65,7 @@ export class BusinessRegistrationTransactionHandler extends MagistrateTransactio
         data: Interfaces.ITransactionData,
         pool: TransactionPool.IConnection,
         processor: TransactionPool.IProcessor,
-    ): Promise<boolean> {
+    ): Promise<{ type: string; message: string } | null> {
         if (
             await pool.senderHasTransactionsOfType(
                 data.senderPublicKey,
@@ -75,14 +74,12 @@ export class BusinessRegistrationTransactionHandler extends MagistrateTransactio
             )
         ) {
             const wallet: State.IWallet = pool.walletManager.findByPublicKey(data.senderPublicKey);
-            processor.pushError(
-                data,
-                "ERR_PENDING",
-                `Business registration for "${wallet.getAttribute("business")}" already in the pool`,
-            );
-            return false;
+            return {
+                type: "ERR_PENDING",
+                message: `Business registration for "${wallet.getAttribute("business")}" already in the pool`,
+            };
         }
-        return true;
+        return null;
     }
 
     public async applyToSender(
@@ -94,7 +91,6 @@ export class BusinessRegistrationTransactionHandler extends MagistrateTransactio
         const sender: State.IWallet = walletManager.findByPublicKey(transaction.data.senderPublicKey);
         const businessAsset: IBusinessWalletAttributes = {
             businessAsset: transaction.data.asset.businessRegistration,
-            businessId: this.getBusinessId(walletManager),
         };
 
         sender.setAttribute<IBusinessWalletAttributes>("business", businessAsset);
@@ -124,8 +120,4 @@ export class BusinessRegistrationTransactionHandler extends MagistrateTransactio
         walletManager: State.IWalletManager,
         // tslint:disable-next-line:no-empty
     ): Promise<void> {}
-
-    private getBusinessId(walletManager: State.IWalletManager): number {
-        return walletManager.getIndex(MagistrateIndex.Businesses).values().length + 1;
-    }
 }

@@ -6,11 +6,15 @@ import { IMultiSignatureAsset } from "../../../../packages/crypto/src/interfaces
 import { configManager } from "../../../../packages/crypto/src/managers";
 import { BuilderFactory } from "../../../../packages/crypto/src/transactions";
 import { TransactionTypeFactory } from "../../../../packages/crypto/src/transactions";
+import { schemas } from "../../../../packages/crypto/src/transactions/types";
 import { TransactionSchema } from "../../../../packages/crypto/src/transactions/types/schemas";
 import { validator as Ajv } from "../../../../packages/crypto/src/validation";
+import { htlcSecretHashHex, htlcSecretHex } from "../../../utils/fixtures";
 
 let transaction;
 let transactionSchema: TransactionSchema;
+
+configManager.setHeight(2); // aip11 (v2 transactions) is true from height 2 on testnet
 
 describe("Transfer Transaction", () => {
     const address = "DTRdbaUW3RQQSL5By4G43JVaeHiqfVp9oh";
@@ -78,19 +82,7 @@ describe("Transfer Transaction", () => {
         transaction.data.vendorField = "a".repeat(65);
         transaction.sign("passphrase");
 
-        let { error } = Ajv.validate(transactionSchema.$id, transaction.getStruct());
-        expect(error).not.toBeUndefined();
-
-        transaction
-            .recipientId(address)
-            .amount(amount)
-            .fee(Utils.BigNumber.make(fee).toFixed());
-
-        // Bypass vendorfield check by manually assigning a vendorfield > 64 bytes
-        transaction.vendorField("⊁".repeat(22));
-        transaction.sign("passphrase");
-
-        error = Ajv.validate(transactionSchema.$id, transaction.getStruct());
+        const { error } = Ajv.validate(transactionSchema.$id, transaction.getStruct());
         expect(error).not.toBeUndefined();
     });
 
@@ -334,6 +326,16 @@ describe("Delegate Registration Transaction", () => {
         transaction
             .usernameAsset("delegate1")
             .amount(10 * ARKTOSHI)
+            .sign("passphrase");
+
+        const { error } = Ajv.validate(transactionSchema.$id, transaction.getStruct());
+        expect(error).not.toBeUndefined();
+    });
+
+    it("should be invalid due to zero fee", () => {
+        transaction
+            .usernameAsset("delegate1")
+            .fee("0")
             .sign("passphrase");
 
         const { error } = Ajv.validate(transactionSchema.$id, transaction.getStruct());
@@ -696,7 +698,7 @@ describe("Multi Signature Registration Transaction", () => {
         expect(error).not.toBeUndefined();
     });
 
-    it("should validate legacy multisignature", () => {
+    it("should not validate legacy multisignature against current multisig schema", () => {
         const legacyMultiSignature = {
             version: 1,
             network: 23,
@@ -722,6 +724,35 @@ describe("Multi Signature Registration Transaction", () => {
         };
 
         const { error } = Ajv.validate(transactionSchema.$id, legacyMultiSignature);
+        expect(error).not.toBeUndefined();
+    });
+
+    it("should validate legacy multisignature against legacy schema", () => {
+        const legacyMultiSignature = {
+            version: 1,
+            network: 23,
+            type: 4,
+            timestamp: 53253482,
+            senderPublicKey: "0333421e69d3531a1c43c43cd4b9344e5a10640644a5fd35618b6306f3a4d7f208",
+            fee: "2000000000",
+            amount: "0",
+            asset: {
+                multiSignatureLegacy: {
+                    keysgroup: [
+                        "+034da006f958beba78ec54443df4a3f52237253f7ae8cbdb17dccf3feaa57f3126",
+                        "+0310c283aac7b35b4ae6fab201d36e8322c3408331149982e16013a5bcb917081c",
+                        "+0392a762e0123945455b7afe675e5ab98fb1586de43e5682514b9454d6edced724",
+                    ],
+                    lifetime: 24,
+                    min: 2,
+                },
+            },
+            signature:
+                "304402206009fbf8592e2e3485bc0aa84dbbc8c78326d59191daf870693bc3446b5eeeee02200b4ff5dd53b1e337fe6fbe090f42337dcfc4242c802c340815326e3858d13d6b",
+            id: "32aa60577531c190e6a29d28f434367c84c2f0a62eceba5c5483a3983639d51a",
+        };
+
+        const { error } = Ajv.validate(schemas.multiSignatureLegacy, legacyMultiSignature);
         expect(error).toBeUndefined();
     });
 });
@@ -746,17 +777,6 @@ describe("Multi Payment Transaction", () => {
 
         const { error } = Ajv.validate(transactionSchema.$id, multiPayment.getStruct());
         expect(error).toBeUndefined();
-    });
-
-    it("should be invalid with 0 or 1 payment", () => {
-        multiPayment.sign("passphrase");
-        const { error: errorZeroPayment } = Ajv.validate(transactionSchema.$id, multiPayment.getStruct());
-        expect(errorZeroPayment).not.toBeUndefined();
-
-        multiPayment.addPayment(address, "100").sign("passphrase");
-
-        const { error: errorOnePayment } = Ajv.validate(transactionSchema.$id, multiPayment.getStruct());
-        expect(errorOnePayment).not.toBeUndefined();
     });
 
     it("should not accept more than `multiPaymentLimit` payments", () => {
@@ -817,7 +837,7 @@ describe("HTLC Lock Transaction", () => {
     const fee = 1 * ARKTOSHI;
     const amount = 10 * ARKTOSHI;
     const htlcLockAsset = {
-        secretHash: "0f128d401958b1b30ad0d10406f47f9489321017b4614e6cb993fc63913c5454",
+        secretHash: htlcSecretHashHex,
         expiration: {
             type: HtlcLockExpirationType.EpochTimestamp,
             value: Math.floor(Date.now() / 1000),
@@ -933,7 +953,7 @@ describe("HTLC Claim Transaction", () => {
     const fee = "0";
     const htlcClaimAsset = {
         lockTransactionId: "943c220691e711c39c79d437ce185748a0018940e1a4144293af9d05627d2eb4",
-        unlockSecret: "my secret that should be 32bytes",
+        unlockSecret: htlcSecretHex,
     };
 
     beforeAll(() => {
@@ -958,7 +978,7 @@ describe("HTLC Claim Transaction", () => {
         transaction
             .htlcClaimAsset({
                 lockTransactionId: "943c220691e711c39c79d437ce185748a0018940e1a4144293af9d05627d2eb",
-                unlockSecret: "my secret that should be 32bytes",
+                unlockSecret: htlcSecretHex,
             })
             .recipientId(address)
             .fee(fee)
@@ -972,7 +992,7 @@ describe("HTLC Claim Transaction", () => {
         transaction
             .htlcClaimAsset({
                 lockTransactionId: "943c220691e711c39c79d437ce185748a0018940e1a4144293af9d05627d2ebw",
-                unlockSecret: "my secret that should be 32bytes",
+                unlockSecret: htlcSecretHex,
             })
             .recipientId(address)
             .fee(fee)
@@ -986,7 +1006,7 @@ describe("HTLC Claim Transaction", () => {
         transaction
             .htlcClaimAsset({
                 lockTransactionId: "943c220691e711c39c79d437ce185748a0018940e1a4144293af9d05627d2eb",
-                unlockSecret: "my secret that should be 32bytes but is not",
+                unlockSecret: "00112233",
             })
             .recipientId(address)
             .fee(fee)

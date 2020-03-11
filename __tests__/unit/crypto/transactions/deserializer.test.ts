@@ -1,7 +1,6 @@
 import "jest-extended";
 
 import ByteBuffer from "bytebuffer";
-import Long from "long";
 import { Enums, Errors, Utils } from "../../../../packages/crypto/src";
 import { Hash } from "../../../../packages/crypto/src/crypto";
 import {
@@ -17,7 +16,10 @@ import { TransactionFactory, Utils as TransactionUtils, Verifier } from "../../.
 import { BuilderFactory } from "../../../../packages/crypto/src/transactions/builders";
 import { Deserializer } from "../../../../packages/crypto/src/transactions/deserializer";
 import { Serializer } from "../../../../packages/crypto/src/transactions/serializer";
+import { htlcSecretHashHex, htlcSecretHex } from "../../../utils/fixtures";
 import { legacyMultiSignatureRegistration } from "./__fixtures__/transaction";
+
+configManager.setHeight(2); // aip11 (v2 transactions) is true from height 2 on testnet
 
 describe("Transaction serializer / Deserializer", () => {
     const checkCommonFields = (deserialized: ITransaction, expected) => {
@@ -348,7 +350,7 @@ describe("Transaction serializer / Deserializer", () => {
 
     describe("ser/deserialize - htlc lock", () => {
         const htlcLockAsset = {
-            secretHash: "0f128d401958b1b30ad0d10406f47f9489321017b4614e6cb993fc63913c5454",
+            secretHash: htlcSecretHashHex,
             expiration: {
                 type: Enums.HtlcLockExpirationType.EpochTimestamp,
                 value: Math.floor(Date.now() / 1000),
@@ -389,8 +391,16 @@ describe("Transaction serializer / Deserializer", () => {
                 .build();
 
             configManager.getMilestone().aip11 = false;
+            configManager.getMilestone().htlcEnabled = true;
             expect(htlcLock.verify()).toBeFalse();
             configManager.getMilestone().aip11 = true;
+            configManager.getMilestone().htlcEnabled = false;
+            expect(htlcLock.verify()).toBeFalse();
+            configManager.getMilestone().aip11 = false;
+            configManager.getMilestone().htlcEnabled = false;
+            expect(htlcLock.verify()).toBeFalse();
+            configManager.getMilestone().aip11 = true;
+            configManager.getMilestone().htlcEnabled = true;
             expect(htlcLock.verify()).toBeTrue();
         });
     });
@@ -398,7 +408,7 @@ describe("Transaction serializer / Deserializer", () => {
     describe("ser/deserialize - htlc claim", () => {
         const htlcClaimAsset = {
             lockTransactionId: "943c220691e711c39c79d437ce185748a0018940e1a4144293af9d05627d2eb4",
-            unlockSecret: "my secret that should be 32bytes",
+            unlockSecret: htlcSecretHex,
         };
 
         beforeAll(() => {
@@ -490,9 +500,11 @@ describe("Transaction serializer / Deserializer", () => {
                 buffer.writeByte(transaction.network);
                 buffer.writeUint32(Enums.TransactionTypeGroup.Core);
                 buffer.writeUint16(transaction.type);
-                buffer.writeUint64(Long.fromString(transaction.nonce.toFixed()));
+                // @ts-ignore - The ByteBuffer types say we can't use strings but the code actually handles them.
+                buffer.writeUint64(transaction.nonce.toString());
                 buffer.append(transaction.senderPublicKey, "hex");
-                buffer.writeUint64(Long.fromString(Utils.BigNumber.make(transaction.fee).toFixed()));
+                // @ts-ignore - The ByteBuffer types say we can't use strings but the code actually handles them.
+                buffer.writeUint64(Utils.BigNumber.make(transaction.fee).toString());
                 buffer.writeByte(0x00);
 
                 return Buffer.from(buffer.flip().toBuffer());

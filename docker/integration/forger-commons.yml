@@ -1,9 +1,6 @@
 version: '2'
 services:
   forger:
-    build:   
-      context: ../..
-      dockerfile: docker/Dockerfile
     image: universalnamesystem/dcore:latest
     restart: always
     environment:
@@ -17,5 +14,5 @@ services:
       - SYS_RESOURCE
       - SYS_TIME
     networks:
-      - core 
+      - core
     tty: true

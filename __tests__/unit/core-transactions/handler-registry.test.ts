@@ -7,7 +7,6 @@ import { Registry, TransactionHandler } from "../../../packages/core-transaction
 import { TransactionHandlerConstructor } from "../../../packages/core-transactions/src/handlers/transaction";
 import { TransferTransactionHandler } from "../../../packages/core-transactions/src/handlers/transfer";
 
-import Long from "long";
 import { DeactivatedTransactionHandlerError } from "../../../packages/core-transactions/src/errors";
 import { testnet } from "../../../packages/crypto/src/networks";
 
@@ -45,7 +44,8 @@ class TestTransaction extends Transactions.Transaction {
     public serialize(): ByteBuffer {
         const { data } = this;
         const buffer = new ByteBuffer(24, true);
-        buffer.writeUint64(Long.fromString(data.amount.toFixed()));
+        // @ts-ignore - The ByteBuffer types say we can't use strings but the code actually handles them.
+        buffer.writeUint64(data.amount.toFixed());
         buffer.writeUint32(data.expiration || 0);
         buffer.append(Utils.Base58.decodeCheck(data.recipientId));
         buffer.writeInt32(data.asset.test);
@@ -97,8 +97,8 @@ class TestTransactionHandler extends TransactionHandler {
         data: Interfaces.ITransactionData,
         pool: TransactionPool.IConnection,
         processor: TransactionPool.IProcessor,
-    ): Promise<boolean> {
-        return true;
+    ): Promise<{ type: string; message: string } | null> {
+        return null;
     }
 
     public async applyToRecipient(
@@ -119,6 +119,7 @@ beforeAll(() => {
     testnet.milestones[0].fees.staticFees.test = 1234;
 
     Managers.configManager.setConfig(testnet);
+    Managers.configManager.setHeight(2); // aip11 (v2 transactions) is true from height 2 on testnet
 });
 
 describe("Registry", () => {

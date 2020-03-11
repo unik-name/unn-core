@@ -32,7 +32,7 @@
         "ignoreExpiredTransactions": false,
         "multiPaymentLimit": 128,
         "p2p": {
-            "minimumVersions": ["^4.0.0 || ^4.0.0-beta || ^4.0.0-dev"]
+            "minimumVersions": ["^4.2.7"]
         }
     },
     {

@@ -402,6 +402,23 @@ jobs:
       - run: ./scripts/docker/publish.sh integration
       - *notif
 
+  # This jobs MUST be executed on a tag only
+  docker_build_sandbox_release:
+    machine:
+      docker_layer_caching: true
+    working_directory: *repo_path
+    steps:
+      - *attach
+      # Protection: allow to run builds only on tags with 'X.Y.Z' format
+      # /!\ this tag is duplicated in 'build-publish-docker-releases' workflow
+      - run:
+          command: |
+            [[ "${CIRCLE_TAG}" =~ ^core-[0-9]+\.[0-9]+\.[0-9]+$ ]] && echo "Version '${CIRCLE_TAG}' has right format" || exit EXIT_FAILURE
+      - run: echo "$DOCKERHUB_PASS" | docker login --username $DOCKERHUB_USER --password-stdin
+      - run: ./scripts/docker/build.sh
+      - run: ./scripts/docker/publish.sh ${CIRCLE_TAG}
+      - *notif
+
   publish_dev_build:
     <<: *job_config
     steps:
@@ -561,3 +578,17 @@ workflows:
   full:
     jobs:
       *workflow
+
+  build-publish-docker-releases:
+    jobs:
+      - prepare
+    # Run only on tags with a specific format
+      - docker_build_sandbox_release:
+          requires:
+            - prepare
+          filters:
+            tags:
+              # /!\ this tag is duplicated in 'docker_build_sandbox_release' job description
+              only: /^core-[0-9]+\.[0-9]+\.[0-9]+$/
+            branches:
+              ignore: /.*/

@@ -212,9 +212,7 @@ export class WalletsBusinessRepository implements Database.IWalletsBusinessRepos
                         timestamp: lock.timestamp,
                         expirationType: lock.expiration.type,
                         expirationValue: lock.expiration.value,
-                        isExpired: expirationCalculator.calculateLockExpirationStatus(
-                            lock.expiration,
-                        ),
+                        isExpired: expirationCalculator.calculateLockExpirationStatus(lock.expiration),
                         vendorField: lock.vendorField,
                     });
                 }
@@ -231,7 +229,7 @@ export class WalletsBusinessRepository implements Database.IWalletsBusinessRepos
 
     private searchBusinesses(params: Database.IParameters = {}): ISearchContext<any> {
         const query: Record<string, string[]> = {
-            exact: ["businessId", "vat"],
+            exact: ["address", "isResigned", "publicKey", "vat"],
             like: ["name", "repository", "website"],
         };
 
@@ -240,11 +238,14 @@ export class WalletsBusinessRepository implements Database.IWalletsBusinessRepos
             .values()
             .map(wallet => {
                 const business: any = wallet.getAttribute("business");
-                return {
-                    address: wallet.address,
-                    businessId: business.businessId,
-                    ...business.businessAsset,
-                };
+                return params.transform
+                    ? {
+                          address: wallet.address,
+                          publicKey: wallet.publicKey,
+                          ...business.businessAsset,
+                          isResigned: !!business.resigned,
+                      }
+                    : wallet;
             });
 
         return {
@@ -256,26 +257,31 @@ export class WalletsBusinessRepository implements Database.IWalletsBusinessRepos
 
     private searchBridgechains(params: Database.IParameters = {}): ISearchContext<any> {
         const query: Record<string, string[]> = {
-            exact: ["bridgechainId", "businessId", "genesisHash"],
+            exact: ["genesisHash", "isResigned", "publicKey"],
             like: ["bridgechainRepository", "name"],
             every: ["seedNodes"],
         };
 
         const entries: any[] = this.databaseServiceProvider()
-            .walletManager.getIndex("bridgechains")
-            .entries()
-            .reduce((acc, [bridgechainId, wallet]) => {
-                const business: any = wallet.getAttribute("business");
-                const bridgechains: any[] = wallet.getAttribute("business.bridgechains");
-                if (bridgechains && bridgechains[bridgechainId]) {
-                    const bridgechain: any = bridgechains[bridgechainId];
+            .walletManager.getIndex("businesses")
+            .values()
+            .reduce((acc, wallet) => {
+                const bridgechains: Record<
+                    string,
+                    {
+                        bridgechainAsset: object;
+                        resigned?: boolean;
+                    }
+                > = wallet.getAttribute("business.bridgechains") || {};
 
-                    acc.push({
-                        bridgechainId: bridgechain.bridgechainId,
-                        businessId: business.businessId,
+                acc.push(
+                    ...Object.values(bridgechains).map(bridgechain => ({
+                        publicKey: wallet.publicKey,
+                        address: wallet.address,
                         ...bridgechain.bridgechainAsset,
-                    });
-                }
+                        isResigned: !!bridgechain.resigned,
+                    })),
+                );
 
                 return acc;
             }, []);

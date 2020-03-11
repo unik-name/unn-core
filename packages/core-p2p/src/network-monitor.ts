@@ -186,23 +186,25 @@ export class NetworkMonitor implements P2P.INetworkMonitor {
         }
     }
 
-    public async discoverPeers(initialRun?: boolean): Promise<boolean> {
+    public async discoverPeers(pingAll?: boolean): Promise<boolean> {
         const maxPeersPerPeer: number = 50;
         const ownPeers: P2P.IPeer[] = this.storage.getPeers();
         const theirPeers: P2P.IPeer[] = Object.values(
-            (await Promise.all(
-                shuffle(this.storage.getPeers())
-                    .slice(0, 8)
-                    .map(async (peer: P2P.IPeer) => {
-                        try {
-                            const hisPeers = await this.communicator.getPeers(peer);
-                            return hisPeers || [];
-                        } catch (error) {
-                            this.logger.debug(`Failed to get peers from ${peer.ip}: ${error.message}`);
-                            return [];
-                        }
-                    }),
-            ))
+            (
+                await Promise.all(
+                    shuffle(this.storage.getPeers())
+                        .slice(0, 8)
+                        .map(async (peer: P2P.IPeer) => {
+                            try {
+                                const hisPeers = await this.communicator.getPeers(peer);
+                                return hisPeers || [];
+                            } catch (error) {
+                                this.logger.debug(`Failed to get peers from ${peer.ip}: ${error.message}`);
+                                return [];
+                            }
+                        }),
+                )
+            )
                 .map(peers =>
                     shuffle(peers)
                         .slice(0, maxPeersPerPeer)
@@ -211,9 +213,9 @@ export class NetworkMonitor implements P2P.INetworkMonitor {
                 .reduce((acc, curr) => ({ ...acc, ...curr }), {}),
         );
 
-        if (initialRun || !this.hasMinimumPeers() || ownPeers.length < theirPeers.length * 0.5) {
+        if (pingAll || !this.hasMinimumPeers() || ownPeers.length < theirPeers.length * 0.75) {
             await Promise.all(theirPeers.map(p => this.processor.validateAndAcceptPeer(p, { lessVerbose: true })));
-            this.pingPeerPorts(initialRun);
+            this.pingPeerPorts(pingAll);
 
             return true;
         }
@@ -228,6 +230,10 @@ export class NetworkMonitor implements P2P.INetworkMonitor {
             blocked: await this.rateLimiter.isBlocked(ip),
             exceededLimitOnEndpoint: await this.rateLimiter.hasExceededRateLimit(ip, endpoint),
         };
+    }
+
+    public getRateLimitedEndpoints(): string[] {
+        return this.rateLimiter.getRateLimitedEndpoints();
     }
 
     public async isBlockedByRateLimit(ip: string): Promise<boolean> {
@@ -264,6 +270,7 @@ export class NetworkMonitor implements P2P.INetworkMonitor {
     }
 
     public async checkNetworkHealth(): Promise<P2P.INetworkStatus> {
+        await this.discoverPeers(true);
         await this.cleansePeers({ forcePing: true });
 
         const lastBlock = app
@@ -493,7 +500,7 @@ export class NetworkMonitor implements P2P.INetworkMonitor {
             `Broadcasting block ${block.data.height.toLocaleString()} to ${pluralize("peer", peers.length, true)}`,
         );
 
-        await Promise.all(peers.map(peer => this.communicator.postBlock(peer, block.toJson())));
+        await Promise.all(peers.map(peer => this.communicator.postBlock(peer, block)));
     }
 
     public async broadcastTransactions(transactions: Interfaces.ITransaction[]): Promise<any> {
@@ -516,9 +523,9 @@ export class NetworkMonitor implements P2P.INetworkMonitor {
         );
     }
 
-    private async pingPeerPorts(initialRun?: boolean): Promise<void> {
+    private async pingPeerPorts(pingAll?: boolean): Promise<void> {
         let peers = this.storage.getPeers();
-        if (!initialRun) {
+        if (!pingAll) {
             peers = shuffle(peers).slice(0, Math.floor(peers.length / 2));
         }
 

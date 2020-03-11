@@ -38,6 +38,8 @@ let businessRegistrationBuilder: MagistrateBuilders.BusinessRegistrationBuilder;
 let senderWallet: Wallets.Wallet;
 let walletManager: State.IWalletManager;
 
+Managers.configManager.setHeight(2); // aip11 (v2 transactions) is true from height 2 on testnet
+
 describe("Business registration handler", () => {
     Managers.configManager.setFromPreset("testnet");
 
@@ -112,10 +114,7 @@ describe("Business registration handler", () => {
 
             await businessRegistrationHandler.applyToSender(actual.build(), walletManager);
 
-            const wallet = walletManager.findByIndex(
-                MagistrateIndex.Businesses,
-                senderWallet.getAttribute<IBusinessWalletAttributes>("business").businessId.toString(),
-            );
+            const wallet = walletManager.findByIndex(MagistrateIndex.Businesses, senderWallet.publicKey);
 
             expect(wallet).toStrictEqual(senderWallet);
         });
@@ -124,7 +123,6 @@ describe("Business registration handler", () => {
     describe("revertForSender", () => {
         it("should not fail", async () => {
             senderWallet.setAttribute<IBusinessWalletAttributes>("business", {
-                businessId: 1,
                 businessAsset: businessRegistrationAsset1,
             });
             senderWallet.nonce = Utils.BigNumber.make(1);
@@ -138,14 +136,13 @@ describe("Business registration handler", () => {
 
         it("should be undefined", async () => {
             senderWallet.setAttribute<IBusinessWalletAttributes>("business", {
-                businessId: 1,
                 businessAsset: businessRegistrationAsset1,
             });
             senderWallet.nonce = Utils.BigNumber.make(1);
             walletManager.reindex(senderWallet);
 
-            let wallet = walletManager.findByIndex(MagistrateIndex.Businesses, "1");
-            expect(wallet).toBe(senderWallet);
+            const initialWallet = walletManager.findByIndex(MagistrateIndex.Businesses, senderWallet.publicKey);
+            expect(initialWallet).toBe(senderWallet);
 
             const actual = businessRegistrationBuilder
                 .businessRegistrationAsset(businessRegistrationAsset1)
@@ -154,8 +151,12 @@ describe("Business registration handler", () => {
 
             await businessRegistrationHandler.revertForSender(actual.build(), walletManager);
 
-            wallet = walletManager.findByIndex(MagistrateIndex.Businesses, "1");
-            expect(wallet.getAttribute("business")).toBeUndefined();
+            const walletByIndexAfterRevert = walletManager.findByIndex(
+                MagistrateIndex.Businesses,
+                senderWallet.publicKey,
+            );
+            expect(walletByIndexAfterRevert).toBeUndefined();
+            expect(initialWallet.getAttribute("business")).toBeUndefined();
         });
     });
 });

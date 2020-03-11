@@ -64,8 +64,8 @@ export class NftTransferTransactionHandler extends Handlers.TransactionHandler {
         data: Interfaces.ITransactionData,
         pool: TransactionPool.IConnection,
         processor: TransactionPool.IProcessor,
-    ): Promise<boolean> {
-        return !(await this.typeFromSenderAlreadyInPool(data, pool, processor));
+    ): Promise<{ type: string; message: string } | null> {
+        return this.typeFromSenderAlreadyInPool(data, pool);
     }
 
     public async applyToSender(

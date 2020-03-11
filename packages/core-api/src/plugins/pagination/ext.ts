@@ -42,10 +42,10 @@ export class Ext {
         { method: "post", path: "/wallets/search" },
 
         // TODO: uns : find better way to add routes to pagination plugin
-        { method: "get", path: "/api/{nft}s" },
-        { method: "get", path: "/api/{nft}s/{id}/properties" },
-        { method: "post", path: "/api/{nft}s/search" },
-        { method: "get", path: "/api/wallets/{id}/{nft}s" },
+        { method: "get", path: "/{nft}s" },
+        { method: "get", path: "/{nft}s/{id}/properties" },
+        { method: "post", path: "/{nft}s/search" },
+        { method: "get", path: "/wallets/{id}/{nft}s" },
     ];
 
     constructor(private readonly config) {}

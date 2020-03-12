@@ -563,14 +563,16 @@ workflows:
 
   build-publish-docker-releases:
     jobs:
-      - prepare
-    # Run only on tags with a specific format
+      - prepare:
+          filters:  # required since `docker_build_sandbox_release` has tag filters AND requires `prepare`
+            tags:
+              only: /.*/
       - docker_build_sandbox_release:
           requires:
             - prepare
           filters:
             tags:
               # /!\ this tag is duplicated in 'docker_build_sandbox_release' job description
-              only: /^core-[0-9]+\.[0-9]+\.[0-9]+$/
+              only: /^core-[0-9]+\.[0-9]+\.[0-9]+/
             branches:
               ignore: /.*/

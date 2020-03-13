@@ -3,7 +3,7 @@ import { DiscloseExplicitTransaction } from "@uns/crypto";
 import "jest-extended";
 import { checkCommonFields } from "../../core-nft/helpers";
 import * as Fixtures from "../__fixtures__";
-import { discloseExplicitTransaction } from "../__fixtures__";
+import { discloseExplicitTransaction } from "../helpers";
 
 describe("Uns Disclose Explicit Transaction", () => {
     Managers.configManager.setFromPreset(Fixtures.network);

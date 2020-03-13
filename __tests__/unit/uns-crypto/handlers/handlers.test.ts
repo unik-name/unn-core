@@ -9,6 +9,7 @@ import {
     DiscloseExplicitTransactionHandler,
 } from "@uns/uns-transactions";
 import * as Fixtures from "../__fixtures__";
+import { discloseExplicitTransaction } from "../helpers";
 
 describe("Registry register uns transaction", () => {
     Managers.configManager.setFromPreset(Fixtures.network);
@@ -27,7 +28,7 @@ describe("Registry register uns transaction", () => {
 
         it("should return dynamic fees", async () => {
             const handler = await Handlers.Registry.get(UnsTransactionType.UnsDiscloseExplicit, UnsTransactionGroup);
-            const transaction = Fixtures.discloseExplicitTransaction().build();
+            const transaction = discloseExplicitTransaction().build();
             expect(handler.dynamicFee({ addonBytes: 0, satoshiPerByte: 0, transaction } as any)).toEqual(
                 Utils.BigNumber.make(221),
             );

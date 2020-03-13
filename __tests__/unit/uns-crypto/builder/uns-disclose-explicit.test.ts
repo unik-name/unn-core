@@ -8,6 +8,7 @@ import {
 } from "@uns/crypto";
 import "jest-extended";
 import * as Fixtures from "../__fixtures__";
+import { discloseDemand, discloseExplicitTransaction } from "../helpers";
 
 describe("Uns Disclose Explicit Transaction", () => {
     Managers.configManager.setFromPreset(Fixtures.network);
@@ -17,11 +18,11 @@ describe("Uns Disclose Explicit Transaction", () => {
 
     describe("should verify", () => {
         it("with a signature", () => {
-            expect(Fixtures.discloseExplicitTransaction().build().verified).toBeTrue();
-            expect(Fixtures.discloseExplicitTransaction().verify()).toBeTrue();
+            expect(discloseExplicitTransaction().build().verified).toBeTrue();
+            expect(discloseExplicitTransaction().verify()).toBeTrue();
         });
         it("with second signature", () => {
-            const transaction = Fixtures.discloseExplicitTransaction().secondSign("second passphrase");
+            const transaction = discloseExplicitTransaction().secondSign("second passphrase");
             expect(transaction.build().verified).toBeTrue();
             expect(transaction.verify()).toBeTrue();
         });
@@ -29,7 +30,7 @@ describe("Uns Disclose Explicit Transaction", () => {
 
     describe("should have properties", () => {
         it("specific", () => {
-            const builder = Fixtures.discloseExplicitTransaction().secondSign("second passphrase");
+            const builder = discloseExplicitTransaction().secondSign("second passphrase");
 
             expect(builder).toHaveProperty("data.type", UnsTransactionType.UnsDiscloseExplicit);
             expect(builder).toHaveProperty("data.typeGroup", UnsTransactionGroup);
@@ -40,15 +41,15 @@ describe("Uns Disclose Explicit Transaction", () => {
             );
             expect(builder).toHaveProperty("data.recipientId", undefined);
             expect(builder).toHaveProperty("data.version", 2);
-            expect(builder).toHaveProperty("data.asset.disclose-demand", Fixtures.discloseDemand["disclose-demand"]);
+            expect(builder).toHaveProperty("data.asset.disclose-demand", discloseDemand["disclose-demand"]);
             expect(builder).toHaveProperty(
                 "data.asset.disclose-demand-certification",
-                Fixtures.discloseDemand["disclose-demand-certification"],
+                discloseDemand["disclose-demand-certification"],
             );
         });
 
         it("with valid payload signatures", () => {
-            const builder = Fixtures.discloseExplicitTransaction();
+            const builder = discloseExplicitTransaction();
 
             const isDemandVerified = unsCrypto.verifyPayload(
                 builder.data.asset["disclose-demand"].payload,

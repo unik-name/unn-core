@@ -1,9 +1,8 @@
 import { app } from "@arkecosystem/core-container";
-import { Database, NFT, State } from "@arkecosystem/core-interfaces";
+import { Database, State } from "@arkecosystem/core-interfaces";
 import { IWalletManager } from "@arkecosystem/core-interfaces/dist/core-state";
 import { Interfaces } from "@arkecosystem/crypto";
 import { nftRepository, NftsManager } from "@uns/core-nft";
-import { CertifiedDemandIssuerNotFound } from "../../errors";
 
 export const EXPLICIT_PROP_KEY = "explicitValues";
 
@@ -59,29 +58,20 @@ export const revertExplicitValue = async (transaction: Interfaces.ITransactionDa
 };
 
 /**
- * Check and find the issuer public key in the current Blockchain.
+ * Check and find the unikid owner public key in the current Blockchain.
  *
  * @returns publicKey
  *
  */
-export const checkAndGetIssuerPublicKey = async (
-    issuerNftId: string,
-    transaction: Interfaces.ITransaction,
-    walletManager: State.IWalletManager,
-    nftsRepository: NFT.INftsRepository,
-): Promise<string> => {
-    // check existence of certification issuer UNIK
-    const issuer = await nftsRepository.findById(issuerNftId);
-    if (!issuer) {
-        throw new CertifiedDemandIssuerNotFound(transaction.id, `issuer UNIK not found for UNIK ID: ${issuerNftId}`);
+export const checkAndGetPublicKey = async (unikId: string, walletManager: State.IWalletManager): Promise<string> => {
+    // check existence of UNIK
+    const unik = await nftRepository().findById(unikId);
+    if (!unik) {
+        throw new Error(`UNIK Id \"${unikId}\" not found.`);
     }
-    const foundPublicKey = walletManager.findByAddress(issuer.ownerId)?.publicKey;
-
+    const foundPublicKey = walletManager.findByAddress(unik.ownerId)?.publicKey;
     if (!foundPublicKey) {
-        throw new CertifiedDemandIssuerNotFound(
-            transaction.id,
-            `issuer publicKey not found for UNIK ID: ${issuerNftId}]`,
-        );
+        throw new Error(`publicKey not found for UNIK ID: ${unikId}`);
     }
     return foundPublicKey;
 };

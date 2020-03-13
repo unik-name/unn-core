@@ -6,13 +6,15 @@ import { Interfaces, Transactions } from "@arkecosystem/crypto";
 import { NftMintTransactionHandler, NftOwnerError, nftRepository } from "@uns/core-nft";
 import { DiscloseExplicitTransaction, IDiscloseDemand, IDiscloseDemandCertification, unsCrypto } from "@uns/crypto";
 import {
+    CertifiedDemandIssuerNotFound,
     CertifiedDemandNotAllowedIssuerError,
     DiscloseDemandAlreadyExistsError,
     DiscloseDemandCertificationSignatureError,
     DiscloseDemandSignatureError,
     DiscloseDemandSubInvalidError,
+    ForgeFactoryNotFound,
 } from "../errors";
-import { checkAndGetIssuerPublicKey, EXPLICIT_PROP_KEY, revertExplicitValue, setExplicitValue } from "./utils/helpers";
+import { checkAndGetPublicKey, EXPLICIT_PROP_KEY, revertExplicitValue, setExplicitValue } from "./utils/helpers";
 
 export class DiscloseExplicitTransactionHandler extends Handlers.TransactionHandler {
     private get nftsRepository(): NFT.INftsRepository {
@@ -52,27 +54,27 @@ export class DiscloseExplicitTransactionHandler extends Handlers.TransactionHand
         }
 
         // ISSUER FOR CERTIFICATION (FORGE FACTORY)
-        const certificationPublicKey = await checkAndGetIssuerPublicKey(
-            discloseDemandCertif.payload.iss,
-            transaction,
-            walletManager,
-            nftRepository(),
-        );
+        let forgeFactoryPublicKey: string;
+        try {
+            forgeFactoryPublicKey = await checkAndGetPublicKey(discloseDemandCertif.payload.iss, walletManager);
+        } catch (error) {
+            throw new ForgeFactoryNotFound(transaction.id, error.message);
+        }
 
         // ISSUER FOR DEMAND (CLIENT)
-        const demandPublicKey = await checkAndGetIssuerPublicKey(
-            discloseDemand.payload.iss,
-            transaction,
-            walletManager,
-            nftRepository(),
-        );
+        let demandPublicKey: string;
+        try {
+            demandPublicKey = await checkAndGetPublicKey(discloseDemand.payload.iss, walletManager);
+        } catch (error) {
+            throw new CertifiedDemandIssuerNotFound(transaction.id, error.message);
+        }
 
         // check disclose demand certification signature
         if (
             !unsCrypto.verifyPayload(
                 discloseDemandCertif.payload,
                 discloseDemandCertif.signature,
-                certificationPublicKey,
+                forgeFactoryPublicKey,
             )
         ) {
             throw new DiscloseDemandCertificationSignatureError();

@@ -1,6 +1,5 @@
 import { State } from "@arkecosystem/core-interfaces";
 import { Identities, Interfaces } from "@arkecosystem/crypto";
-import { nftRepository } from "@uns/core-nft";
 import {
     INftDemand,
     INftMintDemand,
@@ -11,11 +10,12 @@ import {
 } from "@uns/crypto";
 import {
     CertifiedDemandNotAllowedIssuerError,
+    ForgeFactoryNotFound,
     NftCertificationBadPayloadSubjectError,
     NftCertificationBadSignatureError,
     NftTransactionParametersError,
 } from "../errors";
-import { checkAndGetIssuerPublicKey } from "./utils/helpers";
+import { checkAndGetPublicKey } from "./utils/helpers";
 
 export abstract class CertifiedTransactionHandler {
     protected abstract getPayloadSigner(payload: INftMintDemandCertificationPayload): IPayloadSigner;
@@ -35,16 +35,16 @@ export abstract class CertifiedTransactionHandler {
         }
 
         // ISSUER FOR CERTIFICATION (FORGE FACTORY)
-        const certificationPublicKey = await checkAndGetIssuerPublicKey(
-            certification.payload.iss,
-            transaction,
-            walletManager,
-            nftRepository(),
-        );
+        let forgeFactoryPublicKey: string;
+        try {
+            forgeFactoryPublicKey = await checkAndGetPublicKey(certification.payload.iss, walletManager);
+        } catch (error) {
+            throw new ForgeFactoryNotFound(transaction.id, error.message);
+        }
 
         // check certification signature
         const signer = this.getPayloadSigner(certification.payload);
-        if (!signer.verify(certification.signature, certificationPublicKey)) {
+        if (!signer.verify(certification.signature, forgeFactoryPublicKey)) {
             throw new NftCertificationBadSignatureError();
         }
 
@@ -60,7 +60,7 @@ export abstract class CertifiedTransactionHandler {
         }
 
         // check certified service payment recipient corresponds to transaction recipient
-        if (transaction.data.recipientId !== Identities.Address.fromPublicKey(certificationPublicKey)) {
+        if (transaction.data.recipientId !== Identities.Address.fromPublicKey(forgeFactoryPublicKey)) {
             throw new NftTransactionParametersError("recipient");
         }
     }

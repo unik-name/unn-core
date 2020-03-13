@@ -31,7 +31,6 @@ describe("CertifiedNtfMint Transaction", () => {
         const issuerAddress = Identities.Address.fromPublicKey(issuerPubKey);
 
         forgeFactoryWallet = new Wallets.Wallet(issuerAddress);
-        forgeFactoryWallet.balance = Utils.BigNumber.ZERO;
         forgeFactoryWallet.publicKey = issuerPubKey;
         walletManager.reindex(forgeFactoryWallet);
 

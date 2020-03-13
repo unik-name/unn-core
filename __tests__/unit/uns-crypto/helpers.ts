@@ -1,4 +1,16 @@
-import { IDiscloseDemandPayload, unsCrypto } from "@uns/crypto";
+import { Identities, Utils } from "@arkecosystem/crypto";
+import {
+    IDiscloseDemandPayload,
+    INftDemand,
+    INftDemandCertificationPayload,
+    INftMintDemandPayload,
+    NftMintDemandCertificationSigner,
+    NftMintDemandHashBuffer,
+    NftMintDemandSigner,
+    unsCrypto,
+    UNSDiscloseExplicitBuilder,
+} from "@uns/crypto";
+import * as Fixtures from "./__fixtures__";
 
 export const buildDiscloseDemand = (
     discloseDemandPayload: IDiscloseDemandPayload,
@@ -21,5 +33,52 @@ export const buildDiscloseDemand = (
             payload: discloseDemandCertificationPayload,
             signature: unsCrypto.signPayload(discloseDemandCertificationPayload, certificationIssuerPassphrase),
         },
+    };
+};
+
+export const discloseDemand = buildDiscloseDemand(
+    Fixtures.discloseDemandPayload,
+    Fixtures.ownerPassphrase,
+    Fixtures.issUnikId,
+    Fixtures.issPassphrase,
+);
+
+export const discloseExplicitTransaction = () =>
+    new UNSDiscloseExplicitBuilder()
+        .discloseDemand(discloseDemand["disclose-demand"], discloseDemand["disclose-demand-certification"])
+        .sign(Fixtures.ownerPassphrase);
+
+export const buildCertifiedDemand = (
+    tokenId,
+    properties,
+    demanderPassphrase,
+    issUnikId = Fixtures.issUnikId,
+    issPassphrase = Fixtures.issPassphrase,
+) => {
+    const demandPayload: INftMintDemandPayload = {
+        iss: tokenId,
+        sub: tokenId,
+        iat: 1579165954,
+        cryptoAccountAddress: Identities.Address.fromPassphrase(demanderPassphrase),
+    };
+    const demandAsset: INftDemand = {
+        nft: { unik: { tokenId, properties } },
+        demand: { payload: demandPayload, signature: "" },
+    };
+    demandAsset.demand.signature = new NftMintDemandSigner(demandAsset).sign(demanderPassphrase);
+
+    const certificationPayload: INftDemandCertificationPayload = {
+        iss: issUnikId,
+        sub: new NftMintDemandHashBuffer(demandAsset).getPayloadHashBuffer(),
+        iat: 12345678,
+        cost: Utils.BigNumber.ZERO,
+    };
+    const certification = {
+        payload: certificationPayload,
+        signature: new NftMintDemandCertificationSigner(certificationPayload).sign(issPassphrase),
+    };
+    return {
+        demand: demandAsset.demand,
+        certification,
     };
 };

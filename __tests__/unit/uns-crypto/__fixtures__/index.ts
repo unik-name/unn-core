@@ -12,11 +12,9 @@ import {
     INftUpdateDemandCertification,
     UNSCertifiedNftMintBuilder,
     UNSCertifiedNftUpdateBuilder,
-    UNSDiscloseExplicitBuilder,
     UnsTransactionGroup,
     UnsTransactionType,
 } from "@uns/crypto";
-import { buildDiscloseDemand } from "../helpers";
 
 export const tokenId = "ee16f4b75f38f6e3d16635f72a8445e0ff8fbacfdfa8f05df077e73de79d6e4f";
 export const ownerPassphrase = "clay harbor enemy utility margin pretty hub comic piece aerobic umbrella acquire";
@@ -24,6 +22,8 @@ export const ownerPassphrase = "clay harbor enemy utility margin pretty hub comi
 export const issUnikId = "0035a40470021425558f5cbb7b5f056e51b694db5cc6c336abdc6b777fc9d051";
 export const issPassphrase = "iss secret";
 export const issKeys = Identities.Keys.fromPassphrase(issPassphrase);
+export const issuerAddress = Identities.Address.fromPassphrase(issPassphrase);
+
 export const demanderKeys = Identities.Keys.fromPassphrase(ownerPassphrase);
 
 /**
@@ -48,13 +48,6 @@ export const certificationPayload: IDiscloseDemandCertificationPayload = {
     sub: certPayloadSub,
     iat: 12345678,
 };
-
-export const discloseDemand = buildDiscloseDemand(discloseDemandPayload, ownerPassphrase, issUnikId, issPassphrase);
-
-export const discloseExplicitTransaction = () =>
-    new UNSDiscloseExplicitBuilder()
-        .discloseDemand(discloseDemand["disclose-demand"], discloseDemand["disclose-demand-certification"])
-        .sign(ownerPassphrase);
 
 export const dummyTransaction = ({
     type: UnsTransactionType.UnsDiscloseExplicit,
@@ -118,26 +111,20 @@ export const nftMintDemandHashBufferPayload: INftMintDemand = {
     demand: nftMintDemand,
 };
 
-export const unsCertifiedNftMintTransaction = (cert: INftMintDemandCertification = undefined) => {
-    if (!cert) {
-        cert = certification;
-    }
+export const unsCertifiedNftMintTransaction = (cert: INftMintDemandCertification = certification) => {
     return new UNSCertifiedNftMintBuilder("unik", tokenId)
         .properties(mintProperties)
         .demand(nftMintDemand)
-        .certification(cert, Identities.Address.fromPublicKey(issKeys.publicKey))
+        .certification(cert, issuerAddress)
         .nonce("1")
         .sign(ownerPassphrase);
 };
 
-export const unsCertifiedNftupdateTransaction = (cert: INftUpdateDemandCertification = undefined) => {
-    if (!cert) {
-        cert = certification;
-    }
+export const unsCertifiedNftupdateTransaction = (cert: INftUpdateDemandCertification = certification) => {
     return new UNSCertifiedNftUpdateBuilder("unik", tokenId)
         .properties(mintProperties)
         .demand(nftMintDemand)
-        .certification(cert, Identities.Address.fromPublicKey(issKeys.publicKey))
+        .certification(cert, issuerAddress)
         .nonce("1")
         .sign(ownerPassphrase);
 };

@@ -35,6 +35,12 @@ export class CertifiedDemandIssuerNotFound extends Errors.TransactionError {
     }
 }
 
+export class ForgeFactoryNotFound extends Errors.TransactionError {
+    constructor(txId, message) {
+        super(`Failed to apply transaction ${txId}: Unable to retrieve forge factory: ${message}`);
+    }
+}
+
 export class CertifiedDemandNotAllowedIssuerError extends Errors.TransactionError {
     constructor(txId, issuerId) {
         super(`Failed to apply transaction ${txId}, because the demand issuer of id ${issuerId} is not allowed to`);

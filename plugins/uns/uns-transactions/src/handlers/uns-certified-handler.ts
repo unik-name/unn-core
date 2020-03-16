@@ -1,5 +1,6 @@
 import { State } from "@arkecosystem/core-interfaces";
 import { Identities, Interfaces } from "@arkecosystem/crypto";
+import { getCurrentNftAsset } from "@uns/core-nft-crypto";
 import {
     INftDemand,
     INftMintDemand,
@@ -73,5 +74,9 @@ export abstract class CertifiedTransactionHandler {
     protected revertCostToRecipient(transaction: Interfaces.ITransaction, walletManager: State.IWalletManager): void {
         const recipient: State.IWallet = walletManager.findByAddress(transaction.data.recipientId);
         recipient.balance = recipient.balance.minus(transaction.data.amount);
+    }
+
+    protected hasVoucher(asset: Interfaces.ITransactionAsset): boolean {
+        return getCurrentNftAsset(asset).properties?.UnikVoucherId !== undefined;
     }
 }

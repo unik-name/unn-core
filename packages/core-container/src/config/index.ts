@@ -91,7 +91,12 @@ export class Config {
                     }),
                     transactionsConfig: Joi.object(),
                     forgeFactory: Joi.object({
-                        unikidWhiteList: Joi.array().items(Joi.string()),
+                        unikidWhiteList: Joi.array()
+                            .items(Joi.string())
+                            .required(),
+                    }),
+                    foundation: Joi.object({
+                        publicKey: Joi.string().required(),
                     }),
                 }).required(),
             }),

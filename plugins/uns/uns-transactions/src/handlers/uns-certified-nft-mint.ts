@@ -1,7 +1,8 @@
 import { Database, State } from "@arkecosystem/core-interfaces";
 import { Handlers, TransactionReader } from "@arkecosystem/core-transactions";
-import { Interfaces, Transactions } from "@arkecosystem/crypto";
-import { NftMintTransactionHandler } from "@uns/core-nft";
+import { Interfaces, Managers, Transactions, Utils } from "@arkecosystem/crypto";
+import { NftMintTransactionHandler, nftRepository } from "@uns/core-nft";
+import { getCurrentNftAsset, getNftName } from "@uns/core-nft-crypto";
 import {
     applyMixins,
     CertifiedNftMintTransaction,
@@ -9,9 +10,10 @@ import {
     INftMintDemandCertificationPayload,
     NftMintDemandCertificationSigner,
     NftMintDemandHashBuffer,
+    UnsTransactionStaticFees,
 } from "@uns/crypto";
+import { VoucherAlreadyUsedError, WrongFeeError } from "../errors";
 import { CertifiedTransactionHandler } from "./uns-certified-handler";
-
 export class CertifiedNftMintTransactionHandler extends NftMintTransactionHandler {
     public async isActivated(): Promise<boolean> {
         return true;
@@ -38,6 +40,19 @@ export class CertifiedNftMintTransactionHandler extends NftMintTransactionHandle
             for (const transaction of transactions) {
                 const forgeFactoryWallet: State.IWallet = walletManager.findByAddress(transaction.recipientId);
                 forgeFactoryWallet.balance = forgeFactoryWallet.balance.plus(transaction.amount);
+
+                if (this.hasVoucher(transaction.asset)) {
+                    const rewards = Managers.configManager.getMilestone().voucherRewards;
+                    const foundationPublicKey = Managers.configManager.get("network.foundation.publicKey");
+                    const foundationWallet: State.IWallet = walletManager.findByAddress(foundationPublicKey);
+                    foundationWallet.balance = foundationWallet.balance.plus(rewards.foundation);
+
+                    const sender: State.IWallet = walletManager.findByPublicKey(transaction.senderPublicKey);
+                    sender.balance = sender.balance
+                        .plus(transaction.amount)
+                        .plus(transaction.fee)
+                        .plus(Utils.BigNumber.make(rewards.sender));
+                }
             }
         }
     }
@@ -50,6 +65,26 @@ export class CertifiedNftMintTransactionHandler extends NftMintTransactionHandle
         await super.throwIfCannotBeApplied(transaction, wallet, walletManager);
 
         await this.throwIfCannotBeCertified(transaction, walletManager);
+
+        if (this.hasVoucher(transaction.data.asset)) {
+            // Check minimum Fees
+            if (!transaction.data.fee.isEqualTo(Utils.BigNumber.make(UnsTransactionStaticFees.UnsVoucherNftMint))) {
+                throw new WrongFeeError(transaction.data.id);
+            }
+            // Check voucher existence in DB
+            const voucherId = getCurrentNftAsset(transaction.data.asset).properties.UnikVoucherId;
+            const asset = {
+                nft: { [getNftName(transaction.data.asset)]: { properties: { UnikVoucherId: voucherId } } },
+            };
+            const transactions = await nftRepository().findTransactionsByAsset(
+                asset,
+                [transaction.type],
+                transaction.typeGroup,
+            );
+            if (transactions.length) {
+                throw new VoucherAlreadyUsedError(voucherId);
+            }
+        }
     }
 
     public async applyToRecipient(
@@ -57,6 +92,31 @@ export class CertifiedNftMintTransactionHandler extends NftMintTransactionHandle
         walletManager: State.IWalletManager,
     ): Promise<void> {
         this.applyCostToRecipient(transaction, walletManager);
+
+        if (this.hasVoucher(transaction.data.asset)) {
+            // voucher token eco
+            // pay Space Elephant Foundation
+            const rewards = Managers.configManager.getMilestone().voucherRewards;
+            const foundationPublicKey = Managers.configManager.get("network.foundation.publicKey");
+            const foundationWallet: State.IWallet = walletManager.findByPublicKey(foundationPublicKey);
+            foundationWallet.balance = foundationWallet.balance.plus(Utils.BigNumber.make(rewards.foundation));
+        }
+    }
+
+    public async applyToSender(
+        transaction: Interfaces.ITransaction,
+        walletManager: State.IWalletManager,
+        updateDb = false,
+    ): Promise<void> {
+        if (this.hasVoucher(transaction.data.asset)) {
+            // voucher token eco
+            // fee and amount will be deduced in super.applyToSender
+            const rewards = Managers.configManager.getMilestone().voucherRewards;
+            const sender: State.IWallet = walletManager.findByPublicKey(transaction.data.senderPublicKey);
+            sender.balance = sender.balance.plus(transaction.data.fee).plus(Utils.BigNumber.make(rewards.sender));
+        }
+
+        await super.applyToSender(transaction, walletManager, updateDb);
     }
 
     public async revertForRecipient(
@@ -64,6 +124,26 @@ export class CertifiedNftMintTransactionHandler extends NftMintTransactionHandle
         walletManager: State.IWalletManager,
     ): Promise<void> {
         this.revertCostToRecipient(transaction, walletManager);
+
+        if (this.hasVoucher(transaction.data.asset)) {
+            const rewards = Managers.configManager.getMilestone().voucherRewards;
+            const foundationPublicKey = Managers.configManager.get("network.foundation.publicKey");
+            const foundationWallet: State.IWallet = walletManager.findByPublicKey(foundationPublicKey);
+            foundationWallet.balance = foundationWallet.balance.minus(Utils.BigNumber.make(rewards.foundation));
+        }
+    }
+
+    public async revertForSender(
+        transaction: Interfaces.ITransaction,
+        walletManager: State.IWalletManager,
+        updateDb = false,
+    ): Promise<void> {
+        if (this.hasVoucher(transaction.data.asset)) {
+            const rewards = Managers.configManager.getMilestone().voucherRewards;
+            const sender: State.IWallet = walletManager.findByPublicKey(transaction.data.senderPublicKey);
+            sender.balance = sender.balance.minus(transaction.data.fee).minus(Utils.BigNumber.make(rewards.sender));
+        }
+        await super.revertForSender(transaction, walletManager, updateDb);
     }
 
     protected getPayloadSigner(payload: INftMintDemandCertificationPayload): NftMintDemandCertificationSigner {

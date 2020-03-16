@@ -22,5 +22,8 @@
     },
     "forgeFactory": {
         "unikidWhiteList": ["5f96dd359ab300e2c702a54760f4d74a11db076aa17575179d36e06d75c96511"]
+    },
+    "foundation": {
+        "publicKey": "0234886b5546a65beb0341b0f40f321fdc898a3e2a0831ef7578c208aa8870624f"
     }
 }

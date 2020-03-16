@@ -16,10 +16,10 @@ case $package_name in
         uns_version=$(awk -F '"' '/version/{print $4}' "$ROOT_DIR/plugins/uns/ark-crypto/package.json")
         if [ -n "$uns_version" ]
         then
-            echo "Set @uns/ark-crypto dependency to version $uns_version"
+            echo "Replace @arkecosystem/crypto dependency by version @uns/ark-crypto=^$uns_version"
             sed -i'' "s/\"@arkecosystem\/crypto\": \".*\"/\"@uns\/ark-crypto\": \"\^$uns_version\"/g" "$1/package.json"
 
-            echo "update @uns/core-nft-crypto dependency version"
+            echo "update @uns/core-nft-crypto dependency to version ^$uns_version"
             sed -i'' "s/\"@uns\/core-nft-crypto\": \".*\"/\"@uns\/core-nft-crypto\": \"\^$uns_version\"/g" "$1/package.json"
 
             echo "set $package_name version to $uns_version"

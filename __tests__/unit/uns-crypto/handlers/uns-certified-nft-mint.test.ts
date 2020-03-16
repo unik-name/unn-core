@@ -28,15 +28,15 @@ describe("CertifiedNtfMint Transaction", () => {
         walletManager.reindex(senderWallet);
 
         const issuerPubKey = Fixtures.issKeys.publicKey;
-        const issuerAddress = Identities.Address.fromPublicKey(issuerPubKey);
 
-        forgeFactoryWallet = new Wallets.Wallet(issuerAddress);
+        forgeFactoryWallet = new Wallets.Wallet(Fixtures.issuerAddress);
         forgeFactoryWallet.publicKey = issuerPubKey;
         walletManager.reindex(forgeFactoryWallet);
 
-        jest.spyOn(nftRepository(), "findById").mockReturnValue(
-            Promise.resolve({ tokenId: Fixtures.issUnikId, ownerId: issuerAddress }),
-        );
+        jest.spyOn(nftRepository(), "findById").mockResolvedValue({
+            tokenId: Fixtures.issUnikId,
+            ownerId: Fixtures.issuerAddress,
+        });
 
         builder = Fixtures.unsCertifiedNftMintTransaction();
 

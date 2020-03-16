@@ -71,12 +71,20 @@ export abstract class TransactionHandler implements ITransactionHandler {
         sender.verifyTransactionNonceApply(transaction);
 
         if (
-            sender.balance
-                .minus(data.amount)
-                .minus(data.fee)
-                .isNegative()
+            !(
+                transaction.type === 3 /*UnsCertifiedNftMint*/ &&
+                transaction.typeGroup === 2001 /*UnsTransactionGroup*/ &&
+                transaction.data.asset.nft.unik.properties?.UnikVoucherId
+            )
         ) {
-            throw new InsufficientBalanceError();
+            if (
+                sender.balance
+                    .minus(data.amount)
+                    .minus(data.fee)
+                    .isNegative()
+            ) {
+                throw new InsufficientBalanceError();
+            }
         }
 
         if (data.senderPublicKey !== sender.publicKey) {

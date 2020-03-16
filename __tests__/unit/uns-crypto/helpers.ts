@@ -49,11 +49,12 @@ export const discloseExplicitTransaction = () =>
         .sign(Fixtures.ownerPassphrase);
 
 export const buildCertifiedDemand = (
-    tokenId,
+    tokenId: string,
     properties,
-    demanderPassphrase,
-    issUnikId = Fixtures.issUnikId,
-    issPassphrase = Fixtures.issPassphrase,
+    demanderPassphrase: string,
+    cost: Utils.BigNumber = Utils.BigNumber.ZERO,
+    issUnikId: string = Fixtures.issUnikId,
+    issPassphrase: string = Fixtures.issPassphrase,
 ) => {
     const demandPayload: INftMintDemandPayload = {
         iss: tokenId,
@@ -71,7 +72,7 @@ export const buildCertifiedDemand = (
         iss: issUnikId,
         sub: new NftMintDemandHashBuffer(demandAsset).getPayloadHashBuffer(),
         iat: 12345678,
-        cost: Utils.BigNumber.ZERO,
+        cost,
     };
     const certification = {
         payload: certificationPayload,

@@ -9,6 +9,7 @@
         "bootstrap": "yarn lerna bootstrap",
         "clean": "yarn lerna clean --yes",
         "build": "yarn lerna run build",
+        "compile": "yarn lerna run compile",
         "lint": "yarn lint:config './packages/**/*/src/**/*.ts' './plugins/**/*/src/**/*.ts'",
         "lint:config": "./node_modules/tslint/bin/tslint -c ./tslint.json -p ./tslint-config.json --fix",
         "format": "yarn lint && yarn prettier",

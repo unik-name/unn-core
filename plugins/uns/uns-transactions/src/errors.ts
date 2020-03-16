@@ -105,3 +105,15 @@ export class NftTransactionParametersError extends NftCertificationError {
         super(`Failed to apply transaction: invalid parameter \"${parameter}\"`);
     }
 }
+
+export class VoucherAlreadyUsedError extends Errors.TransactionError {
+    constructor(parameter: string) {
+        super(`Failed to apply transaction: voucher \"${parameter}\" has already been used`);
+    }
+}
+
+export class WrongFeeError extends Errors.TransactionError {
+    constructor(transactionId: string) {
+        super(`Failed to apply transaction ${transactionId}: provided fees does not match the requirements`);
+    }
+}

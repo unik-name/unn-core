@@ -12,6 +12,7 @@ export const UnsTransactionStaticFees = {
     UnsDiscloseExplicit: 10000000,
     UnsDelegateRegister: 10000000,
     UnsDelegateResign: 10000000,
-    UnsCertifiedNftMint: 10000000,
+    UnsCertifiedNftMint: 100000000,
     UnsCertifiedNftUpdate: 10000000,
+    UnsVoucherNftMint: 100000000,
 };

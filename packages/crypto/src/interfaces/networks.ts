@@ -24,6 +24,12 @@ export interface INetwork {
         symbol: string;
         explorer: string;
     };
+    forgeFactory?: {
+        unikidWhiteList: string[];
+    };
+    foundation?: {
+        publicKey: string;
+    };
 }
 
 export interface IExceptions {

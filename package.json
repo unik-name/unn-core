@@ -180,7 +180,8 @@
         ],
         "watchman": false,
         "setupFilesAfterEnv": [
-            "jest-extended"
+            "jest-extended",
+            "<rootDir>/__tests__/setupTests.ts"
         ]
     }
 }

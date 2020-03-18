@@ -140,6 +140,8 @@ all_tests: &all_tests
   - F-nft
   - Badges
   - F-UNS
+  - F-uns-disclose
+  - F-uns-certified-mint
 
 nft_uns_related_tests: &nft_uns_related_tests
 #   - Unit
@@ -218,7 +220,23 @@ jobs:
     <<: *job_test_config
     steps:
       - *attach
-      - run: yarn test:coverage __tests__/functional/transaction-forging/uns/
+      - run: yarn test:coverage __tests__/functional/transaction-forging/uns/uns.test.ts
+      - *coverage
+      - *notif
+
+  F-uns-disclose:
+    <<: *job_test_config
+    steps:
+      - *attach
+      - run: yarn test:coverage __tests__/functional/transaction-forging/uns/disclose-explicit.test.ts
+      - *coverage
+      - *notif
+
+  F-uns-certified-mint:
+    <<: *job_test_config
+    steps:
+      - *attach
+      - run: yarn test:coverage __tests__/functional/transaction-forging/uns/certified-mint.test.ts
       - *coverage
       - *notif
 
@@ -463,6 +481,12 @@ workflow: &workflow
       requires:
         - build
   - F-UNS:
+      requires:
+        - build
+  - F-uns-disclose:
+      requires:
+        - build
+  - F-uns-certified-mint:
       requires:
         - build
 # Ark's tests

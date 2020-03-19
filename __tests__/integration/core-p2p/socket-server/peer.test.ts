@@ -33,6 +33,14 @@ const headers = {
     "Content-Type": "application/json",
 };
 
+const isSocketOpen = async socket => {
+    while (socket.state !== "open" && socket.pendingReconnect) {
+        console.log("Warning: socket is in pendingReconnect state. Waiting for reconnection");
+        await delay(100);
+    }
+    expect(socket.state).toBe("open");
+};
+
 beforeAll(async () => {
     process.env.CORE_ENV = "test";
     defaults.remoteAccess = []; // empty for rate limit tests
@@ -212,8 +220,7 @@ describe("Peer socket endpoint", () => {
             it("should disconnect the client if it sends an invalid message payload", async () => {
                 connect();
                 await delay(1000);
-
-                expect(socket.state).toBe("open");
+                await isSocketOpen(socket);
 
                 send("Invalid payload");
                 await delay(1000);
@@ -229,12 +236,12 @@ describe("Peer socket endpoint", () => {
                 connect();
                 await delay(1000);
 
-                expect(socket.state).toBe("open");
+                await isSocketOpen(socket);
 
                 send("#2");
                 await delay(1000);
 
-                expect(socket.state).toBe("open");
+                await isSocketOpen(socket);
 
                 send("#2");
                 send("#2");
@@ -251,7 +258,7 @@ describe("Peer socket endpoint", () => {
                 connect();
                 await delay(1000);
 
-                expect(socket.state).toBe("open");
+                await isSocketOpen(socket);
 
                 ping();
                 await delay(500);
@@ -266,7 +273,7 @@ describe("Peer socket endpoint", () => {
                 connect();
                 await delay(1000);
 
-                expect(socket.state).toBe("open");
+                await isSocketOpen(socket);
 
                 pong();
                 await delay(500);
@@ -281,7 +288,7 @@ describe("Peer socket endpoint", () => {
                 connect();
                 await delay(1000);
 
-                expect(socket.state).toBe("open");
+                await isSocketOpen(socket);
 
                 invalidOpcode();
                 await delay(500);
@@ -303,7 +310,7 @@ describe("Peer socket endpoint", () => {
             connect();
             await delay(1000);
 
-            expect(socket.state).toBe("open");
+            await isSocketOpen(socket);
 
             const secondSocket = socketCluster.create({
                 port: 4007,
@@ -320,6 +327,23 @@ describe("Peer socket endpoint", () => {
 
             expect(socket.state).toBe("closed");
             expect(secondSocket.state).toBe("open");
+
+            // kill workers to reset ipLastError (or we won't pass handshake for 1 minute)
+            server.killWorkers({ immediate: true });
+            await delay(2000); // give time to workers to respawn
+        });
+
+        it("should disconnect the client if it sends multiple handshakes", async () => {
+            connect(); // this automatically sends the first handshake
+            await delay(1000);
+
+            expect(socket.state).toBe("open");
+
+            // this is the second handshake
+            send('{"event": "#handshake", "data": {}, "cid": 1}');
+            await delay(500);
+
+            expect(socket.state).toBe("closed");
 
             // kill workers to reset ipLastError (or we won't pass handshake for 1 minute)
             server.killWorkers({ immediate: true });
@@ -454,7 +478,7 @@ describe("Peer socket endpoint", () => {
                 data: {},
             });
 
-            expect(socket.state).toBe("open");
+            await isSocketOpen(socket);
 
             for (let i = 0; i < 100; i++) {
                 await expect(
@@ -496,7 +520,7 @@ describe("Peer socket endpoint", () => {
             connect();
             await delay(1000);
 
-            expect(socket.state).toBe("open");
+            await isSocketOpen(socket);
 
             send('{"event":"#disconnect","data":{"code":4000}}');
             await expect(
@@ -530,7 +554,8 @@ describe("Peer socket endpoint", () => {
             }
 
             const stringifiedPayload = JSON.stringify(payload).replace(/ /g, "");
-            expect(socket.state).toBe("open");
+
+            await isSocketOpen(socket);
             send(stringifiedPayload);
             await delay(500);
             expect(socket.state).not.toBe("open");
@@ -540,30 +565,56 @@ describe("Peer socket endpoint", () => {
             await delay(2000); // give time to workers to respawn
         });
 
-        it("should close the connection when the HTTP url is not valid", async () => {
+        it("should close the connection when the HTTP url is not valid", async done => {
             const socket = new net.Socket();
-            socket.connect(4007, "127.0.0.1", function() {
+            socket.connect(4007, "127.0.0.1", async () => {
                 socket.write("GET /invalid/ HTTP/1.0\r\n\r\n");
+                await delay(500);
+                expect(socket.destroyed).toBe(true);
+
+                socket.connect(4007, "127.0.0.1");
+                await delay(500);
+                expect(socket.destroyed).toBe(true);
+
+                // kill workers to reset ipLastError (or we won't pass handshake for 1 minute)
+                server.killWorkers({ immediate: true });
+                await delay(2000); // give time to workers to respawn
+                done();
             });
-            await delay(500);
-            expect(socket.destroyed).toBe(true);
-
-            socket.connect(4007, "127.0.0.1");
-            await delay(500);
-            expect(socket.destroyed).toBe(true);
-
-            // kill workers to reset ipLastError (or we won't pass handshake for 1 minute)
-            server.killWorkers({ immediate: true });
-            await delay(2000); // give time to workers to respawn
         });
 
-        it("should close the connection if the initial HTTP request is not processed within 2 seconds", async () => {
+        it("should close the connection if the initial HTTP request is not processed within 2 seconds", async done => {
             const socket = new net.Socket();
-            socket.connect(4007, "127.0.0.1");
-            await delay(500);
-            expect(socket.destroyed).toBe(false);
             await delay(2000);
-            expect(socket.destroyed).toBe(true);
+            socket.connect(4007, "127.0.0.1", async () => {
+                await delay(500);
+                expect(socket.destroyed).toBe(false);
+                await delay(2000);
+                expect(socket.destroyed).toBe(true);
+                server.killWorkers({ immediate: true });
+                await delay(2000); // give time to workers to respawn
+                done();
+            });
+        });
+
+        it("should close the connection if is is not fully established from start to finish within 4 seconds", async done => {
+            const socket = new net.Socket();
+            await delay(2000);
+            socket.connect(4007, "127.0.0.1", async () => {
+                expect(socket.destroyed).toBe(false);
+                // @ts-ignore
+                socket.write(`GET /${server.options.path}/ HTTP/1.0\r\n`);
+                socket.write("Host: 127.0.0.1");
+                await delay(1500);
+                expect(socket.destroyed).toBe(false);
+                socket.write("Host: 127.0.0.1");
+                await delay(1500);
+                expect(socket.destroyed).toBe(false);
+                socket.write("Host: 127.0.0.1");
+                await delay(1500);
+                expect(socket.destroyed).toBe(true);
+                done();
+            });
         });
     });
 });

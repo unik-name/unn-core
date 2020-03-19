@@ -74,7 +74,7 @@ export_date_week: &export_date_week
       date +%Y-%V >> .circle-week
 
 cache_key: &cache_key
-  v6-cache-node_modules-{{ checksum "./yarn.lock" }}--{{ checksum ".circle-week" }}
+  v8-cache-node_modules-{{ checksum "./yarn.lock" }}--{{ checksum ".circle-week" }}
 
 restore: &restore
   restore_cache:
@@ -105,6 +105,7 @@ save: &save
       - ./packages/core-p2p/node_modules
       - ./packages/core-container/node_modules
       - ./node_modules
+      - ../.cache
 
 attach: &attach
   attach_workspace:

@@ -22,7 +22,7 @@
         "postpublish": "yarn restore_backup"
     },
     "dependencies": {
-        "@arkecosystem/crypto": "^2.6.25"
+        "@arkecosystem/crypto": "^2.6.28"
     },
     "publishConfig": {
         "access": "public"

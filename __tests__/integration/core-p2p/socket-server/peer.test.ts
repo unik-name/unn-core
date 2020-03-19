@@ -33,14 +33,6 @@ const headers = {
     "Content-Type": "application/json",
 };
 
-const isSocketOpen = async socket => {
-    while (socket.state !== "open" && socket.pendingReconnect) {
-        console.log("Warning: socket is in pendingReconnect state. Waiting for reconnection");
-        await delay(100);
-    }
-    expect(socket.state).toBe("open");
-};
-
 beforeAll(async () => {
     process.env.CORE_ENV = "test";
     defaults.remoteAccess = []; // empty for rate limit tests
@@ -220,7 +212,8 @@ describe("Peer socket endpoint", () => {
             it("should disconnect the client if it sends an invalid message payload", async () => {
                 connect();
                 await delay(1000);
-                await isSocketOpen(socket);
+
+                expect(socket.state).toBe("open");
 
                 send("Invalid payload");
                 await delay(1000);
@@ -236,12 +229,12 @@ describe("Peer socket endpoint", () => {
                 connect();
                 await delay(1000);
 
-                await isSocketOpen(socket);
+                expect(socket.state).toBe("open");
 
                 send("#2");
                 await delay(1000);
 
-                await isSocketOpen(socket);
+                expect(socket.state).toBe("open");
 
                 send("#2");
                 send("#2");
@@ -258,7 +251,7 @@ describe("Peer socket endpoint", () => {
                 connect();
                 await delay(1000);
 
-                await isSocketOpen(socket);
+                expect(socket.state).toBe("open");
 
                 ping();
                 await delay(500);
@@ -273,7 +266,7 @@ describe("Peer socket endpoint", () => {
                 connect();
                 await delay(1000);
 
-                await isSocketOpen(socket);
+                expect(socket.state).toBe("open");
 
                 pong();
                 await delay(500);
@@ -288,7 +281,7 @@ describe("Peer socket endpoint", () => {
                 connect();
                 await delay(1000);
 
-                await isSocketOpen(socket);
+                expect(socket.state).toBe("open");
 
                 invalidOpcode();
                 await delay(500);
@@ -310,7 +303,7 @@ describe("Peer socket endpoint", () => {
             connect();
             await delay(1000);
 
-            await isSocketOpen(socket);
+            expect(socket.state).toBe("open");
 
             const secondSocket = socketCluster.create({
                 port: 4007,
@@ -478,7 +471,7 @@ describe("Peer socket endpoint", () => {
                 data: {},
             });
 
-            await isSocketOpen(socket);
+            expect(socket.state).toBe("open");
 
             for (let i = 0; i < 100; i++) {
                 await expect(
@@ -520,8 +513,6 @@ describe("Peer socket endpoint", () => {
             connect();
             await delay(1000);
 
-            await isSocketOpen(socket);
-
             send('{"event":"#disconnect","data":{"code":4000}}');
             await expect(
                 emit("p2p.peer.getStatus", {
@@ -554,8 +545,7 @@ describe("Peer socket endpoint", () => {
             }
 
             const stringifiedPayload = JSON.stringify(payload).replace(/ /g, "");
-
-            await isSocketOpen(socket);
+            expect(socket.state).toBe("open");
             send(stringifiedPayload);
             await delay(500);
             expect(socket.state).not.toBe("open");

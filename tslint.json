@@ -52,7 +52,8 @@
             "packages/core-transactions/src/handlers/multi-payment.ts",
             "packages/core-transactions/src/handlers/transaction.ts",
             "packages/core-transactions/src/handlers/transfer.ts",
-            "__tests__/integration/core-transaction-pool/processor.test.ts"
+            "__tests__/integration/core-transaction-pool/processor.test.ts",
+            "__tests__/integration/core-p2p/socket-server/peer.test.ts"
         ]
     }
 }

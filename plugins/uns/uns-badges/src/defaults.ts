@@ -12,9 +12,6 @@ export const systemProperties: Record<string, IProperyInfo> = {
     "Badges/Security/Multisig": {
         default: "false",
     },
-    "Badges/Security/Passphrase/Backup": {
-        default: "false",
-    },
     "Badges/Rightness/Verified": {
         defaultByType: {
             [DIDTypes.ORGANIZATION]: "false",

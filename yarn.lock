@@ -2,20 +2,20 @@
 # yarn lockfile v1
 
 
-"@arkecosystem/core-blockchain@2.6.28", "@arkecosystem/core-blockchain@^2.6.28":
-  version "2.6.28"
-  resolved "https://registry.yarnpkg.com/@arkecosystem/core-blockchain/-/core-blockchain-2.6.28.tgz#15ce18f43497654745133c0066c4d60fad7a7a2d"
-  integrity sha512-K7uqexquPuW1qrL4RGeCKRx6m9FEuRNOGHQ7J008XM7smB7nF7JjyN/p0qCylRmMhuRKELky7mMyvTBx0bDpEA==
+"@arkecosystem/core-blockchain@2.6.30", "@arkecosystem/core-blockchain@^2.6.30":
+  version "2.6.30"
+  resolved "https://registry.yarnpkg.com/@arkecosystem/core-blockchain/-/core-blockchain-2.6.30.tgz#8bba934c0488bb2c28767cd0d75573aa880cb0fa"
+  integrity sha512-0nPLxgIr/6OdNVOVilrky/pAmEXJIchj2gjv8kabUyrFQrTycnCn0YvUHQcLebLhdIAwLnkyHxSp+6a86NcdpQ==
   dependencies:
-    "@arkecosystem/core-container" "^2.6.28"
-    "@arkecosystem/core-database" "^2.6.28"
-    "@arkecosystem/core-event-emitter" "^2.6.28"
-    "@arkecosystem/core-interfaces" "^2.6.28"
-    "@arkecosystem/core-p2p" "^2.6.28"
-    "@arkecosystem/core-state" "^2.6.28"
-    "@arkecosystem/core-transactions" "^2.6.28"
-    "@arkecosystem/core-utils" "^2.6.28"
-    "@arkecosystem/crypto" "^2.6.28"
+    "@arkecosystem/core-container" "^2.6.30"
+    "@arkecosystem/core-database" "^2.6.30"
+    "@arkecosystem/core-event-emitter" "^2.6.30"
+    "@arkecosystem/core-interfaces" "^2.6.30"
+    "@arkecosystem/core-p2p" "^2.6.30"
+    "@arkecosystem/core-state" "^2.6.30"
+    "@arkecosystem/core-transactions" "^2.6.30"
+    "@arkecosystem/core-utils" "^2.6.30"
+    "@arkecosystem/crypto" "^2.6.30"
     async "^3.1.0"
     delay "^4.3.0"
     immutable "^4.0.0-rc.12"
@@ -24,43 +24,43 @@
     pretty-ms "^6.0.0"
     xstate "^4.8.0"
 
-"@arkecosystem/core-elasticsearch@2.6.28":
-  version "2.6.28"
-  resolved "https://registry.yarnpkg.com/@arkecosystem/core-elasticsearch/-/core-elasticsearch-2.6.28.tgz#b10faf564bf0e3df825c1fd051f255158e5ee406"
-  integrity sha512-ib/Akmm/3slSpcj3n1LsbfDn5ZDujBXcA32XQj5zi08+Ay/fKS2AKqkFRdsPA78/v9ylfuBlcbl1px5KkA5DFQ==
+"@arkecosystem/core-elasticsearch@2.6.30":
+  version "2.6.30"
+  resolved "https://registry.yarnpkg.com/@arkecosystem/core-elasticsearch/-/core-elasticsearch-2.6.30.tgz#d7c51225ee30e32a2a29783155bc85e1f1825828"
+  integrity sha512-KLEW7X/8OqP+kroHZ3c/Y5r9rBeTQeZXDcDu8bVYL2goBSlI+NfLVAKuixe/EKIxz3TvAUM7CoVuYljZmkveIA==
   dependencies:
-    "@arkecosystem/core-container" "^2.6.28"
-    "@arkecosystem/core-event-emitter" "^2.6.28"
-    "@arkecosystem/core-http-utils" "^2.6.28"
-    "@arkecosystem/core-interfaces" "^2.6.28"
-    "@arkecosystem/crypto" "^2.6.28"
+    "@arkecosystem/core-container" "^2.6.30"
+    "@arkecosystem/core-event-emitter" "^2.6.30"
+    "@arkecosystem/core-http-utils" "^2.6.30"
+    "@arkecosystem/core-interfaces" "^2.6.30"
+    "@arkecosystem/crypto" "^2.6.30"
     "@elastic/elasticsearch" "^7.2.0"
     "@hapi/boom" "^8.0.0"
     "@hapi/joi" "^15.1.0"
     fs-extra "^8.1.0"
 
-"@arkecosystem/core-event-emitter@2.6.28", "@arkecosystem/core-event-emitter@^2.6.28":
-  version "2.6.28"
-  resolved "https://registry.yarnpkg.com/@arkecosystem/core-event-emitter/-/core-event-emitter-2.6.28.tgz#35f28e27b1e1fe4443354d5bc0e0211ce34f365b"
-  integrity sha512-WG7KLl2Ul9qiCQjLdjz6oifgOINOATLhfVqxesWowhVbry6NVdwD58b9nlkFoHbB3RQNNyqNVltgwUBBIjHPLA==
+"@arkecosystem/core-event-emitter@2.6.30", "@arkecosystem/core-event-emitter@^2.6.30":
+  version "2.6.30"
+  resolved "https://registry.yarnpkg.com/@arkecosystem/core-event-emitter/-/core-event-emitter-2.6.30.tgz#616a5ce33ec9212d8a89017eed4afdc3e17c5d7f"
+  integrity sha512-rERDrVvGW5e31tXfecMIyDLujQr2h26N8C6yz4hRBhPsHE19965DPxJFfKiqqA0wRFCRX1tMHzTeDnA7DfYNWw==
 
-"@arkecosystem/core-exchange-json-rpc@2.6.28", "@arkecosystem/core-exchange-json-rpc@^2.6.28":
-  version "2.6.28"
-  resolved "https://registry.yarnpkg.com/@arkecosystem/core-exchange-json-rpc/-/core-exchange-json-rpc-2.6.28.tgz#2ede2f09cc22d4f5c20f935effd616993b52bf88"
-  integrity sha512-1BfuIGgvoZzOfcqvu1WJ7O1rKaMhrXY7nc2Bzqo3SeLGOgIPUyFvK2as2OWPTtyKRMEmo7lzD3imBAa/OrUOnQ==
+"@arkecosystem/core-exchange-json-rpc@2.6.30", "@arkecosystem/core-exchange-json-rpc@^2.6.30":
+  version "2.6.30"
+  resolved "https://registry.yarnpkg.com/@arkecosystem/core-exchange-json-rpc/-/core-exchange-json-rpc-2.6.30.tgz#5842d590c738ee360b0fa022d3d1151afc999271"
+  integrity sha512-iH68ekb3ntdi7WmytxvU9UCuRtRpkDiHGjW1qNJ0bExRvKa3lealyG8p75zWz8BFOspmPniCbZcyw+mpNAY4vw==
   dependencies:
-    "@arkecosystem/core-container" "^2.6.28"
-    "@arkecosystem/core-interfaces" "^2.6.28"
+    "@arkecosystem/core-container" "^2.6.30"
+    "@arkecosystem/core-interfaces" "^2.6.30"
     "@arkecosystem/exchange-json-rpc" "^2.0.1"
 
-"@arkecosystem/core-http-utils@2.6.28", "@arkecosystem/core-http-utils@^2.6.28":
-  version "2.6.28"
-  resolved "https://registry.yarnpkg.com/@arkecosystem/core-http-utils/-/core-http-utils-2.6.28.tgz#0a9c23a5b330821baf31adf5697eda41ecbb479b"
-  integrity sha512-A7rv2J0Lbc3FLQqvt9BnBqmc16xHWRq9dhtcoVEwEH84AaV/yDb1qQYFccljFGbIpbZ+tS35ZQ+f2f5PND4DNg==
+"@arkecosystem/core-http-utils@2.6.30", "@arkecosystem/core-http-utils@^2.6.30":
+  version "2.6.30"
+  resolved "https://registry.yarnpkg.com/@arkecosystem/core-http-utils/-/core-http-utils-2.6.30.tgz#d892c40234c8d114ececebb87d0f863e35a58880"
+  integrity sha512-CFsVhlT2QZPG8MKiHvjz+TZ2iuT9USi26ZDc8Gpz5Gu1CO7EiLHFZz1FVbb/6UBYqjEtbYieF1fxDNmFAyf7NQ==
   dependencies:
-    "@arkecosystem/core-container" "^2.6.28"
-    "@arkecosystem/core-utils" "^2.6.28"
-    "@arkecosystem/crypto" "^2.6.28"
+    "@arkecosystem/core-container" "^2.6.30"
+    "@arkecosystem/core-utils" "^2.6.30"
+    "@arkecosystem/crypto" "^2.6.30"
     "@hapi/boom" "^8.0.0"
     "@hapi/good" "^8.2.0"
     "@hapi/good-console" "^8.1.0"
@@ -71,13 +71,13 @@
     expand-home-dir "^0.0.3"
     nanomatch "^1.2.13"
 
-"@arkecosystem/core-jest-matchers@2.6.28":
-  version "2.6.28"
-  resolved "https://registry.yarnpkg.com/@arkecosystem/core-jest-matchers/-/core-jest-matchers-2.6.28.tgz#d3da28cf91287736ca2c4440c37dfa9eb51e495d"
-  integrity sha512-OXtbxYjHSCw8uyQQ8DHllrwmHnMegxqURPUV6R4zqCE9W/14qP/J7M0CuoFcWQDs5vMWCy1pKt8k2AS4dDE2UA==
+"@arkecosystem/core-jest-matchers@2.6.30":
+  version "2.6.30"
+  resolved "https://registry.yarnpkg.com/@arkecosystem/core-jest-matchers/-/core-jest-matchers-2.6.30.tgz#d311b7fed51865665eb9fc7423a5b841823d502a"
+  integrity sha512-5J+/yaFnAM08A55dHSVL1kkiQuIozLYWyLEJSjzepEahTc2xfwtQn+X+9H02H/LzDh87puYRuLus8EockKgx1w==
   dependencies:
-    "@arkecosystem/core-container" "^2.6.28"
-    "@arkecosystem/crypto" "^2.6.28"
+    "@arkecosystem/core-container" "^2.6.30"
+    "@arkecosystem/crypto" "^2.6.30"
     "@arkecosystem/utils" "^0.3.0"
     bip39 "^3.0.2"
     got "^9.6.0"
@@ -88,14 +88,14 @@
     superheroes "^3.0.0"
     xstate "^4.6.7"
 
-"@arkecosystem/core-logger-pino@2.6.28", "@arkecosystem/core-logger-pino@^2.6.28":
-  version "2.6.28"
-  resolved "https://registry.yarnpkg.com/@arkecosystem/core-logger-pino/-/core-logger-pino-2.6.28.tgz#a5beb3e1be725770f4f6492bb0d3e7119f230657"
-  integrity sha512-PoKQpARkKnGflARJAKPhXPP9c1ROhVWACV4qMMdwvhLosXqjRYKn3Qc30IU7HPpOtwBtcRcrS+hylbB1IDDllQ==
+"@arkecosystem/core-logger-pino@2.6.30", "@arkecosystem/core-logger-pino@^2.6.30":
+  version "2.6.30"
+  resolved "https://registry.yarnpkg.com/@arkecosystem/core-logger-pino/-/core-logger-pino-2.6.30.tgz#00602fd1fb951ccd4d1e9d5603a00c26bfbc33ca"
+  integrity sha512-K8OcTHlQvyCU9+zP3K3ZrRrRG6HktSX8W4/U0FNog+fSm89pj2G/ljPCw1h6oESi7miFTcAElMU+JO5sZJThmw==
   dependencies:
-    "@arkecosystem/core-container" "^2.6.28"
-    "@arkecosystem/core-interfaces" "^2.6.28"
-    "@arkecosystem/core-logger" "^2.6.28"
+    "@arkecosystem/core-container" "^2.6.30"
+    "@arkecosystem/core-interfaces" "^2.6.30"
+    "@arkecosystem/core-logger" "^2.6.30"
     pino "^5.12.6"
     pino-pretty "^3.2.0"
     pump "^3.0.0"
@@ -103,22 +103,22 @@
     rotating-file-stream "^1.4.2"
     split2 "^3.1.1"
 
-"@arkecosystem/core-logger-signale@2.6.28":
-  version "2.6.28"
-  resolved "https://registry.yarnpkg.com/@arkecosystem/core-logger-signale/-/core-logger-signale-2.6.28.tgz#8a90c3c18e8f27463e48353207a1bdef9950c194"
-  integrity sha512-essR48w5pdQJ8zji96dbVA1leniJM1QkVwdVGORPC47iGqO8DuldMuxutU6HfdZLIvK94gROoF8BN3OBGUszRg==
+"@arkecosystem/core-logger-signale@2.6.30":
+  version "2.6.30"
+  resolved "https://registry.yarnpkg.com/@arkecosystem/core-logger-signale/-/core-logger-signale-2.6.30.tgz#66e2f64e6af317bb637cd2481995e96b642c6b4f"
+  integrity sha512-HFVS7+AnDpE8mTq9NB38XLoad2DFFMs5Rd5vNRiGsJXNUaNVvUlqkt5Kjn+4lswvh1flIb3FlPMz7ZexRfJh8w==
   dependencies:
-    "@arkecosystem/core-interfaces" "^2.6.28"
-    "@arkecosystem/core-logger" "^2.6.28"
+    "@arkecosystem/core-interfaces" "^2.6.30"
+    "@arkecosystem/core-logger" "^2.6.30"
     signale "^1.4.0"
 
-"@arkecosystem/core-logger-winston@2.6.28":
-  version "2.6.28"
-  resolved "https://registry.yarnpkg.com/@arkecosystem/core-logger-winston/-/core-logger-winston-2.6.28.tgz#77e66235b838a82320de16aa5af19d9892ca88db"
-  integrity sha512-hVG6iDXIZvJAwYskkdwKxAbM7gqay/kyM4CEjDM1tNWVr7sispjRssUw4pfkF5mmizXRbgZvuq5wT0UiptfIsA==
+"@arkecosystem/core-logger-winston@2.6.30":
+  version "2.6.30"
+  resolved "https://registry.yarnpkg.com/@arkecosystem/core-logger-winston/-/core-logger-winston-2.6.30.tgz#cfc147ad39d843c454a38fad34c664f5489135b8"
+  integrity sha512-zw3I013p8PNlOHH1mTKMIvTZk+UomO8dzgJ1MRI4oZSdlEYJRM0gpdWNneoU1wsZTvfHjW80JEnw1GHtzDAmKQ==
   dependencies:
-    "@arkecosystem/core-interfaces" "^2.6.28"
-    "@arkecosystem/core-logger" "^2.6.28"
+    "@arkecosystem/core-interfaces" "^2.6.30"
+    "@arkecosystem/core-logger" "^2.6.30"
     chalk "^3.0.0"
     colors "^1.3.3"
     dayjs "^1.8.15"
@@ -126,48 +126,48 @@
     winston-daily-rotate-file "^4.0.0"
     winston-transport "^4.3.0"
 
-"@arkecosystem/core-logger@2.6.28", "@arkecosystem/core-logger@^2.6.0-next.4", "@arkecosystem/core-logger@^2.6.28":
-  version "2.6.28"
-  resolved "https://registry.yarnpkg.com/@arkecosystem/core-logger/-/core-logger-2.6.28.tgz#bd485de81ea27eeaee09957b8ed20aa8d1194406"
-  integrity sha512-FAn1KruvWF5nkNclZMLHNbmcNgGYuutImY7Ql+j0Rt3XkMww36+r278iKbvgeKKN0E6fwLnpjbk/D7aKc0v+tA==
+"@arkecosystem/core-logger@2.6.30", "@arkecosystem/core-logger@^2.6.0-next.4", "@arkecosystem/core-logger@^2.6.30":
+  version "2.6.30"
+  resolved "https://registry.yarnpkg.com/@arkecosystem/core-logger/-/core-logger-2.6.30.tgz#6ee41d8efedd9798d89800ee469516e331bb4ef7"
+  integrity sha512-qVBlp/e9DVoZ0P2KR7/kbK+iV14bDykqHX5RP2WqCC3QCCB+B2DKQVScPaZcNGLSFv48n5CuuNMKJx8Pqzut0A==
   dependencies:
-    "@arkecosystem/core-container" "^2.6.28"
-    "@arkecosystem/core-interfaces" "^2.6.28"
+    "@arkecosystem/core-container" "^2.6.30"
+    "@arkecosystem/core-interfaces" "^2.6.30"
     lodash.isempty "^4.4.0"
 
-"@arkecosystem/core-magistrate-crypto@2.6.28", "@arkecosystem/core-magistrate-crypto@^2.6.28":
-  version "2.6.28"
-  resolved "https://registry.yarnpkg.com/@arkecosystem/core-magistrate-crypto/-/core-magistrate-crypto-2.6.28.tgz#1308dbccc4dd8ba6892815dab53633c85a35ddca"
-  integrity sha512-g6MqcYQfJiD3pHWAidu0L2uXAPMl4hkH+6hdvFU1F4A/0BP95IhIvRMWdkUUgbCF4mVd1le31VXA1I7CyCYQ8g==
+"@arkecosystem/core-magistrate-crypto@2.6.30", "@arkecosystem/core-magistrate-crypto@^2.6.30":
+  version "2.6.30"
+  resolved "https://registry.yarnpkg.com/@arkecosystem/core-magistrate-crypto/-/core-magistrate-crypto-2.6.30.tgz#e37791e62c4d99d68becc9e4d3e300caf6eb01d9"
+  integrity sha512-zyXVtErz8pbNfDo7rs2h7h3ArYibJwQa4KGKe5Ab9JEDWxP4ZxZ/wSBkjnyakYxBsvtkNqV23RTcOUAAaqLkgQ==
   dependencies:
-    "@arkecosystem/crypto" "^2.6.28"
+    "@arkecosystem/crypto" "^2.6.30"
     bytebuffer "^5.0.1"
 
-"@arkecosystem/core-magistrate-transactions@2.6.28", "@arkecosystem/core-magistrate-transactions@^2.6.28":
-  version "2.6.28"
-  resolved "https://registry.yarnpkg.com/@arkecosystem/core-magistrate-transactions/-/core-magistrate-transactions-2.6.28.tgz#9ce9488f688d97a5b96ddec0544e2bffd4a26f17"
-  integrity sha512-7cIPpaa0QWmy4dIx7+6lbUOsn8sAA9ndA8nhyvJORuo3TsgEdVGoxpv7is8gWMk+3N1uK7YA3Z+zeUTfE3nwPA==
+"@arkecosystem/core-magistrate-transactions@2.6.30", "@arkecosystem/core-magistrate-transactions@^2.6.30":
+  version "2.6.30"
+  resolved "https://registry.yarnpkg.com/@arkecosystem/core-magistrate-transactions/-/core-magistrate-transactions-2.6.30.tgz#a6c961b09972faf3673fa2f1373e31ae399237fd"
+  integrity sha512-G1UvQFS/WgKLvBHrr2WkHoX75i3lFza0ygRrwPwcH722AxwdbCfqiwabu5qw3eKTkxkhdptXgMXP8a3beclnGw==
   dependencies:
-    "@arkecosystem/core-container" "^2.6.28"
-    "@arkecosystem/core-event-emitter" "^2.6.28"
-    "@arkecosystem/core-interfaces" "^2.6.28"
-    "@arkecosystem/core-magistrate-crypto" "^2.6.28"
-    "@arkecosystem/core-transactions" "^2.6.28"
-    "@arkecosystem/crypto" "^2.6.28"
+    "@arkecosystem/core-container" "^2.6.30"
+    "@arkecosystem/core-event-emitter" "^2.6.30"
+    "@arkecosystem/core-interfaces" "^2.6.30"
+    "@arkecosystem/core-magistrate-crypto" "^2.6.30"
+    "@arkecosystem/core-transactions" "^2.6.30"
+    "@arkecosystem/crypto" "^2.6.30"
 
-"@arkecosystem/core-transaction-pool@2.6.28", "@arkecosystem/core-transaction-pool@^2.6.28":
-  version "2.6.28"
-  resolved "https://registry.yarnpkg.com/@arkecosystem/core-transaction-pool/-/core-transaction-pool-2.6.28.tgz#890d58a7ab9a5f162e632facfe28e5f6197c41a6"
-  integrity sha512-kxmLA+u8vToKgcfBfRTy5aCAK2R0yqafUkmQv+7qlSYzcGXpJUawpxB+V1/jV4DbloCvAt4APZw39iVq2rfFyw==
+"@arkecosystem/core-transaction-pool@2.6.30", "@arkecosystem/core-transaction-pool@^2.6.30":
+  version "2.6.30"
+  resolved "https://registry.yarnpkg.com/@arkecosystem/core-transaction-pool/-/core-transaction-pool-2.6.30.tgz#ea7a558bdc172b05034556118dddb4ac15eff1e5"
+  integrity sha512-qcroubOJrBPDvGWoNglXXHQtjbtbxV2OpQ2BB9jZMyCwkH5wZBkYAzGLW40+gz68K7tpIT35AJ3OlG5kWDWHRg==
   dependencies:
-    "@arkecosystem/core-container" "^2.6.28"
-    "@arkecosystem/core-database" "^2.6.28"
-    "@arkecosystem/core-event-emitter" "^2.6.28"
-    "@arkecosystem/core-interfaces" "^2.6.28"
-    "@arkecosystem/core-state" "^2.6.28"
-    "@arkecosystem/core-transactions" "^2.6.28"
-    "@arkecosystem/core-utils" "^2.6.28"
-    "@arkecosystem/crypto" "^2.6.28"
+    "@arkecosystem/core-container" "^2.6.30"
+    "@arkecosystem/core-database" "^2.6.30"
+    "@arkecosystem/core-event-emitter" "^2.6.30"
+    "@arkecosystem/core-interfaces" "^2.6.30"
+    "@arkecosystem/core-state" "^2.6.30"
+    "@arkecosystem/core-transactions" "^2.6.30"
+    "@arkecosystem/core-utils" "^2.6.30"
+    "@arkecosystem/crypto" "^2.6.30"
     "@types/better-sqlite3" "^5.4.0"
     "@types/fs-extra" "^8.0.0"
     "@types/pluralize" "^0.0.29"
@@ -179,14 +179,14 @@
     lodash.differencewith "^4.5.0"
     pluralize "^8.0.0"
 
-"@arkecosystem/core-utils@2.6.28", "@arkecosystem/core-utils@^2.6.28":
-  version "2.6.28"
-  resolved "https://registry.yarnpkg.com/@arkecosystem/core-utils/-/core-utils-2.6.28.tgz#d6de1c0cefe4c614ae9b9222ddc6425aa52f52bc"
-  integrity sha512-gJBf3dPV30Xl1PSFKU9tAdRWTHbn1qN81h/lIW7AfDUHiYbcCfoCBor2p9KJ0bgDfyxqsATcshl1ExwwViaaNg==
+"@arkecosystem/core-utils@2.6.30", "@arkecosystem/core-utils@^2.6.30":
+  version "2.6.30"
+  resolved "https://registry.yarnpkg.com/@arkecosystem/core-utils/-/core-utils-2.6.30.tgz#fa77038e808b37e817055ad93517b15aa46fd87b"
+  integrity sha512-lpBpp7nDA3dAJv6mfP7Fymemgr3bGVydnBIwYgG/74BTCOFW813egrMJ1bNOMDOQzm2jIPcPIz8g2M5+P0pQRA==
   dependencies:
-    "@arkecosystem/core-container" "^2.6.28"
-    "@arkecosystem/core-interfaces" "^2.6.28"
-    "@arkecosystem/crypto" "^2.6.28"
+    "@arkecosystem/core-container" "^2.6.30"
+    "@arkecosystem/core-interfaces" "^2.6.30"
+    "@arkecosystem/crypto" "^2.6.30"
     cli-table3 "^0.5.1"
     dayjs "^1.8.15"
     fast-json-parse "^1.0.3"
@@ -194,41 +194,41 @@
     immutable "^4.0.0-rc.12"
     nanomatch "^1.2.13"
 
-"@arkecosystem/core-vote-report@2.6.28":
-  version "2.6.28"
-  resolved "https://registry.yarnpkg.com/@arkecosystem/core-vote-report/-/core-vote-report-2.6.28.tgz#24f8dbd5c4f28ebbb8abea50e2eace7ba0003ac3"
-  integrity sha512-Ikha82Clj47uUuIcCe9lslkeuzvlbI7blguvOfKx/eStIEtPsco3RiwHUtcbPFXo+MtENmgkHYuvMsJmP3AgdA==
+"@arkecosystem/core-vote-report@2.6.30":
+  version "2.6.30"
+  resolved "https://registry.yarnpkg.com/@arkecosystem/core-vote-report/-/core-vote-report-2.6.30.tgz#c8ff2ab692e8626006f7f79719e525644486c290"
+  integrity sha512-eVVLdNRHjwXE2c90hSZP9b0YpyqxbwriW1rPp5IfiHLHs8Bx1jFprThdevD5dvWng1L5EIjfUZRCA5am3Xy1+g==
   dependencies:
-    "@arkecosystem/core-container" "^2.6.28"
-    "@arkecosystem/core-http-utils" "^2.6.28"
-    "@arkecosystem/core-utils" "^2.6.28"
-    "@arkecosystem/crypto" "^2.6.28"
+    "@arkecosystem/core-container" "^2.6.30"
+    "@arkecosystem/core-http-utils" "^2.6.30"
+    "@arkecosystem/core-utils" "^2.6.30"
+    "@arkecosystem/crypto" "^2.6.30"
     "@hapi/vision" "^5.5.4"
     handlebars "^4.1.2"
 
-"@arkecosystem/core-wallet-api@2.6.28", "@arkecosystem/core-wallet-api@^2.6.28":
-  version "2.6.28"
-  resolved "https://registry.yarnpkg.com/@arkecosystem/core-wallet-api/-/core-wallet-api-2.6.28.tgz#03ac38ad50ab3aadcdfeeca4435d44166cd2f5a1"
-  integrity sha512-ImPgIJWQijb/hwQxt4OwvvkDVhE4vLerGDaTHbmv7ErDFhO+GbelZLmxVMU1PLRH3J64sDa1YHYyzzZezV3Dmw==
+"@arkecosystem/core-wallet-api@2.6.30", "@arkecosystem/core-wallet-api@^2.6.30":
+  version "2.6.30"
+  resolved "https://registry.yarnpkg.com/@arkecosystem/core-wallet-api/-/core-wallet-api-2.6.30.tgz#0aee597245f25435e058ce2a5cc3afe237555441"
+  integrity sha512-wc5z1Dq8f8oLvnE5WGXLzJAWmdceaZpDtqv54uX9SdnzTJR9CzR3bG41rxVURGcuLA/+9bawj9TSL0E3DVa92g==
   dependencies:
-    "@arkecosystem/core-container" "^2.6.28"
-    "@arkecosystem/core-http-utils" "^2.6.28"
-    "@arkecosystem/core-interfaces" "^2.6.28"
-    "@arkecosystem/core-utils" "^2.6.28"
+    "@arkecosystem/core-container" "^2.6.30"
+    "@arkecosystem/core-http-utils" "^2.6.30"
+    "@arkecosystem/core-interfaces" "^2.6.30"
+    "@arkecosystem/core-utils" "^2.6.30"
     "@hapi/h2o2" "^8.3.0"
     hapi-rate-limit "^4.0.0"
     ip "^1.1.5"
 
-"@arkecosystem/core-webhooks@2.6.28", "@arkecosystem/core-webhooks@^2.6.28":
-  version "2.6.28"
-  resolved "https://registry.yarnpkg.com/@arkecosystem/core-webhooks/-/core-webhooks-2.6.28.tgz#208f2b9ad002d4813ed8035e26e08d728f4aa281"
-  integrity sha512-/5tWdxgMBLJVEGtAAVr5A4gHJ1rmQTiRvweG8qI43eND49jwTXvF4m8m0Qeci/J9pjGvUvZleY+H9WtwNXv4cw==
+"@arkecosystem/core-webhooks@2.6.30", "@arkecosystem/core-webhooks@^2.6.30":
+  version "2.6.30"
+  resolved "https://registry.yarnpkg.com/@arkecosystem/core-webhooks/-/core-webhooks-2.6.30.tgz#6095b483327741c4aba0f97104df84fc47d9d278"
+  integrity sha512-a9Y8P9nCl8gFN0WYU5hZ/siYgJdQ+v13kqKYrXTXuco3O0GkT68Cy9MH9nzh8I7gjrU8PuoOoY2tVAarZpS31w==
   dependencies:
-    "@arkecosystem/core-container" "^2.6.28"
-    "@arkecosystem/core-event-emitter" "^2.6.28"
-    "@arkecosystem/core-http-utils" "^2.6.28"
-    "@arkecosystem/core-interfaces" "^2.6.28"
-    "@arkecosystem/core-utils" "^2.6.28"
+    "@arkecosystem/core-container" "^2.6.30"
+    "@arkecosystem/core-event-emitter" "^2.6.30"
+    "@arkecosystem/core-http-utils" "^2.6.30"
+    "@arkecosystem/core-interfaces" "^2.6.30"
+    "@arkecosystem/core-utils" "^2.6.30"
     "@hapi/boom" "^8.0.0"
     "@hapi/joi" "^15.1.0"
     fs-extra "^8.1.0"

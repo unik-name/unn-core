@@ -30,6 +30,7 @@ job_test_config: &job_test_config
   environment:
     CORE_DB_DATABASE: ark_unitnet
     CORE_DB_USERNAME: ark
+    CORE_API_RATE_LIMIT_USER_LIMIT: 300
 
 job_test_config_unit_tests: &job_test_config_unit_tests
   working_directory: *repo_path

@@ -43,7 +43,7 @@ export class NftUpdateTransactionHandler extends Handlers.TransactionHandler {
             !wallet.hasAttribute("tokens") ||
             !wallet.getAttribute<INftWalletAttributes>("tokens").tokens.includes(tokenId)
         ) {
-            throw new NftOwnerError(tokenId);
+            throw new NftOwnerError(wallet, tokenId);
         }
 
         checkAssetPropertiesSize(properties);

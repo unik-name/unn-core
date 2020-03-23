@@ -104,7 +104,7 @@ export class DiscloseExplicitTransactionHandler extends Handlers.TransactionHand
             wallet.hasAttribute("tokens") &&
             !wallet.getAttribute("tokens").tokens.includes(discloseDemand.payload.sub)
         ) {
-            throw new NftOwnerError(wallet.address, discloseDemand.payload.sub);
+            throw new NftOwnerError(wallet, discloseDemand.payload.sub);
         }
 
         return super.throwIfCannotBeApplied(transaction, wallet, walletManager);

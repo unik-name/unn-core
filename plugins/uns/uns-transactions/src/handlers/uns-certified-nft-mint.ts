@@ -153,6 +153,10 @@ export class CertifiedNftMintTransactionHandler extends NftMintTransactionHandle
     protected getPayloadHashBuffer(demand: INftDemand): NftMintDemandHashBuffer {
         return new NftMintDemandHashBuffer(demand);
     }
+
+    protected checkEmptyBalance(transaction: Interfaces.ITransaction): boolean {
+        return transaction.data.asset.nft.unik.properties?.UnikVoucherId === undefined;
+    }
 }
 
 // Mixins must have the same interface name as the class

@@ -71,20 +71,13 @@ export abstract class TransactionHandler implements ITransactionHandler {
         sender.verifyTransactionNonceApply(transaction);
 
         if (
-            !(
-                transaction.type === 3 /*UnsCertifiedNftMint*/ &&
-                transaction.typeGroup === 2001 /*UnsTransactionGroup*/ &&
-                transaction.data.asset.nft.unik.properties?.UnikVoucherId
-            )
+            this.checkEmptyBalance(transaction) &&
+            sender.balance
+                .minus(data.amount)
+                .minus(data.fee)
+                .isNegative()
         ) {
-            if (
-                sender.balance
-                    .minus(data.amount)
-                    .minus(data.fee)
-                    .isNegative()
-            ) {
-                throw new InsufficientBalanceError();
-            }
+            throw new InsufficientBalanceError();
         }
 
         if (data.senderPublicKey !== sender.publicKey) {
@@ -149,6 +142,7 @@ export abstract class TransactionHandler implements ITransactionHandler {
         walletManager: State.IWalletManager,
     ): Promise<void> {
         if (
+            this.checkEmptyBalance(transaction) &&
             !walletManager.hasByPublicKey(sender.publicKey) &&
             walletManager.findByAddress(sender.address).balance.isZero()
         ) {
@@ -282,5 +276,9 @@ export abstract class TransactionHandler implements ITransactionHandler {
     public isTransactionActivated(): boolean {
         const isEnabled = Managers.configManager.get(`network.transactionsConfig.${this.getConstructor().key}.enable`);
         return isEnabled === undefined ? true : isEnabled;
+    }
+
+    protected checkEmptyBalance(_: Interfaces.ITransaction): boolean {
+        return true;
     }
 }

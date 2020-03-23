@@ -34,7 +34,7 @@ export class DelegateRegisterTransactionHandler extends DelegateRegistrationTran
 
         // check token ownership
         if (wallet.hasAttribute("tokens") && !wallet.getAttribute("tokens").tokens.includes(nftId)) {
-            throw new NftOwnerError(wallet.address, nftId);
+            throw new NftOwnerError(wallet, nftId);
         }
 
         // assert wallet has only 1 Unik

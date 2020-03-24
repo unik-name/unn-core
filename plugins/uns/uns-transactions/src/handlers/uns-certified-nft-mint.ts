@@ -2,6 +2,7 @@ import { Database, State } from "@arkecosystem/core-interfaces";
 import { Handlers, TransactionReader } from "@arkecosystem/core-transactions";
 import { Interfaces, Managers, Transactions, Utils } from "@arkecosystem/crypto";
 import { NftMintTransactionHandler, nftRepository } from "@uns/core-nft";
+import { addNftToWallet } from "@uns/core-nft";
 import { getCurrentNftAsset, getNftName } from "@uns/core-nft-crypto";
 import {
     applyMixins,
@@ -14,6 +15,7 @@ import {
 } from "@uns/crypto";
 import { VoucherAlreadyUsedError, WrongFeeError } from "../errors";
 import { CertifiedTransactionHandler } from "./uns-certified-handler";
+
 export class CertifiedNftMintTransactionHandler extends NftMintTransactionHandler {
     public async isActivated(): Promise<boolean> {
         return true;
@@ -38,6 +40,9 @@ export class CertifiedNftMintTransactionHandler extends NftMintTransactionHandle
             const transactions = await reader.read();
 
             for (const transaction of transactions) {
+                const sender: State.IWallet = walletManager.findByPublicKey(transaction.senderPublicKey);
+                await addNftToWallet(sender, transaction.asset, walletManager);
+
                 const forgeFactoryWallet: State.IWallet = walletManager.findByAddress(transaction.recipientId);
                 forgeFactoryWallet.balance = forgeFactoryWallet.balance.plus(transaction.amount);
 
@@ -47,7 +52,6 @@ export class CertifiedNftMintTransactionHandler extends NftMintTransactionHandle
                     const foundationWallet: State.IWallet = walletManager.findByAddress(foundationPublicKey);
                     foundationWallet.balance = foundationWallet.balance.plus(rewards.foundation);
 
-                    const sender: State.IWallet = walletManager.findByPublicKey(transaction.senderPublicKey);
                     sender.balance = sender.balance
                         .plus(transaction.amount)
                         .plus(transaction.fee)

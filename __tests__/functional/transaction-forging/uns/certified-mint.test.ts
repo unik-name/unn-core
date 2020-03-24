@@ -39,16 +39,16 @@ describe("Uns certified mint", () => {
             type: "1",
             UnikVoucherId: voucherId,
         };
-
+        const passphrase = "user passphrase";
         const demand = buildCertifiedDemand(
             tokenId,
             properties,
-            NftSupport.defaultPassphrase,
+            passphrase,
             Utils.BigNumber.ZERO,
             UnsSupport.forgerFactoryTokenId,
             UnsSupport.forgerFactoryPassphrase,
         );
-        const trx = await UnsSupport.certifiedMintAndWait(tokenId, properties, demand);
+        const trx = await UnsSupport.certifiedMintAndWait(tokenId, properties, demand, passphrase);
         await expect(trx.id).toBeForged();
         await expect({ tokenId, properties }).toMatchProperties();
     });

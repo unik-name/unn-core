@@ -22,10 +22,10 @@
         "test:coverage": "jest --coverage --coveragePathIgnorePatterns='/(defaults.ts|index.ts)$' --runInBand --forceExit"
     },
     "dependencies": {
-        "@arkecosystem/core-api": "^2.6.28",
-        "@arkecosystem/core-interfaces": "^2.6.28",
-        "@uns/core-nft": "^5.0.1-dev",
-        "@uns/crypto": "^5.0.1-dev",
+        "@arkecosystem/core-api": "^2.6.31",
+        "@arkecosystem/core-interfaces": "^2.6.31",
+        "@uns/core-nft": "^5.1.0-dev",
+        "@uns/crypto": "^5.1.0-dev",
         "@hapi/boom": "^8.0.0",
         "@hapi/hapi": "^18.3.1"
     },

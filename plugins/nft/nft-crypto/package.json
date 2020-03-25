@@ -1,6 +1,6 @@
 {
     "name": "@uns/core-nft-crypto",
-    "version": "5.0.1",
+    "version": "5.1.0",
     "description": "Utilities for NFT plugin using ARK Core",
     "license": "MIT",
     "contributors": [
@@ -22,7 +22,7 @@
         "postpublish": "yarn restore_backup"
     },
     "dependencies": {
-        "@arkecosystem/crypto": "^2.6.28"
+        "@arkecosystem/crypto": "^2.6.31"
     },
     "publishConfig": {
         "access": "public"

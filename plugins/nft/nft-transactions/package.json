@@ -25,7 +25,7 @@
         "@arkecosystem/core-interfaces": "^2.6.28",
         "@arkecosystem/core-database": "^2.6.28",
         "@arkecosystem/core-transactions": "^2.6.28",
-        "@uns/core-nft-crypto": "^5.0.1-dev",
+        "@uns/core-nft-crypto": "^5.0.2",
         "@uns/crypto": "^5.0.1-dev",
         "lodash.difference": "^4.5.0"
     },

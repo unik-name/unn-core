@@ -49,6 +49,7 @@
     },
     {
         "height": 398906,
-        "certifiedNFTsOnly": true
+        "certifiedNFTsOnly": true,
+        "disableArkLegacyVote": true
     }
 ]

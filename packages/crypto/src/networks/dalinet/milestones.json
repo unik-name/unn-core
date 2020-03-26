@@ -46,5 +46,9 @@
             "idFullSha256": true
         },
         "aip11": true
+    },
+    {
+        "height": 280000,
+        "disableArkLegacyVote": true
     }
 ]

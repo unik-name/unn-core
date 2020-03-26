@@ -117,3 +117,17 @@ export class WrongFeeError extends Errors.TransactionError {
         super(`Failed to apply transaction ${transactionId}: provided fees does not match the requirements`);
     }
 }
+
+export class NoUnikError extends Errors.TransactionError {
+    constructor(transactionId: string) {
+        super(`Failed to apply transaction ${transactionId}: crypto-account has no UNIK token`);
+    }
+}
+
+export class VoteUnikTypeError extends Errors.TransactionError {
+    constructor(transactionId: string) {
+        super(
+            `Failed to apply vote transaction ${transactionId}: voter UNIK type must be the same as delegate UNIK type`,
+        );
+    }
+}

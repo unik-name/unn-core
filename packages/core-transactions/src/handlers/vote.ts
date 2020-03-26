@@ -1,6 +1,6 @@
 import { ApplicationEvents } from "@arkecosystem/core-event-emitter";
 import { Database, EventEmitter, State, TransactionPool } from "@arkecosystem/core-interfaces";
-import { Interfaces, Transactions } from "@arkecosystem/crypto";
+import { Interfaces, Managers, Transactions } from "@arkecosystem/crypto";
 import {
     AlreadyVotedError,
     NoVoteError,
@@ -54,7 +54,7 @@ export class VoteTransactionHandler extends TransactionHandler {
     }
 
     public async isActivated(): Promise<boolean> {
-        return true;
+        return !Managers.configManager.getMilestone().disableArkLegacyVote;
     }
 
     public async throwIfCannotBeApplied(

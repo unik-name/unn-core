@@ -3,6 +3,7 @@ import { UNSCertifiedNftUpdateBuilder } from "./uns-certified-nft-update";
 import { UNSDelegateRegisterBuilder } from "./uns-delegate-register";
 import { UNSDelegateResignBuilder } from "./uns-delegate-resign";
 import { UNSDiscloseExplicitBuilder } from "./uns-disclose-explicit";
+import { UNSVoteBuilder } from "./uns-vote";
 
 export {
     UNSDiscloseExplicitBuilder,
@@ -10,4 +11,5 @@ export {
     UNSDelegateResignBuilder,
     UNSCertifiedNftMintBuilder,
     UNSCertifiedNftUpdateBuilder,
+    UNSVoteBuilder,
 };

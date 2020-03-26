@@ -5,6 +5,7 @@ import {
     UNSDelegateRegisterBuilder,
     UNSDelegateResignBuilder,
     UNSDiscloseExplicitBuilder,
+    UNSVoteBuilder,
 } from "@uns/crypto";
 import { snoozeForBlock } from ".";
 import { TransactionFactory } from "../../../helpers";
@@ -91,6 +92,26 @@ export const certifiedMintAndWait = async (nftId, properties, demand, passphrase
         .withPassphrase(passphrase)
         .createOne();
 
+    await expect(t).toBeAccepted();
+    await snoozeForBlock(1);
+    return t;
+};
+
+export const voteAndWait = async (delegatePubKey, passphrase = NftSupport.defaultPassphrase) => {
+    const t = new TransactionFactory(new UNSVoteBuilder().votesAsset([`+${delegatePubKey}`]))
+        .withNetwork(NftSupport.network)
+        .withPassphrase(passphrase)
+        .createOne();
+    await expect(t).toBeAccepted();
+    await snoozeForBlock(1);
+    return t;
+};
+
+export const unvoteAndWait = async (delegatePubKey, passphrase = NftSupport.defaultPassphrase) => {
+    const t = new TransactionFactory(new UNSVoteBuilder().votesAsset([`-${delegatePubKey}`]))
+        .withNetwork(NftSupport.network)
+        .withPassphrase(passphrase)
+        .createOne();
     await expect(t).toBeAccepted();
     await snoozeForBlock(1);
     return t;

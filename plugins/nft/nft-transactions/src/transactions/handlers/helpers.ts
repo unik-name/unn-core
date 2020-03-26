@@ -38,6 +38,7 @@ export const addNftToWallet = async (
 ) => {
     const { tokenId } = getCurrentNftAsset(assets);
 
+    // TODO UNS: remove useless 'tokens' level in attributes
     const walletTokens: INftWalletAttributes = wallet.hasAttribute("tokens")
         ? wallet.getAttribute<INftWalletAttributes>("tokens")
         : { tokens: [] };

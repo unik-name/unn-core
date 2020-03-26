@@ -6,6 +6,7 @@ import {
     DelegateRegisterTransactionHandler,
     DelegateResignTransactionHandler,
     DiscloseExplicitTransactionHandler,
+    UnsVoteTransactionHandler,
 } from "./handlers";
 
 export const plugin: Container.IPluginDescriptor = {
@@ -19,6 +20,7 @@ export const plugin: Container.IPluginDescriptor = {
         Handlers.Registry.registerTransactionHandler(DelegateResignTransactionHandler);
         Handlers.Registry.registerTransactionHandler(CertifiedNftMintTransactionHandler);
         Handlers.Registry.registerTransactionHandler(CertifiedNftUpdateTransactionHandler);
+        Handlers.Registry.registerTransactionHandler(UnsVoteTransactionHandler);
     },
     async deregister(container: Container.IContainer, options) {
         container.resolvePlugin<Logger.ILogger>("logger").info("Stopping UNS Transactions plugin");

@@ -61,7 +61,11 @@ const handleTransactionsRoute = async transactions => {
 };
 
 const isVoteTransaction = transaction => {
-    return transaction.typeGroup === Enums.TransactionTypeGroup.Core && transaction.type === Enums.TransactionType.Vote;
+    return (
+        (transaction.typeGroup === Enums.TransactionTypeGroup.Core &&
+            transaction.type === Enums.TransactionType.Vote) ||
+        (transaction.type === 5 /*UnsVote*/ && transaction.typeGroup === 2001)
+    );
 };
 
 const isUnikId = (username: string): boolean => {

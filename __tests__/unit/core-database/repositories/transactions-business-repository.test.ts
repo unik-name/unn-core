@@ -324,7 +324,7 @@ describe("Transactions Business Repository", () => {
                         {
                             field: "type",
                             operator: expect.anything(),
-                            value: Enums.TransactionType.Vote,
+                            value: 5 /*Unsvote*/,
                         },
                     ]),
                 }),

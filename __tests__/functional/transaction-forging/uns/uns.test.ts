@@ -50,28 +50,32 @@ describe("Uns delegate scenario", () => {
 
         // Delegate votes for himself
         const initialVote = getVoteAmount(delegatePubKey);
-        trx = await NftSupport.voteAndWait(delegatePubKey, delegatePasshrase);
+        trx = await UnsSupport.voteAndWait(delegatePubKey, delegatePasshrase);
         await expect(trx.id).toBeForged();
         const afterVote1: number = getVoteAmount(delegatePubKey);
         expect(afterVote1).toBeGreaterThan(initialVote);
         expect(walletManager.findByPublicKey(delegatePubKey).getAttribute("vote")).toEqual(delegatePubKey);
 
         // Genesis votes for delegate
+        // Genesis must have a unik token to vote
+        trx = await NftSupport.mintAndWait(NftSupport.generateNftId());
+        await expect(trx.id).toBeForged();
+
         const genesisPubKey: string = Identities.PublicKey.fromPassphrase(NftSupport.defaultPassphrase);
-        trx = await NftSupport.voteAndWait(delegatePubKey);
+        trx = await UnsSupport.voteAndWait(delegatePubKey);
         await expect(trx.id).toBeForged();
         const afterVote2: number = getVoteAmount(delegatePubKey);
         expect(afterVote2).toBeGreaterThan(afterVote1);
         expect(walletManager.findByPublicKey(genesisPubKey).getAttribute("vote")).toEqual(delegatePubKey);
 
-        trx = await NftSupport.unvoteAndWait(delegatePubKey, delegatePasshrase);
+        trx = await UnsSupport.unvoteAndWait(delegatePubKey, delegatePasshrase);
         await expect(trx.id).toBeForged();
         const afterUnvote1: number = getVoteAmount(delegatePubKey);
         expect(afterUnvote1).toBeLessThan(afterVote2);
         expect(afterUnvote1).toBeGreaterThan(afterVote1);
         expect(walletManager.findByPublicKey(delegatePubKey).getAttribute("vote")).toBeUndefined();
 
-        trx = await NftSupport.unvoteAndWait(delegatePubKey);
+        trx = await UnsSupport.unvoteAndWait(delegatePubKey);
         await expect(trx.id).toBeForged();
         const afterUnvote2: number = getVoteAmount(delegatePubKey);
         expect(afterUnvote2).toEqual(0);

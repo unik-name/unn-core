@@ -99,23 +99,3 @@ export const transferAndWait = async (recipient, amount, passphrase = defaultPas
     await snoozeForBlock(1);
     return t;
 };
-
-export const voteAndWait = async (delegatePubKey, passphrase = defaultPassphrase) => {
-    const t = TransactionFactory.vote(delegatePubKey)
-        .withNetwork(network)
-        .withPassphrase(passphrase)
-        .createOne();
-    await expect(t).toBeAccepted();
-    await snoozeForBlock(1);
-    return t;
-};
-
-export const unvoteAndWait = async (delegatePubKey, passphrase = defaultPassphrase) => {
-    const t = TransactionFactory.unvote(delegatePubKey)
-        .withNetwork(network)
-        .withPassphrase(passphrase)
-        .createOne();
-    await expect(t).toBeAccepted();
-    await snoozeForBlock(1);
-    return t;
-};

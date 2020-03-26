@@ -4,6 +4,7 @@ export enum UnsTransactionType {
     UnsDelegateResign = 2,
     UnsCertifiedNftMint = 3,
     UnsCertifiedNftUpdate = 4,
+    UnsVote = 5,
 }
 
 export const UnsTransactionGroup = 2001;
@@ -15,4 +16,5 @@ export const UnsTransactionStaticFees = {
     UnsCertifiedNftMint: 100000000,
     UnsCertifiedNftUpdate: 10000000,
     UnsVoucherNftMint: 100000000,
+    UnsVote: 100000000,
 };

@@ -8,7 +8,7 @@ const databaseService = app.resolvePlugin<Database.IDatabaseService>("database")
 const transactionsRepository = databaseService.transactionsBusinessRepository;
 
 const index = async request => {
-    const wallets = databaseService.wallets.search(Database.SearchScope.Wallets, {
+    const wallets = await databaseService.wallets.search(Database.SearchScope.Wallets, {
         ...request.query,
         ...paginate(request),
     });
@@ -17,7 +17,7 @@ const index = async request => {
 };
 
 const top = async request => {
-    const wallets = databaseService.wallets.top(Database.SearchScope.Wallets, paginate(request));
+    const wallets = await databaseService.wallets.top(Database.SearchScope.Wallets, paginate(request));
 
     return toPagination(wallets, "wallet");
 };
@@ -125,7 +125,7 @@ const locks = async request => {
         return toPagination({ rows: [], count: 0 }, "lock");
     }
 
-    const rows = databaseService.wallets.search(Database.SearchScope.Locks, {
+    const rows = await databaseService.wallets.search(Database.SearchScope.Locks, {
         ...request.params,
         ...request.query,
         ...paginate(request),
@@ -136,12 +136,11 @@ const locks = async request => {
 };
 
 const search = async request => {
-    const wallets = databaseService.wallets.search(Database.SearchScope.Wallets, {
+    const wallets = await databaseService.wallets.search(Database.SearchScope.Wallets, {
         ...request.payload,
         ...request.query,
         ...paginate(request),
     });
-
     return toPagination(wallets, "wallet");
 };
 

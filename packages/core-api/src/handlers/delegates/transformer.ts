@@ -16,7 +16,7 @@ export const transformDelegate = (delegate: State.IWallet) => {
             produced: attributes.producedBlocks,
         },
         production: {
-            approval: delegateCalculator.calculateApproval(delegate),
+            approval: attributes.approval,
         },
         forged: {
             fees: attributes.forgedFees.toFixed(),

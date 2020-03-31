@@ -1,4 +1,5 @@
 import { Interfaces } from "@arkecosystem/crypto";
+import { INftsBusinessRepository } from "../core-nft";
 import { IWallet, IWalletManager } from "../core-state/wallets";
 import { EventEmitter, Logger } from "../index";
 import { IRoundInfo } from "../shared";
@@ -21,6 +22,8 @@ export interface IDatabaseService {
     blocksBusinessRepository: IBlocksBusinessRepository;
 
     transactionsBusinessRepository: ITransactionsBusinessRepository;
+
+    nftsBusinessRepository: INftsBusinessRepository;
 
     connection: IConnection;
 

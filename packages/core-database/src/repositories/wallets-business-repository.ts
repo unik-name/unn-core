@@ -25,7 +25,10 @@ interface IUnwrappedHtlcLock {
 export class WalletsBusinessRepository implements Database.IWalletsBusinessRepository {
     public constructor(private readonly databaseServiceProvider: () => Database.IDatabaseService) {}
 
-    public search<T>(scope: Database.SearchScope, params: Database.IParameters = {}): Database.IRowsPaginated<T> {
+    public async search<T>(
+        scope: Database.SearchScope,
+        params: Database.IParameters = {},
+    ): Promise<Database.IRowsPaginated<T>> {
         let searchContext: ISearchContext;
 
         switch (scope) {
@@ -34,7 +37,7 @@ export class WalletsBusinessRepository implements Database.IWalletsBusinessRepos
                 break;
             }
             case Database.SearchScope.Delegates: {
-                searchContext = this.searchDelegates(params);
+                searchContext = await this.searchDelegates(params);
                 break;
             }
             case Database.SearchScope.Locks: {
@@ -82,12 +85,15 @@ export class WalletsBusinessRepository implements Database.IWalletsBusinessRepos
         return undefined;
     }
 
-    public count(scope: Database.SearchScope): number {
-        return this.search(scope, {}).count;
+    public async count(scope: Database.SearchScope): Promise<number> {
+        return (await this.search(scope, {})).count;
     }
 
-    public top(scope: Database.SearchScope, params: Database.IParameters = {}): Database.IRowsPaginated<State.IWallet> {
-        return this.search(scope, { ...params, ...{ orderBy: "balance:desc" } });
+    public async top(
+        scope: Database.SearchScope,
+        params: Database.IParameters = {},
+    ): Promise<Database.IRowsPaginated<State.IWallet>> {
+        return await this.search(scope, { ...params, ...{ orderBy: "balance:desc" } });
     }
 
     private searchWallets(params: Database.IParameters): ISearchContext<State.IWallet> {
@@ -115,7 +121,7 @@ export class WalletsBusinessRepository implements Database.IWalletsBusinessRepos
         };
     }
 
-    private searchDelegates(params: Database.IParameters): ISearchContext<State.IWallet> {
+    private async searchDelegates(params: Database.IParameters): Promise<ISearchContext<State.IWallet>> {
         const query: Record<string, string[]> = {
             exact: ["address", "publicKey"],
             like: ["username"],
@@ -155,9 +161,17 @@ export class WalletsBusinessRepository implements Database.IWalletsBusinessRepos
         }
 
         const manipulators = {
-            approval: delegateCalculator.calculateApproval,
             forgedTotal: delegateCalculator.calculateForgedTotal,
         };
+
+        await Promise.all(
+            entries.map(async delegate => {
+                const approval: number = await this.databaseServiceProvider().nftsBusinessRepository.calculateDelegateApproval(
+                    delegate,
+                );
+                delegate.setAttribute(`delegate.approval`, approval);
+            }),
+        );
 
         if (hasSomeProperty(params, Object.keys(manipulators))) {
             entries = entries.map(delegate => {

@@ -5,7 +5,7 @@ import { paginate, respondWithResource, toPagination } from "../../handlers/util
 import { ServerCache } from "../../services";
 import { networkNfts } from "./utils";
 
-const nftsRepository: NftsBusinessRepository = new NftsBusinessRepository(
+export const nftsRepository: NftsBusinessRepository = new NftsBusinessRepository(
     app.resolvePlugin<ConnectionManager>("database-manager").connection(),
 );
 

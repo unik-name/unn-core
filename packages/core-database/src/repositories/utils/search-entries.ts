@@ -55,8 +55,6 @@ const applyOrder = (
 
 const manipulateIteratee = (iteratee): any => {
     switch (iteratee) {
-        case "approval":
-            return delegateCalculator.calculateApproval;
         case "forgedTotal":
             return delegateCalculator.calculateForgedTotal;
         case "votes":

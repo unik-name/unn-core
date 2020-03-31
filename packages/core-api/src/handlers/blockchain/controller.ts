@@ -1,6 +1,8 @@
 import { supplyCalculator } from "@arkecosystem/core-utils";
+import { Utils } from "@arkecosystem/crypto";
 import Boom from "@hapi/boom";
 import Hapi from "@hapi/hapi";
+import { nftsRepository } from "../../core-nft/handlers/methods";
 import { Controller } from "../shared/controller";
 
 export class BlockchainController extends Controller {
@@ -8,13 +10,17 @@ export class BlockchainController extends Controller {
         try {
             const lastBlock = this.blockchain.getLastBlock();
 
+            const rewardSupply: Utils.BigNumber = await nftsRepository.getNftTotalRewards(lastBlock.data.height);
+            const supply = Utils.BigNumber.make(supplyCalculator.calculate(lastBlock.data.height))
+                .plus(rewardSupply)
+                .toFixed();
             return {
                 data: {
                     block: {
                         height: lastBlock.data.height,
                         id: lastBlock.data.id,
                     },
-                    supply: supplyCalculator.calculate(lastBlock.data.height),
+                    supply,
                 },
             };
         } catch (error) {

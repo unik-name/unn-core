@@ -3,7 +3,7 @@ import { Blockchain, State } from "@arkecosystem/core-interfaces";
 import { Utils } from "@arkecosystem/crypto";
 import { supplyCalculator } from "./index";
 
-const toDecimal = (voteBalance: Utils.BigNumber, totalSupply: Utils.BigNumber): number => {
+export const toDecimal = (voteBalance: Utils.BigNumber, totalSupply: Utils.BigNumber): number => {
     const decimals: number = 2;
     const exponent: number = totalSupply.toString().length - voteBalance.toString().length + 4;
 

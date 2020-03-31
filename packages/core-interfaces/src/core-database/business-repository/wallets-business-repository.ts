@@ -15,8 +15,8 @@ export enum SearchScope {
 }
 
 export interface IWalletsBusinessRepository {
-    search<T>(scope: SearchScope, params: IParameters): IRowsPaginated<T>;
+    search<T>(scope: SearchScope, params: IParameters): Promise<IRowsPaginated<T>>;
     findById(searchScope: SearchScope, id: string): IWallet;
-    count(searchScope: SearchScope): number;
-    top(searchScope: SearchScope, params?: IParameters): IRowsPaginated<IWallet>;
+    count(searchScope: SearchScope): Promise<number>;
+    top(searchScope: SearchScope, params?: IParameters): Promise<IRowsPaginated<IWallet>>;
 }

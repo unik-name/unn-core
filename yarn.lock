@@ -179,21 +179,6 @@
     lodash.differencewith "^4.5.0"
     pluralize "^8.0.0"
 
-"@arkecosystem/core-utils@2.6.31", "@arkecosystem/core-utils@^2.6.31":
-  version "2.6.31"
-  resolved "https://registry.yarnpkg.com/@arkecosystem/core-utils/-/core-utils-2.6.31.tgz#def6a9df31e09fd0c832874564da0efca538efa6"
-  integrity sha512-4xLBOMINSV2GaXoK80qAb9YCO2BNCKWKv0jNv3Q4IGY97jcCizRhcncUe4GVmUVgOguZ+L41EXaoK8ckRDwrqw==
-  dependencies:
-    "@arkecosystem/core-container" "^2.6.31"
-    "@arkecosystem/core-interfaces" "^2.6.31"
-    "@arkecosystem/crypto" "^2.6.31"
-    cli-table3 "^0.5.1"
-    dayjs "^1.8.15"
-    fast-json-parse "^1.0.3"
-    got "^9.6.0"
-    immutable "^4.0.0-rc.12"
-    nanomatch "^1.2.13"
-
 "@arkecosystem/core-vote-report@2.6.31":
   version "2.6.31"
   resolved "https://registry.yarnpkg.com/@arkecosystem/core-vote-report/-/core-vote-report-2.6.31.tgz#f09bbc5da7c96f8a64c1c0fbc3a4d42119ccafae"

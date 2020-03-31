@@ -7,7 +7,7 @@ import { paginate, respondWithResource, toPagination } from "../utils";
 const databaseService = app.resolvePlugin<Database.IDatabaseService>("database");
 
 const index = async request => {
-    const businesses = databaseService.wallets.search(Database.SearchScope.Businesses, {
+    const businesses = await databaseService.wallets.search(Database.SearchScope.Businesses, {
         ...request.query,
         ...paginate(request),
     });
@@ -28,10 +28,12 @@ const show = async request => {
         }
     }
 
-    const business = databaseService.wallets.search(Database.SearchScope.Businesses, {
-        publicKey,
-        ...request.query,
-    }).rows[0];
+    const business = (
+        await databaseService.wallets.search(Database.SearchScope.Businesses, {
+            publicKey,
+            ...request.query,
+        })
+    ).rows[0];
 
     if (!business) {
         return Boom.notFound("Business not found");
@@ -47,7 +49,7 @@ const bridgechains = async request => {
         return Boom.notFound("Business not found");
     }
 
-    const bridgechains = databaseService.wallets.search(Database.SearchScope.Bridgechains, {
+    const bridgechains = await databaseService.wallets.search(Database.SearchScope.Bridgechains, {
         publicKey: wallet.publicKey,
         ...request.query,
         ...paginate(request),
@@ -72,7 +74,7 @@ const bridgechain = async request => {
 };
 
 const search = async request => {
-    const businesses = databaseService.wallets.search(Database.SearchScope.Businesses, {
+    const businesses = await databaseService.wallets.search(Database.SearchScope.Businesses, {
         ...request.payload,
         ...request.query,
         ...paginate(request),

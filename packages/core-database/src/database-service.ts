@@ -1,6 +1,6 @@
 import { app } from "@arkecosystem/core-container";
 import { ApplicationEvents } from "@arkecosystem/core-event-emitter";
-import { Database, EventEmitter, Logger, Shared, State } from "@arkecosystem/core-interfaces";
+import { Database, EventEmitter, Logger, NFT, Shared, State } from "@arkecosystem/core-interfaces";
 import { Wallets } from "@arkecosystem/core-state";
 import { Handlers } from "@arkecosystem/core-transactions";
 import { roundCalculator } from "@arkecosystem/core-utils";
@@ -18,6 +18,7 @@ export class DatabaseService implements Database.IDatabaseService {
     public wallets: Database.IWalletsBusinessRepository;
     public blocksBusinessRepository: Database.IBlocksBusinessRepository;
     public transactionsBusinessRepository: Database.ITransactionsBusinessRepository;
+    public nftsBusinessRepository: NFT.INftsBusinessRepository;
     public blocksInCurrentRound: Interfaces.IBlock[] = undefined;
     public restoredDatabaseIntegrity: boolean = false;
     public forgingDelegates: State.IWallet[] = undefined;
@@ -30,6 +31,7 @@ export class DatabaseService implements Database.IDatabaseService {
         walletsBusinessRepository: Database.IWalletsBusinessRepository,
         transactionsBusinessRepository: Database.ITransactionsBusinessRepository,
         blocksBusinessRepository: Database.IBlocksBusinessRepository,
+        nftsBusinessRepository: NFT.INftsBusinessRepository,
     ) {
         this.connection = connection;
         this.walletManager = walletManager;
@@ -37,6 +39,7 @@ export class DatabaseService implements Database.IDatabaseService {
         this.wallets = walletsBusinessRepository;
         this.blocksBusinessRepository = blocksBusinessRepository;
         this.transactionsBusinessRepository = transactionsBusinessRepository;
+        this.nftsBusinessRepository = nftsBusinessRepository;
     }
 
     public async init(): Promise<void> {

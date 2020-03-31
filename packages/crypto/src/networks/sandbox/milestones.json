@@ -35,6 +35,7 @@
             "minimumVersions": ["^5.0.1 || ^5.0.1-beta || ^5.0.1-dev"]
         },
         "voucherRewards": {
+            "forger": 100000000,
             "sender": 1000000000,
             "foundation": 8900000000
         }

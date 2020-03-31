@@ -112,6 +112,7 @@
     },
     "workspaces": [
         "packages/crypto",
+        "packages/core-utils",
         "packages/core-container",
         "packages/core-database-postgres",
         "packages/core-database",
@@ -138,8 +139,7 @@
         "@arkecosystem/core-magistrate-transactions": "2.6.31",
         "@arkecosystem/core-transaction-pool": "2.6.31",
         "@arkecosystem/core-wallet-api": "2.6.31",
-        "@arkecosystem/core-webhooks": "2.6.31",
-        "@arkecosystem/core-utils": "2.6.31"
+        "@arkecosystem/core-webhooks": "2.6.31"
     },
     "husky": {
         "hooks": {

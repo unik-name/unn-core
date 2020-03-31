@@ -8,7 +8,7 @@ const databaseService = app.resolvePlugin<Database.IDatabaseService>("database")
 const blocksRepository = databaseService.blocksBusinessRepository;
 
 const index = async request => {
-    const delegates = databaseService.wallets.search(Database.SearchScope.Delegates, {
+    const delegates = await databaseService.wallets.search(Database.SearchScope.Delegates, {
         ...request.query,
         ...paginate(request),
     });
@@ -27,7 +27,7 @@ const show = async request => {
 };
 
 const search = async request => {
-    const delegates = databaseService.wallets.search(Database.SearchScope.Delegates, {
+    const delegates = await databaseService.wallets.search(Database.SearchScope.Delegates, {
         ...request.payload,
         ...request.query,
         ...paginate(request),
@@ -55,7 +55,7 @@ const voters = async request => {
         return Boom.notFound("Delegate not found");
     }
 
-    const wallets = databaseService.wallets.search(Database.SearchScope.Wallets, {
+    const wallets = await databaseService.wallets.search(Database.SearchScope.Wallets, {
         ...request.query,
         ...{ vote: delegate.publicKey },
         ...paginate(request),

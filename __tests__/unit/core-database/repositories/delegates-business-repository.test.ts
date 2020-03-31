@@ -3,6 +3,7 @@ import "jest-extended";
 import "../mocks/core-container";
 
 import { Database, State } from "@arkecosystem/core-interfaces";
+import { INftsBusinessRepository } from "@arkecosystem/core-interfaces/dist/core-nft";
 import { delegateCalculator } from "@arkecosystem/core-utils";
 import { Utils } from "@arkecosystem/crypto";
 import { WalletsBusinessRepository } from "../../../../packages/core-database/src";
@@ -19,7 +20,23 @@ beforeEach(async () => {
     walletManager = new WalletManager();
 
     walletsRepository = new WalletsBusinessRepository(() => databaseService);
-    databaseService = new DatabaseService(undefined, undefined, walletManager, walletsRepository, undefined, undefined);
+    databaseService = new DatabaseService(
+        undefined,
+        undefined,
+        walletManager,
+        walletsRepository,
+        undefined,
+        undefined,
+        undefined,
+    );
+
+    // UNS mocks
+    const nftRewardsMock = jest.fn().mockResolvedValue(Utils.BigNumber.make("10000"));
+    const approvalMock = jest.fn().mockResolvedValue(0.26);
+    databaseService.nftsBusinessRepository = ({
+        getNftTotalRewards: nftRewardsMock,
+        calculateDelegateApproval: approvalMock,
+    } as any) as INftsBusinessRepository;
 });
 
 const generateWallets = (): Wallet[] => {
@@ -56,8 +73,8 @@ describe("Wallet Repository - Delegates", () => {
             return Object.assign(wallet, { attributes: { delegate } });
         });
 
-        const search = (params: Database.IParameters = {}): Database.IRowsPaginated<State.IWallet> => {
-            return walletsRepository.search(Database.SearchScope.Delegates, params);
+        const search = async (params: Database.IParameters = {}): Promise<Database.IRowsPaginated<State.IWallet>> => {
+            return await walletsRepository.search(Database.SearchScope.Delegates, params);
         };
 
         beforeEach(() => {
@@ -65,20 +82,20 @@ describe("Wallet Repository - Delegates", () => {
             walletManager.index(wallets);
         });
 
-        it("should return the local wallets of the connection that are delegates", () => {
+        it("should return the local wallets of the connection that are delegates", async () => {
             jest.spyOn(walletManager, "allByUsername").mockReturnValue(wallets);
 
-            const { rows } = search();
+            const { rows } = await search();
 
             expect(rows).toEqual(expect.arrayContaining(wallets));
             expect(walletManager.allByUsername).toHaveBeenCalled();
         });
 
-        it("should be ok with params (forgedTotal)", () => {
+        it("should be ok with params (forgedTotal)", async () => {
             // @ts-ignore
             jest.spyOn(walletManager, "allByUsername").mockReturnValue(wallets);
 
-            const { rows } = search({ forgedTotal: undefined });
+            const { rows } = await search({ forgedTotal: undefined });
 
             for (const delegate of rows) {
                 expect(delegate.hasAttribute("delegate.forgedTotal")).toBeTrue();
@@ -88,11 +105,12 @@ describe("Wallet Repository - Delegates", () => {
             }
         });
 
-        it("should be ok without params", () => {
+        it("should be ok without params", async () => {
             const wallets = generateWallets();
             walletManager.index(wallets);
 
-            const { count, rows } = search({});
+            const { count, rows } = await search({});
+
             expect(count).toBe(52);
             expect(rows).toHaveLength(52);
             expect(
@@ -100,67 +118,67 @@ describe("Wallet Repository - Delegates", () => {
             ).toEqual(rows);
         });
 
-        it("should be ok with params", () => {
+        it("should be ok with params", async () => {
             const wallets = generateWallets();
             walletManager.index(wallets);
 
-            const { count, rows } = search({ offset: 10, limit: 10, orderBy: "rate:desc" });
+            const { count, rows } = await search({ offset: 10, limit: 10, orderBy: "rate:desc" });
             expect(count).toBe(52);
             expect(rows).toHaveLength(10);
             expect((rows as any).sort((a, b) => a.rate > b.rate)).toEqual(rows);
         });
 
-        it("should be ok with params (no offset)", () => {
+        it("should be ok with params (no offset)", async () => {
             const wallets = generateWallets();
             walletManager.index(wallets);
 
-            const { count, rows } = search({ limit: 10 });
+            const { count, rows } = await search({ limit: 10 });
             expect(count).toBe(52);
             expect(rows).toHaveLength(10);
         });
 
-        it("should be ok with params (offset = 0)", () => {
+        it("should be ok with params (offset = 0)", async () => {
             const wallets = generateWallets();
             walletManager.index(wallets);
 
-            const { count, rows } = search({ offset: 0, limit: 12 });
+            const { count, rows } = await search({ offset: 0, limit: 12 });
             expect(count).toBe(52);
             expect(rows).toHaveLength(12);
         });
 
-        it("should be ok with params (no limit)", () => {
+        it("should be ok with params (no limit)", async () => {
             const wallets = generateWallets();
             walletManager.index(wallets);
 
-            const { count, rows } = search({ offset: 10 });
+            const { count, rows } = await search({ offset: 10 });
             expect(count).toBe(52);
             expect(rows).toHaveLength(42);
         });
 
         describe("by `username`", () => {
-            it("should search by exact match", () => {
+            it("should search by exact match", async () => {
                 const username = "username-APnhwwyTbMiykJwYbGhYjNgtHiVJDSEhSn";
-                const { count, rows } = search({ username });
+                const { count, rows } = await search({ username });
 
                 expect(count).toBe(1);
                 expect(rows).toHaveLength(1);
                 expect(rows[0].getAttribute("delegate.username")).toEqual(username);
             });
 
-            it("should search that username contains the string", () => {
-                const { count, rows } = search({ username: "username" });
+            it("should search that username contains the string", async () => {
+                const { count, rows } = await search({ username: "username" });
 
                 expect(count).toBe(52);
                 expect(rows).toHaveLength(52);
             });
 
             describe('when a username is "undefined"', () => {
-                it("should return it", () => {
+                it("should return it", async () => {
                     // Index a wallet with username "undefined"
                     walletManager.allByAddress()[0].setAttribute("delegate", { username: "undefined" });
 
                     const username = "undefined";
-                    const { count, rows } = search({ username });
+                    const { count, rows } = await search({ username });
 
                     expect(count).toBe(1);
                     expect(rows).toHaveLength(1);
@@ -169,8 +187,8 @@ describe("Wallet Repository - Delegates", () => {
             });
 
             describe("when the username does not exist", () => {
-                it("should return no results", () => {
-                    const { count, rows } = search({
+                it("should return no results", async () => {
+                    const { count, rows } = await search({
                         username: "unknown-dummy-username",
                     });
 
@@ -179,8 +197,8 @@ describe("Wallet Repository - Delegates", () => {
                 });
             });
 
-            it("should be ok with params", () => {
-                const { count, rows } = search({
+            it("should be ok with params", async () => {
+                const { count, rows } = await search({
                     username: "username",
                     offset: 10,
                     limit: 10,
@@ -189,8 +207,8 @@ describe("Wallet Repository - Delegates", () => {
                 expect(rows).toHaveLength(10);
             });
 
-            it("should be ok with params (no offset)", () => {
-                const { count, rows } = search({
+            it("should be ok with params (no offset)", async () => {
+                const { count, rows } = await search({
                     username: "username",
                     limit: 10,
                 });
@@ -198,8 +216,8 @@ describe("Wallet Repository - Delegates", () => {
                 expect(rows).toHaveLength(10);
             });
 
-            it("should be ok with params (offset = 0)", () => {
-                const { count, rows } = search({
+            it("should be ok with params (offset = 0)", async () => {
+                const { count, rows } = await search({
                     username: "username",
                     offset: 0,
                     limit: 12,
@@ -208,8 +226,8 @@ describe("Wallet Repository - Delegates", () => {
                 expect(rows).toHaveLength(12);
             });
 
-            it("should be ok with params (no limit)", () => {
-                const { count, rows } = search({
+            it("should be ok with params (no limit)", async () => {
+                const { count, rows } = await search({
                     username: "username",
                     offset: 10,
                 });
@@ -219,13 +237,13 @@ describe("Wallet Repository - Delegates", () => {
         });
 
         describe("by `usernames`", () => {
-            it("should search by exact match", () => {
+            it("should search by exact match", async () => {
                 const usernames = [
                     "username-APnhwwyTbMiykJwYbGhYjNgtHiVJDSEhSn",
                     "username-AG8kwwk4TsYfA2HdwaWBVAJQBj6VhdcpMo",
                     "username-AHXtmB84sTZ9Zd35h9Y1vfFvPE2Xzqj8ri",
                 ];
-                const { count, rows } = search({ usernames });
+                const { count, rows } = await search({ usernames });
 
                 expect(count).toBe(3);
                 expect(rows).toHaveLength(3);
@@ -236,12 +254,12 @@ describe("Wallet Repository - Delegates", () => {
             });
 
             describe('when a username is "undefined"', () => {
-                it("should return it", () => {
+                it("should return it", async () => {
                     // Index a wallet with username "undefined"
                     walletManager.allByAddress()[0].setAttribute("delegate", { username: "undefined" });
 
                     const usernames = ["undefined"];
-                    const { count, rows } = search({ usernames });
+                    const { count, rows } = await search({ usernames });
 
                     expect(count).toBe(1);
                     expect(rows).toHaveLength(1);
@@ -250,8 +268,8 @@ describe("Wallet Repository - Delegates", () => {
             });
 
             describe("when the username does not exist", () => {
-                it("should return no results", () => {
-                    const { count, rows } = search({
+                it("should return no results", async () => {
+                    const { count, rows } = await search({
                         usernames: ["unknown-dummy-username"],
                     });
 
@@ -260,8 +278,8 @@ describe("Wallet Repository - Delegates", () => {
                 });
             });
 
-            it("should be ok with params", () => {
-                const { count, rows } = search({
+            it("should be ok with params", async () => {
+                const { count, rows } = await search({
                     usernames: [
                         "username-APnhwwyTbMiykJwYbGhYjNgtHiVJDSEhSn",
                         "username-AG8kwwk4TsYfA2HdwaWBVAJQBj6VhdcpMo",
@@ -273,8 +291,8 @@ describe("Wallet Repository - Delegates", () => {
                 expect(rows).toHaveLength(1);
             });
 
-            it("should be ok with params (no offset)", () => {
-                const { count, rows } = search({
+            it("should be ok with params (no offset)", async () => {
+                const { count, rows } = await search({
                     usernames: [
                         "username-APnhwwyTbMiykJwYbGhYjNgtHiVJDSEhSn",
                         "username-AG8kwwk4TsYfA2HdwaWBVAJQBj6VhdcpMo",
@@ -285,8 +303,8 @@ describe("Wallet Repository - Delegates", () => {
                 expect(rows).toHaveLength(1);
             });
 
-            it("should be ok with params (offset = 0)", () => {
-                const { count, rows } = search({
+            it("should be ok with params (offset = 0)", async () => {
+                const { count, rows } = await search({
                     usernames: [
                         "username-APnhwwyTbMiykJwYbGhYjNgtHiVJDSEhSn",
                         "username-AG8kwwk4TsYfA2HdwaWBVAJQBj6VhdcpMo",
@@ -298,8 +316,8 @@ describe("Wallet Repository - Delegates", () => {
                 expect(rows).toHaveLength(2);
             });
 
-            it("should be ok with params (no limit)", () => {
-                const { count, rows } = search({
+            it("should be ok with params (no limit)", async () => {
+                const { count, rows } = await search({
                     usernames: [
                         "username-APnhwwyTbMiykJwYbGhYjNgtHiVJDSEhSn",
                         "username-AG8kwwk4TsYfA2HdwaWBVAJQBj6VhdcpMo",
@@ -312,14 +330,14 @@ describe("Wallet Repository - Delegates", () => {
         });
 
         describe("when searching by `username` and `usernames`", () => {
-            it("should search delegates only by `username`", () => {
+            it("should search delegates only by `username`", async () => {
                 const username = "username-APnhwwyTbMiykJwYbGhYjNgtHiVJDSEhSn";
                 const usernames = [
                     "username-AG8kwwk4TsYfA2HdwaWBVAJQBj6VhdcpMo",
                     "username-AHXtmB84sTZ9Zd35h9Y1vfFvPE2Xzqj8ri",
                 ];
 
-                const { count, rows } = search({ username, usernames });
+                const { count, rows } = await search({ username, usernames });
 
                 expect(count).toBe(1);
                 expect(rows).toHaveLength(1);
@@ -327,19 +345,19 @@ describe("Wallet Repository - Delegates", () => {
         });
 
         describe("when searching without params", () => {
-            it("should return all results", () => {
-                const { count, rows } = search({});
+            it("should return all results", async () => {
+                const { count, rows } = await search({});
 
                 expect(count).toBe(52);
                 expect(rows).toHaveLength(52);
             });
 
             describe('when a username is "undefined"', () => {
-                it("should return all results", () => {
+                it("should return all results", async () => {
                     // Index a wallet with username "undefined"
                     walletManager.allByAddress()[0].setAttribute("delegate", { username: "undefined" });
 
-                    const { count, rows } = search({});
+                    const { count, rows } = await search({});
                     expect(count).toBe(52);
                     expect(rows).toHaveLength(52);
                 });

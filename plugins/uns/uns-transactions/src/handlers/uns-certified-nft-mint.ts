@@ -11,7 +11,6 @@ import {
     INftMintDemandCertificationPayload,
     NftMintDemandCertificationSigner,
     NftMintDemandHashBuffer,
-    UnsTransactionStaticFees,
 } from "@uns/crypto";
 import { VoucherAlreadyUsedError, WrongFeeError } from "../errors";
 import { CertifiedTransactionHandler } from "./uns-certified-handler";
@@ -71,8 +70,9 @@ export class CertifiedNftMintTransactionHandler extends NftMintTransactionHandle
         await this.throwIfCannotBeCertified(transaction, walletManager);
 
         if (this.hasVoucher(transaction.data.asset)) {
-            // Check minimum Fees
-            if (!transaction.data.fee.isEqualTo(Utils.BigNumber.make(UnsTransactionStaticFees.UnsVoucherNftMint))) {
+            const rewards = Managers.configManager.getMilestone().voucherRewards;
+            // Fees should be equal to forger reward
+            if (!transaction.data.fee.isEqualTo(Utils.BigNumber.make(rewards.forger))) {
                 throw new WrongFeeError(transaction.data.id);
             }
             // Check voucher existence in DB

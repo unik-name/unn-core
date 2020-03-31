@@ -68,6 +68,7 @@ export interface IWalletDelegateAttributes {
     lastBlock?: Interfaces.IBlockData;
     round?: number;
     resigned?: boolean;
+    approval?: number;
 }
 
 export type IWalletMultiSignatureAttributes = Interfaces.IMultiSignatureAsset & { legacy?: boolean };

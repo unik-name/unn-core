@@ -7,7 +7,7 @@ import { paginate, respondWithResource, toPagination } from "../utils";
 const databaseService = app.resolvePlugin<Database.IDatabaseService>("database");
 
 const index = async request => {
-    const locks = databaseService.wallets.search(Database.SearchScope.Locks, {
+    const locks = await databaseService.wallets.search(Database.SearchScope.Locks, {
         ...request.query,
         ...paginate(request),
     });
@@ -16,9 +16,11 @@ const index = async request => {
 };
 
 const show = async request => {
-    const lock = databaseService.wallets.search(Database.SearchScope.Locks, {
-        lockId: request.params.id,
-    }).rows[0];
+    const lock = (
+        await databaseService.wallets.search(Database.SearchScope.Locks, {
+            lockId: request.params.id,
+        })
+    ).rows[0];
 
     if (!lock) {
         return Boom.notFound("Lock not found");
@@ -28,7 +30,7 @@ const show = async request => {
 };
 
 const search = async request => {
-    const locks = databaseService.wallets.search(Database.SearchScope.Locks, {
+    const locks = await databaseService.wallets.search(Database.SearchScope.Locks, {
         ...request.payload,
         ...request.query,
         ...paginate(request),

@@ -6,7 +6,7 @@ import { paginate, toPagination } from "../utils";
 const databaseService = app.resolvePlugin<Database.IDatabaseService>("database");
 
 const index = async request => {
-    const bridgechains = databaseService.wallets.search(Database.SearchScope.Bridgechains, {
+    const bridgechains = await databaseService.wallets.search(Database.SearchScope.Bridgechains, {
         ...request.query,
         ...paginate(request),
     });
@@ -15,7 +15,7 @@ const index = async request => {
 };
 
 const search = async request => {
-    const bridgechains = databaseService.wallets.search(Database.SearchScope.Bridgechains, {
+    const bridgechains = await databaseService.wallets.search(Database.SearchScope.Bridgechains, {
         ...request.payload,
         ...request.query,
         ...paginate(request),

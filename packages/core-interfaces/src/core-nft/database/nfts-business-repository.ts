@@ -1,5 +1,5 @@
-import { Interfaces } from "@arkecosystem/crypto";
-import { Database } from "../..";
+import { Interfaces, Utils } from "@arkecosystem/crypto";
+import { Database, State } from "../..";
 
 export interface INftsBusinessRepository {
     findById(id: string): Promise<any>;
@@ -14,4 +14,6 @@ export interface INftsBusinessRepository {
         typeGroup: number,
         order?: string,
     ): Promise<Interfaces.ITransactionData[]>;
+    getNftTotalRewards(height: number, nftName?: string): Promise<Utils.BigNumber>;
+    calculateDelegateApproval(delegate: State.IWallet, height?: number): Promise<number>;
 }

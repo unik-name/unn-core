@@ -1,17 +1,15 @@
 import { app } from "@arkecosystem/core-container";
 import { Database } from "@arkecosystem/core-interfaces";
-import { Enums } from "@arkecosystem/crypto";
 import Boom from "@hapi/boom";
 import { ServerCache } from "../../services";
 import { paginate, respondWithResource, toPagination } from "../utils";
-
-const { TransactionType } = Enums;
 
 const databaseService = app.resolvePlugin<Database.IDatabaseService>("database");
 const transactionsRepository = databaseService.transactionsBusinessRepository;
 
 const index = async request => {
-    const transactions = await transactionsRepository.findAllByType(TransactionType.Vote, {
+    const transactions = await transactionsRepository.findAllByType(5 /*UnsVote*/, {
+        typeGroup: 2001,
         ...request.query,
         ...paginate(request),
     });
@@ -20,7 +18,7 @@ const index = async request => {
 };
 
 const show = async request => {
-    const transaction = await transactionsRepository.findByTypeAndId(TransactionType.Vote, request.params.id);
+    const transaction = await transactionsRepository.findByTypeAndId(5 /*UnsVote*/, request.params.id, 2001);
 
     if (!transaction) {
         return Boom.notFound("Vote not found");

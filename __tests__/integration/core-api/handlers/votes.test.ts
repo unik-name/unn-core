@@ -7,7 +7,8 @@ const voteId = "ea294b610e51efb3ceb4229f27bf773e87f41d21b6bb1f3bf68629ffd652c2d3
 beforeAll(async () => await setUp());
 afterAll(async () => await tearDown());
 
-describe("API 2.0 - Votes", () => {
+// UNS: skip followings test because it uses a fixture blockgenesis containing legacy ark vote transactions
+describe.skip("API 2.0 - Votes", () => {
     describe("GET /votes", () => {
         it("should GET all the votes", async () => {
             const response = await utils.request("GET", "votes");

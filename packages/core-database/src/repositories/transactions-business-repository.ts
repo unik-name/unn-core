@@ -27,7 +27,7 @@ export class TransactionsBusinessRepository implements Database.ITransactionsBus
         parameters: Database.IParameters = {},
     ): Promise<Database.ITransactionsPaginated> {
         return this.search({
-            ...{ senderPublicKey, type: Enums.TransactionType.Vote, typeGroup: Enums.TransactionTypeGroup.Core },
+            ...{ senderPublicKey, type: 5 /*UnsVote*/, typeGroup: 2001 },
             ...parameters,
         });
     }
@@ -67,8 +67,8 @@ export class TransactionsBusinessRepository implements Database.ITransactionsBus
         ))[0];
     }
 
-    public async findByTypeAndId(type: number, id: string) {
-        const results = await this.search({ type, id });
+    public async findByTypeAndId(type: number, id: string, typeGroup?: number) {
+        const results = await this.search({ type, id, typeGroup });
         return results.rows.length ? results.rows[0] : undefined;
     }
 

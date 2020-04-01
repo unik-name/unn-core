@@ -166,8 +166,8 @@ describe("API 2.0 - Wallets", () => {
             const response = await utils.request("GET", `wallets/${address}/votes`);
             expect(response).toBeSuccessfulResponse();
             expect(response.data.data).toBeArray();
-
-            expect(response.data.data[0]).toBeObject();
+            // UNS: vote api works with unsVote transaction
+            // expect(response.data.data[0]).toBeObject();
         });
 
         it("should fail to GET all the votes for the given wallet if it doesn't exist", async () => {

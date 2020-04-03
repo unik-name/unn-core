@@ -25,5 +25,11 @@
     },
     "foundation": {
         "publicKey": "0234886b5546a65beb0341b0f40f321fdc898a3e2a0831ef7578c208aa8870624f"
-    }
+    },
+    "delegateWhitelistUniks": [
+        "43e68d742436fdf1e1f542818276b6c5f40c5e668481ea4255b19d15190688d3",
+        "470143f9be3061dba418664dc4a2e930f6536aa34fc06518dbaa4ae714168a9c",
+        "d150f2f61e59e84a7fd39c92075ec326b53cb5024fd7fa7ed921bcbde5343e46",
+        "0766a09720ce88a88803a59e9e02d394232534dbed06961812c355c63befdc33"
+    ]
 }

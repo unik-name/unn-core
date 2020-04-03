@@ -98,6 +98,7 @@ export class Config {
                     foundation: Joi.object({
                         publicKey: Joi.string().required(),
                     }),
+                    delegateWhitelistUniks: Joi.array().items(Joi.string()),
                 }).required(),
             }),
         );

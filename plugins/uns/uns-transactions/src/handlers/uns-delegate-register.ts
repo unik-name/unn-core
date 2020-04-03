@@ -1,7 +1,7 @@
 import { State } from "@arkecosystem/core-interfaces";
 import { TransactionHandlerConstructor } from "@arkecosystem/core-transactions/dist/handlers";
 import { DelegateRegistrationTransactionHandler } from "@arkecosystem/core-transactions/dist/handlers/delegate-registration";
-import { Interfaces, Transactions } from "@arkecosystem/crypto";
+import { Interfaces, Managers, Transactions } from "@arkecosystem/crypto";
 import { NftMintTransactionHandler, NftOwnerError } from "@uns/core-nft";
 import { DelegateRegisterTransaction, DIDHelpers, DIDTypes } from "@uns/crypto";
 import { CryptoAccountHasSeveralUniksError, InvalidUnikTypeError, UnikNameNotDisclosedError } from "../errors";
@@ -52,7 +52,7 @@ export class DelegateRegisterTransactionHandler extends DelegateRegistrationTran
         // check UNIK Type
         const nftType = parseInt(properties.find(elt => elt.key === "type").value);
 
-        if (!(nftType === DIDTypes.INDIVIDUAL || nftType === DIDTypes.ORGANIZATION)) {
+        if (!(nftType === DIDTypes.INDIVIDUAL || nftType === DIDTypes.ORGANIZATION) && !this.isWhitelisted(nftId)) {
             throw new InvalidUnikTypeError(DIDHelpers.fromCode(nftType));
         }
 
@@ -81,5 +81,9 @@ export class DelegateRegisterTransactionHandler extends DelegateRegistrationTran
             const nftId: string = transaction.data.asset.delegate.username;
             await getNftsManager().deleteProperty(DELEGATE_BADGE, nftId);
         }
+    }
+
+    private isWhitelisted(nftId: string): boolean {
+        return Managers.configManager.get("network.delegateWhitelistUniks").includes(nftId);
     }
 }

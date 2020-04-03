@@ -61,6 +61,23 @@ describe("UnsDelegateRegister Transaction", () => {
             expect(nftManager.getProperties).toHaveBeenCalledWith(TOKEN_ID);
         });
 
+        it("should not throw for unik of type network whitelisted", async () => {
+            const properties = [
+                { key: "type", value: "3" },
+                { key: EXPLICIT_PROP_KEY, value: "unsBounty" },
+            ];
+            nftManager.getProperties.mockReturnValueOnce(properties);
+            const whiteListedUnik = Managers.configManager.get("network.delegateWhitelistUniks")[0];
+            senderWallet.setAttribute("tokens", { tokens: [whiteListedUnik] });
+            walletManager.reindex(senderWallet);
+            transaction = builder
+                .usernameAsset(whiteListedUnik)
+                .nonce("1")
+                .sign(DEMANDER_PASSPHRASE);
+            await expect(handler.throwIfCannotBeApplied(transaction.build(), senderWallet, walletManager)).toResolve();
+            expect(nftManager.getProperties).toHaveBeenCalledWith(whiteListedUnik);
+        });
+
         it("should throw NftOwnerError", async () => {
             transaction.usernameAsset("deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef");
             await expect(

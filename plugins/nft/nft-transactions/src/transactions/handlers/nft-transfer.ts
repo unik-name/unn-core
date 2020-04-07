@@ -8,7 +8,7 @@ import { addNftToWallet, applyNftTransferDb, removeNftFromWallet } from "./helpe
 
 export class NftTransferTransactionHandler extends Handlers.TransactionHandler {
     public async isActivated(): Promise<boolean> {
-        return true;
+        return this.isTransactionActivated();
     }
 
     public getConstructor(): Transactions.TransactionConstructor {

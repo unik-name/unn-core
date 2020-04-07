@@ -28,8 +28,9 @@ describe("UnsDelegateRegister Transaction", () => {
 
     const DEMANDER_PASSPHRASE = "owner passphrase";
     const TOKEN_ID = "ee16f4b75f38f6e3d16635f72a8445e0ff8fbacfdfa8f05df077e73de79d6e4f";
+    const nftType = "2";
     const properties = [
-        { key: "type", value: "2" },
+        { key: "type", value: nftType },
         { key: EXPLICIT_PROP_KEY, value: "tatalol" },
     ];
     beforeEach(async () => {
@@ -112,15 +113,13 @@ describe("UnsDelegateRegister Transaction", () => {
     });
 
     describe("apply", () => {
-        it("should set delegate.username", async () => {
+        it("should apply and set attributes and badge", async () => {
             nftManager.getProperties.mockReturnValueOnce(properties);
-            await expect(handler.apply(transaction.build(), walletManager)).toResolve();
-            expect(senderWallet.getAttribute("delegate.username")).toBe(TOKEN_ID);
-        });
+            nftManager.getProperty.mockReturnValueOnce({ value: nftType });
 
-        it("should set delegate Badge", async () => {
-            nftManager.getProperties.mockReturnValueOnce(properties);
             await expect(handler.apply(transaction.build(), walletManager, true)).toResolve();
+            expect(senderWallet.getAttribute<string>("delegate.username")).toBe(TOKEN_ID);
+            expect(senderWallet.getAttribute<number>("delegate.type")).toBe(parseInt(nftType));
             expect(nftManager.manageProperties).toHaveBeenCalledWith({ [DELEGATE_BADGE]: "true" }, TOKEN_ID);
         });
     });

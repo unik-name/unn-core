@@ -12,3 +12,7 @@ export const applyMixins = (derivedCtor: any, baseCtors: any[]) => {
         }
     }
 };
+
+export const isUnikId = (username: string): boolean => {
+    return /^[a-f0-9]{64}$/.test(username);
+};

@@ -1,7 +1,7 @@
 import { app } from "@arkecosystem/core-container";
 import { Database } from "@arkecosystem/core-interfaces";
-import { IWalletManager } from "@arkecosystem/core-interfaces/dist/core-state";
-import { Identities } from "@arkecosystem/crypto";
+import { IWallet, IWalletManager } from "@arkecosystem/core-interfaces/dist/core-state";
+import { Identities, Managers } from "@arkecosystem/crypto";
 import { DELEGATE_BADGE } from "@uns/uns-transactions";
 import { EXPLICIT_PROP_KEY } from "@uns/uns-transactions/src/handlers/utils/helpers";
 import * as support from "../__support__";
@@ -23,7 +23,8 @@ describe("Uns delegate scenario", () => {
         await NftSupport.transferAndWait(Identities.Address.fromPassphrase(delegatePasshrase), 10);
 
         const nftId = NftSupport.generateNftId();
-        let trx = await NftSupport.mintAndWait(nftId, delegatePasshrase);
+        const nftType = "2"; // Organization
+        let trx = await NftSupport.mintAndWait(nftId, { type: nftType }, delegatePasshrase);
         await expect(trx.id).toBeForged();
 
         const discloseDemand = await UnsSupport.discloseDemand(nftId, delegatePasshrase, ["voteForMe"]);
@@ -31,55 +32,63 @@ describe("Uns delegate scenario", () => {
         await expect(trx.id).toBeForged();
         await expect({
             tokenId: nftId,
-            properties: { [EXPLICIT_PROP_KEY]: "voteForMe" },
+            properties: { type: nftType, [EXPLICIT_PROP_KEY]: "voteForMe" },
         }).toMatchProperties();
 
         trx = await UnsSupport.delegateRegisterAndWait(nftId, delegatePasshrase);
         await expect(trx.id).toBeForged();
         await expect({
             tokenId: nftId,
-            properties: { [DELEGATE_BADGE.replace(/\//g, "%2F")]: "true" },
+            properties: { type: nftType, [DELEGATE_BADGE.replace(/\//g, "%2F")]: "true" },
         }).toMatchProperties();
 
         const walletManager: IWalletManager = app.resolvePlugin<Database.IDatabaseService>("database").walletManager;
+        const delegateWallet = walletManager.findByPublicKey(delegatePubKey);
 
-        const getVoteAmount = (pubkey: string): number => {
-            const votes: string = walletManager.findByPublicKey(pubkey).getAttribute("delegate.voteBalance");
+        const getVoteAmount = (wallet: IWallet): number => {
+            const votes: string = wallet.getAttribute("delegate.voteBalance");
             return Number.parseInt(votes);
         };
 
         // Delegate votes for himself
-        const initialVote = getVoteAmount(delegatePubKey);
+        const initialVote = getVoteAmount(delegateWallet);
         trx = await UnsSupport.voteAndWait(delegatePubKey, delegatePasshrase);
         await expect(trx.id).toBeForged();
-        const afterVote1: number = getVoteAmount(delegatePubKey);
+        const afterVote1: number = getVoteAmount(delegateWallet);
         expect(afterVote1).toBeGreaterThan(initialVote);
-        expect(walletManager.findByPublicKey(delegatePubKey).getAttribute("vote")).toEqual(delegatePubKey);
+        expect(delegateWallet.getAttribute("vote")).toEqual(delegatePubKey);
 
         // Genesis votes for delegate
         // Genesis must have a unik token to vote
-        trx = await NftSupport.mintAndWait(NftSupport.generateNftId());
+        trx = await NftSupport.mintAndWait(NftSupport.generateNftId(), { type: nftType });
         await expect(trx.id).toBeForged();
 
         const genesisPubKey: string = Identities.PublicKey.fromPassphrase(NftSupport.defaultPassphrase);
+        const genesisWallet: IWallet = walletManager.findByPublicKey(genesisPubKey);
+
         trx = await UnsSupport.voteAndWait(delegatePubKey);
         await expect(trx.id).toBeForged();
-        const afterVote2: number = getVoteAmount(delegatePubKey);
+        const afterVote2: number = getVoteAmount(delegateWallet);
         expect(afterVote2).toBeGreaterThan(afterVote1);
-        expect(walletManager.findByPublicKey(genesisPubKey).getAttribute("vote")).toEqual(delegatePubKey);
+        expect(genesisWallet.getAttribute("vote")).toEqual(delegatePubKey);
+
+        // Check delegate attributes
+        expect(delegateWallet.getAttribute("delegate.type")).toEqual(parseInt(nftType));
+        const nbIndividuals = Managers.configManager.getMilestone().nbDelegatesByType.individual;
+        expect(delegateWallet.getAttribute("delegate.rank")).toEqual(nbIndividuals + 1);
 
         trx = await UnsSupport.unvoteAndWait(delegatePubKey, delegatePasshrase);
         await expect(trx.id).toBeForged();
-        const afterUnvote1: number = getVoteAmount(delegatePubKey);
+        const afterUnvote1: number = getVoteAmount(delegateWallet);
         expect(afterUnvote1).toBeLessThan(afterVote2);
         expect(afterUnvote1).toBeGreaterThan(afterVote1);
-        expect(walletManager.findByPublicKey(delegatePubKey).getAttribute("vote")).toBeUndefined();
+        expect(delegateWallet.getAttribute("vote")).toBeUndefined();
 
         trx = await UnsSupport.unvoteAndWait(delegatePubKey);
         await expect(trx.id).toBeForged();
-        const afterUnvote2: number = getVoteAmount(delegatePubKey);
+        const afterUnvote2: number = getVoteAmount(delegateWallet);
         expect(afterUnvote2).toEqual(0);
-        expect(walletManager.findByPublicKey(genesisPubKey).getAttribute("vote")).toBeUndefined();
+        expect(genesisWallet.getAttribute("vote")).toBeUndefined();
 
         trx = await UnsSupport.delegateResignAndWait(delegatePasshrase);
         await expect(trx.id).toBeForged();

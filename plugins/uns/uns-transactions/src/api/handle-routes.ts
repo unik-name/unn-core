@@ -1,6 +1,7 @@
 import { State } from "@arkecosystem/core-interfaces";
 import { Enums } from "@arkecosystem/crypto";
 import * as Hapi from "@hapi/hapi";
+import { isUnikId } from "@uns/crypto";
 import { EXPLICIT_PROP_KEY, getNftsManager, getWalletManager } from "../handlers/utils/helpers";
 import { isResponse } from "./utils";
 
@@ -66,10 +67,6 @@ const isVoteTransaction = transaction => {
             transaction.type === Enums.TransactionType.Vote) ||
         (transaction.type === 5 /*UnsVote*/ && transaction.typeGroup === 2001)
     );
-};
-
-const isUnikId = (username: string): boolean => {
-    return /^[a-f0-9]+$/.test(username) && username.length === 64;
 };
 
 const addUniknameToApiItem = (item: any, username: string, batch: any[]) => {

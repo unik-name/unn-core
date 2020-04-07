@@ -77,7 +77,7 @@ export const discloseDemand = async (tokenId, demanderPassphrase, explicitValues
 
 export const setupForgeFactory = async () => {
     await NftSupport.transferAndWait(Identities.Address.fromPassphrase(forgerFactoryPassphrase), 1000);
-    await NftSupport.mintAndWait(forgerFactoryTokenId, forgerFactoryPassphrase);
+    await NftSupport.mintAndWait(forgerFactoryTokenId, { type: "1" }, forgerFactoryPassphrase);
     return forgerFactoryTokenId;
 };
 

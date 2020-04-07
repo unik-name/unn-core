@@ -5,7 +5,7 @@ It checks the presence of a NFT issuer token. if not present it creates it on th
 
 const delay = require("delay");
 const got = require("got");
-const nftCrypto = require("../../../packages/core-nft-crypto");
+const nftCrypto = require("../../../plugins/nft/nft-crypto");
 const crypto = require("../../../packages/crypto");
 const utils = require("../../../packages/core-utils");
 

@@ -97,6 +97,18 @@ describe("CertifiedNtfMint Transaction", () => {
         });
     });
 
+    describe("custom methods", () => {
+        it("should get voucher rewards", async () => {
+            expect(handler.getVoucherRewards(builder.build().data.asset)).toEqual(
+                Managers.configManager.getMilestone().voucherRewards.individual,
+            );
+        });
+
+        it("checkEmptyBalance", async () => {
+            expect(handler.checkEmptyBalance(builder.build())).toBeFalse();
+        });
+    });
+
     describe("apply/revert", () => {
         beforeEach(() => {
             const foundationPassphrase = "foundation secret";
@@ -108,9 +120,9 @@ describe("CertifiedNtfMint Transaction", () => {
 
         describe("apply", () => {
             it("should apply voucher token eco", async () => {
-                await expect(handler.apply(builder.build(), walletManager)).toResolve();
-
-                const rewards = Managers.configManager.getMilestone().voucherRewards;
+                const transaction = builder.build();
+                await expect(handler.apply(transaction, walletManager)).toResolve();
+                const rewards = handler.getVoucherRewards(transaction.data.asset);
                 expect(foundationWallet.balance).toStrictEqual(Utils.BigNumber.make(rewards.foundation));
                 expect(senderWallet.balance).toStrictEqual(Utils.BigNumber.make(rewards.sender));
             });
@@ -118,7 +130,8 @@ describe("CertifiedNtfMint Transaction", () => {
 
         describe("revert", () => {
             it("should revert voucher token eco", async () => {
-                const rewards = Managers.configManager.getMilestone().voucherRewards;
+                const transaction = builder.build();
+                const rewards = handler.getVoucherRewards(transaction.data.asset);
 
                 senderWallet.nonce = Utils.BigNumber.make(1);
                 senderWallet.balance = Utils.BigNumber.make(rewards.sender);
@@ -128,7 +141,7 @@ describe("CertifiedNtfMint Transaction", () => {
                 foundationWallet.balance = Utils.BigNumber.make(rewards.foundation);
                 walletManager.reindex(foundationWallet);
 
-                await expect(handler.revert(builder.build(), walletManager)).toResolve();
+                await expect(handler.revert(transaction, walletManager)).toResolve();
                 expect(foundationWallet.balance).toStrictEqual(Utils.BigNumber.ZERO);
                 expect(senderWallet.balance).toStrictEqual(Utils.BigNumber.ZERO);
             });

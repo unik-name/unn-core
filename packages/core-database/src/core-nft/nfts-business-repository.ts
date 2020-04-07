@@ -69,9 +69,10 @@ export class NftsBusinessRepository implements NFT.INftsBusinessRepository {
                 if (transaction.blockHeight === milestones[milestonesIdx + 1].height) {
                     milestonesIdx++;
                 }
-                const rewards = milestones[milestonesIdx].voucherRewards;
+                const properties = transaction.asset.nft[nftName].properties;
+                const rewards = milestones[milestonesIdx].voucherRewards[this.getNftTypeLabel(properties.type)];
 
-                if (transaction.asset.nft[nftName].properties?.UnikVoucherId !== undefined) {
+                if (properties?.UnikVoucherId) {
                     totalRewards = totalRewards
                         .plus(Utils.BigNumber.make(rewards.foundation))
                         .plus(Utils.BigNumber.make(rewards.sender))
@@ -93,6 +94,18 @@ export class NftsBusinessRepository implements NFT.INftsBusinessRepository {
         const voteBalance = Utils.BigNumber.make(delegate.getAttribute<Utils.BigNumber>("delegate.voteBalance"));
 
         return delegateCalculator.toDecimal(voteBalance, totalSupply);
+    }
+
+    private getNftTypeLabel(type: string) {
+        switch (type) {
+            default:
+            case "1":
+                return "individual";
+            case "2":
+                return "organization";
+            case "3":
+                return "network";
+        }
     }
 
     private parseSearchParams(params: Database.IParameters): Database.ISearchParameters {

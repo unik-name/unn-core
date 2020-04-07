@@ -18,7 +18,8 @@
     "transactionsConfig": {
         "delegateRegistration": { "enable": false },
         "delegateResignation": { "enable": false },
-        "NftUpdate": { "enable": false }
+        "NftUpdate": { "enable": false },
+        "NftTransfer": { "enable": false }
     },
     "forgeFactory": {
         "unikidWhiteList": [

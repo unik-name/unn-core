@@ -77,6 +77,6 @@ export abstract class CertifiedTransactionHandler {
     }
 
     protected hasVoucher(asset: Interfaces.ITransactionAsset): boolean {
-        return getCurrentNftAsset(asset).properties?.UnikVoucherId !== undefined;
+        return !!getCurrentNftAsset(asset).properties?.UnikVoucherId;
     }
 }

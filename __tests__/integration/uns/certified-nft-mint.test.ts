@@ -130,7 +130,7 @@ describe("Transfer handler bootstrap", () => {
 
         await stateBuilder.run();
 
-        const rewards = Managers.configManager.getMilestone().voucherRewards;
+        const rewards = Managers.configManager.getMilestone().voucherRewards.individual;
         // check sender balance
         expect(senderWallet.balance).toEqual(Utils.BigNumber.make(rewards.sender));
 

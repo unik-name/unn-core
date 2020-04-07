@@ -32,7 +32,7 @@ afterAll(async () => {
     await tearDown();
 });
 
-describe("Transfer handler bootstrap", () => {
+describe("certifiedNftMint handler tests", () => {
     const optionsDefault = {
         timestamp: 12345689,
         previousBlock: {

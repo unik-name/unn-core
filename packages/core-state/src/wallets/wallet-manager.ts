@@ -1,7 +1,8 @@
 import { app } from "@arkecosystem/core-container";
 import { Logger, Shared, State } from "@arkecosystem/core-interfaces";
 import { Handlers, Interfaces as TransactionInterfaces } from "@arkecosystem/core-transactions";
-import { Enums, Identities, Interfaces, Utils } from "@arkecosystem/crypto";
+import { Enums, Identities, Interfaces, Managers, Utils } from "@arkecosystem/crypto";
+import { DIDTypes } from "@uns/crypto";
 import pluralize from "pluralize";
 import { WalletIndexAlreadyRegisteredError, WalletIndexNotFoundError } from "./errors";
 import { TempWalletManager } from "./temp-wallet-manager";
@@ -437,7 +438,6 @@ export class WalletManager implements State.IWalletManager {
 
                     return a.publicKey.localeCompare(b.publicKey, "en");
                 }
-
                 return diff;
             })
             .map(
@@ -447,12 +447,95 @@ export class WalletManager implements State.IWalletManager {
                     return delegate;
                 },
             );
+        const network = Managers.configManager.get("network.name");
+        if (network === "dalinet" || network === "sandbox" || network === "livenet") {
+            delegatesSorted = this.buildCustomRanking(delegatesSorted);
+        }
 
         if (roundInfo) {
             delegatesSorted = delegatesSorted.slice(0, roundInfo.maxDelegates);
             for (const delegate of delegatesSorted) {
                 delegate.setAttribute("delegate.round", roundInfo.round);
             }
+        }
+
+        return delegatesSorted;
+    }
+
+    public buildCustomRanking(delegatesSorted: State.IWallet[]): State.IWallet[] {
+        const organizationDelegates = [];
+        const networkDelegates = [];
+        const primaryDelegates = [];
+
+        delegatesSorted.map(delegate => {
+            const delegateType = delegate.getAttribute<number>("delegate.type");
+            if (delegateType === DIDTypes.ORGANIZATION) {
+                organizationDelegates.push(delegate);
+            } else if (delegateType === DIDTypes.NETWORK) {
+                networkDelegates.push(delegate);
+            } else {
+                // individuals + genesis
+                primaryDelegates.push(delegate);
+            }
+        });
+
+        const nbNetworks = Managers.configManager.getMilestone().nbDelegatesByType.network;
+        const nbIndividuals = Managers.configManager.getMilestone().nbDelegatesByType.individual;
+        const nbOrganizations = Managers.configManager.getMilestone().nbDelegatesByType.organization;
+        const activeDelegates = Managers.configManager.getMilestone().activeDelegates;
+        const delegatesCustomSort: State.IWallet[] = [];
+
+        let individuals = 0;
+        let organizations = 0;
+        let networks = 0;
+        for (let rank = 0; rank < activeDelegates; rank++) {
+            let delegate: State.IWallet;
+            // select individuals delegates
+            if (individuals < nbIndividuals) {
+                if (primaryDelegates.length) {
+                    delegate = primaryDelegates.shift();
+                    individuals++;
+                }
+            }
+            // select organizations
+            if (!delegate && organizations < nbOrganizations) {
+                if (organizationDelegates.length) {
+                    delegate = organizationDelegates.shift();
+                } else if (primaryDelegates.length) {
+                    delegate = primaryDelegates.shift();
+                }
+                if (delegate) {
+                    organizations++;
+                }
+            }
+            // select networks
+            if (!delegate && networks < nbNetworks) {
+                if (networkDelegates.length) {
+                    delegate = networkDelegates.shift();
+                } else if (primaryDelegates.length) {
+                    delegate = primaryDelegates.shift();
+                }
+                if (delegate) {
+                    networks++;
+                }
+            }
+            if (delegate) {
+                // remove delegate from global list
+                const delegateIdx = delegatesSorted.indexOf(delegate);
+                delegatesSorted.splice(delegateIdx, 1);
+                // add delegate to custom ranking
+                delegatesCustomSort.push(delegate);
+            }
+        }
+
+        if (delegatesCustomSort.length) {
+            // insert custom ranked delegates at first places
+            delegatesSorted.unshift(...delegatesCustomSort);
+            // reindex ranks
+            delegatesSorted.map((delegate, idx) => {
+                delegate.setAttribute("delegate.rank", idx + 1);
+                return delegate;
+            });
         }
 
         return delegatesSorted;

@@ -1,12 +1,18 @@
 import { State } from "@arkecosystem/core-interfaces";
 import { delegateCalculator, formatTimestamp } from "@arkecosystem/core-utils";
 import { Utils } from "@arkecosystem/crypto";
+import { DIDHelpers } from "@uns/crypto";
 
 export const transformDelegate = (delegate: State.IWallet) => {
     const attributes: State.IWalletDelegateAttributes = delegate.getAttribute("delegate");
 
+    let type = "genesis";
+    if (attributes.type) {
+        type = DIDHelpers.fromCode(attributes.type).toLowerCase();
+    }
     const data = {
         username: attributes.username,
+        type,
         address: delegate.address,
         publicKey: delegate.publicKey,
         votes: Utils.BigNumber.make(attributes.voteBalance).toFixed(),

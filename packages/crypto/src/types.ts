@@ -8,6 +8,7 @@ export type NetworkType =
 
     // TODO: uns : find better way to add networks
     | typeof networks.dalinet.network
-    | typeof networks.sandbox.network;
+    | typeof networks.sandbox.network
+    | typeof networks.livenet.network;
 
 export type NetworkName = keyof typeof networks;

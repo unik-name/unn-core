@@ -1,7 +1,7 @@
 [
     {
         "height": 1,
-        "reward": 0,
+        "reward": 200000000,
         "activeDelegates": 23,
         "blocktime": 8,
         "block": {
@@ -62,7 +62,6 @@
     },
     {
         "height": 75600,
-        "reward": 200000000,
         "certifiedNFTsOnly": true
     }
 ]

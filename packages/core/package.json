@@ -51,7 +51,11 @@
         "relay:sandbox": "cross-env CORE_PATH_CONFIG=./bin/config/sandbox yarn ark relay:run --token uns",
         "forger:sandbox": "cross-env CORE_PATH_CONFIG=./bin/config/sandbox yarn ark forger:run --token uns",
         "start:sandbox": "cross-env CORE_PATH_CONFIG=./bin/config/sandbox yarn ark core:run --token uns",
-        "full:sandbox": "cross-env CORE_PATH_CONFIG=./bin/config/sandbox yarn ark core:run --token uns --networkStart --env=test"
+        "full:sandbox": "cross-env CORE_PATH_CONFIG=./bin/config/sandbox yarn ark core:run --token uns --networkStart --env=test",
+        "relay:livenet": "cross-env CORE_PATH_CONFIG=./bin/config/livenet yarn ark relay:run --token uns",
+        "forger:livenet": "cross-env CORE_PATH_CONFIG=./bin/config/livenet yarn ark forger:run --token uns",
+        "start:livenet": "cross-env CORE_PATH_CONFIG=./bin/config/livenet yarn ark core:run --token uns",
+        "full:livenet": "cross-env CORE_PATH_CONFIG=./bin/config/livenet yarn ark core:run --token uns --networkStart --env=test"
     },
     "dependencies": {
         "@arkecosystem/core-api": "^2.6.31",

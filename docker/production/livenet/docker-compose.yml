@@ -2,39 +2,39 @@ version: '2'
 services:
   postgres:
     image: "postgres:11-alpine"
-    container_name: postgres-sandbox
+    container_name: postgres-livenet
     restart: always
     ports:
       - '127.0.0.1:5432:5432'
     volumes:
       - 'postgres:/var/lib/postgresql/data'
     networks:
-      - core 
+      - core
     environment:
      POSTGRES_PASSWORD: password
-     POSTGRES_DB: uns_sandbox
+     POSTGRES_DB: uns_livenet
      POSTGRES_USER: uns
 
   uns:
-    build:   
+    build:
       context: ../../..
       dockerfile: docker/Dockerfile
     image: universalnamesystem/core
     container_name: uns
     restart: always
     environment:
-     UNS_NET: sandbox
+     UNS_NET: livenet
     #  FORGER_SECRET: ""
     #  BOOTSTRAP: "true"
     #  FORGERS_SECRET: "\"\""
      CORE_DB_HOST: postgres
      CORE_DB_PORT: 5432
      CORE_DB_PASSWORD: password
-     CORE_DB_DATABASE: uns_sandbox
+     CORE_DB_DATABASE: uns_livenet
      CORE_DB_USER: uns
-     CORE_P2P_PORT: 4002
+     CORE_P2P_PORT: 4001
     ports:
-     - "4002:4002"
+     - "4001:4001"
      - "4003:4003"
     cap_add:
       - SYS_NICE
@@ -44,7 +44,7 @@ services:
      - /tmp/uns-data/cfg:/etc/uns
      - /tmp/uns-data/key:/run/secrets
     networks:
-      - core 
+      - core
     tty: true
     links:
      - postgres

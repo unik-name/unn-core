@@ -1,9 +1,9 @@
 #!/bin/sh
 
-NETWORK=${UNS_NET:-devnet} # default devnet
+NETWORK=${UNS_NET:-livenet} # default livenet
 TOKEN="uns"
 
-echo "network : $NETWORK" 
+echo "network : $NETWORK"
 echo "token : $TOKEN"
 
 CONFIG_DIR=~/.config/uns-core/$NETWORK
@@ -50,6 +50,8 @@ seek_and_replace(){
 
 seek_and_replace $CONFIG_DIR/.env
 
+echo "using P2P port: $CORE_P2P_PORT"
+
 if [[ -n "${BOOTSTRAP}" ]]; then
   echo "bootstrap mode"
   NETWORK_START="--networkStart"
@@ -60,7 +62,7 @@ if [[ -n "${BOOTNODE}" ]]; then
   IP=$(getent hosts  $BOOTNODE | cut -d ' ' -f 1)
   if [[ -n "${IP}" ]]; then
     PEER_FILE=$CONFIG_DIR/peers.json
-    echo $(jq --arg ip $IP '.list += [{"ip": $ip,"port":"4002"}]' $PEER_FILE ) > $PEER_FILE # warning 4002 port used
+    echo $(jq --arg ip $IP --arg port $CORE_P2P_PORT '.list += [{"ip": $ip,"port":"$port"}]' $PEER_FILE ) > $PEER_FILE
   fi
   echo "wait bootnode to be up and forging ($STARTING_DELAY)"
   sleep $STARTING_DELAY

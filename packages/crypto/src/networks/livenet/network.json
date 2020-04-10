@@ -22,10 +22,17 @@
         "NftTransfer": { "enable": false }
     },
     "forgeFactory": {
-        "unikidWhiteList": []
+        "unikidWhiteList": [
+            "fbfbe7d9e8c005f1a9937d9fd17c4ef7da2ff8037a71e6cb7847b302eda4d08a",
+            "8bdd3a5358a8c6e0d96796048a87a8d83d076c73f52a0b850575e95f192376f9"
+        ]
     },
     "foundation": {
-        "publicKey": ""
+        "publicKey": "02669e5f915de44a335155d20cde6dc0d61548498a8f38b05f6e399d5318624299"
     },
-    "delegateWhitelistUniks": []
+    "delegateWhitelistUniks": [
+        "a3a7b9c12c35c19052e55f3467f4efbf6e57f64b538af0f18685e676fd673c84",
+        "564614968f07f385edad46d972d95f4d6a07d4fe787b9f621f0c79a303121c4d",
+        "79f785f7be780fa53e5c0bee8b0d663d36cc5df66c1ab64d4da10e83b4be81e1"
+    ]
 }

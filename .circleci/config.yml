@@ -204,6 +204,7 @@ jobs:
 
   Integration:
     <<: *job_test_config
+    resource_class: large
     steps:
       - *attach
       - run: yarn test:integration:coverage
@@ -387,49 +388,75 @@ jobs:
     #   - *coverage
       - *notif
 
-
-  # Temporary disabled because requires command modifications
-  # e2e:
-  #   docker:
-  #     - image: circleci/node:12-browsers
-  #   working_directory: *repo_path
-  #   steps:
-  #     - *attach
-  #     - setup_remote_docker
-  #     - run:
-  #         name: Initialize docker swarm
-  #         command: docker swarm init
-  #     - run:
-  #         name: Install and build e2e project
-  #         command: cd __tests__/e2e && ../../node_modules/.bin/tsc && yarn cache clean && yarn install --frozen-lockfile
-  #     - run:
-  #         name: Generate files
-  #         command: node --version && cd __tests__/e2e && yarn generate -c 3 -v 12.x
-  #     - run:
-  #         name: Make scripts executable
-  #         command: sudo chmod +x __tests__/e2e/dist/docker* && sudo chmod +x __tests__/e2e/dist/node0/docker/testnet-e2e/entrypoint.sh && sudo chmod +x __tests__/e2e/dist/node1/docker/testnet-e2e/entrypoint.sh && sudo chmod +x __tests__/e2e/dist/node2/docker/testnet-e2e/entrypoint.sh && sudo chmod +x __tests__/e2e/dist/node0/ark.sh && sudo chmod +x __tests__/e2e/dist/node1/ark.sh && sudo chmod +x __tests__/e2e/dist/node2/ark.sh
-  #     - run:
-  #         name: Docker init and start
-  #         command: cd __tests__/e2e/dist && ./docker-init.sh && ./docker-start.sh
-  #     - run:
-  #         name: Wait 10 sec for docker containers to be up
-  #         command: sleep 10
-  #     - run:
-  #         name: Run tests
-  #         command: cd __tests__/e2e && sudo chown -R $USER:$USER ./dist/ && yarn run-tests -s scenario1
-  #     - run:
-  #         name: Output results - node0
-  #         command: cat __tests__/e2e/dist/node0/output.log && cat __tests__/e2e/dist/node0/errors.log
-  #         when: always
-  #     - run:
-  #         name: Output results - node1
-  #         command: cat __tests__/e2e/dist/node1/output.log && cat __tests__/e2e/dist/node1/errors.log
-  #         when: always
-  #     - run:
-  #         name: Output results - node2
-  #         command: cat __tests__/e2e/dist/node2/output.log && cat __tests__/e2e/dist/node2/errors.log
-  #         when: always
-  #     - *notif
+  e2e:
+    machine:
+        docker_layer_caching: true
+    working_directory: *repo_path
+    steps:
+      - *attach
+      - run:
+          name: Install node
+          command: |
+            ./.circleci/load-nvm.sh
+            cat .circleci/load-nvm.sh >> $BASH_ENV
+            source /opt/circleci/.nvm/nvm.sh
+            nvm install $(cat .nvmrc)
+            nvm alias default $(cat .nvmrc)
+      - run:
+          name: Install yarn
+          command: |
+            curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+            echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+            sudo apt-get update
+            sudo apt-get install yarn
+      - run:
+          name: set ark compatible node version
+          command: |
+            cd packages/core
+            cp package.json package.json.back
+            yarn version --no-git-tag-version --new-version 2.6.1
+      - run:
+          name: Install and build packages
+          command: |
+            ./.circleci/load-nvm.sh
+            yarn setup
+            cd __tests__/e2e
+            yarn cache clean
+            yarn install --frozen-lockfile
+      - run:
+          name: Build test helpers
+          command: |
+            ./.circleci/load-nvm.sh
+            cd __tests__/helpers && echo "{}" > tsconfig.json && ../../node_modules/.bin/tsc || true
+      - run:
+          name: Build test utils
+          command: |
+            ./.circleci/load-nvm.sh
+            cd __tests__/utils && echo "{}" > tsconfig.json && ../../node_modules/.bin/tsc || true
+      - run:
+          name: Docker compose up
+          command: cd __tests__/e2e/lib/config && docker-compose up -d
+      - run:
+          name: Wait 20 sec for docker containers to be up and nodes be running
+          command: sleep 20
+      - run:
+          name: Run tests
+          command: |
+            ./.circleci/load-nvm.sh
+            cd __tests__/e2e && yarn run-tests -s scenario1
+      - run:
+          name: Output results - node0
+          command: docker logs config_core0_1
+          when: always
+      - run:
+          name: Output results - node1
+          command: docker logs config_core1_1
+          when: always
+      - run:
+          name: Output results - node2
+          command: docker logs config_core2_1
+          when: always
+      - *notif
 
   docker_build_publish:
     machine:
@@ -458,7 +485,6 @@ orbs:
 ####################################
 ## Workflows
 ####################################
-
 arksTestsBranches: &arksTestsBranches
   branches:
     only:
@@ -577,6 +603,12 @@ workflow: &workflow
         *arksTestsBranches
       requires:
         *nft_uns_related_tests
+  - e2e:
+      filters:
+        *arksTestsBranches
+      requires:
+        *nft_uns_related_tests
+
 # Post-tests operations
   - docker_build_publish:
      filters:

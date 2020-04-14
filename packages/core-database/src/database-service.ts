@@ -31,7 +31,7 @@ export class DatabaseService implements Database.IDatabaseService {
         walletsBusinessRepository: Database.IWalletsBusinessRepository,
         transactionsBusinessRepository: Database.ITransactionsBusinessRepository,
         blocksBusinessRepository: Database.IBlocksBusinessRepository,
-        nftsBusinessRepository: NFT.INftsBusinessRepository,
+        nftsBusinessRepository?: NFT.INftsBusinessRepository,
     ) {
         this.connection = connection;
         this.walletManager = walletManager;

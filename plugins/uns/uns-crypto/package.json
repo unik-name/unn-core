@@ -1,6 +1,6 @@
 {
     "name": "@uns/crypto",
-    "version": "5.1.0",
+    "version": "5.2.0",
     "description": "Crypto utilities for the UNS.network Blockchain",
     "license": "MIT",
     "contributors": [

@@ -9,16 +9,12 @@ const roundFromHeight = (height, activeDelegates) => {
 const main = async () => {
     const networkHeight = JSON.parse((await got.get(`http://localhost:4003/api/node/status`)).body).data.now;
     const delegates = JSON.parse((await got.get(`http://localhost:4003/api/delegates`)).body);
-    let activeDelegates = 0;
-    for (delegate of delegates.data) {
-        if ( delegate.resigned === undefined && delegate.rank > 0) {
-            activeDelegates++;
-        }
-    }
+    const activeDelegates = JSON.parse((await got.get(`http://localhost:4003/api/node/configuration`)).body).data.constants.activeDelegates;
+
     const networkRound = roundFromHeight(networkHeight, activeDelegates);
     let notSynced = 0;
     for (delegate of delegates.data) {
-        if ( delegate.resigned === undefined && delegate.rank > 0) {
+        if ( delegate.resigned === undefined && delegate.rank <= activeDelegates) {
             const lastBlockRound = roundFromHeight(delegate.blocks.last.height, activeDelegates)
             const roundDelta = networkRound - lastBlockRound;
 

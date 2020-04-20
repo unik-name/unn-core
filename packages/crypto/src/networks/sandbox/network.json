@@ -19,7 +19,18 @@
         "delegateRegistration": { "enable": false },
         "delegateResignation": { "enable": false },
         "NftUpdate": { "enable": false },
-        "NftTransfer": { "enable": false }
+        "NftTransfer": { "enable": false },
+        "multiSignature": { "enable": false },
+        "ipfs": { "enable": false },
+        "htlcLock": { "enable": false },
+        "htlcClaim": { "enable": false },
+        "htlcRefund": { "enable": false },
+        "bridgechainRegistration": { "enable": false },
+        "bridgechainResignation": { "enable": false },
+        "bridgechainUpdate": { "enable": false },
+        "businessRegistration": { "enable": false },
+        "businessResignation": { "enable": false },
+        "businessUpdate": { "enable": false }
     },
     "forgeFactory": {
         "unikidWhiteList": [

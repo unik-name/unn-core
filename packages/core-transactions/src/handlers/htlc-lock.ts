@@ -53,7 +53,7 @@ export class HtlcLockTransactionHandler extends TransactionHandler {
 
     public async isActivated(): Promise<boolean> {
         const milestone = Managers.configManager.getMilestone();
-        return milestone.aip11 === true && milestone.htlcEnabled === true;
+        return milestone.aip11 === true && milestone.htlcEnabled === true && this.isTransactionActivated();
     }
 
     public async throwIfCannotBeApplied(

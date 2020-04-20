@@ -56,7 +56,7 @@ export class MultiSignatureTransactionHandler extends TransactionHandler {
     // but since there are no versioned transaction types yet we have to do it differently, to not break
     // existing legacy multi signatures. TODO: becomes obsolete with 3.0
     public async isActivated(): Promise<boolean> {
-        return true;
+        return this.isTransactionActivated();
     }
 
     public async throwIfCannotBeApplied(

@@ -1,6 +1,6 @@
 {
     "name": "@uns/ark-crypto",
-    "version": "5.1.1",
+    "version": "5.1.2",
     "description": "Crypto utilities for the ARK Blockchain",
     "license": "MIT",
     "contributors": [

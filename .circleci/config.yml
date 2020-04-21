@@ -121,7 +121,7 @@ persist: &persist
 
 all_tests: &all_tests
   - Unit
-  - Integration
+#  - Integration
   - F-bridgechain-registration
   - F-bridgechain-resignation
   - F-bridgechain-update
@@ -204,7 +204,7 @@ jobs:
 
   Integration:
     <<: *job_test_config
-    resource_class: large
+    resource_class: xlarge
     steps:
       - *attach
       - run: yarn test:integration:coverage
@@ -502,9 +502,9 @@ workflow: &workflow
   - Badges:
       requires:
         - build
-  - Integration:
-      requires:
-        - build
+  # - Integration:
+  #     requires:
+  #       - build
   - F-nft:
       requires:
         - build

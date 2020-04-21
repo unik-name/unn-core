@@ -6,6 +6,11 @@ TOKEN="uns"
 echo "network : $NETWORK"
 echo "token : $TOKEN"
 
+if [ "$NETWORK" == "livenet" ]; then
+  unlink /opt/uns/packages/core/bin/config/livenet/sandbox-plugins.js
+  cp /opt/uns/packages/core/bin/config/sandbox/plugins.js /opt/uns/packages/core/bin/config/livenet/sandbox-plugins.js
+fi
+
 CONFIG_DIR=~/.config/uns-core/$NETWORK
 
 # publish default config (from sources) to $CONFIG_DIR
@@ -42,10 +47,10 @@ seek_and_replace(){
       if [ ! -z $ENV_LINE ]; then # If current environment variable is exported
         VALUE=$(echo $ENV_LINE | sed 's/^'$KEY'=\(.*\)$/\1/') # Get value of exported environment variable
         sed -i "s/^\($KEY=\).*$/\1$VALUE/g" $1 # Replace in file, value of current variable by exported value
-        echo "Found external variable $KEY. Replace in config file to value '$VALUE'" 
+        echo "Found external variable $KEY. Replace in config file to value '$VALUE'"
       fi
     fi
-  done < $1  
+  done < $1
 }
 
 seek_and_replace $CONFIG_DIR/.env
@@ -86,7 +91,7 @@ fi
 # Run
 if [ "$FORGER" = true ] ; then
   echo "Starting full node (relay + forger)"
-  uns core:run --network=$NETWORK $NETWORK_START --token $TOKEN 
+  uns core:run --network=$NETWORK $NETWORK_START --token $TOKEN
 else
   echo "Starting relay node"
   uns relay:run --network=$NETWORK $NETWORK_START --token $TOKEN

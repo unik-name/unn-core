@@ -5,6 +5,7 @@ import { Interfaces, Transactions } from "@arkecosystem/crypto";
 import { NftMintTransactionHandler } from "@uns/core-nft";
 import { VoteTransaction } from "@uns/crypto";
 import { NoUnikError, VoteUnikTypeError } from "../errors";
+import { DelegateRegisterTransactionHandler } from "./uns-delegate-register";
 import { getNftsManager } from "./utils/helpers";
 
 export class UnsVoteTransactionHandler extends VoteTransactionHandler {
@@ -17,7 +18,7 @@ export class UnsVoteTransactionHandler extends VoteTransactionHandler {
     }
 
     public dependencies(): ReadonlyArray<TransactionHandlerConstructor> {
-        return [VoteTransactionHandler, NftMintTransactionHandler];
+        return [VoteTransactionHandler, NftMintTransactionHandler, DelegateRegisterTransactionHandler];
     }
 
     public walletAttributes(): ReadonlyArray<string> {
@@ -36,17 +37,15 @@ export class UnsVoteTransactionHandler extends VoteTransactionHandler {
 
         // get sender token type
         const nftId = wallet.getAttribute("tokens").tokens[0];
-        const type = (await getNftsManager().getProperty(nftId, "type")).value;
+        const type: string = (await getNftsManager().getProperty(nftId, "type")).value;
 
         // get delegate unik type
         const vote: string = transaction.data.asset.votes[0];
         const delegatePublicKey: string = vote.slice(1);
         const delegateWallet: State.IWallet = walletManager.findByPublicKey(delegatePublicKey);
-        const delegateNftId = delegateWallet.getAttribute("tokens").tokens[0];
-        const delegateType = (await getNftsManager().getProperty(delegateNftId, "type")).value;
-
+        const delegateType = delegateWallet.getAttribute<number>("delegate.type");
         // check unik types
-        if (type !== delegateType) {
+        if (parseInt(type) !== delegateType) {
             throw new VoteUnikTypeError(transaction.id);
         }
         return super.throwIfCannotBeApplied(transaction, wallet, walletManager);

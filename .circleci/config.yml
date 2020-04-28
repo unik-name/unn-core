@@ -36,6 +36,7 @@ job_test_config_unit_tests: &job_test_config_unit_tests
   working_directory: *repo_path
   docker:
     - image: circleci/node:12-browsers
+  resource_class: medium+
 
 job_test_config_f-nft_tests: &job_test_config_f-nft_tests
   working_directory: *repo_path
@@ -121,7 +122,8 @@ persist: &persist
 
 all_tests: &all_tests
   - Unit
-#  - Integration
+  - Integration
+  - UNS-Integration
   - F-bridgechain-registration
   - F-bridgechain-resignation
   - F-bridgechain-update
@@ -204,10 +206,18 @@ jobs:
 
   Integration:
     <<: *job_test_config
-    resource_class: xlarge
+    resource_class: large
     steps:
       - *attach
       - run: yarn test:integration:coverage
+      - *coverage
+      - *notif
+
+  UNS-Integration:
+    <<: *job_test_config
+    steps:
+      - *attach
+      - run: yarn test:uns-integration:coverage
       - *coverage
       - *notif
 
@@ -392,6 +402,7 @@ jobs:
     machine:
         docker_layer_caching: true
     working_directory: *repo_path
+    resource_class: large
     steps:
       - *attach
       - run:
@@ -489,6 +500,7 @@ arksTestsBranches: &arksTestsBranches
   branches:
     only:
       - develop
+      - /[Rr]elease-.*/
 
 workflow: &workflow
   - prepare
@@ -502,9 +514,12 @@ workflow: &workflow
   - Badges:
       requires:
         - build
-  # - Integration:
-  #     requires:
-  #       - build
+  - Integration:
+      requires:
+        - build
+  - UNS-Integration:
+      requires:
+        - build
   - F-nft:
       requires:
         - build

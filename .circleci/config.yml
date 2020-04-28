@@ -122,7 +122,8 @@ persist: &persist
 
 all_tests: &all_tests
   - Unit
-#  - Integration
+  - Integration
+  - UNS-Integration
   - F-bridgechain-registration
   - F-bridgechain-resignation
   - F-bridgechain-update
@@ -209,6 +210,14 @@ jobs:
     steps:
       - *attach
       - run: yarn test:integration:coverage
+      - *coverage
+      - *notif
+
+  UNS-Integration:
+    <<: *job_test_config
+    steps:
+      - *attach
+      - run: yarn test:uns-integration:coverage
       - *coverage
       - *notif
 
@@ -393,6 +402,7 @@ jobs:
     machine:
         docker_layer_caching: true
     working_directory: *repo_path
+    resource_class: large
     steps:
       - *attach
       - run:
@@ -490,6 +500,7 @@ arksTestsBranches: &arksTestsBranches
   branches:
     only:
       - develop
+      - /release-/
 
 workflow: &workflow
   - prepare
@@ -503,9 +514,12 @@ workflow: &workflow
   - Badges:
       requires:
         - build
-  # - Integration:
-  #     requires:
-  #       - build
+  - Integration:
+      requires:
+        - build
+  - UNS-Integration:
+      requires:
+        - build
   - F-nft:
       requires:
         - build

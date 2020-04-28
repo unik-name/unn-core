@@ -79,6 +79,9 @@ describe("Uns delegate scenario", () => {
         expect(delegateWallet.getAttribute("delegate.voteBalance")).toEqual(
             delegateWallet.balance.plus(genesisWallet.balance),
         );
+        expect(delegateWallet.getAttribute("delegate.weightedVoteBalance")).toEqual(
+            delegateWallet.getAttribute("delegate.voteBalance"),
+        );
 
         trx = await UnsSupport.unvoteAndWait(delegatePubKey, delegatePasshrase);
         await expect(trx.id).toBeForged();

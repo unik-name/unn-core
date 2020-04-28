@@ -4,6 +4,7 @@ import { Handlers } from "@arkecosystem/core-transactions";
 import { Constants, Identities, Managers, Utils } from "@arkecosystem/crypto";
 import { DIDTypes } from "@uns/crypto";
 import { DelegateRegisterTransactionHandler } from "@uns/uns-transactions";
+import { buildDelegatePool } from "../helpers";
 
 Managers.configManager.setFromPreset("sandbox");
 Handlers.Registry.registerTransactionHandler(DelegateRegisterTransactionHandler);
@@ -21,32 +22,6 @@ beforeEach(() => {
     walletManager = new WalletManager();
 });
 
-const buildDelegatePool = nbDelegates => {
-    for (let i = 0; i < nbDelegates; i++) {
-        // Generate nbDelegates wallet of each types
-        const delegatePassphrase = `delegate secret ${i}`;
-        const delegateKey = Identities.PublicKey.fromPassphrase(delegatePassphrase);
-        const delegate = new Wallet(Identities.Address.fromPassphrase(delegatePassphrase));
-        delegate.publicKey = delegateKey;
-        delegate.setAttribute("delegate.username", `delegate${i}`);
-        delegate.setAttribute<Utils.BigNumber>("delegate.voteBalance", Utils.BigNumber.ZERO);
-        delegate.setAttribute<number>("delegate.type", (i % 3) + 1);
-
-        // Generate nbDelegates voters wallet.
-        const voterPassphrase = `voter secret ${i}`;
-        const voterKey = Identities.PublicKey.fromPassphrase(voterPassphrase);
-        const voter = new Wallet(Identities.Address.fromPassphrase(voterPassphrase));
-        voter.balance = Utils.BigNumber.make((nbDelegates - i) * 1000 * SATOSHI);
-        voter.publicKey = voterKey;
-        voter.setAttribute("vote", delegateKey);
-
-        walletManager.index([delegate, voter]);
-    }
-
-    walletManager.buildVoteBalances();
-    return walletManager.buildDelegateRanking();
-};
-
 const checkDelegateTypeAndVotes = (delegate: State.IWallet, idx: number, array: State.IWallet[], type: number) => {
     // check type
     expect(delegate.getAttribute<number>("delegate.type")).toEqual(type);
@@ -58,12 +33,18 @@ const checkDelegateTypeAndVotes = (delegate: State.IWallet, idx: number, array: 
                 .minus(delegate.getAttribute<Utils.BigNumber>("delegate.voteBalance"))
                 .isGreaterThanEqual(Utils.BigNumber.ZERO),
         ).toBeTrue();
+        expect(
+            array[idx - 1]
+                .getAttribute<Utils.BigNumber>("delegate.weightedVoteBalance")
+                .minus(delegate.getAttribute<Utils.BigNumber>("delegate.weightedVoteBalance"))
+                .isGreaterThanEqual(Utils.BigNumber.ZERO),
+        ).toBeTrue();
     }
 };
 
 describe("buildDelegateRanking", () => {
     it("should build ranking and sort delegates by vote balance", async () => {
-        const delegates = buildDelegatePool(50);
+        const delegates = buildDelegatePool(walletManager, 50);
 
         // assert nbIndividuals first delegates are individual delegates
         delegates
@@ -141,7 +122,7 @@ describe("buildDelegateRanking", () => {
     });
 
     it("should build ranking with missing delegates and fills with genesis", async () => {
-        buildDelegatePool(15);
+        buildDelegatePool(walletManager, 15);
 
         const NB_GENESIS = 15;
         for (let i = 0; i < NB_GENESIS; i++) {
@@ -189,5 +170,47 @@ describe("buildDelegateRanking", () => {
                 return rank >= firstNetwork && rank <= nbIndividuals + nbOrganizations + nbNetworks;
             })
             .map((delegate, idx, array) => checkDelegateTypeAndVotes(delegate, idx, array, DIDTypes.NETWORK));
+    });
+
+    it("should build ranking for individual delegates with voter balance over 10.000 UNS", async () => {
+        const NB_DELEGATES = 3;
+        for (let i = 0; i < NB_DELEGATES; i++) {
+            const delegatePassphrase = `delegate secret ${i}`;
+            const delegateKey = Identities.PublicKey.fromPassphrase(delegatePassphrase);
+            const delegate = new Wallet(Identities.Address.fromPassphrase(delegatePassphrase));
+            delegate.publicKey = delegateKey;
+            delegate.setAttribute("delegate.username", `delegate${i}`);
+            delegate.setAttribute("delegate.voteBalance", Utils.BigNumber.ZERO);
+            delegate.setAttribute<number>("delegate.type", DIDTypes.INDIVIDUAL);
+
+            // Generate NB_DELEGATES voters wallet.
+            const voterPassphrase = `voter secret ${i}`;
+            const voterKey = Identities.PublicKey.fromPassphrase(voterPassphrase);
+            const voter = new Wallet(Identities.Address.fromPassphrase(voterPassphrase));
+            voter.balance = Utils.BigNumber.make((NB_DELEGATES - i) * 10000 * SATOSHI);
+            voter.publicKey = voterKey;
+            voter.setAttribute("vote", delegateKey);
+
+            // Generate NB_DELEGATES voters wallet.
+            const voter2Passphrase = `voter2 secret ${i}`;
+            const voter2Key = Identities.PublicKey.fromPassphrase(voter2Passphrase);
+            const voter2 = new Wallet(Identities.Address.fromPassphrase(voter2Passphrase));
+            voter2.balance = Utils.BigNumber.make((i + 1) * 10000 * SATOSHI);
+            voter2.publicKey = voter2Key;
+            voter2.setAttribute("vote", delegateKey);
+
+            walletManager.index([delegate, voter, voter2]);
+        }
+        walletManager.buildVoteBalances();
+        const delegates = walletManager.buildDelegateRanking();
+
+        const wallets = walletManager.allByAddress();
+
+        // check delegate have same weighted balance
+        delegates.map((delegate, idx, array) => {
+            const voters = wallets.filter(wallet => wallet.getAttribute<string>("vote") === delegate.publicKey);
+            const weightedVoteBalance = delegate.getAttribute<Utils.BigNumber>("delegate.weightedVoteBalance");
+            expect(weightedVoteBalance.isEqualTo(Utils.BigNumber.make(voters.length * 10000 * SATOSHI)));
+        });
     });
 });

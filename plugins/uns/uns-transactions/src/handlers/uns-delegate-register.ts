@@ -22,7 +22,7 @@ export class DelegateRegisterTransactionHandler extends DelegateRegistrationTran
     }
 
     public walletAttributes(): ReadonlyArray<string> {
-        return ["delegate.type"];
+        return ["delegate.type", "delegate.weightedVoteBalance"];
     }
 
     public async bootstrap(connection: Database.IConnection, walletManager: State.IWalletManager): Promise<void> {

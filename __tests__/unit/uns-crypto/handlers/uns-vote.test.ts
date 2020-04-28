@@ -67,18 +67,8 @@ describe("UnsDelegateRegister Transaction", () => {
         });
 
         it("should throw VoteUnikTypeError", async () => {
-            jest.spyOn(nftManager, "getProperty").mockImplementation((tokenId, _) => {
-                let type;
-                switch (tokenId) {
-                    case senderTokenId:
-                        type = DIDTypes.NETWORK;
-                        break;
-                    case delegateTokenId:
-                        type = DIDTypes.INDIVIDUAL;
-                        break;
-                }
-                return Promise.resolve({ value: type });
-            });
+            jest.spyOn(nftManager, "getProperty").mockResolvedValue({ value: DIDTypes.INDIVIDUAL });
+
             await expect(
                 handler.throwIfCannotBeApplied(transaction.build(), senderWallet, walletManager),
             ).rejects.toThrow(VoteUnikTypeError);

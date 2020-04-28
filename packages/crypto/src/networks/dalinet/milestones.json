@@ -8,6 +8,9 @@
             "organization": 1,
             "network": 1
         },
+        "voterMaximumWeight": {
+            "individual": 1000000000000
+        },
         "blocktime": 8,
         "block": {
             "version": 0,

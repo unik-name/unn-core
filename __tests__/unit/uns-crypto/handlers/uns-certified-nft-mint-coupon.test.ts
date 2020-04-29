@@ -7,7 +7,7 @@ import { Managers, Identities, Utils, Interfaces } from "@arkecosystem/crypto";
 import { CertifiedNftMintTransactionHandler, Errors as unsErrors } from "@uns/uns-transactions";
 import * as Fixtures from "../__fixtures__";
 import { nftRepository } from "@uns/core-nft";
-import { UNSCertifiedNftMintBuilder } from "@uns/crypto";
+import { UNSCertifiedNftMintBuilder, getVoucherRewards } from "@uns/crypto";
 import { buildCertifiedDemand } from "../helpers";
 
 let handler;
@@ -99,7 +99,7 @@ describe("CertifiedNtfMint Transaction", () => {
 
     describe("custom methods", () => {
         it("should get voucher rewards", async () => {
-            expect(handler.getVoucherRewards(builder.build().data.asset)).toEqual(
+            expect(getVoucherRewards(builder.build().data.asset)).toEqual(
                 Managers.configManager.getMilestone().voucherRewards.individual,
             );
         });
@@ -122,7 +122,7 @@ describe("CertifiedNtfMint Transaction", () => {
             it("should apply voucher token eco", async () => {
                 const transaction = builder.build();
                 await expect(handler.apply(transaction, walletManager)).toResolve();
-                const rewards = handler.getVoucherRewards(transaction.data.asset);
+                const rewards = getVoucherRewards(transaction.data.asset);
                 expect(foundationWallet.balance).toStrictEqual(Utils.BigNumber.make(rewards.foundation));
                 expect(senderWallet.balance).toStrictEqual(Utils.BigNumber.make(rewards.sender));
             });
@@ -131,7 +131,7 @@ describe("CertifiedNtfMint Transaction", () => {
         describe("revert", () => {
             it("should revert voucher token eco", async () => {
                 const transaction = builder.build();
-                const rewards = handler.getVoucherRewards(transaction.data.asset);
+                const rewards = getVoucherRewards(transaction.data.asset);
 
                 senderWallet.nonce = Utils.BigNumber.make(1);
                 senderWallet.balance = Utils.BigNumber.make(rewards.sender);

@@ -1,7 +1,8 @@
 import { app } from "@arkecosystem/core-container";
 import { Logger, Shared, State } from "@arkecosystem/core-interfaces";
 import { Handlers, Interfaces as TransactionInterfaces } from "@arkecosystem/core-transactions";
-import { Enums, Identities, Interfaces, Utils } from "@arkecosystem/crypto";
+import { Enums, Identities, Interfaces, Managers, Utils } from "@arkecosystem/crypto";
+import { getVoucherRewards, hasVoucher, UnsTransactionGroup, UnsTransactionType } from "@uns/crypto";
 import pluralize from "pluralize";
 import { WalletIndexAlreadyRegisteredError, WalletIndexNotFoundError } from "./errors";
 import { TempWalletManager } from "./temp-wallet-manager";
@@ -480,7 +481,7 @@ export class WalletManager implements State.IWalletManager {
         if (
             (transaction.type === Enums.TransactionType.Vote &&
                 transaction.typeGroup === Enums.TransactionTypeGroup.Core) ||
-            (transaction.type === 5 /*UnsVote*/ && transaction.typeGroup === 2001)
+            (transaction.type === UnsTransactionType.UnsVote && UnsTransactionGroup)
         ) {
             const vote: string = transaction.asset.votes[0];
             const delegate: State.IWallet = this.findByPublicKey(vote.substr(1));
@@ -518,6 +519,14 @@ export class WalletManager implements State.IWalletManager {
                 let newVoteBalance: Utils.BigNumber;
 
                 if (
+                    transaction.type === UnsTransactionType.UnsCertifiedNftMint &&
+                    transaction.typeGroup === UnsTransactionGroup &&
+                    hasVoucher(transaction.asset)
+                ) {
+                    // Apply voucher rewards to delegate vote balance
+                    const rewards = getVoucherRewards(transaction.asset);
+                    newVoteBalance = revert ? voteBalance.minus(rewards.sender) : voteBalance.plus(rewards.sender);
+                } else if (
                     transaction.type === Enums.TransactionType.HtlcLock &&
                     transaction.typeGroup === Enums.TransactionTypeGroup.Core
                 ) {

@@ -1,5 +1,5 @@
 import { app } from "@arkecosystem/core-container";
-import { Database } from "@arkecosystem/core-interfaces";
+import { Database, State } from "@arkecosystem/core-interfaces";
 import { IWalletManager } from "@arkecosystem/core-interfaces/dist/core-state";
 import { Identities } from "@arkecosystem/crypto";
 import { DELEGATE_BADGE } from "@uns/uns-transactions";
@@ -42,6 +42,7 @@ describe("Uns delegate scenario", () => {
         }).toMatchProperties();
 
         const walletManager: IWalletManager = app.resolvePlugin<Database.IDatabaseService>("database").walletManager;
+        const delegateWallet = walletManager.findByPublicKey(delegatePubKey);
 
         const getVoteAmount = (pubkey: string): number => {
             const votes: string = walletManager.findByPublicKey(pubkey).getAttribute("delegate.voteBalance");
@@ -62,11 +63,17 @@ describe("Uns delegate scenario", () => {
         await expect(trx.id).toBeForged();
 
         const genesisPubKey: string = Identities.PublicKey.fromPassphrase(NftSupport.defaultPassphrase);
+        const genesisWallet: State.IWallet = walletManager.findByPublicKey(genesisPubKey);
+
         trx = await UnsSupport.voteAndWait(delegatePubKey);
         await expect(trx.id).toBeForged();
         const afterVote2: number = getVoteAmount(delegatePubKey);
         expect(afterVote2).toBeGreaterThan(afterVote1);
+
         expect(walletManager.findByPublicKey(genesisPubKey).getAttribute("vote")).toEqual(delegatePubKey);
+        expect(delegateWallet.getAttribute("delegate.voteBalance")).toEqual(
+            delegateWallet.balance.plus(genesisWallet.balance),
+        );
 
         trx = await UnsSupport.unvoteAndWait(delegatePubKey, delegatePasshrase);
         await expect(trx.id).toBeForged();

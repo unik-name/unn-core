@@ -66,7 +66,11 @@ describe("Uns delegate scenario", () => {
         await expect(trx.id).toBeForged();
         const afterVote2: number = getVoteAmount(delegatePubKey);
         expect(afterVote2).toBeGreaterThan(afterVote1);
+
         expect(walletManager.findByPublicKey(genesisPubKey).getAttribute("vote")).toEqual(delegatePubKey);
+        expect(delegateWallet.getAttribute("delegate.voteBalance")).toEqual(
+            delegateWallet.balance.plus(genesisWallet.balance),
+        );
 
         trx = await UnsSupport.unvoteAndWait(delegatePubKey, delegatePasshrase);
         await expect(trx.id).toBeForged();

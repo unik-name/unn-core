@@ -7,7 +7,8 @@ import { getCurrentNftAsset, getNftName } from "@uns/core-nft-crypto";
 import {
     applyMixins,
     CertifiedNftMintTransaction,
-    DIDHelpers,
+    getVoucherRewards,
+    hasVoucher,
     INftDemand,
     INftMintDemandCertificationPayload,
     NftMintDemandCertificationSigner,
@@ -46,8 +47,8 @@ export class CertifiedNftMintTransactionHandler extends NftMintTransactionHandle
                 const forgeFactoryWallet: State.IWallet = walletManager.findByAddress(transaction.recipientId);
                 forgeFactoryWallet.balance = forgeFactoryWallet.balance.plus(transaction.amount);
 
-                if (this.hasVoucher(transaction.asset)) {
-                    const rewards = this.getVoucherRewards(transaction.asset);
+                if (hasVoucher(transaction.asset)) {
+                    const rewards = getVoucherRewards(transaction.asset);
                     const foundationPublicKey = Managers.configManager.get("network.foundation.publicKey");
                     const foundationWallet: State.IWallet = walletManager.findByAddress(foundationPublicKey);
                     foundationWallet.balance = foundationWallet.balance.plus(rewards.foundation);
@@ -70,8 +71,8 @@ export class CertifiedNftMintTransactionHandler extends NftMintTransactionHandle
 
         await this.throwIfCannotBeCertified(transaction, walletManager);
 
-        if (this.hasVoucher(transaction.data.asset)) {
-            const rewards = this.getVoucherRewards(transaction.data.asset);
+        if (hasVoucher(transaction.data.asset)) {
+            const rewards = getVoucherRewards(transaction.data.asset);
             // Fees should be equal to forger reward
             if (!transaction.data.fee.isEqualTo(Utils.BigNumber.make(rewards.forger))) {
                 throw new WrongFeeError(transaction.data.id);
@@ -98,10 +99,10 @@ export class CertifiedNftMintTransactionHandler extends NftMintTransactionHandle
     ): Promise<void> {
         this.applyCostToRecipient(transaction, walletManager);
 
-        if (this.hasVoucher(transaction.data.asset)) {
+        if (hasVoucher(transaction.data.asset)) {
             // voucher token eco
             // pay Space Elephant Foundation
-            const rewards = this.getVoucherRewards(transaction.data.asset);
+            const rewards = getVoucherRewards(transaction.data.asset);
             const foundationPublicKey = Managers.configManager.get("network.foundation.publicKey");
             const foundationWallet: State.IWallet = walletManager.findByPublicKey(foundationPublicKey);
             foundationWallet.balance = foundationWallet.balance.plus(Utils.BigNumber.make(rewards.foundation));
@@ -113,10 +114,10 @@ export class CertifiedNftMintTransactionHandler extends NftMintTransactionHandle
         walletManager: State.IWalletManager,
         updateDb = false,
     ): Promise<void> {
-        if (this.hasVoucher(transaction.data.asset)) {
+        if (hasVoucher(transaction.data.asset)) {
             // voucher token eco
             // fee and amount will be deduced in super.applyToSender
-            const rewards = this.getVoucherRewards(transaction.data.asset);
+            const rewards = getVoucherRewards(transaction.data.asset);
             const sender: State.IWallet = walletManager.findByPublicKey(transaction.data.senderPublicKey);
             sender.balance = sender.balance.plus(transaction.data.fee).plus(Utils.BigNumber.make(rewards.sender));
         }
@@ -130,8 +131,8 @@ export class CertifiedNftMintTransactionHandler extends NftMintTransactionHandle
     ): Promise<void> {
         this.revertCostToRecipient(transaction, walletManager);
 
-        if (this.hasVoucher(transaction.data.asset)) {
-            const rewards = this.getVoucherRewards(transaction.data.asset);
+        if (hasVoucher(transaction.data.asset)) {
+            const rewards = getVoucherRewards(transaction.data.asset);
             const foundationPublicKey = Managers.configManager.get("network.foundation.publicKey");
             const foundationWallet: State.IWallet = walletManager.findByPublicKey(foundationPublicKey);
             foundationWallet.balance = foundationWallet.balance.minus(Utils.BigNumber.make(rewards.foundation));
@@ -143,8 +144,8 @@ export class CertifiedNftMintTransactionHandler extends NftMintTransactionHandle
         walletManager: State.IWalletManager,
         updateDb = false,
     ): Promise<void> {
-        if (this.hasVoucher(transaction.data.asset)) {
-            const rewards = this.getVoucherRewards(transaction.data.asset);
+        if (hasVoucher(transaction.data.asset)) {
+            const rewards = getVoucherRewards(transaction.data.asset);
             const sender: State.IWallet = walletManager.findByPublicKey(transaction.data.senderPublicKey);
             sender.balance = sender.balance.minus(transaction.data.fee).minus(Utils.BigNumber.make(rewards.sender));
         }
@@ -160,12 +161,7 @@ export class CertifiedNftMintTransactionHandler extends NftMintTransactionHandle
     }
 
     protected checkEmptyBalance(transaction: Interfaces.ITransaction): boolean {
-        return !this.hasVoucher(transaction.data.asset);
-    }
-
-    protected getVoucherRewards(asset: Interfaces.ITransactionAsset) {
-        const type: number = parseInt(getCurrentNftAsset(asset).properties.type);
-        return Managers.configManager.getMilestone().voucherRewards[DIDHelpers.fromCode(type).toLowerCase()];
+        return !hasVoucher(transaction.data.asset);
     }
 }
 

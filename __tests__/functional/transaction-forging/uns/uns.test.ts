@@ -76,6 +76,9 @@ describe("Uns delegate scenario", () => {
         expect(delegateWallet.getAttribute("delegate.type")).toEqual(parseInt(nftType));
         const nbIndividuals = Managers.configManager.getMilestone().nbDelegatesByType.individual;
         expect(delegateWallet.getAttribute("delegate.rank")).toEqual(nbIndividuals + 1);
+        expect(delegateWallet.getAttribute("delegate.voteBalance")).toEqual(
+            delegateWallet.balance.plus(genesisWallet.balance),
+        );
 
         trx = await UnsSupport.unvoteAndWait(delegatePubKey, delegatePasshrase);
         await expect(trx.id).toBeForged();

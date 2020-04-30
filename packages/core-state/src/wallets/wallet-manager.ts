@@ -481,7 +481,7 @@ export class WalletManager implements State.IWalletManager {
         if (
             (transaction.type === Enums.TransactionType.Vote &&
                 transaction.typeGroup === Enums.TransactionTypeGroup.Core) ||
-            (transaction.type === UnsTransactionType.UnsVote && UnsTransactionGroup)
+            (transaction.type === UnsTransactionType.UnsVote && transaction.typeGroup === UnsTransactionGroup)
         ) {
             const vote: string = transaction.asset.votes[0];
             const delegate: State.IWallet = this.findByPublicKey(vote.substr(1));

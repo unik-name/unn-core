@@ -588,6 +588,29 @@ export class WalletManager implements State.IWalletManager {
                 }
             }
 
+            if (
+                transaction.type === UnsTransactionType.UnsCertifiedNftMint &&
+                transaction.typeGroup === UnsTransactionGroup &&
+                hasVoucher(transaction.asset)
+            ) {
+                const foundationPublicKey = Managers.configManager.get("network.foundation.publicKey");
+                const foundationWallet: State.IWallet = this.findByPublicKey(foundationPublicKey);
+
+                // Apply foundation voucher rewards to delegate vote balance
+                if (foundationWallet.hasVoted()) {
+                    const delegate: State.IWallet = this.findByPublicKey(foundationWallet.getAttribute("vote"));
+                    const voteBalance: Utils.BigNumber = delegate.getAttribute(
+                        "delegate.voteBalance",
+                        Utils.BigNumber.ZERO,
+                    );
+                    const rewards = getVoucherRewards(transaction.asset);
+                    delegate.setAttribute(
+                        "delegate.voteBalance",
+                        revert ? voteBalance.minus(rewards.foundation) : voteBalance.plus(rewards.foundation),
+                    );
+                }
+            }
+
             // Update vote balance of recipient's delegate
             if (
                 recipient &&

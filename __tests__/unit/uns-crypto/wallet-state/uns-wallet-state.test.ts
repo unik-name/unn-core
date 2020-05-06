@@ -4,6 +4,7 @@ import { Handlers } from "@arkecosystem/core-transactions";
 import { Constants, Identities, Managers, Utils } from "@arkecosystem/crypto";
 import { DIDTypes } from "@uns/crypto";
 import { DelegateRegisterTransactionHandler } from "@uns/uns-transactions";
+import { buildDelegatePool } from "../helpers";
 
 Managers.configManager.setFromPreset("sandbox");
 Handlers.Registry.registerTransactionHandler(DelegateRegisterTransactionHandler);
@@ -21,32 +22,6 @@ beforeEach(() => {
     walletManager = new WalletManager();
 });
 
-const buildDelegatePool = nbDelegates => {
-    for (let i = 0; i < nbDelegates; i++) {
-        // Generate nbDelegates wallet of each types
-        const delegatePassphrase = `delegate secret ${i}`;
-        const delegateKey = Identities.PublicKey.fromPassphrase(delegatePassphrase);
-        const delegate = new Wallet(Identities.Address.fromPassphrase(delegatePassphrase));
-        delegate.publicKey = delegateKey;
-        delegate.setAttribute("delegate.username", `delegate${i}`);
-        delegate.setAttribute<Utils.BigNumber>("delegate.voteBalance", Utils.BigNumber.ZERO);
-        delegate.setAttribute<number>("delegate.type", (i % 3) + 1);
-
-        // Generate nbDelegates voters wallet.
-        const voterPassphrase = `voter secret ${i}`;
-        const voterKey = Identities.PublicKey.fromPassphrase(voterPassphrase);
-        const voter = new Wallet(Identities.Address.fromPassphrase(voterPassphrase));
-        voter.balance = Utils.BigNumber.make((nbDelegates - i) * 1000 * SATOSHI);
-        voter.publicKey = voterKey;
-        voter.setAttribute("vote", delegateKey);
-
-        walletManager.index([delegate, voter]);
-    }
-
-    walletManager.buildVoteBalances();
-    return walletManager.buildDelegateRanking();
-};
-
 const checkDelegateTypeAndVotes = (delegate: State.IWallet, idx: number, array: State.IWallet[], type: number) => {
     // check type
     expect(delegate.getAttribute<number>("delegate.type")).toEqual(type);
@@ -63,7 +38,7 @@ const checkDelegateTypeAndVotes = (delegate: State.IWallet, idx: number, array: 
 
 describe("buildDelegateRanking", () => {
     it("should build ranking and sort delegates by vote balance", async () => {
-        const delegates = buildDelegatePool(50);
+        const delegates = buildDelegatePool(walletManager, 50);
 
         // assert nbIndividuals first delegates are individual delegates
         delegates
@@ -141,7 +116,7 @@ describe("buildDelegateRanking", () => {
     });
 
     it("should build ranking with missing delegates and fills with genesis", async () => {
-        buildDelegatePool(15);
+        buildDelegatePool(walletManager, 15);
 
         const NB_GENESIS = 15;
         for (let i = 0; i < NB_GENESIS; i++) {

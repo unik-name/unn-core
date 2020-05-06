@@ -447,8 +447,8 @@ export class WalletManager implements State.IWalletManager {
                     return delegate;
                 },
             );
-        const network = Managers.configManager.get("network.name");
-        if (network === "dalinet" || network === "sandbox" || network === "livenet") {
+
+        if (Managers.configManager.getMilestone()?.nbDelegatesByType) {
             delegatesSorted = this.buildCustomRanking(delegatesSorted);
         }
 

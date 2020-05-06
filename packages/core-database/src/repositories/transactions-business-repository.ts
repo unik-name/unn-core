@@ -1,6 +1,7 @@
 import { app } from "@arkecosystem/core-container";
 import { Database } from "@arkecosystem/core-interfaces";
 import { Enums, Interfaces } from "@arkecosystem/crypto";
+import { UnsTransactionGroup, UnsTransactionType } from "@uns/crypto";
 import { SearchParameterConverter } from "./utils/search-parameter-converter";
 
 export class TransactionsBusinessRepository implements Database.ITransactionsBusinessRepository {
@@ -27,7 +28,7 @@ export class TransactionsBusinessRepository implements Database.ITransactionsBus
         parameters: Database.IParameters = {},
     ): Promise<Database.ITransactionsPaginated> {
         return this.search({
-            ...{ senderPublicKey, type: 5 /*UnsVote*/, typeGroup: 2001 },
+            ...{ senderPublicKey, type: UnsTransactionType.UnsVote, typeGroup: UnsTransactionGroup },
             ...parameters,
         });
     }
@@ -62,9 +63,11 @@ export class TransactionsBusinessRepository implements Database.ITransactionsBus
 
     // @TODO: simplify this
     public async findById(id: string) {
-        return (await this.mapBlocksToTransactions(
-            await this.databaseServiceProvider().connection.transactionsRepository.findById(id),
-        ))[0];
+        return (
+            await this.mapBlocksToTransactions(
+                await this.databaseServiceProvider().connection.transactionsRepository.findById(id),
+            )
+        )[0];
     }
 
     public async findByTypeAndId(type: number, id: string, typeGroup?: number) {

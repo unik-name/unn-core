@@ -33,9 +33,15 @@ beforeEach(async () => {
     // UNS mocks
     const nftRewardsMock = jest.fn().mockResolvedValue(Utils.BigNumber.make("10000"));
     const approvalMock = jest.fn().mockResolvedValue(0.26);
+    const totalVotesMock = jest.fn().mockReturnValue({
+        individual: Utils.BigNumber.ZERO,
+        organization: Utils.BigNumber.ZERO,
+        network: Utils.BigNumber.ZERO,
+    });
     databaseService.nftsBusinessRepository = ({
         getNftTotalRewards: nftRewardsMock,
         calculateDelegateApproval: approvalMock,
+        getTotalVotesByType: totalVotesMock,
     } as any) as INftsBusinessRepository;
 });
 

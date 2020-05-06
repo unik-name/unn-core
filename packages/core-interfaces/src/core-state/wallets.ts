@@ -70,6 +70,7 @@ export interface IWalletDelegateAttributes {
     resigned?: boolean;
     approval?: number;
     type?: number;
+    weightedVoteBalance?: Utils.BigNumber;
 }
 
 export type IWalletMultiSignatureAttributes = Interfaces.IMultiSignatureAsset & { legacy?: boolean };

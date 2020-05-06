@@ -130,5 +130,11 @@
                 "UnsCertifiedNftUpdate": 100000000
             }
         }
+    },
+    {
+        "height": 1529215,
+        "voterMaximumWeight": {
+            "individual": 1000000000000
+        }
     }
 ]

@@ -258,6 +258,7 @@ export class WalletManager implements State.IWalletManager {
                 const voteBalance: Utils.BigNumber = delegate.getAttribute("delegate.voteBalance");
                 const lockedBalance = voter.getAttribute("htlc.lockedBalance", Utils.BigNumber.ZERO);
                 delegate.setAttribute("delegate.voteBalance", voteBalance.plus(voter.balance).plus(lockedBalance));
+                this.delegateWeightedBalance(delegate);
             }
         }
     }
@@ -420,6 +421,27 @@ export class WalletManager implements State.IWalletManager {
         }
     }
 
+    public delegateWeightedBalance(delegate: State.IWallet): Utils.BigNumber {
+        let weightedBalance: Utils.BigNumber = delegate.getAttribute("delegate.voteBalance");
+        const voterWeight = Managers.configManager.getMilestone()?.voterMaximumWeight;
+        if (voterWeight) {
+            if (delegate.getAttribute<number>("delegate.type") === DIDTypes.INDIVIDUAL) {
+                const voters = this.allByAddress().filter(
+                    wallet => wallet.getAttribute<string>("vote", "") === delegate.publicKey,
+                );
+                for (const voter of voters) {
+                    const maxVotes = Utils.BigNumber.make(voterWeight.individual);
+                    const diff = voter.balance.comparedTo(maxVotes);
+                    if (diff > 0) {
+                        weightedBalance = maxVotes;
+                    }
+                }
+            }
+            delegate.setAttribute("delegate.weightedVoteBalance", weightedBalance);
+        }
+        return weightedBalance;
+    }
+
     public buildDelegateRanking(roundInfo?: Shared.IRoundInfo): State.IWallet[] {
         const delegatesActive: State.IWallet[] = [];
 
@@ -433,8 +455,8 @@ export class WalletManager implements State.IWalletManager {
 
         let delegatesSorted = delegatesActive
             .sort((a, b) => {
-                const voteBalanceA: Utils.BigNumber = a.getAttribute("delegate.voteBalance");
-                const voteBalanceB: Utils.BigNumber = b.getAttribute("delegate.voteBalance");
+                const voteBalanceA: Utils.BigNumber = this.delegateWeightedBalance(a);
+                const voteBalanceB: Utils.BigNumber = this.delegateWeightedBalance(b);
 
                 const diff = voteBalanceB.comparedTo(voteBalanceA);
                 if (diff === 0) {
@@ -594,6 +616,7 @@ export class WalletManager implements State.IWalletManager {
             }
 
             delegate.setAttribute("delegate.voteBalance", voteBalance);
+            this.delegateWeightedBalance(delegate);
         } else {
             // Update vote balance of the sender's delegate
             if (sender.hasVoted()) {
@@ -659,6 +682,7 @@ export class WalletManager implements State.IWalletManager {
                     newVoteBalance = revert ? voteBalance.plus(total) : voteBalance.minus(total);
                 }
                 delegate.setAttribute("delegate.voteBalance", newVoteBalance);
+                this.delegateWeightedBalance(delegate);
             }
 
             if (
@@ -678,6 +702,7 @@ export class WalletManager implements State.IWalletManager {
                         ? lockWalletDelegateVoteBalance.plus(lockTransaction.amount)
                         : lockWalletDelegateVoteBalance.minus(lockTransaction.amount),
                 );
+                this.delegateWeightedBalance(lockWalletDelegate);
             }
 
             if (
@@ -698,6 +723,7 @@ export class WalletManager implements State.IWalletManager {
                             "delegate.voteBalance",
                             revert ? voteBalance.minus(amount) : voteBalance.plus(amount),
                         );
+                        this.delegateWeightedBalance(delegate);
                     }
                 }
             }
@@ -743,6 +769,7 @@ export class WalletManager implements State.IWalletManager {
                     "delegate.voteBalance",
                     revert ? voteBalance.minus(transaction.amount) : voteBalance.plus(transaction.amount),
                 );
+                this.delegateWeightedBalance(delegate);
             }
         }
     }
@@ -759,6 +786,7 @@ export class WalletManager implements State.IWalletManager {
                 "delegate.voteBalance",
                 revert ? voteBalance.minus(rewards.foundation) : voteBalance.plus(rewards.foundation),
             );
+            this.delegateWeightedBalance(delegate);
         }
     }
 }

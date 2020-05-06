@@ -15,5 +15,11 @@ export interface INftsBusinessRepository {
         order?: string,
     ): Promise<Interfaces.ITransactionData[]>;
     getNftTotalRewards(height: number, nftName?: string): Promise<Utils.BigNumber>;
-    calculateDelegateApproval(delegate: State.IWallet, height?: number): Promise<number>;
+    calculateDelegateApproval(
+        delegate: State.IWallet,
+        totalVotes: { individual: Utils.BigNumber; organization: Utils.BigNumber; network: Utils.BigNumber },
+    ): Promise<number>;
+    getTotalVotesByType(
+        delegates: ReadonlyArray<State.IWallet>,
+    ): { individual: Utils.BigNumber; organization: Utils.BigNumber; network: Utils.BigNumber };
 }

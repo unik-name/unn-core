@@ -1,4 +1,6 @@
-import { Identities, Utils } from "@arkecosystem/crypto";
+import { State } from "@arkecosystem/core-interfaces";
+import { Wallet } from "@arkecosystem/core-state/dist/wallets";
+import { Constants, Identities, Utils } from "@arkecosystem/crypto";
 import {
     IDiscloseDemandPayload,
     INftDemand,
@@ -11,6 +13,7 @@ import {
     UNSDiscloseExplicitBuilder,
 } from "@uns/crypto";
 import * as Fixtures from "./__fixtures__";
+const { SATOSHI } = Constants;
 
 export const buildDiscloseDemand = (
     discloseDemandPayload: IDiscloseDemandPayload,
@@ -82,4 +85,35 @@ export const buildCertifiedDemand = (
         demand: demandAsset.demand,
         certification,
     };
+};
+
+export const buildDelegatePool = (walletManager, nbDelegates): State.IWallet[] => {
+    for (let i = 0; i < nbDelegates; i++) {
+        // Generate nbDelegates wallet of each types
+        const delegatePassphrase = `delegate secret ${i}`;
+        const delegateKey = Identities.PublicKey.fromPassphrase(delegatePassphrase);
+        const delegate = new Wallet(Identities.Address.fromPassphrase(delegatePassphrase));
+        delegate.publicKey = delegateKey;
+        delegate.setAttribute("delegate", {
+            username: `delegate${i}`,
+            voteBalance: Utils.BigNumber.ZERO,
+            type: (i % 3) + 1,
+            forgedFees: Utils.BigNumber.make(123),
+            forgedRewards: Utils.BigNumber.make(456),
+            producedBlocks: 75,
+        });
+
+        // Generate nbDelegates voters wallet.
+        const voterPassphrase = `voter secret ${i}`;
+        const voterKey = Identities.PublicKey.fromPassphrase(voterPassphrase);
+        const voter = new Wallet(Identities.Address.fromPassphrase(voterPassphrase));
+        voter.balance = Utils.BigNumber.make((nbDelegates - i) * 100 * SATOSHI);
+        voter.publicKey = voterKey;
+        voter.setAttribute("vote", delegateKey);
+
+        walletManager.index([delegate, voter]);
+    }
+
+    walletManager.buildVoteBalances();
+    return walletManager.buildDelegateRanking();
 };

@@ -1,6 +1,6 @@
 import * as support from "../../../../functional/transaction-forging/__support__";
 import * as NftSupport from "../../../../functional/transaction-forging/__support__/nft";
-import { utils } from "../../utils";
+import { utils } from "../../../core-api/utils";
 
 beforeAll(NftSupport.setUp);
 afterAll(support.tearDown);

@@ -16,6 +16,7 @@ let handler: UnsVoteTransactionHandler;
 let builder: UNSVoteBuilder;
 let senderWallet: Wallets.Wallet;
 let delegateWallet: Wallets.Wallet;
+const delegateType = DIDTypes.NETWORK;
 let walletManager: State.IWalletManager;
 
 describe("UnsDelegateRegister Transaction", () => {
@@ -49,7 +50,7 @@ describe("UnsDelegateRegister Transaction", () => {
         delegateWallet = new Wallets.Wallet(delegateAddress);
         delegateWallet.publicKey = delegatePubKey;
         delegateWallet.setAttribute("tokens", { tokens: [delegateTokenId] });
-        delegateWallet.setAttribute("delegate", { username: delegateTokenId });
+        delegateWallet.setAttribute("delegate", { username: delegateTokenId, type: delegateType });
         walletManager.reindex(delegateWallet);
 
         /* Build transaction */
@@ -61,7 +62,7 @@ describe("UnsDelegateRegister Transaction", () => {
 
     describe("throwIfCannotBeApplied", () => {
         it("should not throw", async () => {
-            jest.spyOn(nftManager, "getProperty").mockResolvedValue({ value: DIDTypes.NETWORK });
+            jest.spyOn(nftManager, "getProperty").mockResolvedValue({ value: delegateType });
             await expect(handler.throwIfCannotBeApplied(transaction.build(), senderWallet, walletManager)).toResolve();
         });
 

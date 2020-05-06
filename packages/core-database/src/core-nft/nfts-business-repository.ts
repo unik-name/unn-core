@@ -2,7 +2,8 @@ import { app } from "@arkecosystem/core-container";
 import { Blockchain, Database, NFT, State } from "@arkecosystem/core-interfaces";
 import { TransactionReader } from "@arkecosystem/core-transactions";
 import { delegateCalculator, supplyCalculator } from "@arkecosystem/core-utils";
-import { Interfaces, Transactions, Utils } from "@arkecosystem/crypto";
+import { Interfaces, Managers, Transactions, Utils } from "@arkecosystem/crypto";
+import { DIDHelpers, DIDTypes, UnsTransactionGroup, UnsTransactionType } from "@uns/crypto";
 import limitRows from "../repositories/utils/limit-rows";
 import { SearchParameterConverter } from "../repositories/utils/search-parameter-converter";
 
@@ -53,8 +54,8 @@ export class NftsBusinessRepository implements NFT.INftsBusinessRepository {
     public async getNftTotalRewards(height: number, nftName: string = "unik"): Promise<Utils.BigNumber> {
         const { milestones } = app.getConfig().all();
         const reader: TransactionReader = await TransactionReader.create(this.connection, ({
-            type: 3 /*UnsCertifiedNftMint*/,
-            typeGroup: 2001,
+            type: UnsTransactionType.UnsCertifiedNftMint,
+            typeGroup: UnsTransactionGroup,
         } as any) as Transactions.TransactionConstructor);
 
         let totalRewards: Utils.BigNumber = Utils.BigNumber.ZERO;
@@ -70,7 +71,10 @@ export class NftsBusinessRepository implements NFT.INftsBusinessRepository {
                     milestonesIdx++;
                 }
                 const properties = transaction.asset.nft[nftName].properties;
-                const rewards = milestones[milestonesIdx].voucherRewards[this.getNftTypeLabel(properties.type)];
+                const rewards =
+                    milestones[milestonesIdx].voucherRewards[
+                        DIDHelpers.fromCode(parseInt(properties.type)).toLowerCase()
+                    ];
 
                 if (properties?.UnikVoucherId) {
                     totalRewards = totalRewards
@@ -83,29 +87,46 @@ export class NftsBusinessRepository implements NFT.INftsBusinessRepository {
         return totalRewards;
     }
 
-    public async calculateDelegateApproval(delegate: State.IWallet, height?: number): Promise<number> {
-        if (!height) {
-            height = app.resolvePlugin<Blockchain.IBlockchain>("blockchain").getLastBlock().data.height;
+    public async calculateDelegateApproval(delegate: State.IWallet, totalVotes): Promise<number> {
+        const voteBalance = delegate.getAttribute<Utils.BigNumber>("delegate.voteBalance");
+        let supply: Utils.BigNumber;
+        if (Managers.configManager.getMilestone()?.nbDelegatesByType) {
+            if (!delegate.hasAttribute("delegate.type")) {
+                // Case of genesis delegate
+                return 0;
+            }
+            supply = totalVotes[DIDHelpers.fromCode(delegate.getAttribute<number>("delegate.type")).toLowerCase()];
+        } else {
+            const height = app.resolvePlugin<Blockchain.IBlockchain>("blockchain").getLastBlock().data.height;
+            supply = Utils.BigNumber.make(supplyCalculator.calculate(height)).plus(
+                await this.getNftTotalRewards(height),
+            );
         }
 
-        const totalSupply = Utils.BigNumber.make(supplyCalculator.calculate(height)).plus(
-            await this.getNftTotalRewards(height),
-        );
-        const voteBalance = Utils.BigNumber.make(delegate.getAttribute<Utils.BigNumber>("delegate.voteBalance"));
-
-        return delegateCalculator.toDecimal(voteBalance, totalSupply);
+        return delegateCalculator.toDecimal(voteBalance, supply);
     }
 
-    private getNftTypeLabel(type: string) {
-        switch (type) {
-            default:
-            case "1":
-                return "individual";
-            case "2":
-                return "organization";
-            case "3":
-                return "network";
+    public getTotalVotesByType(delegates: ReadonlyArray<State.IWallet>) {
+        const totalVotes = {
+            individual: Utils.BigNumber.ZERO,
+            organization: Utils.BigNumber.ZERO,
+            network: Utils.BigNumber.ZERO,
+        };
+        if (Managers.configManager.getMilestone()?.nbDelegatesByType) {
+            // Sum weighted votes balances by type
+            for (const delegate of delegates) {
+                const type = delegate.getAttribute<number>("delegate.type");
+                const voteBalance = delegate.getAttribute<Utils.BigNumber>("delegate.voteBalance");
+                if (type === DIDTypes.INDIVIDUAL) {
+                    totalVotes.individual = totalVotes.individual.plus(voteBalance);
+                } else if (type === DIDTypes.ORGANIZATION) {
+                    totalVotes.organization = totalVotes.organization.plus(voteBalance);
+                } else if (type === DIDTypes.NETWORK) {
+                    totalVotes.network = totalVotes.network.plus(voteBalance);
+                }
+            }
         }
+        return totalVotes;
     }
 
     private parseSearchParams(params: Database.IParameters): Database.ISearchParameters {

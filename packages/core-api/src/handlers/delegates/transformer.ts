@@ -1,6 +1,5 @@
 import { State } from "@arkecosystem/core-interfaces";
 import { delegateCalculator, formatTimestamp } from "@arkecosystem/core-utils";
-import { Utils } from "@arkecosystem/crypto";
 import { DIDHelpers } from "@uns/crypto";
 
 export const transformDelegate = (delegate: State.IWallet) => {
@@ -10,12 +9,14 @@ export const transformDelegate = (delegate: State.IWallet) => {
     if (attributes.type) {
         type = DIDHelpers.fromCode(attributes.type).toLowerCase();
     }
+    const voteBalance = attributes.weightedVoteBalance ?? attributes.voteBalance;
+
     const data = {
         username: attributes.username,
         type,
         address: delegate.address,
         publicKey: delegate.publicKey,
-        votes: Utils.BigNumber.make(attributes.voteBalance).toFixed(),
+        votes: voteBalance.toFixed(),
         rank: attributes.rank,
         isResigned: !!attributes.resigned,
         blocks: {

@@ -6,8 +6,16 @@ import { DIDTypes } from "@uns/crypto";
 import { DelegateRegisterTransactionHandler } from "@uns/uns-transactions";
 import { buildDelegatePool } from "../helpers";
 
+// use sandbox to test with 23 delegates
 Managers.configManager.setFromPreset("sandbox");
-Managers.configManager.setHeight(333742);
+const height = Managers.configManager.getMilestones().find(milestone => !!milestone.nbDelegatesByType).height;
+Managers.configManager.setHeight(height);
+jest.spyOn(Managers.configManager, "getMilestone").mockReturnValue({
+    ...Managers.configManager.getMilestone(),
+    voterMaximumWeight: {
+        individual: 1000000000000,
+    },
+});
 
 Handlers.Registry.registerTransactionHandler(DelegateRegisterTransactionHandler);
 
@@ -33,6 +41,12 @@ const checkDelegateTypeAndVotes = (delegate: State.IWallet, idx: number, array: 
             array[idx - 1]
                 .getAttribute<Utils.BigNumber>("delegate.voteBalance")
                 .minus(delegate.getAttribute<Utils.BigNumber>("delegate.voteBalance"))
+                .isGreaterThanEqual(Utils.BigNumber.ZERO),
+        ).toBeTrue();
+        expect(
+            array[idx - 1]
+                .getAttribute<Utils.BigNumber>("delegate.weightedVoteBalance")
+                .minus(delegate.getAttribute<Utils.BigNumber>("delegate.weightedVoteBalance"))
                 .isGreaterThanEqual(Utils.BigNumber.ZERO),
         ).toBeTrue();
     }
@@ -166,5 +180,48 @@ describe("buildDelegateRanking", () => {
                 return rank >= firstNetwork && rank <= nbIndividuals + nbOrganizations + nbNetworks;
             })
             .map((delegate, idx, array) => checkDelegateTypeAndVotes(delegate, idx, array, DIDTypes.NETWORK));
+    });
+
+    it("should build ranking for individual delegates with voter balance over 10.000 UNS", async () => {
+        const NB_DELEGATES = 3;
+        for (let i = 0; i < NB_DELEGATES; i++) {
+            const delegatePassphrase = `delegate secret ${i}`;
+            const delegateKey = Identities.PublicKey.fromPassphrase(delegatePassphrase);
+            const delegate = new Wallet(Identities.Address.fromPassphrase(delegatePassphrase));
+            delegate.publicKey = delegateKey;
+            delegate.setAttribute("delegate.username", `delegate${i}`);
+            delegate.setAttribute("delegate.voteBalance", Utils.BigNumber.ZERO);
+            delegate.setAttribute<number>("delegate.type", DIDTypes.INDIVIDUAL);
+
+            // Generate NB_DELEGATES voters wallet.
+            const voterPassphrase = `voter secret ${i}`;
+            const voterKey = Identities.PublicKey.fromPassphrase(voterPassphrase);
+            const voter = new Wallet(Identities.Address.fromPassphrase(voterPassphrase));
+            voter.balance = Utils.BigNumber.make((NB_DELEGATES - i) * 10000 * SATOSHI);
+            voter.publicKey = voterKey;
+            voter.setAttribute("vote", delegateKey);
+
+            // Generate NB_DELEGATES voters wallet.
+            const voter2Passphrase = `voter2 secret ${i}`;
+            const voter2Key = Identities.PublicKey.fromPassphrase(voter2Passphrase);
+            const voter2 = new Wallet(Identities.Address.fromPassphrase(voter2Passphrase));
+            voter2.balance = Utils.BigNumber.make((i + 1) * 10000 * SATOSHI);
+            voter2.publicKey = voter2Key;
+            voter2.setAttribute("vote", delegateKey);
+
+            walletManager.index([delegate, voter, voter2]);
+        }
+        walletManager.buildVoteBalances();
+        const delegates = walletManager.buildDelegateRanking();
+
+        const wallets = walletManager.allByAddress();
+
+        expect(delegates.length).toEqual(NB_DELEGATES);
+        // check delegate have same weighted balance
+        for (const delegate of delegates) {
+            const voters = wallets.filter(wallet => wallet.getAttribute<string>("vote") === delegate.publicKey);
+            const weightedVoteBalance = delegate.getAttribute<Utils.BigNumber>("delegate.weightedVoteBalance");
+            expect(weightedVoteBalance.isEqualTo(Utils.BigNumber.make(voters.length * 10000 * SATOSHI)));
+        }
     });
 });

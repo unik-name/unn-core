@@ -88,7 +88,6 @@ export class NftsBusinessRepository implements NFT.INftsBusinessRepository {
                         .plus(Utils.BigNumber.make(rewards.sender))
                         .plus(Utils.BigNumber.make(rewards.forger));
                 }
-
             }
         }
         const walletManager: State.IWalletManager = this.connection.walletManager;
@@ -128,12 +127,15 @@ export class NftsBusinessRepository implements NFT.INftsBusinessRepository {
     }
 
     public async calculateDelegateApproval(delegate: State.IWallet, totalVotes): Promise<number> {
-        const voteBalance = delegate.getAttribute<Utils.BigNumber>("delegate.voteBalance");
+        let voteBalance = delegate.getAttribute<Utils.BigNumber>("delegate.voteBalance");
         let supply: Utils.BigNumber;
         if (Managers.configManager.getMilestone()?.nbDelegatesByType) {
             if (!delegate.hasAttribute("delegate.type")) {
                 // Case of genesis delegate
                 return 0;
+            }
+            if (delegate.hasAttribute("delegate.weightedVoteBalance")) {
+                voteBalance = delegate.getAttribute<Utils.BigNumber>("delegate.weightedVoteBalance");
             }
             supply = totalVotes[DIDHelpers.fromCode(delegate.getAttribute<number>("delegate.type")).toLowerCase()];
         } else {
@@ -156,7 +158,9 @@ export class NftsBusinessRepository implements NFT.INftsBusinessRepository {
             // Sum weighted votes balances by type
             for (const delegate of delegates) {
                 const type = delegate.getAttribute<number>("delegate.type");
-                const voteBalance = delegate.getAttribute<Utils.BigNumber>("delegate.voteBalance");
+                const voteBalance = delegate.hasAttribute("delegate.weightedVoteBalance")
+                    ? delegate.getAttribute("delegate.weightedVoteBalance")
+                    : delegate.getAttribute<Utils.BigNumber>("delegate.voteBalance");
                 if (type === DIDTypes.INDIVIDUAL) {
                     totalVotes.individual = totalVotes.individual.plus(voteBalance);
                 } else if (type === DIDTypes.ORGANIZATION) {

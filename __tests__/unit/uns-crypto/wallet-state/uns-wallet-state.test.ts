@@ -7,6 +7,8 @@ import { DelegateRegisterTransactionHandler } from "@uns/uns-transactions";
 import { buildDelegatePool } from "../helpers";
 
 Managers.configManager.setFromPreset("sandbox");
+Managers.configManager.setHeight(333742);
+
 Handlers.Registry.registerTransactionHandler(DelegateRegisterTransactionHandler);
 
 const nbNetworks = Managers.configManager.getMilestone().nbDelegatesByType.network;

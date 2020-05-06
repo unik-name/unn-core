@@ -3,11 +3,6 @@
         "height": 1,
         "reward": 200000000,
         "activeDelegates": 23,
-        "nbDelegatesByType": {
-            "individual": 10,
-            "organization": 10,
-            "network": 3
-        },
         "blocktime": 8,
         "block": {
             "version": 0,
@@ -37,7 +32,7 @@
         "ignoreExpiredTransactions": false,
         "multiPaymentLimit": 128,
         "p2p": {
-            "minimumVersions": ["^5.2.0 || ^5.2.0-dev"]
+            "minimumVersions": ["^5.1.0 || ^5.1.0-dev"]
         },
         "voucherRewards": {
             "individual": {
@@ -65,7 +60,15 @@
         "aip11": true
     },
     {
-        "height": 398906,
+        "height": 327413,
+        "p2p": {
+            "minimumVersions": ["^5.2.0 || ^5.2.0-dev"]
+        },
+        "nbDelegatesByType": {
+            "individual": 10,
+            "organization": 10,
+            "network": 3
+        },
         "certifiedNFTsOnly": true,
         "disableArkLegacyVote": true
     }

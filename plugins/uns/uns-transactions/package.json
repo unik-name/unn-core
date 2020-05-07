@@ -26,9 +26,9 @@
         "@arkecosystem/crypto": "^2.6.31",
         "@hapi/boom": "^8.0.0",
         "@hapi/hapi": "^18.3.1",
-        "@uns/core-nft": "^5.2.0-dev",
-        "@uns/core-nft-crypto": "^5.2.0-dev",
-        "@uns/crypto": "^5.2.0-dev"
+        "@uns/core-nft": "^5.2.0",
+        "@uns/core-nft-crypto": "^5.2.0",
+        "@uns/crypto": "^5.2.0"
     },
     "publishConfig": {
         "access": "public"

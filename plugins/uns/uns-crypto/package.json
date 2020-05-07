@@ -27,7 +27,7 @@
     },
     "dependencies": {
         "@arkecosystem/crypto": "^2.6.31",
-        "@uns/core-nft-crypto": "^5.1.0-dev"
+        "@uns/core-nft-crypto": "^5.2.0"
     },
     "devDependencies": {
         "rollup": "^1.17.0",

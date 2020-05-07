@@ -1,6 +1,6 @@
 {
     "name": "@arkecosystem/core-api",
-    "version": "2.6.31",
+    "version": "5.3.0-dev.0",
     "description": "Public API for ARK Core",
     "license": "MIT",
     "contributors": [
@@ -21,16 +21,18 @@
         "pretest": "bash ../../scripts/pre-test.sh"
     },
     "dependencies": {
-        "@arkecosystem/core-container": "^2.6.31",
+        "@arkecosystem/core-container": "^5.3.0-dev.0",
+        "@arkecosystem/core-database": "^5.3.0-dev.0",
         "@arkecosystem/core-http-utils": "^2.6.31",
-        "@arkecosystem/core-interfaces": "^2.6.31",
+        "@arkecosystem/core-interfaces": "^5.3.0-dev.0",
         "@arkecosystem/core-transaction-pool": "^2.6.31",
-        "@arkecosystem/core-transactions": "^2.6.31",
-        "@arkecosystem/core-utils": "^2.6.31",
-        "@arkecosystem/crypto": "^2.6.31",
+        "@arkecosystem/core-transactions": "^5.3.0-dev.0",
+        "@arkecosystem/core-utils": "^5.3.0-dev.0",
+        "@arkecosystem/crypto": "^5.3.0-dev.0",
         "@arkecosystem/utils": "^0.3.0",
         "@hapi/boom": "^8.0.0",
         "@hapi/joi": "^15.1.0",
+        "@uns/crypto": "^5.3.0-dev.0",
         "ajv": "^6.10.2",
         "dayjs": "^1.8.15",
         "hapi-rate-limit": "^4.0.0",
@@ -38,9 +40,7 @@
         "lodash.orderby": "^4.6.0",
         "lodash.partition": "^4.6.0",
         "lodash.snakecase": "^4.1.1",
-        "semver": "^7.0.0",
-        "@arkecosystem/core-database": "^2.6.30",
-        "@uns/crypto": "^5.1.0"
+        "semver": "^7.0.0"
     },
     "devDependencies": {
         "@types/hapi__boom": "^7.4.0",

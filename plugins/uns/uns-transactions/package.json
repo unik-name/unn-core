@@ -1,6 +1,7 @@
 {
     "name": "@uns/uns-transactions",
     "version": "5.2.0",
+    "private": true,
     "description": "NFT plugin for UNS Transactions",
     "license": "MIT",
     "contributors": [

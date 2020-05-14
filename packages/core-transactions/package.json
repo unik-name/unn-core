@@ -1,6 +1,7 @@
 {
     "name": "@arkecosystem/core-transactions",
     "version": "2.6.31",
+    "private": true,
     "description": "Transaction Services for ARK Core",
     "license": "MIT",
     "contributors": [

@@ -1,6 +1,7 @@
 {
     "name": "@arkecosystem/core-utils",
     "version": "2.6.31",
+    "private": true,
     "description": "Utilities for ARK Core",
     "license": "MIT",
     "contributors": [

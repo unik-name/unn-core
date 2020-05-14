@@ -1,6 +1,7 @@
 {
     "name": "@uns/logger-pino",
     "version": "2.6.0-next.4",
+    "private": true,
     "description": "Pino integration for UNS Core",
     "license": "MIT",
     "contributors": [

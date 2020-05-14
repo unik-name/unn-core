@@ -476,15 +476,16 @@ jobs:
     steps:
       - *attach
       - run: echo "$DOCKERHUB_PASS" | docker login --username $DOCKERHUB_USER --password-stdin
-      - run: ./scripts/docker/build.sh integration
-      - run: ./scripts/docker/publish.sh integration
+      - run: if [[ "$CIRCLE_TAG" =~ '^\d+\.\d+\.\d+/$' ]]; then export TARGET=$CIRCLE_TAG; else export TARGET=integration; fi
+      - run: ./scripts/docker/build.sh $TARGET
+      - run: ./scripts/docker/publish.sh $TARGET
       - *notif
 
-  publish_dev_build:
+  npm_publish:
     <<: *job_config
     steps:
       - *attach
-      - run: ./scripts/publish/uns-dev.sh
+      - run: ./scripts/publish/uns.sh
       - *notif
 
 ####################################
@@ -628,13 +629,17 @@ workflow: &workflow
   - docker_build_publish:
      filters:
        branches:
-         only: develop
+         only:
+          - develop
+          - /release-\d+\.\d+\.\d+/
      requires:
        *all_tests
-  - publish_dev_build:
+  - npm_publish:
      filters:
        branches:
-         only: develop
+         only:
+          - develop
+          - /release-\d+\.\d+\.\d+/
      requires:
        *all_tests
 

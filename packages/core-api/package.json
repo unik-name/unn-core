@@ -1,5 +1,6 @@
 {
     "name": "@arkecosystem/core-api",
+    "private": true,
     "version": "2.6.31",
     "description": "Public API for ARK Core",
     "license": "MIT",

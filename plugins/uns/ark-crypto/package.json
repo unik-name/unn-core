@@ -1,7 +1,7 @@
 {
     "name": "@uns/ark-crypto",
     "version": "5.2.0",
-    "description": "Crypto utilities for the ARK Blockchain",
+    "description": "Crypto utilities for the UNS Blockchain",
     "license": "MIT",
     "contributors": [
         "François-Xavier Thoorens <fx.thoorens@ark.io>",

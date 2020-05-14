@@ -1,6 +1,7 @@
 {
     "name": "@arkecosystem/core-tester-cli",
     "version": "2.6.31",
+    "private": true,
     "description": "Tester CLI for ARK Core",
     "license": "MIT",
     "contributors": [

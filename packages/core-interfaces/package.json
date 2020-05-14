@@ -1,6 +1,7 @@
 {
     "name": "@arkecosystem/core-interfaces",
     "version": "2.6.31",
+    "private": true,
     "description": "Interface types for essential ARK Core modules",
     "license": "MIT",
     "contributors": [

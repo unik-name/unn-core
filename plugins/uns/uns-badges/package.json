@@ -1,6 +1,7 @@
 {
     "name": "@uns/badges",
     "version": "4.1.0",
+    "private": true,
     "description": "NFT Badges plugin for UNIKs token",
     "license": "MIT",
     "contributors": [

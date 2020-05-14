@@ -1,6 +1,7 @@
 {
     "name": "@uns/core-nft",
     "version": "5.2.0",
+    "private": true,
     "description": "NFT plugin for chains using ARK Core",
     "license": "MIT",
     "contributors": [

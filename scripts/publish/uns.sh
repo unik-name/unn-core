@@ -1,18 +1,25 @@
 #!/usr/bin/env bash
 
-PUBLISH_OPTS=$1
+set -e
 
-pushd plugins/uns/ark-crypto
-npm publish $PUBLISH_OPTS
-popd
+if [[ -n "$CI" ]];then
+    echo "Authenticate with registry."
+    if [[ -z "$NPM_TOKEN" ]];then
+        echo "Error: NPM_TOKEN is not set."
+        exit 1
+    fi
 
-pushd plugins/nft/nft-crypto
-npm publish $PUBLISH_OPTS
-popd
+    set +x
+    echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
+    set -x
 
-pushd plugins/uns/uns-crypto
-npm publish $PUBLISH_OPTS
-yarn build
-popd
+    #publish release
+    if [[ "$CIRCLE_TAG" =~ '^\d+\.\d+\.\d+/$' ]]; then
+        version=$(awk -F '"' '/version/{print $4}' "lerna.json")
+        echo "Publishing UNS packages to version $version"
+        yarn publish:uns --yes $version
+    else
+        yarn publish:uns:dev --yes
+    fi
 
-
+fi

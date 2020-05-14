@@ -1,6 +1,7 @@
 {
     "name": "@arkecosystem/core-database",
     "version": "2.6.31",
+    "private": true,
     "description": "Database Interface for ARK Core",
     "license": "MIT",
     "contributors": [

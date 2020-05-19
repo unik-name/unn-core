@@ -1,6 +1,6 @@
 import { Database, State } from "@arkecosystem/core-interfaces";
 import { Handlers, TransactionReader } from "@arkecosystem/core-transactions";
-import { Interfaces, Managers, Transactions, Utils } from "@arkecosystem/crypto";
+import { Identities, Interfaces, Managers, Transactions, Utils } from "@arkecosystem/crypto";
 import { NftMintTransactionHandler, nftRepository } from "@uns/core-nft";
 import { addNftToWallet } from "@uns/core-nft";
 import { getCurrentNftAsset, getNftName } from "@uns/core-nft-crypto";
@@ -50,7 +50,10 @@ export class CertifiedNftMintTransactionHandler extends NftMintTransactionHandle
                 if (hasVoucher(transaction.asset)) {
                     const rewards = getVoucherRewards(transaction.asset);
                     const foundationPublicKey = Managers.configManager.get("network.foundation.publicKey");
-                    const foundationWallet: State.IWallet = walletManager.findByAddress(foundationPublicKey);
+                    const foundationWallet: State.IWallet = walletManager.findByAddress(
+                        Identities.Address.fromPublicKey(foundationPublicKey),
+                    );
+
                     foundationWallet.balance = foundationWallet.balance.plus(rewards.foundation);
 
                     sender.balance = sender.balance
@@ -104,7 +107,9 @@ export class CertifiedNftMintTransactionHandler extends NftMintTransactionHandle
             // pay Space Elephant Foundation
             const rewards = getVoucherRewards(transaction.data.asset);
             const foundationPublicKey = Managers.configManager.get("network.foundation.publicKey");
-            const foundationWallet: State.IWallet = walletManager.findByPublicKey(foundationPublicKey);
+            const foundationWallet: State.IWallet = walletManager.findByAddress(
+                Identities.Address.fromPublicKey(foundationPublicKey),
+            );
             foundationWallet.balance = foundationWallet.balance.plus(Utils.BigNumber.make(rewards.foundation));
         }
     }
@@ -134,7 +139,9 @@ export class CertifiedNftMintTransactionHandler extends NftMintTransactionHandle
         if (hasVoucher(transaction.data.asset)) {
             const rewards = getVoucherRewards(transaction.data.asset);
             const foundationPublicKey = Managers.configManager.get("network.foundation.publicKey");
-            const foundationWallet: State.IWallet = walletManager.findByPublicKey(foundationPublicKey);
+            const foundationWallet: State.IWallet = walletManager.findByAddress(
+                Identities.Address.fromPublicKey(foundationPublicKey),
+            );
             foundationWallet.balance = foundationWallet.balance.minus(Utils.BigNumber.make(rewards.foundation));
         }
     }

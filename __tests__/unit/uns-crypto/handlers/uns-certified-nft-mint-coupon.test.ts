@@ -111,10 +111,9 @@ describe("CertifiedNtfMint Transaction", () => {
 
     describe("apply/revert", () => {
         beforeEach(() => {
-            const foundationPassphrase = "foundation secret";
-            const foundationAddress = Identities.Address.fromPassphrase(foundationPassphrase);
+            const foundationPubKey = Managers.configManager.get("network.foundation.publicKey");
+            const foundationAddress = Identities.Address.fromPublicKey(foundationPubKey);
             foundationWallet = new Wallets.Wallet(foundationAddress);
-            foundationWallet.publicKey = Managers.configManager.get("network.foundation.publicKey");
             walletManager.reindex(foundationWallet);
         });
 

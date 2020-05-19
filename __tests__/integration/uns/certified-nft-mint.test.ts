@@ -136,7 +136,7 @@ describe("certifiedNftMint handler tests", () => {
 
         // check foundation balance
         const foundationPublicKey = Managers.configManager.get("network.foundation.publicKey");
-        const foundationWallet = walletManager.findByAddress(foundationPublicKey);
+        const foundationWallet = walletManager.findByAddress(Identities.Address.fromPublicKey(foundationPublicKey));
         expect(foundationWallet.balance).toStrictEqual(Utils.BigNumber.make(rewards.foundation));
 
         expect(senderWallet.getAttribute("tokens").tokens.includes(tokenId)).toBeTrue();

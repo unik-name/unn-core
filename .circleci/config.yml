@@ -475,10 +475,13 @@ jobs:
     working_directory: *repo_path
     steps:
       - *attach
-      - run: echo "$DOCKERHUB_PASS" | docker login --username $DOCKERHUB_USER --password-stdin
-      - run: if [[ "$CIRCLE_TAG" =~ '^\d+\.\d+\.\d+/$' ]]; then export TARGET=$CIRCLE_TAG; else export TARGET=integration; fi
-      - run: ./scripts/docker/build.sh $TARGET
-      - run: ./scripts/docker/publish.sh $TARGET
+      - run:
+          name: Docker build and publish
+          command: |
+           echo "$DOCKERHUB_PASS" | docker login --username $DOCKERHUB_USER --password-stdin
+           if [[ "$CIRCLE_TAG" =~ '^\d+\.\d+\.\d+/$' ]]; then TARGET=$CIRCLE_TAG; else TARGET=integration; fi
+           ./scripts/docker/build.sh $TARGET
+           ./scripts/docker/publish.sh $TARGET
       - *notif
 
   npm_publish:

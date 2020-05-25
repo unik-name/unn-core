@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [5.2.1] - 2020-05-25
+
+### Changed
+
+-   Set UNS custom ranking milestone for Livenet
+-   Use lerna for automated release et nightly builds ([#2572])
+
+### Fixed
+
+-   UNS Foundation wallet rewards ([#2761])
+
 ## [2.6.31] - 2020-03-25
 
 ### Fixed

@@ -65,9 +65,9 @@
         "certifiedNFTsOnly": true
     },
     {
-        "height": 441413,
+        "height": 490000,
         "p2p": {
-            "minimumVersions": ["^5.2.0 || ^5.2.0-dev"]
+            "minimumVersions": ["^5.2.1 || ^5.2.1-dev"]
         },
         "nbDelegatesByType": {
             "individual": 10,

@@ -634,7 +634,7 @@ workflow: &workflow
        branches:
          only:
           - develop
-          - /release-\d+\.\d+\.\d+/
+          - /release-\d+\.\d+\.x/
      requires:
        *all_tests
   - npm_publish:
@@ -642,7 +642,7 @@ workflow: &workflow
        branches:
          only:
           - develop
-          - /release-\d+\.\d+\.\d+/
+          - /release-\d+\.\d+\.x/
      requires:
        *all_tests
 

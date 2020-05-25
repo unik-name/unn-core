@@ -7,6 +7,9 @@
     "command": {
         "publish": {
             "allowBranch": ["develop", "release-*"]
+        },
+        "version": {
+            "allowBranch": ["**"]
         }
     }
 }

@@ -13,13 +13,12 @@ if [[ -n "$CI" ]];then
     echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
     set -x
 
+    TAG=$(git tag --points-at HEAD)
     #publish release
-    if [[ "$CIRCLE_TAG" =~ '^\d+\.\d+\.\d+/$' ]]; then
-        version=$(awk -F '"' '/version/{print $4}' "lerna.json")
-        echo "Publishing UNS packages to version $version"
-        yarn publish:uns --yes $version
+    if [[ "$TAG" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+        echo "Publishing UNS packages to version $TAG"
+        yarn publish:uns --yes $TAG
     else
         yarn publish:uns:dev --yes
     fi
-
 fi

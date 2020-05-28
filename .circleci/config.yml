@@ -469,20 +469,6 @@ jobs:
           when: always
       - *notif
 
-  docker_build_publish:
-    machine:
-      docker_layer_caching: true
-    working_directory: *repo_path
-    steps:
-      - *attach
-      - run:
-          name: Docker build and publish
-          command: |
-           echo "$DOCKERHUB_PASS" | docker login --username $DOCKERHUB_USER --password-stdin
-           if [[ "$CIRCLE_TAG" =~ '^\d+\.\d+\.\d+/$' ]]; then TARGET=$CIRCLE_TAG; else TARGET=integration; fi
-           ./scripts/docker/build.sh $TARGET
-           ./scripts/docker/publish.sh $TARGET
-      - *notif
 
   npm_publish:
     <<: *job_config
@@ -629,22 +615,16 @@ workflow: &workflow
         *nft_uns_related_tests
 
 # Post-tests operations
-  - docker_build_publish:
-     filters:
-       branches:
-         only:
-          - develop
-          - /release-\d+\.\d+\.x/
-     requires:
-       *all_tests
+
   - npm_publish:
      filters:
        branches:
          only:
           - develop
           - /release-\d+\.\d+\.x/
+          - totobranch
      requires:
-       *all_tests
+        - prepare
 
 workflows:
   version: 2.1

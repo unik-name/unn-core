@@ -1,25 +1,14 @@
 #!/usr/bin/env bash
 
 set -e
+echo "CIRCLE_TAG is ! $CIRCLE_TAG"
+TAG=$(git tag --points-at HEAD)
+echo "TAG is ! '$TAG'"
 
-if [[ -n "$CI" ]];then
-    echo "Authenticate with registry."
-    if [[ -z "$NPM_TOKEN" ]];then
-        echo "Error: NPM_TOKEN is not set."
-        exit 1
-    fi
+if [[ "$CIRCLE_TAG" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+  echo "$CIRCLE_TAG match !"
+fi
 
-    set +x
-    echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
-    set -x
-
-    #publish release
-    if [[ "$CIRCLE_TAG" =~ '^\d+\.\d+\.\d+/$' ]]; then
-        version=$(awk -F '"' '/version/{print $4}' "lerna.json")
-        echo "Publishing UNS packages to version $version"
-        yarn publish:uns --yes $version
-    else
-        yarn publish:uns:dev --yes
-    fi
-
+if [[ "$TAG" =~ "^[0-9]+\.[0-9]+\.[0-9]+$" ]]; then
+  echo "$TAG match !"
 fi

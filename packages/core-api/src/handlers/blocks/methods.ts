@@ -1,6 +1,9 @@
 import { app } from "@arkecosystem/core-container";
 import { Database } from "@arkecosystem/core-interfaces";
+import { Managers, Utils } from "@arkecosystem/crypto";
 import Boom from "@hapi/boom";
+import { getCurrentNftAsset } from "@uns/core-nft-crypto";
+import { DIDHelpers, hasVoucher, UnsTransactionGroup, UnsTransactionType } from "@uns/crypto";
 import { ServerCache } from "../../services";
 import { paginate, respondWithResource, toPagination } from "../utils";
 
@@ -22,6 +25,29 @@ const show = async request => {
 
     if (!block) {
         return Boom.notFound("Block not found");
+    }
+
+    if (block.numberOfTransactions) {
+        const transactions: Database.ITransactionsPaginated = await transactionsRepository.findAllByBlock(block.id);
+        const rewards = Managers.configManager.getMilestone(block.height).voucherRewards;
+        let unikMintRewards = Utils.BigNumber.ZERO;
+        let foundationRewards = Utils.BigNumber.ZERO;
+        for (const transaction of transactions.rows) {
+            if (
+                transaction.typeGroup === UnsTransactionGroup &&
+                transaction.type === UnsTransactionType.UnsCertifiedNftMint &&
+                hasVoucher(transaction.asset)
+            ) {
+                const type: number = parseInt(getCurrentNftAsset(transaction.asset).properties.type);
+                const rewardsByType = rewards[DIDHelpers.fromCode(type).toLowerCase()];
+                unikMintRewards = unikMintRewards
+                    .plus(Utils.BigNumber.make(rewardsByType.sender))
+                    .plus(Utils.BigNumber.make(rewardsByType.forger));
+                foundationRewards = unikMintRewards.plus(Utils.BigNumber.make(rewardsByType.foundation));
+            }
+        }
+        (block as any).unikMintRewards = unikMintRewards;
+        (block as any).foundationRewards = foundationRewards;
     }
 
     return respondWithResource(block, "block", request.query.transform);

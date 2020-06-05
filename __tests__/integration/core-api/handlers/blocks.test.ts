@@ -128,6 +128,8 @@ describe("API 2.0 - Blocks", () => {
                 numberOfTransactions: 153,
                 totalAmount: "12500000000000000",
                 totalFee: "0",
+                foundationRewards: "0",
+                unikMintRewards: "0",
                 payloadLength: 35960,
                 payloadHash: "d9acd04bde4234a81addb8482333b4ac906bed7be5a9970ce8ada428bd083192",
                 generatorPublicKey: "03b47f6b6719c76bad46a302d9cff7be9b1c2b2a20602a0d880f139b5b8901f068",

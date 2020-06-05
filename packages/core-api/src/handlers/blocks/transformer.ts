@@ -8,6 +8,12 @@ export const transformBlock = (model, transform) => {
         model.reward = Utils.BigNumber.make(model.reward).toFixed();
         model.totalFee = Utils.BigNumber.make(model.totalFee).toFixed();
         model.totalAmount = Utils.BigNumber.make(model.totalAmount).toFixed();
+        if (model.unikMintRewards) {
+            model.unikMintRewards = Utils.BigNumber.make(model.unikMintRewards).toFixed();
+        }
+        if (model.foundationRewards) {
+            model.foundationRewards = Utils.BigNumber.make(model.foundationRewards).toFixed();
+        }
         return model;
     }
 
@@ -18,7 +24,7 @@ export const transformBlock = (model, transform) => {
     model.reward = Utils.BigNumber.make(model.reward);
     model.totalFee = Utils.BigNumber.make(model.totalFee);
 
-    return {
+    const res: any = {
         id: model.id,
         version: +model.version,
         height: +model.height,
@@ -43,4 +49,11 @@ export const transformBlock = (model, transform) => {
         transactions: model.numberOfTransactions,
         timestamp: formatTimestamp(model.timestamp),
     };
+    if (model.unikMintRewards) {
+        res.forged.unikMintRewards = model.unikMintRewards.toFixed();
+    }
+    if (model.foundationRewards) {
+        res.forged.foundationRewards = model.foundationRewards.toFixed();
+    }
+    return res;
 };

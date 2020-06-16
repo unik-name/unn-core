@@ -19,6 +19,10 @@ if [[ -n "$CI" ]];then
         echo "Publishing UNS packages to version $TAG"
         yarn publish:uns --yes $TAG
     else
-        yarn publish:uns:dev --yes
+        BUILD_SUFFIX=""
+        if [ -z "$CIRCLE_BUILD_NUM" ]; then
+            BUILD_SUFFIX=".$CIRCLE_BUILD_NUM"
+        fi
+        NPM_PRE_ID="dev$BUILD_SUFFIX" yarn publish:uns:dev --yes
     fi
 fi

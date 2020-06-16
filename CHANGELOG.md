@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+-   Fix weekly npm publish. Adds weekly npm dist tag ([#2803])
 -   Call Error.captureStackTrace only if available ([#2830])
 
 ## [2.6.31] - 2020-03-25

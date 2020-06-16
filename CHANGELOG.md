@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+-   Call Error.captureStackTrace only if available ([#2830])
+
 ## [2.6.31] - 2020-03-25
 
 ### Fixed

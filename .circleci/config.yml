@@ -508,6 +508,12 @@ arksTestsBranches: &arksTestsBranches
       - develop
       - /[Rr]elease-.*/
 
+deployBranches: &deployBranches
+   branches:
+     only:
+       - develop
+       - /release-\d+\.\d+\.x/
+
 workflow: &workflow
   - prepare
   - build:
@@ -633,18 +639,12 @@ workflow: &workflow
 # Post-tests operations
   - docker_build_publish:
      filters:
-       branches:
-         only:
-          - develop
-          - /release-\d+\.\d+\.x/
+       *deployBranches
      requires:
        *all_tests
   - npm_publish:
      filters:
-       branches:
-         only:
-          - develop
-          - /release-\d+\.\d+\.x/
+       *deployBranches
      requires:
        *all_tests
 

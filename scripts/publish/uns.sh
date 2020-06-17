@@ -20,7 +20,7 @@ if [[ -n "$CI" ]];then
         yarn publish:uns --yes $TAG
     else
         BUILD_SUFFIX=""
-        if [ -z "$CIRCLE_BUILD_NUM" ]; then
+        if [ -n "$CIRCLE_BUILD_NUM" ]; then
             BUILD_SUFFIX=".$CIRCLE_BUILD_NUM"
         fi
         NPM_PRE_ID="dev$BUILD_SUFFIX" yarn publish:uns:dev --yes

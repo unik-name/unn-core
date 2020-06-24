@@ -15,7 +15,7 @@ if [[ -n "$CI" ]];then
 
     TAG=$(git tag --points-at HEAD)
     #publish release
-    if [[ "$TAG" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    if [[ "$CIRCLE_BRANCH" != "develop" && "$TAG" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
         echo "Publishing UNS packages to version $TAG"
         yarn publish:uns --yes $TAG
     else

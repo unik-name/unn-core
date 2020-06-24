@@ -480,7 +480,7 @@ jobs:
           command: |
            echo "$DOCKERHUB_PASS" | docker login --username $DOCKERHUB_USER --password-stdin
            TAG=$(git tag --points-at HEAD)
-           if [[ "$TAG" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then TARGET=$TAG; else TARGET=integration; fi
+           if [[ "$CIRCLE_BRANCH" != "develop" && "$TAG" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then TARGET=$TAG; else TARGET=integration; fi
            echo "Build and publish docker images for $TARGET"
            ./scripts/docker/build.sh $TARGET
            ./scripts/docker/publish.sh $TARGET

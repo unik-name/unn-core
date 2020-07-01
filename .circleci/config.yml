@@ -146,6 +146,7 @@ all_tests: &all_tests
   - F-UNS
   - F-uns-disclose
   - F-uns-certified-mint
+  - e2e
 
 nft_uns_related_tests: &nft_uns_related_tests
 #   - Unit

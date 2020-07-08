@@ -90,14 +90,13 @@ const bignumber = (ajv: Ajv) => {
                 if (parentObject && property) {
                     parentObject[property] = bignum;
                 }
-
                 let bypassGenesis: boolean = false;
                 if (schema.bypassGenesis) {
                     if (parentObject.id) {
                         if (schema.block) {
                             bypassGenesis = parentObject.height === 1;
                         } else {
-                            bypassGenesis = isGenesisTransaction(parentObject.id);
+                            bypassGenesis = isGenesisTransaction(parentObject);
                         }
                     }
                 }

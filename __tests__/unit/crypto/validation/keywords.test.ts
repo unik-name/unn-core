@@ -214,7 +214,7 @@ describe("keyword bignumber", () => {
     });
 
     describe("bypassGenesis", () => {
-        it("should be ok", () => {
+        it.skip("should be ok", () => {
             const schema = {
                 type: "object",
                 properties: {

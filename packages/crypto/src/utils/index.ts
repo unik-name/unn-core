@@ -18,15 +18,6 @@ const getExceptionIds = memoize(_ => {
     return s;
 });
 
-const getGenesisTransactionIds = memoize(_ => {
-    const s = new Set<string>();
-    const genesisTransactions = configManager.get("genesisBlock.transactions") || [];
-    for (const transaction of genesisTransactions) {
-        s.add(transaction.id);
-    }
-    return s;
-});
-
 /**
  * Get human readable string from satoshis
  */
@@ -47,10 +38,7 @@ export const isException = (blockOrTransaction: { id?: string }): boolean => {
     return getExceptionIds(network).has(blockOrTransaction.id);
 };
 
-export const isGenesisTransaction = (id: string): boolean => {
-    const network: number = configManager.get("network");
-    return getGenesisTransactionIds(network).has(id);
-};
+export const isGenesisTransaction = (tx: any): boolean => tx.timestamp === 0 && (!tx.version || tx.version === 1);
 
 export const numberToHex = (num: number, padding = 2): string => {
     const indexHex: string = Number(num).toString(16);

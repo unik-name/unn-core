@@ -1,10 +1,13 @@
 import { Blocks, Interfaces, Managers } from "@arkecosystem/crypto";
+import { genesisBlocks } from "../../../../packages/core-container/src/config/genesis";
 import { database } from "./database";
 import { p2p } from "./p2p";
 import { transactionPool } from "./transactionPool";
 
 Managers.configManager.getMilestone().aip11 = false;
-const genesisBlock: Interfaces.IBlock = Blocks.BlockFactory.fromJson(Managers.configManager.get("genesisBlock"));
+const network = Managers.configManager.get("network");
+const genesisBlock: Interfaces.IBlock = Blocks.BlockFactory.fromJson(genesisBlocks[network.name].genesisBlock);
+
 Managers.configManager.getMilestone().aip11 = false;
 
 export const blockchain = {

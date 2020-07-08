@@ -2,12 +2,12 @@ import "jest-extended";
 
 import { Interfaces, Managers, Utils } from "@arkecosystem/crypto";
 import ByteBuffer from "bytebuffer";
+import { genesisBlocks } from "../../../../packages/core-container/src/config/genesis";
 import { Delegate } from "../../../../packages/core-forger/src/delegate";
 import { Block, BlockFactory } from "../../../../packages/crypto/src/blocks";
 import { Slots } from "../../../../packages/crypto/src/crypto";
 import { IBlock } from "../../../../packages/crypto/src/interfaces";
 import { configManager } from "../../../../packages/crypto/src/managers";
-import * as networks from "../../../../packages/crypto/src/networks";
 import { testnet } from "../../../../packages/crypto/src/networks";
 import { NetworkName } from "../../../../packages/crypto/src/types";
 import { TransactionFactory } from "../../../helpers/transaction-factory";
@@ -559,7 +559,7 @@ describe("Block", () => {
                 configManager.setFromPreset(network);
                 configManager.getMilestone().aip11 = false;
 
-                const block: Interfaces.IBlock = BlockFactory.fromJson(networks[network].genesisBlock);
+                const block: Interfaces.IBlock = BlockFactory.fromJson(genesisBlocks[network].genesisBlock);
 
                 expect(block.serialized).toHaveLength(length);
                 expect(block.verifySignature()).toBeTrue();

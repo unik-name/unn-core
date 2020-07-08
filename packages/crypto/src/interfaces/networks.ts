@@ -1,8 +1,5 @@
-import { IBlockJson } from "./block";
-
 export interface INetworkConfig {
     exceptions: IExceptions;
-    genesisBlock: IBlockJson;
     milestones: Array<Record<string, any>>;
     network: INetwork;
 }

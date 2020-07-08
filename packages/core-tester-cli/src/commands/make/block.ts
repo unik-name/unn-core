@@ -1,3 +1,4 @@
+import { genesisBlocks } from "@arkecosystem/core-container/src/config/genesis";
 import { Delegate } from "@arkecosystem/core-forger";
 import { Crypto, Interfaces, Managers } from "@arkecosystem/crypto";
 import { flags } from "@oclif/command";
@@ -50,8 +51,8 @@ export class BlockCommand extends BaseCommand {
 
     public async run(): Promise<Interfaces.IBlockJson[]> {
         const { flags } = this.makeOffline(BlockCommand);
+        const genesisBlock = genesisBlocks[Managers.configManager.get("network").name].genesisBlock;
 
-        const genesisBlock = Managers.configManager.get("genesisBlock");
         const genesisWallets = genesisBlock.transactions.map(t => t.recipientId).filter(a => !!a);
 
         let previousBlock = flags.previousBlock ? JSON.parse(flags.previousBlock) : genesisBlock;

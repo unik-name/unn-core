@@ -3,6 +3,7 @@ import Joi from "@hapi/joi";
 import get from "lodash.get";
 import set from "lodash.set";
 import { FileLoader } from "./file-loader";
+import { genesisBlocks } from "./genesis";
 
 export class Config {
     private config: Record<string, any>;
@@ -39,7 +40,7 @@ export class Config {
         this.config.network = Managers.configManager.get("network");
         this.config.exceptions = Managers.configManager.get("exceptions");
         this.config.milestones = Managers.configManager.get("milestones");
-        this.config.genesisBlock = Managers.configManager.get("genesisBlock");
+        this.config.genesisBlock = genesisBlocks[this.config.network.name].genesisBlock;
     }
 
     private configureNetwork(network: Types.NetworkName): Interfaces.INetworkConfig {
@@ -61,7 +62,6 @@ export class Config {
                 }).default({
                     exceptions: {},
                 }),
-                genesisBlock: Joi.object().required(),
                 network: Joi.object({
                     name: Joi.string().required(),
                     messagePrefix: Joi.string().required(),

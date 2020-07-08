@@ -13,7 +13,7 @@ describe("Configuration", () => {
     it("should be set on runtime", () => {
         configManager.setConfig(mainnet);
 
-        expect(configManager.all()).toContainAllKeys(["network", "milestones", "exceptions", "genesisBlock"]);
+        expect(configManager.all()).toContainAllKeys(["network", "milestones", "exceptions"]);
     });
 
     it('key should be "set"', () => {

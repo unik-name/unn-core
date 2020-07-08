@@ -50,9 +50,10 @@ export class DatabaseService implements Database.IDatabaseService {
 
         this.emitter.emit(ApplicationEvents.StateStarting, this);
 
+        const genesisBlock = app.getConfig().get("genesisBlock");
         app.resolvePlugin<State.IStateService>("state")
             .getStore()
-            .setGenesisBlock(Blocks.BlockFactory.fromJson(Managers.configManager.get("genesisBlock")));
+            .setGenesisBlock(Blocks.BlockFactory.fromJson(genesisBlock));
 
         if (process.env.CORE_RESET_DATABASE) {
             await this.reset();

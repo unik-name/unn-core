@@ -25,8 +25,8 @@
     "dependencies": {
         "@arkecosystem/core-api": "^2.6.31",
         "@arkecosystem/core-interfaces": "^2.6.31",
-        "@uns/core-nft": "^5.3.0",
-        "@uns/crypto": "^5.3.0",
+        "@uns/core-nft": "^5.3.1",
+        "@uns/crypto": "^5.3.1",
         "@hapi/boom": "^8.0.0",
         "@hapi/hapi": "^18.3.1"
     },

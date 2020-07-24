@@ -9,6 +9,7 @@ import {
     INftMintDemandCertification,
     INftMintDemandCertificationPayload,
     INftMintDemandPayload,
+    INftUpdateDemand,
     INftUpdateDemandCertification,
     UNSCertifiedNftMintBuilder,
     UNSCertifiedNftUpdateBuilder,
@@ -101,7 +102,7 @@ const mintProperties = {
     type: "1",
     anotherProperty: "12345",
 };
-export const nftMintDemandHashBufferPayload: INftMintDemand = {
+export const nftMintRequest: INftMintDemand = {
     nft: {
         unik: {
             tokenId,
@@ -120,11 +121,15 @@ export const unsCertifiedNftMintTransaction = (cert: INftMintDemandCertification
         .sign(ownerPassphrase);
 };
 
-export const unsCertifiedNftupdateTransaction = (cert: INftUpdateDemandCertification = certification) => {
+export const unsCertifiedNftUpdateTransaction = (
+    cert: INftUpdateDemandCertification = certification,
+    demand: INftUpdateDemand = nftMintRequest,
+    issuer: string = issuerAddress,
+) => {
     return new UNSCertifiedNftUpdateBuilder("unik", tokenId)
-        .properties(mintProperties)
-        .demand(nftMintDemand)
-        .certification(cert, issuerAddress)
+        .properties(demand.nft.unik.properties)
+        .demand(demand.demand)
+        .certification(cert, issuer)
         .nonce("1")
         .sign(ownerPassphrase);
 };

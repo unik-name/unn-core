@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 -   Move genesis blocks to core-container ([#2881])
 
+### Fixed
+
+-   Pay issuers for certified updates services ([#2903])
+
 ## [5.3.0] - 2020-06-18
 
 -   Fix weekly npm publish. Adds weekly npm dist tag ([#2803])

@@ -10,7 +10,7 @@ import {
 } from "@uns/crypto";
 import {
     CertifiedDemandNotAllowedIssuerError,
-    ForgeFactoryNotFound,
+    IssuerNotFound,
     NftCertificationBadPayloadSubjectError,
     NftCertificationBadSignatureError,
     NftTransactionParametersError,
@@ -35,16 +35,16 @@ export abstract class CertifiedTransactionHandler {
         }
 
         // ISSUER FOR CERTIFICATION (FORGE FACTORY)
-        let forgeFactoryPublicKey: string;
+        let issuerPublicKey: string;
         try {
-            forgeFactoryPublicKey = await checkAndGetPublicKey(certification.payload.iss, walletManager);
+            issuerPublicKey = await checkAndGetPublicKey(certification.payload.iss, walletManager);
         } catch (error) {
-            throw new ForgeFactoryNotFound(transaction.id, error.message);
+            throw new IssuerNotFound(transaction.id, error.message);
         }
 
         // check certification signature
         const signer = this.getPayloadSigner(certification.payload);
-        if (!signer.verify(certification.signature, forgeFactoryPublicKey)) {
+        if (!signer.verify(certification.signature, issuerPublicKey)) {
             throw new NftCertificationBadSignatureError();
         }
 
@@ -60,7 +60,7 @@ export abstract class CertifiedTransactionHandler {
         }
 
         // check certified service payment recipient corresponds to transaction recipient
-        if (transaction.data.recipientId !== Identities.Address.fromPublicKey(forgeFactoryPublicKey)) {
+        if (transaction.data.recipientId !== Identities.Address.fromPublicKey(issuerPublicKey)) {
             throw new NftTransactionParametersError("recipient");
         }
     }

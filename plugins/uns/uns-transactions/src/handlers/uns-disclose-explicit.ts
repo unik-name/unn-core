@@ -12,7 +12,7 @@ import {
     DiscloseDemandCertificationSignatureError,
     DiscloseDemandSignatureError,
     DiscloseDemandSubInvalidError,
-    ForgeFactoryNotFound,
+    IssuerNotFound,
 } from "../errors";
 import { checkAndGetPublicKey, EXPLICIT_PROP_KEY, revertExplicitValue, setExplicitValue } from "./utils/helpers";
 
@@ -58,7 +58,7 @@ export class DiscloseExplicitTransactionHandler extends Handlers.TransactionHand
         try {
             forgeFactoryPublicKey = await checkAndGetPublicKey(discloseDemandCertif.payload.iss, walletManager);
         } catch (error) {
-            throw new ForgeFactoryNotFound(transaction.id, error.message);
+            throw new IssuerNotFound(transaction.id, error.message);
         }
 
         // ISSUER FOR DEMAND (CLIENT)

@@ -5,7 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [5.3.2] - 2020-07-31
+
+### Fixed
+
+-   Pay issuers for certified updates services ([#2903])
+
 ## [5.3.1] - 2020-07-15
+
+### Changed
 
 -   Move genesis blocks to core-container ([#2881])
 

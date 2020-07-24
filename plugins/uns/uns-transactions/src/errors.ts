@@ -35,9 +35,9 @@ export class CertifiedDemandIssuerNotFound extends Errors.TransactionError {
     }
 }
 
-export class ForgeFactoryNotFound extends Errors.TransactionError {
+export class IssuerNotFound extends Errors.TransactionError {
     constructor(txId, message) {
-        super(`Failed to apply transaction ${txId}: Unable to retrieve forge factory: ${message}`);
+        super(`Failed to apply transaction ${txId}: Unable to retrieve transaction issuer: ${message}`);
     }
 }
 
@@ -78,7 +78,7 @@ export class CryptoAccountHasSeveralUniksError extends Errors.TransactionError {
 }
 export abstract class NftCertificationError extends Errors.TransactionError {
     constructor(message: string) {
-        super("Failed to apply transaction Certified NFT Mint: " + message);
+        super("Failed to apply certified transaction:: " + message);
     }
 }
 

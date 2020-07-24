@@ -10,7 +10,7 @@ export interface IUNSCertifiedNftBuilder<T extends INftDemandPayload, U extends 
     /**
      * @param certification The certification itself, according to the demande set by #demand()
      */
-    certification(certification: U, forgeFactoryAddress: string): this;
+    certification(certification: U, issuerAddress: string): this;
 }
 
 export class UNSCertifiedNftBuilder<
@@ -24,10 +24,10 @@ export class UNSCertifiedNftBuilder<
         return this;
     }
 
-    public certification(certification: U, forgeFactoryAddress: string): this {
+    public certification(certification: U, issuerAddress: string): this {
         this.data.asset.certification = certification;
         this.data.amount = certification.payload.cost;
-        this.data.recipientId = forgeFactoryAddress;
+        this.data.recipientId = issuerAddress;
         return this;
     }
 }

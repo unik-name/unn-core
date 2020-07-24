@@ -72,7 +72,7 @@ describe("Signers", () => {
     describe("Validate getPayload hash buffer functions", () => {
         let payloadHashBuffer: IPayloadHashBuffer;
 
-        const payload = Fixtures.nftMintDemandHashBufferPayload;
+        const payload = Fixtures.nftMintRequest;
 
         beforeEach(() => {
             payloadHashBuffer = new NftMintDemandHashBuffer(payload);

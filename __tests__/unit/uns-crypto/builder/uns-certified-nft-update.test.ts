@@ -9,7 +9,7 @@ describe("Uns Certified NFT update", () => {
     Managers.configManager.setHeight(2);
     Transactions.TransactionRegistry.registerTransactionType(CertifiedNftUpdateTransaction);
 
-    testCertifiedBuilder(Fixtures.unsCertifiedNftupdateTransaction());
+    testCertifiedBuilder(Fixtures.unsCertifiedNftUpdateTransaction());
 
-    testNftAssetSchema(CertifiedNftUpdateTransaction, Fixtures.unsCertifiedNftupdateTransaction());
+    testNftAssetSchema(CertifiedNftUpdateTransaction, Fixtures.unsCertifiedNftUpdateTransaction());
 });

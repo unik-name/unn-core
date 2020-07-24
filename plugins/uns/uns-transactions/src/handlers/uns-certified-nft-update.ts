@@ -39,6 +39,20 @@ export class CertifiedNftUpdateTransactionHandler extends NftUpdateTransactionHa
         await this.throwIfCannotBeCertified(transaction, walletManager);
     }
 
+    public async applyToRecipient(
+        transaction: Interfaces.ITransaction,
+        walletManager: State.IWalletManager,
+    ): Promise<void> {
+        this.applyCostToRecipient(transaction, walletManager);
+    }
+
+    public async revertForRecipient(
+        transaction: Interfaces.ITransaction,
+        walletManager: State.IWalletManager,
+    ): Promise<void> {
+        this.revertCostToRecipient(transaction, walletManager);
+    }
+
     protected getPayloadSigner(payload: INftUpdateDemandCertificationPayload): NftUpdateDemandCertificationSigner {
         return new NftUpdateDemandCertificationSigner(payload);
     }

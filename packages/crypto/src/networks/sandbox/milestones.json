@@ -71,5 +71,12 @@
         },
         "certifiedNFTsOnly": true,
         "disableArkLegacyVote": true
+    },
+    {
+        "height": 1216800,
+        "p2p": {
+            "minimumVersions": ["^5.4.0 || ^5.4.0-dev"]
+        },
+        "urlCheckers": ["fcc385b9a0bf840525242c2248312988efba5ea5e03bec84cebb5c8265f56059"]
     }
 ]

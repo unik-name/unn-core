@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 -   Return 404 in nft api when querying not existing unik properties ([#2947])
 
+### Added
+
+-   Add URL-Checker whitelist ([#2866])
+
 ## [2.6.52] - 2020-08-11
 
 ### Fixed

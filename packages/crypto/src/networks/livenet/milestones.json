@@ -73,8 +73,13 @@
             "individual": 10,
             "organization": 10,
             "network": 3
+        }
+    },
+    {
+        "height": 1632000,
+        "p2p": {
+            "minimumVersions": ["^5.4.0 || ^5.4.0-dev"]
         },
-        "certifiedNFTsOnly": true,
-        "disableArkLegacyVote": true
+        "urlCheckers": ["08bf335ede1818e222ecd529e0e892190aab62a39ec40492395b825a4f640731"]
     }
 ]

@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+
+-   Add URL-Checker whitelist ([#2866])
 -   Move genesis blocks to core-container ([#2881])
 
 ### Fixed

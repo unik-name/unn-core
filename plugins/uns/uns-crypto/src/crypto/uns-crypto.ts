@@ -25,9 +25,10 @@ class UnsCrypto {
     /**
      * Return false if the issuer is not allowed to
      */
-    public verifyIssuerCredentials(issuerId): boolean {
-        const forgeFactoryWhiteList: string[] = Managers.configManager.get("network.forgeFactory.unikidWhiteList");
-        return forgeFactoryWhiteList.includes(issuerId);
+    public verifyIssuerCredentials(issuerId: string): boolean {
+        const urlCheckerList: string[] = Managers.configManager.get("network.urlCheckers.unikids");
+        const nftFactoryList: string[] = Managers.configManager.get("network.forgeFactory.unikidWhiteList");
+        return nftFactoryList.concat(urlCheckerList).includes(issuerId);
     }
 
     public serializeDiscloseDemand(payload: IDiscloseDemandPayload | IDiscloseDemandCertificationPayload): Buffer {

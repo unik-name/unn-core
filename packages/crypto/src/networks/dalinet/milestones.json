@@ -67,5 +67,11 @@
     {
         "height": 3600,
         "disableArkLegacyVote": true
+    },
+    {
+        "height": 900000,
+        "urlCheckers": {
+            "unikids": ["88f19a6b1d0d2ca16d385f7f76ba343234fd87498a723439a3b6cf79b38431bc"]
+        }
     }
 ]

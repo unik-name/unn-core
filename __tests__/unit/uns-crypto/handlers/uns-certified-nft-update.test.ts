@@ -3,10 +3,16 @@ import "../mocks/core-container";
 import { State } from "@arkecosystem/core-interfaces";
 import { Wallets } from "@arkecosystem/core-state";
 import { Handlers } from "@arkecosystem/core-transactions";
-import { Managers, Utils } from "@arkecosystem/crypto";
+import { Managers, Utils, Identities } from "@arkecosystem/crypto";
 import { CertifiedNftUpdateTransactionHandler } from "@uns/uns-transactions";
 import * as Fixtures from "../__fixtures__";
 import { nftRepository } from "@uns/core-nft";
+import {
+    INftUpdateDemand,
+    NftUpdateDemandSigner,
+    NftUpdateDemandHashBuffer,
+    NftUpdateDemandCertificationSigner,
+} from "@uns/crypto";
 
 let handler;
 let builder;
@@ -46,6 +52,70 @@ describe("CertifiedNtfUpdate Transaction", () => {
 
     describe("throwIfCannotBeApplied", () => {
         it("should not throw", async () => {
+            await expect(handler.throwIfCannotBeApplied(builder.build(), senderWallet, walletManager)).toResolve();
+        });
+
+        it("should not throw for url verify", async () => {
+            const urlCheckerUnikId = "deadbabeeb364043499c83ee6045e3395f21dbfb5f8bfe58590f59cb639ab8e1";
+            const urlCheckerPassphrase = "urlcheckersecret";
+            const urlCheckerAddr = Identities.Address.fromPassphrase(urlCheckerPassphrase);
+            const urlCheckerWallet = new Wallets.Wallet(urlCheckerAddr);
+            urlCheckerWallet.publicKey = Identities.PublicKey.fromPassphrase(urlCheckerPassphrase);
+            urlCheckerWallet.setAttribute("tokens", { tokens: [urlCheckerUnikId] });
+            walletManager.reindex(urlCheckerWallet);
+
+            // Add Url checker provider authorization
+            Managers.configManager.set("network.urlCheckers", [urlCheckerUnikId]);
+
+            const properties = {
+                "Verified/URL/MyUrl": "https://www.toto.lol",
+                "Verified/URL/MyUrl/proof":
+                    '{"iat":1598434813,"exp":1598694013,"jti":"SyjfEteA8tSAPRjV4b_lw","sig":"jwtSignature"}',
+            };
+            const updateDemand: INftUpdateDemand = {
+                nft: {
+                    unik: {
+                        tokenId: Fixtures.tokenId,
+                        properties,
+                    },
+                },
+                demand: {
+                    payload: {
+                        iss: Fixtures.tokenId,
+                        sub: Fixtures.tokenId,
+                        iat: 1579165954,
+                        cryptoAccountAddress: senderWallet.address,
+                    },
+                    signature: "",
+                },
+            };
+
+            let signature = new NftUpdateDemandSigner(updateDemand).sign(Fixtures.ownerPassphrase);
+            updateDemand.demand.signature = signature;
+
+            const hash = new NftUpdateDemandHashBuffer(updateDemand).getPayloadHashBuffer();
+
+            const urlCheckDemandCertificationPayload = {
+                sub: hash,
+                iss: urlCheckerUnikId,
+                iat: 12345678,
+                cost: Utils.BigNumber.ZERO,
+            };
+
+            signature = new NftUpdateDemandCertificationSigner(urlCheckDemandCertificationPayload).sign(
+                urlCheckerPassphrase,
+            );
+
+            const certification = {
+                payload: urlCheckDemandCertificationPayload,
+                signature,
+            };
+            jest.spyOn(nftRepository(), "findById").mockResolvedValueOnce({
+                tokenId: urlCheckerUnikId,
+                ownerId: urlCheckerAddr,
+            });
+            builder = Fixtures.unsCertifiedNftUpdateTransaction(certification, updateDemand, urlCheckerAddr);
+
             await expect(handler.throwIfCannotBeApplied(builder.build(), senderWallet, walletManager)).toResolve();
         });
     });

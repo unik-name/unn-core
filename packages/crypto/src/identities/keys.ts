@@ -1,4 +1,15 @@
-import { secp256k1 } from "bcrypto";
+let secp256k1;
+let useBcrypto = true;
+try {
+    // tslint:disable
+    secp256k1 = require("bcrypto").secp256k1;
+} catch (e) {
+    const EC = require("elliptic").ec;
+    // tslint:enable
+    secp256k1 = new EC("secp256k1");
+    useBcrypto = false;
+}
+
 import wif from "wif";
 import { HashAlgorithms } from "../crypto";
 import { NetworkVersionError } from "../errors";
@@ -14,8 +25,15 @@ export class Keys {
     public static fromPrivateKey(privateKey: Buffer | string, compressed: boolean = true): IKeyPair {
         privateKey = privateKey instanceof Buffer ? privateKey : Buffer.from(privateKey, "hex");
 
+        let publicKey: string;
+        if (useBcrypto) {
+            publicKey = secp256k1.publicKeyCreate(privateKey, compressed).toString("hex");
+        } else {
+            const keysPair = secp256k1.keyFromPrivate(privateKey.toString("hex"), "hex");
+            publicKey = keysPair.getPublic(compressed, "hex");
+        }
         return {
-            publicKey: secp256k1.publicKeyCreate(privateKey, compressed).toString("hex"),
+            publicKey,
             privateKey: privateKey.toString("hex"),
             compressed,
         };
@@ -31,9 +49,15 @@ export class Keys {
         if (version !== network.wif) {
             throw new NetworkVersionError(network.wif, version);
         }
-
+        let publicKey: string;
+        if (useBcrypto) {
+            publicKey = secp256k1.publicKeyCreate(privateKey, compressed).toString("hex");
+        } else {
+            const keysPair = secp256k1.keyFromPrivate(privateKey.toString("hex"), "hex");
+            publicKey = keysPair.getPublic(compressed, "hex");
+        }
         return {
-            publicKey: secp256k1.publicKeyCreate(privateKey, compressed).toString("hex"),
+            publicKey,
             privateKey: privateKey.toString("hex"),
             compressed,
         };

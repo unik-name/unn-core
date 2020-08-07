@@ -1,11 +1,16 @@
-// tslint:disable:no-bitwise
-
 /**
  * Based on: https://github.com/bitcoinjs/bip38 @ 8e3a2cc6f7391782f3012129924a73bb632a3d4d
  */
 
+let secp256k1;
+try {
+    // tslint:disable
+    secp256k1 = require("bcrypto").secp256k1;
+} catch (e) {}
+// tslint:enable
+// tslint:disable:no-bitwise
+
 import assert from "assert";
-import { secp256k1 } from "bcrypto";
 import aes from "browserify-aes";
 import xor from "buffer-xor/inplace";
 import crypto from "crypto";
@@ -175,6 +180,7 @@ const decryptECMult = (buffer: Buffer, passphrase: string): IDecryptResult => {
 
     const seedBPart1 = xor(decipher2.read(), derivedHalf1.slice(0, 16));
     const seedB = Buffer.concat([seedBPart1, seedBPart2], 24);
+    assert(secp256k1);
     const privateKey = secp256k1.privateKeyTweakMul(HashAlgorithms.hash256(seedB), passFactor);
 
     return {

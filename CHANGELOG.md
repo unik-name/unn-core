@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+
+-   Make bcrypto optional in crypto package ([#2881])
 -   Move genesis blocks to core-container ([#2881])
 
 ### Fixed

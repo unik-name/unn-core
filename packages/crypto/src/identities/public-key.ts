@@ -1,4 +1,11 @@
-import { secp256k1 } from "bcrypto";
+let secp256k1;
+try {
+    // tslint:disable
+    secp256k1 = require("bcrypto").secp256k1;
+} catch (e) {}
+// tslint:enable
+
+import assert from "assert";
 import { Utils } from "..";
 import { InvalidMultiSignatureAssetError, PublicKeyError } from "../errors";
 import { IMultiSignatureAsset } from "../interfaces";
@@ -31,7 +38,7 @@ export class PublicKey {
 
         const minKey: string = PublicKey.fromPassphrase(Utils.numberToHex(min));
         const keys: string[] = [minKey, ...publicKeys];
-
+        assert(secp256k1);
         return keys.reduce((previousValue: string, currentValue: string) =>
             secp256k1
                 .publicKeyAdd(Buffer.from(previousValue, "hex"), Buffer.from(currentValue, "hex"), true)

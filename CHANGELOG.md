@@ -7,11 +7,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
--   Move genesis blocks to core-container ([#2881])
+### Fixed
+
+-   Restore genesisBlock in node configuration api ([#2934])
+
+## [5.3.2] - 2020-07-31
 
 ### Fixed
 
 -   Pay issuers for certified updates services ([#2903])
+
+## [5.3.1] - 2020-07-15
+
+### Changed
+
+-   Move genesis blocks to core-container ([#2881])
 
 ## [5.3.0] - 2020-06-18
 

@@ -1,7 +1,7 @@
 {
     "name": "@arkecosystem/core-api",
     "private": true,
-    "version": "2.6.31",
+    "version": "2.6.52",
     "description": "Public API for ARK Core",
     "license": "MIT",
     "contributors": [
@@ -22,14 +22,14 @@
         "pretest": "bash ../../scripts/pre-test.sh"
     },
     "dependencies": {
-        "@arkecosystem/core-container": "^2.6.31",
-        "@arkecosystem/core-http-utils": "^2.6.31",
-        "@arkecosystem/core-interfaces": "^2.6.31",
-        "@arkecosystem/core-transaction-pool": "^2.6.31",
-        "@arkecosystem/core-transactions": "^2.6.31",
-        "@arkecosystem/core-utils": "^2.6.31",
-        "@arkecosystem/crypto": "^2.6.31",
-        "@arkecosystem/utils": "^0.3.0",
+        "@arkecosystem/core-container": "^2.6.52",
+        "@arkecosystem/core-http-utils": "^2.6.52",
+        "@arkecosystem/core-interfaces": "^2.6.52",
+        "@arkecosystem/core-transaction-pool": "^2.6.52",
+        "@arkecosystem/core-transactions": "^2.6.52",
+        "@arkecosystem/core-utils": "^2.6.52",
+        "@arkecosystem/crypto": "^2.6.52",
+        "@arkecosystem/utils": "^1.1",
         "@hapi/boom": "^8.0.0",
         "@hapi/joi": "^15.1.0",
         "ajv": "^6.10.2",
@@ -40,7 +40,7 @@
         "lodash.partition": "^4.6.0",
         "lodash.snakecase": "^4.1.1",
         "semver": "^7.0.0",
-        "@arkecosystem/core-database": "^2.6.30",
+        "@arkecosystem/core-database": "^2.6.52",
         "@uns/crypto": "^5.3.0",
         "@uns/core-nft-crypto": "^5.3.0"
     },

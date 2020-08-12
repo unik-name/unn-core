@@ -11,6 +11,76 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 -   Restore genesisBlock in node configuration api ([#2934])
 
+## [2.6.52] - 2020-08-11
+
+### Fixed
+
+-   Discard zero-padded R/S (#3950) (9f197fa1, @air1one)
+-   Check sig length value vs r/s length (#3950) (c2d3f2e5, @air1one)
+-   Find by address / public key before username (#3950) (ddd19cc2, @air1one)
+
+## [2.6.49] - 2020-07-22
+
+### Fixed
+
+-   Use bundled file for `browser` field (#3904) (20d66cf3, @luciorubeens)
+-   Reduce download block size when getting no block (#3905) (e2232875, @air1one)
+-   Ping ports using head (#3905) (db226bd3, @air1one)
+-   Stricter rate limit for getBlocks (#3905) (df7a3aa1, @air1one)
+-   Allow to discard possibly invalid txs from pool (#3905) (0450ee84, @air1one)
+-   Check sig length vs R and S length (#3905) (1b0863c3, @air1one)
+-   Check that R and S is positive (#3905) (0783ec08, @air1one)
+
+## [2.6.42] - 2020-06-29
+
+### Added
+
+-   Add rollup config for browsers ([#3830]) (da0d8d5a, @luciorubeens)
+
+### Changed
+
+-   Update `bcrypto` dependency to v5 ([#3823]) (0b510429, @faustbrian)
+
+### Fixed
+
+-   Use incremental timestamps for `make:block` ([#3818]) (4612cd24, @deanpress)
+
+## [2.6.39] - 2020-06-17
+
+### Fixed
+
+-   Block schema violation ([#3806])
+
+## [2.6.38] - 2020-05-27
+
+### Fixed
+
+-   Discard late-forged blocks from forger ([#3746])
+
+## [2.6.37] - 2020-05-12
+
+### Changed
+
+-   Custom validation for `postBlock` in `core-p2p` worker ([#3695])
+
+## [2.6.36] - 2020-05-04
+
+### Fixed
+
+-   Update vote balance with htlc locked balance on vote transactions ([#3669])
+-   Use sorted array (instead of tree) for storing transactions by fee and nonce ([#3678])
+
+## [2.6.34] - 2020-04-28
+
+### Fixed
+
+-   Create a unique round ID for elasticsearch ([#3659])
+
+### Changed
+
+-   Update @arkecosystem/utils dependency ([#3665])
+-   Use tree memory structure to sort by fee and by sender nonce **(core-transaction-pool)** ([#3667])
+
 ## [5.3.2] - 2020-07-31
 
 ### Fixed
@@ -966,7 +1036,9 @@ Closed security vulnerabilities:
 -   Initial Release
 
 [unreleased]: https://github.com/ARKEcosystem/core/compare/master...develop
-[2.6.31]: https://github.com/ARKEcosystem/core/compare/2.6.30...2.6.31
+
+==== BASE ====
+==== BASE ====
 [2.6.30]: https://github.com/ARKEcosystem/core/compare/2.6.29...2.6.30
 [2.6.29]: https://github.com/ARKEcosystem/core/compare/2.6.28...2.6.29
 [2.6.28]: https://github.com/ARKEcosystem/core/compare/2.6.27...2.6.28
@@ -1514,7 +1586,8 @@ Closed security vulnerabilities:
 [#3596]: https://github.com/ARKEcosystem/core/pull/3596
 [#3598]: https://github.com/ARKEcosystem/core/pull/3598
 [#3605]: https://github.com/ARKEcosystem/core/pull/3605
-[#3614]: https://github.com/ARKEcosystem/core/pull/3614
+==== BASE ====
+==== BASE ====
 [032caa1b990e91937e4bc1561bc1aeaeca9e37d]: https://github.com/ARKEcosystem/core/commit/032caa1b990e91937e4bc1561bc1aeaeca9e37d9
 [1209a36366c8fd3ba31fab2463011b7ce1a7d84]: https://github.com/ARKEcosystem/core/commit/1209a36366c8fd3ba31fab2463011b7ce1a7d844
 [34749bf84bcec3fecd0098c0d42f52deb1f6ba4]: https://github.com/ARKEcosystem/core/commit/34749bf84bcec3fecd0098c0d42f52deb1f6ba4a

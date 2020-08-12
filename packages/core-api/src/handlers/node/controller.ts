@@ -77,7 +77,10 @@ export class NodeController extends Controller {
     public async configurationCrypto() {
         try {
             return {
-                data: Managers.configManager.getPreset(this.config.get("network").name),
+                data: {
+                    ...Managers.configManager.getPreset(this.config.get("network").name),
+                    genesisBlock: app.getConfig().get("genesisBlock"),
+                },
             };
         } catch (error) {
             return Boom.badImplementation(error);

@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [5.3.3] - 2020-08-13
+
+### Fixed
+
+-   Restore genesisBlock in node configuration api ([#2934])
+
 ## [5.3.2] - 2020-07-31
 
 ### Fixed

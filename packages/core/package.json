@@ -1,7 +1,7 @@
 {
     "name": "@arkecosystem/core",
     "private": true,
-    "version": "5.3.2",
+    "version": "5.3.3",
     "description": "Core of the ARK Blockchain",
     "license": "MIT",
     "contributors": [
@@ -85,8 +85,8 @@
         "@oclif/plugin-plugins": "^1.7.8",
         "@typeskrift/foreman": "^0.2.1",
         "@uns/chainmeta-plugin": "^1.0.0-alpha.0",
-        "@uns/core-nft": "^5.3.2",
-        "@uns/uns-transactions": "^5.3.2",
+        "@uns/core-nft": "^5.3.3",
+        "@uns/uns-transactions": "^5.3.3",
         "bip39": "^3.0.2",
         "bytebuffer": "^5.0.1",
         "chalk": "^3.0.0",

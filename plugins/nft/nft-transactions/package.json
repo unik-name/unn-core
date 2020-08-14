@@ -1,6 +1,6 @@
 {
     "name": "@uns/core-nft",
-    "version": "5.3.2",
+    "version": "5.3.3",
     "private": true,
     "description": "NFT plugin for chains using ARK Core",
     "license": "MIT",
@@ -26,8 +26,8 @@
         "@arkecosystem/core-interfaces": "^2.6.31",
         "@arkecosystem/core-transactions": "^2.6.31",
         "@arkecosystem/crypto": "^2.6.31",
-        "@uns/core-nft-crypto": "^5.3.2",
-        "@uns/crypto": "^5.3.2",
+        "@uns/core-nft-crypto": "^5.3.3",
+        "@uns/crypto": "^5.3.3",
         "lodash.difference": "^4.5.0"
     },
     "publishConfig": {

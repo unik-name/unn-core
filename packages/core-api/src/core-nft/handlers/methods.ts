@@ -41,6 +41,11 @@ const show = async request => {
 };
 
 const properties = async request => {
+    const nft = await nftsRepository.findById(request.params.id, request.params.nft);
+    if (!nft) {
+        return Boom.notFound(`Non fungible token ${request.params.id} not found`);
+    }
+
     const properties = await nftsRepository.findProperties(request.params.id, {
         ...request.query,
         ...paginate(request),

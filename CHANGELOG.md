@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
--   Restore genesisBlock in node configuration api ([#2934])
+-   Return 404 in nft api when querying not existing unik properties ([#2947])
 
 ## [2.6.52] - 2020-08-11
 
@@ -80,6 +80,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 -   Update @arkecosystem/utils dependency ([#3665])
 -   Use tree memory structure to sort by fee and by sender nonce **(core-transaction-pool)** ([#3667])
+
+## [5.3.3] - 2020-08-13
+
+### Fixed
+
+-   Restore genesisBlock in node configuration api ([#2934])
 
 ## [5.3.2] - 2020-07-31
 

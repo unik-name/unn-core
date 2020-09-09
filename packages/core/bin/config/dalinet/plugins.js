@@ -26,7 +26,7 @@ module.exports = {
         maxTransactionsPerSender: process.env.CORE_TRANSACTION_POOL_MAX_PER_SENDER || 300,
         allowedSenders: [],
         dynamicFees: {
-            enabled: true,
+            enabled: false,
             minFeePool: 1000,
             minFeeBroadcast: 1000,
             addonBytes: {

@@ -77,6 +77,28 @@
         "p2p": {
             "minimumVersions": ["^5.4.0 || ^5.4.0-dev"]
         },
-        "urlCheckers": ["fcc385b9a0bf840525242c2248312988efba5ea5e03bec84cebb5c8265f56059"]
+        "urlCheckers": ["fcc385b9a0bf840525242c2248312988efba5ea5e03bec84cebb5c8265f56059"],
+        "voucherRewards": {
+            "individual": {
+                "forger": 1000000000,
+                "sender": 1000000000,
+                "foundation": 8000000000
+            },
+            "organization": {
+                "forger": 1000000000,
+                "sender": 10000000000,
+                "foundation": 989000000000
+            },
+            "network": {
+                "forger": 1000000000,
+                "sender": 100000000000,
+                "foundation": 99899000000000
+            }
+        },
+        "fees": {
+            "staticFees": {
+                "UnsCertifiedNftMint": 1000000000
+            }
+        }
     }
 ]

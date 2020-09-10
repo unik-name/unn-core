@@ -68,5 +68,30 @@
         "height": 3600,
         "disableArkLegacyVote": true,
         "urlCheckers": ["88f19a6b1d0d2ca16d385f7f76ba343234fd87498a723439a3b6cf79b38431bc"]
+    },
+    {
+        "height": 1194000,
+        "voucherRewards": {
+            "individual": {
+                "forger": 1000000000,
+                "sender": 1000000000,
+                "foundation": 8000000000
+            },
+            "organization": {
+                "forger": 1000000000,
+                "sender": 10000000000,
+                "foundation": 989000000000
+            },
+            "network": {
+                "forger": 1000000000,
+                "sender": 100000000000,
+                "foundation": 99899000000000
+            }
+        },
+        "fees": {
+            "staticFees": {
+                "UnsCertifiedNftMint": 1000000000
+            }
+        }
     }
 ]

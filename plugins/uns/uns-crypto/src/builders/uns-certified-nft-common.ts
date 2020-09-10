@@ -1,5 +1,6 @@
-import { Interfaces } from "@arkecosystem/crypto";
+import { Interfaces, Utils } from "@arkecosystem/crypto";
 import { ICertificationable, ICertifiedDemand, INftDemandCertificationPayload, INftDemandPayload } from "../interfaces";
+import { getVoucherRewards, hasVoucher } from "../utils";
 
 export interface IUNSCertifiedNftBuilder<T extends INftDemandPayload, U extends ICertifiedDemand<ICertificationable>> {
     /**
@@ -28,6 +29,13 @@ export class UNSCertifiedNftBuilder<
         this.data.asset.certification = certification;
         this.data.amount = certification.payload.cost;
         this.data.recipientId = issuerAddress;
+
+        // set fees for mint with voucher
+        if (hasVoucher(this.data.asset)) {
+            const rewards = getVoucherRewards(this.data.asset);
+            this.data.fee = Utils.BigNumber.make(rewards.forger);
+        }
+
         return this;
     }
 }

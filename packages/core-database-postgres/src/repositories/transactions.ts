@@ -1,6 +1,8 @@
 import { app } from "@arkecosystem/core-container";
 import { Database, State } from "@arkecosystem/core-interfaces";
-import { Crypto, Enums, Interfaces, Utils } from "@arkecosystem/crypto";
+import { Crypto, Enums, Identities, Interfaces, Managers, Utils } from "@arkecosystem/crypto";
+import { UnsTransactionGroup, UnsTransactionType } from "@uns/crypto";
+
 import dayjs from "dayjs";
 import partition from "lodash.partition";
 import { Transaction } from "../models";
@@ -121,6 +123,18 @@ export class TransactionsRepository extends Repository implements Database.ITran
                     // We do not know public key for cold wallets
                     if (walletPublicKey) {
                         condition = condition.or(this.query.sender_public_key.equals(walletPublicKey));
+                    }
+
+                    const foundationPubKey = Managers.configManager.get("network.foundation.publicKey");
+                    // Special handler for UNS Foundation wallet
+                    if (foundationPubKey && walletAddress === Identities.Address.fromPublicKey(foundationPubKey)) {
+                        // Find voucher nft mints
+                        condition = condition.or(
+                            this.query.type
+                                .equals(UnsTransactionType.UnsCertifiedNftMint)
+                                .and(this.query.type_group.equals(UnsTransactionGroup))
+                                .and(this.query.asset.path("{nft,unik,properties,UnikVoucherId}").isNotNull()),
+                        );
                     }
 
                     query[useWhere ? "where" : "and"](condition);

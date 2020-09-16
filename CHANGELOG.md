@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+-   add voucher mint transactions in foundation wallet's transaction route ([#2970])
+
+## [5.4.1] - 2020-09-16
+
 ### Fixed
 
 -   foundation rewards in blocks api ([#2981])

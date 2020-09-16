@@ -27,7 +27,7 @@ class UnsCrypto {
      */
     public verifyIssuerCredentials(issuerId: string): boolean {
         const nftFactoryList: string[] = Managers.configManager.get("network.forgeFactory.unikidWhiteList");
-        const urlCheckerList: string[] = Managers.configManager.get("network.urlCheckers") || [];
+        const urlCheckerList: string[] = Managers.configManager.getMilestone().urlCheckers || [];
         return nftFactoryList.concat(urlCheckerList).includes(issuerId);
     }
 

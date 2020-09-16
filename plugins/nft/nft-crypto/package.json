@@ -1,6 +1,6 @@
 {
     "name": "@uns/core-nft-crypto",
-    "version": "5.4.0",
+    "version": "5.4.1",
     "description": "Utilities for NFT plugin using ARK Core",
     "license": "MIT",
     "contributors": [

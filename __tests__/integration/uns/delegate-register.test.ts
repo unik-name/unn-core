@@ -23,6 +23,8 @@ beforeAll(async () => {
     walletManager = new WalletManager();
     database = container.resolvePlugin<Database.IDatabaseService>("database");
     stateBuilder = new StateBuilder(database.connection, walletManager);
+    const height = Managers.configManager.getMilestones().find(milestone => !!milestone.nbDelegatesByType).height;
+    Managers.configManager.setHeight(height);
 });
 
 afterAll(async () => {

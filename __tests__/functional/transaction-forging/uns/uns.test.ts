@@ -1,7 +1,7 @@
 import { app } from "@arkecosystem/core-container";
 import { Database } from "@arkecosystem/core-interfaces";
 import { IWallet, IWalletManager } from "@arkecosystem/core-interfaces/dist/core-state";
-import { Identities, Managers } from "@arkecosystem/crypto";
+import { Identities } from "@arkecosystem/crypto";
 import { DELEGATE_BADGE } from "@uns/uns-transactions";
 import { EXPLICIT_PROP_KEY } from "@uns/uns-transactions/src/handlers/utils/helpers";
 import * as support from "../__support__";
@@ -74,8 +74,8 @@ describe("Uns delegate scenario", () => {
 
         // Check delegate attributes
         expect(delegateWallet.getAttribute("delegate.type")).toEqual(parseInt(nftType));
-        const nbIndividuals = Managers.configManager.getMilestone().nbDelegatesByType.individual;
-        expect(delegateWallet.getAttribute("delegate.rank")).toEqual(nbIndividuals + 1);
+
+        expect(delegateWallet.getAttribute("delegate.rank")).toEqual(1);
         expect(delegateWallet.getAttribute("delegate.voteBalance")).toEqual(
             delegateWallet.balance.plus(genesisWallet.balance),
         );

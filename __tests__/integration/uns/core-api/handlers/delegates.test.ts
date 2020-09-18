@@ -12,6 +12,8 @@ beforeAll(async () => {
     await NftSupport.setUp();
     wm = app.resolvePlugin("database").walletManager;
     buildDelegatePool(wm, 10);
+    const height = Managers.configManager.getMilestones().find(milestone => !!milestone.nbDelegatesByType).height;
+    Managers.configManager.setHeight(height);
 });
 
 afterAll(tearDown);

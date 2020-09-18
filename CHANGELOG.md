@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+-   foundation rewards in blocks api ([#2981])
+
+## [5.4.1] - 2020-09-16
+
+### Fixed
+
 -   get url checker from milestone ([#2915])
 
 ## [5.4.0] - 2020-09-14

@@ -43,7 +43,7 @@ const show = async request => {
                 unikMintRewards = unikMintRewards
                     .plus(Utils.BigNumber.make(rewardsByType.sender))
                     .plus(Utils.BigNumber.make(rewardsByType.forger));
-                foundationRewards = unikMintRewards.plus(Utils.BigNumber.make(rewardsByType.foundation));
+                foundationRewards = Utils.BigNumber.make(rewardsByType.foundation);
             }
         }
         (block as any).unikMintRewards = unikMintRewards;

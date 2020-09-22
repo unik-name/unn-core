@@ -1,5 +1,5 @@
-import { State } from "@arkecosystem/core-interfaces";
-import { Handlers } from "@arkecosystem/core-transactions";
+import { Database, State } from "@arkecosystem/core-interfaces";
+import { Handlers, TransactionReader } from "@arkecosystem/core-transactions";
 import { Interfaces, Transactions } from "@arkecosystem/crypto";
 import { NftUpdateTransactionHandler } from "@uns/core-nft";
 import {
@@ -27,6 +27,19 @@ export class CertifiedNftUpdateTransactionHandler extends NftUpdateTransactionHa
 
     public getConstructor(): Transactions.TransactionConstructor {
         return CertifiedNftUpdateTransaction;
+    }
+
+    public async bootstrap(connection: Database.IConnection, walletManager: State.IWalletManager): Promise<void> {
+        const reader: TransactionReader = await TransactionReader.create(connection, this.getConstructor());
+
+        while (reader.hasNext()) {
+            const transactions = await reader.read();
+
+            for (const transaction of transactions) {
+                const issuerWallet: State.IWallet = walletManager.findByAddress(transaction.recipientId);
+                issuerWallet.balance = issuerWallet.balance.plus(transaction.amount);
+            }
+        }
     }
 
     public async throwIfCannotBeApplied(

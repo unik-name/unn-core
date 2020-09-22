@@ -7,61 +7,12 @@ import { Managers, Utils, Identities } from "@arkecosystem/crypto";
 import { CertifiedNftUpdateTransactionHandler } from "@uns/uns-transactions";
 import * as Fixtures from "../__fixtures__";
 import { nftRepository } from "@uns/core-nft";
-import {
-    INftUpdateDemand,
-    NftUpdateDemandSigner,
-    NftUpdateDemandHashBuffer,
-    NftUpdateDemandCertificationSigner,
-} from "@uns/crypto";
 
 let handler;
 let builder;
 let senderWallet: Wallets.Wallet;
 let forgeFactoryWallet: Wallets.Wallet;
 let walletManager: State.IWalletManager;
-
-const buildUrlCheckerTransaction = (issuer, sender) => {
-    const properties = {
-        "Verified/URL/MyUrl": "https://www.toto.lol",
-        "Verified/URL/MyUrl/proof":
-            '{"iat":1598434813,"exp":1598694013,"jti":"SyjfEteA8tSAPRjV4b_lw","sig":"jwtSignature"}',
-    };
-    const updateDemand: INftUpdateDemand = {
-        nft: {
-            unik: {
-                tokenId: sender.tokenId,
-                properties,
-            },
-        },
-        demand: {
-            payload: {
-                iss: sender.tokenId,
-                sub: sender.tokenId,
-                iat: 1579165954,
-                cryptoAccountAddress: sender.address,
-            },
-            signature: "",
-        },
-    };
-
-    updateDemand.demand.signature = new NftUpdateDemandSigner(updateDemand).sign(sender.passphrase);
-
-    const hash = new NftUpdateDemandHashBuffer(updateDemand).getPayloadHashBuffer();
-
-    const urlCheckDemandCertificationPayload = {
-        sub: hash,
-        iss: issuer.tokenId,
-        iat: 12345678,
-        cost: Utils.BigNumber.ZERO,
-    };
-
-    const certification = {
-        payload: urlCheckDemandCertificationPayload,
-        signature: new NftUpdateDemandCertificationSigner(urlCheckDemandCertificationPayload).sign(issuer.passphrase),
-    };
-
-    return Fixtures.unsCertifiedNftUpdateTransaction(certification, updateDemand, issuer.address).build();
-};
 
 describe("CertifiedNtfUpdate Transaction", () => {
     Managers.configManager.setFromPreset(Fixtures.network);
@@ -99,7 +50,7 @@ describe("CertifiedNtfUpdate Transaction", () => {
         });
 
         it("should not throw for url verify before milestone", async () => {
-            const transaction = buildUrlCheckerTransaction(
+            const transaction = Fixtures.buildUrlCheckerTransaction(
                 { tokenId: Fixtures.issUnikId, address: Fixtures.issuerAddress, passphrase: Fixtures.issPassphrase },
                 { tokenId: Fixtures.tokenId, address: senderWallet.address, passphrase: Fixtures.ownerPassphrase },
             );
@@ -125,7 +76,7 @@ describe("CertifiedNtfUpdate Transaction", () => {
                 ownerId: urlCheckerAddr,
             });
 
-            const transaction = buildUrlCheckerTransaction(
+            const transaction = Fixtures.buildUrlCheckerTransaction(
                 { tokenId: urlCheckerUnikId, address: urlCheckerAddr, passphrase: urlCheckerPassphrase },
                 { tokenId: Fixtures.tokenId, address: senderWallet.address, passphrase: Fixtures.ownerPassphrase },
             );

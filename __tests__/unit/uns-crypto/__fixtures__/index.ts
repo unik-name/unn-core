@@ -11,6 +11,9 @@ import {
     INftMintDemandPayload,
     INftUpdateDemand,
     INftUpdateDemandCertification,
+    NftUpdateDemandCertificationSigner,
+    NftUpdateDemandHashBuffer,
+    NftUpdateDemandSigner,
     UNSCertifiedNftMintBuilder,
     UNSCertifiedNftUpdateBuilder,
     UnsTransactionGroup,
@@ -140,6 +143,49 @@ export const wallet = () => {
     wallet.balance = walletBalance;
     wallet.publicKey = Identities.Keys.fromPassphrase(ownerPassphrase).publicKey;
     return wallet;
+};
+
+export const buildUrlCheckerTransaction = (issuer, sender) => {
+    const properties = {
+        "Verified/URL/MyUrl": "https://www.toto.lol",
+        "Verified/URL/MyUrl/proof":
+            '{"iat":1598434813,"exp":1598694013,"jti":"SyjfEteA8tSAPRjV4b_lw","sig":"jwtSignature"}',
+    };
+    const updateDemand: INftUpdateDemand = {
+        nft: {
+            unik: {
+                tokenId: sender.tokenId,
+                properties,
+            },
+        },
+        demand: {
+            payload: {
+                iss: sender.tokenId,
+                sub: sender.tokenId,
+                iat: 1579165954,
+                cryptoAccountAddress: sender.address,
+            },
+            signature: "",
+        },
+    };
+
+    updateDemand.demand.signature = new NftUpdateDemandSigner(updateDemand).sign(sender.passphrase);
+
+    const hash = new NftUpdateDemandHashBuffer(updateDemand).getPayloadHashBuffer();
+
+    const urlCheckDemandCertificationPayload = {
+        sub: hash,
+        iss: issuer.tokenId,
+        iat: 12345678,
+        cost: Utils.BigNumber.make(100000000),
+    };
+
+    const certification = {
+        payload: urlCheckDemandCertificationPayload,
+        signature: new NftUpdateDemandCertificationSigner(urlCheckDemandCertificationPayload).sign(issuer.passphrase),
+    };
+
+    return unsCertifiedNftUpdateTransaction(certification, updateDemand, issuer.address).build();
 };
 
 export * from "../../core-nft/__fixtures__";

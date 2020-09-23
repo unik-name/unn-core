@@ -76,31 +76,14 @@
         }
     },
     {
-        "height": 1632000,
+        "height": 1721946,
         "p2p": {
             "minimumVersions": ["^5.4.0 || ^5.4.0-dev"]
         },
         "urlCheckers": ["08bf335ede1818e222ecd529e0e892190aab62a39ec40492395b825a4f640731"],
-        "voucherRewards": {
-            "individual": {
-                "forger": 1000000000,
-                "sender": 1000000000,
-                "foundation": 8000000000
-            },
-            "organization": {
-                "forger": 1000000000,
-                "sender": 10000000000,
-                "foundation": 989000000000
-            },
-            "network": {
-                "forger": 1000000000,
-                "sender": 100000000000,
-                "foundation": 99899000000000
-            }
-        },
         "fees": {
             "staticFees": {
-                "UnsCertifiedNftMint": 1000000000
+                "UnsCertifiedNftMint": 100000000
             }
         }
     }

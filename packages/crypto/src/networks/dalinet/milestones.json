@@ -96,5 +96,30 @@
                 "UnsCertifiedNftMint": 1000000000
             }
         }
+    },
+    {
+        "height": 1295395,
+        "voucherRewards": {
+            "individual": {
+                "forger": 100000000,
+                "sender": 1000000000,
+                "foundation": 8900000000
+            },
+            "organization": {
+                "forger": 100000000,
+                "sender": 10000000000,
+                "foundation": 989900000000
+            },
+            "network": {
+                "forger": 100000000,
+                "sender": 100000000000,
+                "foundation": 99899900000000
+            }
+        },
+        "fees": {
+            "staticFees": {
+                "UnsCertifiedNftMint": 100000000
+            }
+        }
     }
 ]

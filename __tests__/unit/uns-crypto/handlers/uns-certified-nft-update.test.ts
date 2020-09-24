@@ -50,11 +50,11 @@ describe("CertifiedNtfUpdate Transaction", () => {
         });
 
         it("should not throw for url verify before milestone", async () => {
-            const transaction = Fixtures.buildUrlCheckerTransaction(
+            const builder = Fixtures.buildUrlCheckerTransaction(
                 { tokenId: Fixtures.issUnikId, address: Fixtures.issuerAddress, passphrase: Fixtures.issPassphrase },
                 { tokenId: Fixtures.tokenId, address: senderWallet.address, passphrase: Fixtures.ownerPassphrase },
             );
-            await expect(handler.throwIfCannotBeApplied(transaction, senderWallet, walletManager)).toResolve();
+            await expect(handler.throwIfCannotBeApplied(builder.build(), senderWallet, walletManager)).toResolve();
         });
 
         it("should not throw for url verify after milestone", async () => {
@@ -76,11 +76,11 @@ describe("CertifiedNtfUpdate Transaction", () => {
                 ownerId: urlCheckerAddr,
             });
 
-            const transaction = Fixtures.buildUrlCheckerTransaction(
+            const builder = Fixtures.buildUrlCheckerTransaction(
                 { tokenId: urlCheckerUnikId, address: urlCheckerAddr, passphrase: urlCheckerPassphrase },
                 { tokenId: Fixtures.tokenId, address: senderWallet.address, passphrase: Fixtures.ownerPassphrase },
             );
-            await expect(handler.throwIfCannotBeApplied(transaction, senderWallet, walletManager)).toResolve();
+            await expect(handler.throwIfCannotBeApplied(builder.build(), senderWallet, walletManager)).toResolve();
         });
     });
 

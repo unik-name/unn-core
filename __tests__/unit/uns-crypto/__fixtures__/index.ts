@@ -129,7 +129,7 @@ export const unsCertifiedNftUpdateTransaction = (
     demand: INftUpdateDemand = nftMintRequest,
     issuer: string = issuerAddress,
 ) => {
-    return new UNSCertifiedNftUpdateBuilder("unik", tokenId)
+    return new UNSCertifiedNftUpdateBuilder("unik", demand.nft.unik.tokenId)
         .properties(demand.nft.unik.properties)
         .demand(demand.demand)
         .certification(cert, issuer)
@@ -185,7 +185,7 @@ export const buildUrlCheckerTransaction = (issuer, sender) => {
         signature: new NftUpdateDemandCertificationSigner(urlCheckDemandCertificationPayload).sign(issuer.passphrase),
     };
 
-    return unsCertifiedNftUpdateTransaction(certification, updateDemand, issuer.address).build();
+    return unsCertifiedNftUpdateTransaction(certification, updateDemand, issuer.address);
 };
 
 export * from "../../core-nft/__fixtures__";

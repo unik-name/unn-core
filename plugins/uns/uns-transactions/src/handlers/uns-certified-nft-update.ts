@@ -36,8 +36,7 @@ export class CertifiedNftUpdateTransactionHandler extends NftUpdateTransactionHa
             const transactions = await reader.read();
 
             for (const transaction of transactions) {
-                const issuerWallet: State.IWallet = walletManager.findByAddress(transaction.recipientId);
-                issuerWallet.balance = issuerWallet.balance.plus(transaction.amount);
+                this.applyCostToRecipient(transaction, walletManager);
             }
         }
     }
@@ -56,7 +55,7 @@ export class CertifiedNftUpdateTransactionHandler extends NftUpdateTransactionHa
         transaction: Interfaces.ITransaction,
         walletManager: State.IWalletManager,
     ): Promise<void> {
-        this.applyCostToRecipient(transaction, walletManager);
+        this.applyCostToRecipient(transaction.data, walletManager);
     }
 
     public async revertForRecipient(

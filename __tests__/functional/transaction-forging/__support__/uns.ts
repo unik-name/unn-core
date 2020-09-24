@@ -13,7 +13,7 @@ import { buildDiscloseDemand } from "../../../unit/uns-crypto/helpers";
 import * as NftSupport from "./nft";
 import "./nft-jest-matchers";
 
-export const forgerFactoryPassphrase = "cactus cute please spirit reveal raw goose emotion latin subject forum panic";
+export const forgerFactoryPassphrase = "The forge factory passphrase";
 export const forgerFactoryTokenId = "5f96dd359ab300e2c702a54760f4d74a11db076aa17575179d36e06d75c96511";
 
 export const discloseExplicitTransaction = discloseDemand => {
@@ -88,6 +88,17 @@ export const certifiedMintAndWait = async (nftId, properties, demand, passphrase
             .demand(demand.demand)
             .certification(demand.certification, Identities.Address.fromPassphrase(forgerFactoryPassphrase)),
     )
+        .withNetwork(NftSupport.network)
+        .withPassphrase(passphrase)
+        .createOne();
+
+    await expect(t).toBeAccepted();
+    await snoozeForBlock(1);
+    return t;
+};
+
+export const certifiedUpdateAndWait = async (builder, passphrase = NftSupport.defaultPassphrase) => {
+    const t = new TransactionFactory(builder)
         .withNetwork(NftSupport.network)
         .withPassphrase(passphrase)
         .createOne();

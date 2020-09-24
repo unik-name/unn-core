@@ -1,4 +1,4 @@
-import { State } from "@arkecosystem/core-interfaces";
+import { Database, State } from "@arkecosystem/core-interfaces";
 import { Identities, Interfaces } from "@arkecosystem/crypto";
 import {
     INftDemand,
@@ -65,9 +65,12 @@ export abstract class CertifiedTransactionHandler {
         }
     }
 
-    protected applyCostToRecipient(transaction: Interfaces.ITransaction, walletManager: State.IWalletManager): void {
-        const recipient: State.IWallet = walletManager.findByAddress(transaction.data.recipientId);
-        recipient.balance = recipient.balance.plus(transaction.data.amount);
+    protected applyCostToRecipient(
+        transaction: Interfaces.ITransactionData | Database.IBootstrapTransaction,
+        walletManager: State.IWalletManager,
+    ): void {
+        const recipient: State.IWallet = walletManager.findByAddress(transaction.recipientId);
+        recipient.balance = recipient.balance.plus(transaction.amount);
     }
 
     protected revertCostToRecipient(transaction: Interfaces.ITransaction, walletManager: State.IWalletManager): void {

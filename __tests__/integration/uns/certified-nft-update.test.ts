@@ -54,7 +54,7 @@ describe("certifiedNftupdate handler tests", () => {
         const transaction = Fixtures.buildUrlCheckerTransaction(
             { tokenId: Fixtures.issUnikId, address: Fixtures.issuerAddress, passphrase: Fixtures.issPassphrase },
             { tokenId: Fixtures.tokenId, address: senderWallet.address, passphrase: Fixtures.ownerPassphrase },
-        );
+        ).build();
 
         const delegate = new Delegate("delegate passphrase", Networks.dalinet.network);
         const block = delegate.forge([transaction.data], optionsDefault);

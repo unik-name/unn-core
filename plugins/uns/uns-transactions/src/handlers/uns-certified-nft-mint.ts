@@ -44,8 +44,7 @@ export class CertifiedNftMintTransactionHandler extends NftMintTransactionHandle
                 const sender: State.IWallet = walletManager.findByPublicKey(transaction.senderPublicKey);
                 await addNftToWallet(sender, transaction.asset, walletManager);
 
-                const forgeFactoryWallet: State.IWallet = walletManager.findByAddress(transaction.recipientId);
-                forgeFactoryWallet.balance = forgeFactoryWallet.balance.plus(transaction.amount);
+                this.applyCostToRecipient(transaction, walletManager);
 
                 if (hasVoucher(transaction.asset)) {
                     const rewards = getVoucherRewards(transaction.asset);
@@ -100,7 +99,7 @@ export class CertifiedNftMintTransactionHandler extends NftMintTransactionHandle
         transaction: Interfaces.ITransaction,
         walletManager: State.IWalletManager,
     ): Promise<void> {
-        this.applyCostToRecipient(transaction, walletManager);
+        this.applyCostToRecipient(transaction.data, walletManager);
 
         if (hasVoucher(transaction.data.asset)) {
             // voucher token eco

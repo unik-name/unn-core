@@ -81,13 +81,20 @@ export const setupForgeFactory = async () => {
     return forgerFactoryTokenId;
 };
 
-export const certifiedMintAndWait = async (nftId, properties, demand, passphrase = NftSupport.defaultPassphrase) => {
+export const certifiedMintAndWait = async (
+    nftId,
+    properties,
+    demand,
+    passphrase = NftSupport.defaultPassphrase,
+    fee: number = 0,
+) => {
     const t = new TransactionFactory(
         new UNSCertifiedNftMintBuilder("unik", nftId)
             .properties(properties)
             .demand(demand.demand)
             .certification(demand.certification, Identities.Address.fromPassphrase(forgerFactoryPassphrase)),
     )
+        .withFee(fee)
         .withNetwork(NftSupport.network)
         .withPassphrase(passphrase)
         .createOne();

@@ -70,17 +70,19 @@ export class NftsBusinessRepository implements NFT.INftsBusinessRepository {
                 if (transaction.blockHeight === milestones[milestonesIdx + 1].height) {
                     milestonesIdx++;
                 }
-                const properties = transaction.asset.nft[nftName].properties;
-                const rewards =
-                    milestones[milestonesIdx].voucherRewards[
-                        DIDHelpers.fromCode(parseInt(properties.type)).toLowerCase()
-                    ];
+                if (!milestones[milestonesIdx].unsTokenEcoV2) {
+                    const properties = transaction.asset.nft[nftName].properties;
+                    const rewards =
+                        milestones[milestonesIdx].voucherRewards[
+                            DIDHelpers.fromCode(parseInt(properties.type)).toLowerCase()
+                        ];
 
-                if (properties?.UnikVoucherId) {
-                    totalRewards = totalRewards
-                        .plus(Utils.BigNumber.make(rewards.foundation))
-                        .plus(Utils.BigNumber.make(rewards.sender))
-                        .plus(Utils.BigNumber.make(rewards.forger));
+                    if (properties?.UnikVoucherId) {
+                        totalRewards = totalRewards
+                            .plus(Utils.BigNumber.make(rewards.foundation))
+                            .plus(Utils.BigNumber.make(rewards.sender))
+                            .plus(Utils.BigNumber.make(rewards.forger));
+                    }
                 }
             }
         }

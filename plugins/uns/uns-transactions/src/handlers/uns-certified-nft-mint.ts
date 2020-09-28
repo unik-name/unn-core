@@ -1,5 +1,6 @@
 import { Database, State } from "@arkecosystem/core-interfaces";
 import { Handlers, TransactionReader } from "@arkecosystem/core-transactions";
+import { IDynamicFeeContext } from "@arkecosystem/core-transactions/dist/interfaces";
 import { Identities, Interfaces, Managers, Transactions, Utils } from "@arkecosystem/crypto";
 import { NftMintTransactionHandler, nftRepository } from "@uns/core-nft";
 import { addNftToWallet } from "@uns/core-nft";
@@ -46,7 +47,11 @@ export class CertifiedNftMintTransactionHandler extends NftMintTransactionHandle
 
                 this.applyCostToRecipient(transaction, walletManager);
 
-                if (hasVoucher(transaction.asset)) {
+                // uns former token eco
+                if (
+                    !Managers.configManager.getMilestone(transaction.blockHeight).unsTokenEcoV2 &&
+                    hasVoucher(transaction.asset)
+                ) {
                     const rewards = getVoucherRewards(transaction.asset);
                     const foundationPublicKey = Managers.configManager.get("network.foundation.publicKey");
                     const foundationWallet: State.IWallet = walletManager.findByAddress(
@@ -74,11 +79,18 @@ export class CertifiedNftMintTransactionHandler extends NftMintTransactionHandle
         await this.throwIfCannotBeCertified(transaction, walletManager);
 
         if (hasVoucher(transaction.data.asset)) {
-            const rewards = getVoucherRewards(transaction.data.asset);
-            // Fees should be equal to forger reward
-            if (!transaction.data.fee.isEqualTo(Utils.BigNumber.make(rewards.forger))) {
-                throw new WrongFeeError(transaction.data.id);
+            if (Managers.configManager.getMilestone().unsTokenEcoV2) {
+                if (!transaction.data.fee.isEqualTo(Utils.BigNumber.ZERO)) {
+                    throw new WrongFeeError(transaction.data.id);
+                }
+            } else {
+                // Fees should be equal to forger reward
+                const rewards = getVoucherRewards(transaction.data.asset);
+                if (!transaction.data.fee.isEqualTo(Utils.BigNumber.make(rewards.forger))) {
+                    throw new WrongFeeError(transaction.data.id);
+                }
             }
+
             // Check voucher existence in DB
             const voucherId = getCurrentNftAsset(transaction.data.asset).properties.UnikVoucherId;
             const asset = {
@@ -101,7 +113,7 @@ export class CertifiedNftMintTransactionHandler extends NftMintTransactionHandle
     ): Promise<void> {
         this.applyCostToRecipient(transaction.data, walletManager);
 
-        if (hasVoucher(transaction.data.asset)) {
+        if (!Managers.configManager.getMilestone().unsTokenEcoV2 && hasVoucher(transaction.data.asset)) {
             // voucher token eco
             // pay Space Elephant Foundation
             const rewards = getVoucherRewards(transaction.data.asset);
@@ -118,7 +130,7 @@ export class CertifiedNftMintTransactionHandler extends NftMintTransactionHandle
         walletManager: State.IWalletManager,
         updateDb = false,
     ): Promise<void> {
-        if (hasVoucher(transaction.data.asset)) {
+        if (!Managers.configManager.getMilestone().unsTokenEcoV2 && hasVoucher(transaction.data.asset)) {
             // voucher token eco
             // fee and amount will be deduced in super.applyToSender
             const rewards = getVoucherRewards(transaction.data.asset);
@@ -135,7 +147,7 @@ export class CertifiedNftMintTransactionHandler extends NftMintTransactionHandle
     ): Promise<void> {
         this.revertCostToRecipient(transaction, walletManager);
 
-        if (hasVoucher(transaction.data.asset)) {
+        if (!Managers.configManager.getMilestone().unsTokenEcoV2 && hasVoucher(transaction.data.asset)) {
             const rewards = getVoucherRewards(transaction.data.asset);
             const foundationPublicKey = Managers.configManager.get("network.foundation.publicKey");
             const foundationWallet: State.IWallet = walletManager.findByAddress(
@@ -150,12 +162,21 @@ export class CertifiedNftMintTransactionHandler extends NftMintTransactionHandle
         walletManager: State.IWalletManager,
         updateDb = false,
     ): Promise<void> {
-        if (hasVoucher(transaction.data.asset)) {
+        if (!Managers.configManager.getMilestone().unsTokenEcoV2 && hasVoucher(transaction.data.asset)) {
             const rewards = getVoucherRewards(transaction.data.asset);
             const sender: State.IWallet = walletManager.findByPublicKey(transaction.data.senderPublicKey);
             sender.balance = sender.balance.minus(transaction.data.fee).minus(Utils.BigNumber.make(rewards.sender));
         }
         await super.revertForSender(transaction, walletManager, updateDb);
+    }
+
+    // eslint-disable-next-line
+    public dynamicFee(context: IDynamicFeeContext): Utils.BigNumber {
+        if (!Managers.configManager.getMilestone(context.height).unsTokenEcoV2) {
+            return super.dynamicFee(context);
+        } else {
+            return Utils.BigNumber.ZERO;
+        }
     }
 
     protected getPayloadSigner(payload: INftMintDemandCertificationPayload): NftMintDemandCertificationSigner {
@@ -167,7 +188,7 @@ export class CertifiedNftMintTransactionHandler extends NftMintTransactionHandle
     }
 
     protected checkEmptyBalance(transaction: Interfaces.ITransaction): boolean {
-        return !hasVoucher(transaction.data.asset);
+        return !Managers.configManager.getMilestone().unsTokenEcoV2 && !hasVoucher(transaction.data.asset);
     }
 }
 

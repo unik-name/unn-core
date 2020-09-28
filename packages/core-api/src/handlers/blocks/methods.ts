@@ -34,6 +34,7 @@ const show = async request => {
         let foundationRewards = Utils.BigNumber.ZERO;
         for (const transaction of transactions.rows) {
             if (
+                !Managers.configManager.getMilestone(block.height).unsTokenEcoV2 &&
                 transaction.typeGroup === UnsTransactionGroup &&
                 transaction.type === UnsTransactionType.UnsCertifiedNftMint &&
                 hasVoucher(transaction.asset)

@@ -605,6 +605,7 @@ export class WalletManager implements State.IWalletManager {
                 let newVoteBalance: Utils.BigNumber;
 
                 if (
+                    !Managers.configManager.getMilestone().unsTokenEcoV2 &&
                     transaction.type === UnsTransactionType.UnsCertifiedNftMint &&
                     transaction.typeGroup === UnsTransactionGroup &&
                     hasVoucher(transaction.asset)
@@ -675,6 +676,7 @@ export class WalletManager implements State.IWalletManager {
             }
 
             if (
+                !Managers.configManager.getMilestone().unsTokenEcoV2 &&
                 transaction.type === UnsTransactionType.UnsCertifiedNftMint &&
                 transaction.typeGroup === UnsTransactionGroup &&
                 hasVoucher(transaction.asset)

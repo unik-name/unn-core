@@ -121,5 +121,9 @@
                 "UnsCertifiedNftMint": 100000000
             }
         }
+    },
+    {
+        "height": 1999000,
+        "unsTokenEcoV2": true
     }
 ]

@@ -121,7 +121,7 @@ describe("CertifiedNtfMint Transaction", () => {
     describe("revert", () => {
         it("should revert service cost", async () => {
             senderWallet.nonce = Utils.BigNumber.make(1);
-            senderWallet.setAttribute("tokens", { tokens: [Fixtures.nftMintDemand.payload.sub] });
+            senderWallet.setAttribute("tokens", { [Fixtures.nftMintDemand.payload.sub]: { type: 2 } });
             walletManager.reindex(senderWallet);
             forgeFactoryWallet.balance = Fixtures.cost;
             walletManager.reindex(forgeFactoryWallet);

@@ -1,3 +1,1 @@
-export interface INftWalletAttributes {
-    tokens: string[];
-}
+export type INftWalletAttributes = Record<string, { type: number }>;

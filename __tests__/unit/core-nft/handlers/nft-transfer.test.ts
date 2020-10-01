@@ -8,6 +8,7 @@ import { Builders } from "@uns/core-nft-crypto";
 import { NftOwnerError } from "@uns/core-nft/src/";
 import { NftTransferTransactionHandler } from "@uns/core-nft/src/transactions";
 import * as Fixtures from "../__fixtures__";
+import { nftManager } from "../mocks/core-nft";
 
 describe("Nft transfer handler", () => {
     Managers.configManager.setFromPreset(Fixtures.network);
@@ -21,13 +22,16 @@ describe("Nft transfer handler", () => {
     const recipientAddress = "D6gDk2j9xn71GCWSt4h6qJ383cDJdB5LqH";
     let recipientWallet: Wallets.Wallet;
     let transaction;
+    const tokenType = 6;
+    let tokenAttribute;
 
     beforeEach(() => {
         nftTransferHandler = new NftTransferTransactionHandler();
         builder = new Builders.NftTransferBuilder(Fixtures.nftName, Fixtures.nftId);
         walletManager = new Wallets.WalletManager();
         senderWallet = Fixtures.wallet();
-        senderWallet.setAttribute("tokens", { tokens: [Fixtures.nftId] });
+        tokenAttribute = { [Fixtures.nftId]: { type: tokenType } };
+        senderWallet.setAttribute("tokens", tokenAttribute);
         walletManager.reindex(senderWallet);
         recipientWallet = new Wallets.Wallet(recipientAddress);
         walletManager.reindex(recipientWallet);
@@ -51,7 +55,7 @@ describe("Nft transfer handler", () => {
 
         it("should fail because sender doesn't own token", () => {
             const fakeToken = Fixtures.nftId.replace("e", "a");
-            senderWallet.setAttribute("tokens", { tokens: [fakeToken] });
+            senderWallet.setAttribute("tokens", { [fakeToken]: { type: tokenType } });
             walletManager.reindex(senderWallet);
 
             return expect(
@@ -76,9 +80,11 @@ describe("Nft transfer handler", () => {
 
     describe("applyToRecipient", () => {
         it("should not fail", async () => {
+            nftManager.getProperty.mockResolvedValueOnce({ value: tokenType.toString() });
             expect(recipientWallet.hasAttribute("tokens")).toBeFalse();
             await expect(nftTransferHandler.applyToRecipient(transaction, walletManager)).toResolve();
             expect(recipientWallet.hasAttribute("tokens")).toBeTrue();
+            expect(recipientWallet.getAttribute("tokens")).toEqual(tokenAttribute);
         });
     });
 
@@ -86,7 +92,7 @@ describe("Nft transfer handler", () => {
         beforeEach(() => {
             senderWallet.forgetAttribute("tokens");
             walletManager.reindex(senderWallet);
-            recipientWallet.setAttribute("tokens", { tokens: [Fixtures.nftId] });
+            recipientWallet.setAttribute("tokens", tokenAttribute);
             walletManager.reindex(recipientWallet);
 
             transaction = builder
@@ -97,9 +103,11 @@ describe("Nft transfer handler", () => {
         });
 
         it("revertForSender should not fail", async () => {
+            nftManager.getProperty.mockResolvedValueOnce({ value: tokenType.toString() });
             expect(senderWallet.hasAttribute("tokens")).toBeFalse();
             await expect(nftTransferHandler.revertForSender(transaction, walletManager)).toResolve();
             expect(senderWallet.hasAttribute("tokens")).toBeTrue();
+            expect(senderWallet.getAttribute("tokens")).toEqual(tokenAttribute);
         });
 
         it("revertForRecipient should not fail", async () => {

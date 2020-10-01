@@ -33,18 +33,11 @@ export class DelegateRegisterTransactionHandler extends DelegateRegistrationTran
         const delegates = walletManager.allByUsername();
         const unsDelegate = delegates.filter(delegate => isUnikId(delegate.getAttribute<string>("delegate.username")));
 
-        const unikIds: string[] = unsDelegate.map(delegate => {
-            return delegate.getAttribute<string>("delegate.username");
-        });
-
-        if (unsDelegate.length) {
-            const delegateTypes = await getNftsManager().getPropertyBatch(unikIds, "type");
-            unsDelegate.map(delegate => {
-                const username = delegate.getAttribute<string>("delegate.username");
-                const nftType = delegateTypes.find(elt => elt.nftId === username).value;
-                delegate.setAttribute<number>("delegate.type", parseInt(nftType));
-                walletManager.reindex(delegate);
-            });
+        for (const delegate of unsDelegate) {
+            const tokenId = delegate.getAttribute<string>("delegate.username");
+            const nftType: DIDTypes = delegate.getAttribute("tokens")[tokenId].type;
+            delegate.setAttribute<number>("delegate.type", nftType);
+            walletManager.reindex(delegate);
         }
     }
 
@@ -56,12 +49,12 @@ export class DelegateRegisterTransactionHandler extends DelegateRegistrationTran
         const nftId: string = transaction.data.asset.delegate.username;
 
         // check token ownership
-        if (wallet.hasAttribute("tokens") && !wallet.getAttribute("tokens").tokens.includes(nftId)) {
+        if (wallet.hasAttribute("tokens") && !Object.keys(wallet.getAttribute("tokens")).includes(nftId)) {
             throw new NftOwnerError(wallet, nftId);
         }
 
         // assert wallet has only 1 Unik
-        if (wallet.getAttribute("tokens").tokens.length > 1) {
+        if (Object.keys(wallet.getAttribute("tokens")).length > 1) {
             throw new CryptoAccountHasSeveralUniksError();
         }
 
@@ -90,9 +83,10 @@ export class DelegateRegisterTransactionHandler extends DelegateRegistrationTran
         await super.applyToSender(transaction, walletManager);
 
         const nftId: string = transaction.data.asset.delegate.username;
-        const nftType = (await getNftsManager().getProperty(nftId, "type")).value;
         const senderWallet: State.IWallet = walletManager.findByPublicKey(transaction.data.senderPublicKey);
-        senderWallet.setAttribute<number>("delegate.type", parseInt(nftType));
+        const nftType: DIDTypes = senderWallet.getAttribute("tokens")[nftId].type;
+
+        senderWallet.setAttribute<number>("delegate.type", nftType);
 
         if (updateDb) {
             await getNftsManager().manageProperties({ [DELEGATE_BADGE]: "true" }, nftId);

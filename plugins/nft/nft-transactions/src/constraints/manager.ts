@@ -30,6 +30,10 @@ export class ConstraintsManager {
         this.registeredConstraints[constraint.name()] = constraint;
     }
 
+    public hasConstraint(constraintName: string): boolean {
+        return !!this.registeredConstraints[constraintName];
+    }
+
     public async applyConstraints(transaction: Interfaces.ITransactionData) {
         const { properties } = getCurrentNftAsset(transaction.asset);
 

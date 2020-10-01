@@ -134,7 +134,7 @@ describe("CertifiedNtfMint Transaction", () => {
 
                 senderWallet.nonce = Utils.BigNumber.make(1);
                 senderWallet.balance = Utils.BigNumber.make(rewards.sender);
-                senderWallet.setAttribute("tokens", { tokens: [tokenId] });
+                senderWallet.setAttribute("tokens", { [tokenId]: { type: 1 } });
                 walletManager.reindex(senderWallet);
 
                 foundationWallet.balance = Utils.BigNumber.make(rewards.foundation);

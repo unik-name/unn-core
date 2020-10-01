@@ -10,5 +10,6 @@ export const coreNft = {
     constraints: {
         applyGenesisPropertyConstraint: _ => true,
         applyConstraints: _ => true,
+        hasConstraint: _ => true,
     },
 };

@@ -60,7 +60,7 @@ describe("UnsDiscloseExplicit Transaction", () => {
         senderWallet = new Wallets.Wallet(demanderAddress);
         senderWallet.balance = Utils.BigNumber.make("5000000000");
         senderWallet.publicKey = demanderPubKey;
-        senderWallet.setAttribute("tokens", { tokens: [TOKEN_ID] });
+        senderWallet.setAttribute("tokens", { [TOKEN_ID]: { type: 1 } });
         walletManager.reindex(senderWallet);
 
         /* Build transaction */

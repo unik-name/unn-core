@@ -49,7 +49,7 @@ export class NftMintTransactionHandler extends Handlers.TransactionHandler {
         if (
             !!walletManager.allByAddress().find(wallet => {
                 if (wallet.hasAttribute("tokens")) {
-                    return wallet.getAttribute<INftWalletAttributes>("tokens").tokens.includes(tokenId);
+                    return Object.keys(wallet.getAttribute<INftWalletAttributes>("tokens")).includes(tokenId);
                 }
                 return false;
             })

@@ -30,7 +30,7 @@ describe("Nft mint handler", () => {
     describe("can be applied", () => {
         it("should fail because token is already owned", () => {
             const ownerWallet = new Wallets.Wallet("D6gDk2j9xn71GCWSt4h6qJ383cDJdB5LqH");
-            ownerWallet.setAttribute("tokens", { tokens: [Fixtures.nftId] });
+            ownerWallet.setAttribute("tokens", { [Fixtures.nftId]: { type: 66 } });
             walletManager.reindex(ownerWallet);
 
             const transaction = builder

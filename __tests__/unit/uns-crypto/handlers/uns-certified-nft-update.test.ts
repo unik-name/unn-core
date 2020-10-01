@@ -24,7 +24,7 @@ describe("CertifiedNtfUpdate Transaction", () => {
         handler = new CertifiedNftUpdateTransactionHandler();
         walletManager = new Wallets.WalletManager();
         senderWallet = Fixtures.wallet();
-        senderWallet.setAttribute("tokens", { tokens: [Fixtures.tokenId] });
+        senderWallet.setAttribute("tokens", { [Fixtures.tokenId]: { type: 2 } });
         walletManager.reindex(senderWallet);
 
         const issuerPubKey = Fixtures.issKeys.publicKey;
@@ -65,7 +65,7 @@ describe("CertifiedNtfUpdate Transaction", () => {
             const urlCheckerAddr = Identities.Address.fromPassphrase(urlCheckerPassphrase);
             const urlCheckerWallet = new Wallets.Wallet(urlCheckerAddr);
             urlCheckerWallet.publicKey = Identities.PublicKey.fromPassphrase(urlCheckerPassphrase);
-            urlCheckerWallet.setAttribute("tokens", { tokens: [urlCheckerUnikId] });
+            urlCheckerWallet.setAttribute("tokens", { [urlCheckerUnikId]: { type: 2 } });
             walletManager.reindex(urlCheckerWallet);
 
             // Allow Url checker to milestone whitelist
@@ -97,7 +97,7 @@ describe("CertifiedNtfUpdate Transaction", () => {
     describe("revert", () => {
         it("should revert service cost", async () => {
             senderWallet.nonce = Utils.BigNumber.make(1);
-            senderWallet.setAttribute("tokens", { tokens: [Fixtures.nftMintDemand.payload.sub] });
+            senderWallet.setAttribute("tokens", { [Fixtures.nftMintDemand.payload.sub]: { type: 1 } });
             walletManager.reindex(senderWallet);
             forgeFactoryWallet.balance = Fixtures.cost;
             walletManager.reindex(forgeFactoryWallet);

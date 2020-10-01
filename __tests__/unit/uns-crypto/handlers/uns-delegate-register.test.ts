@@ -44,7 +44,7 @@ describe("UnsDelegateRegister Transaction", () => {
         senderWallet = new Wallets.Wallet(demanderAddress);
         senderWallet.balance = Utils.BigNumber.make("5000000000");
         senderWallet.publicKey = demanderPubKey;
-        senderWallet.setAttribute("tokens", { tokens: [TOKEN_ID] });
+        senderWallet.setAttribute("tokens", { [TOKEN_ID]: { type: 1 } });
         walletManager = new Wallets.WalletManager();
         walletManager.reindex(senderWallet);
 
@@ -69,7 +69,7 @@ describe("UnsDelegateRegister Transaction", () => {
             ];
             nftManager.getProperties.mockReturnValueOnce(properties);
             const whiteListedUnik = Managers.configManager.get("network.delegateWhitelistUniks")[0];
-            senderWallet.setAttribute("tokens", { tokens: [whiteListedUnik] });
+            senderWallet.setAttribute("tokens", { [whiteListedUnik]: { type: 3 } });
             walletManager.reindex(senderWallet);
             transaction = builder
                 .usernameAsset(whiteListedUnik)
@@ -104,7 +104,7 @@ describe("UnsDelegateRegister Transaction", () => {
         });
 
         it("should throw CryptoAccountHasSeveralUniksError", async () => {
-            senderWallet.setAttribute("tokens", { tokens: [TOKEN_ID, "anotherTokenId"] });
+            senderWallet.setAttribute("tokens", { [TOKEN_ID]: { type: 1 }, anotherTokenId: { type: 2 } });
             walletManager.reindex(senderWallet);
             await expect(
                 handler.throwIfCannotBeApplied(transaction.build(), senderWallet, walletManager),
@@ -115,7 +115,7 @@ describe("UnsDelegateRegister Transaction", () => {
     describe("apply", () => {
         it("should apply and set attributes and badge", async () => {
             nftManager.getProperties.mockReturnValueOnce(properties);
-            nftManager.getProperty.mockReturnValueOnce({ value: nftType });
+            senderWallet.setAttribute("tokens", { [TOKEN_ID]: { type: parseInt(nftType) } });
 
             await expect(handler.apply(transaction.build(), walletManager, true)).toResolve();
             expect(senderWallet.getAttribute<string>("delegate.username")).toBe(TOKEN_ID);

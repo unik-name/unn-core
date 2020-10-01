@@ -41,7 +41,7 @@ export class NftUpdateTransactionHandler extends Handlers.TransactionHandler {
         // check if sender owns token
         if (
             !wallet.hasAttribute("tokens") ||
-            !wallet.getAttribute<INftWalletAttributes>("tokens").tokens.includes(tokenId)
+            !Object.keys(wallet.getAttribute<INftWalletAttributes>("tokens")).includes(tokenId)
         ) {
             throw new NftOwnerError(wallet, tokenId);
         }

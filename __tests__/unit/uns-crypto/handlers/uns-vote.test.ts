@@ -1,7 +1,6 @@
 /* tslint:disable:ordered-imports*/
 import "jest-extended";
 import "../mocks/core-container";
-import { app } from "@arkecosystem/core-container";
 import { Utils, Identities, Managers } from "@arkecosystem/crypto";
 import { UnsVoteTransactionHandler } from "@uns/uns-transactions";
 import { UNSVoteBuilder, DIDTypes } from "@uns/crypto";
@@ -22,7 +21,6 @@ let walletManager: State.IWalletManager;
 describe("UnsDelegateRegister Transaction", () => {
     Managers.configManager.setFromPreset(Fixtures.network);
     Managers.configManager.setHeight(2);
-    const nftManager = app.resolvePlugin("core-nft");
 
     Handlers.Registry.registerTransactionHandler(UnsVoteTransactionHandler);
     walletManager = new Wallets.WalletManager();
@@ -42,14 +40,14 @@ describe("UnsDelegateRegister Transaction", () => {
         senderWallet = new Wallets.Wallet(senderAddress);
         senderWallet.balance = Utils.BigNumber.make("5000000000");
         senderWallet.publicKey = senderPubKey;
-        senderWallet.setAttribute("tokens", { tokens: [senderTokenId] });
+        senderWallet.setAttribute("tokens", { [senderTokenId]: { type: delegateType } });
         walletManager.reindex(senderWallet);
 
         const delegatePubKey = Identities.PublicKey.fromPassphrase("delegate passphrase");
         const delegateAddress = Identities.Address.fromPublicKey(delegatePubKey);
         delegateWallet = new Wallets.Wallet(delegateAddress);
         delegateWallet.publicKey = delegatePubKey;
-        delegateWallet.setAttribute("tokens", { tokens: [delegateTokenId] });
+        delegateWallet.setAttribute("tokens", { [delegateTokenId]: { type: 1 } });
         delegateWallet.setAttribute("delegate", { username: delegateTokenId, type: delegateType });
         walletManager.reindex(delegateWallet);
 
@@ -62,19 +60,19 @@ describe("UnsDelegateRegister Transaction", () => {
 
     describe("throwIfCannotBeApplied", () => {
         it("should not throw", async () => {
-            jest.spyOn(nftManager, "getProperty").mockResolvedValue({ value: delegateType });
             await expect(handler.throwIfCannotBeApplied(transaction.build(), senderWallet, walletManager)).toResolve();
         });
 
         it("should throw VoteUnikTypeError", async () => {
-            jest.spyOn(nftManager, "getProperty").mockResolvedValue({ value: DIDTypes.INDIVIDUAL });
+            senderWallet.setAttribute("tokens", { [senderTokenId]: { type: DIDTypes.INDIVIDUAL } });
+            walletManager.reindex(senderWallet);
 
             await expect(
                 handler.throwIfCannotBeApplied(transaction.build(), senderWallet, walletManager),
             ).rejects.toThrow(VoteUnikTypeError);
         });
         it("should throw NoUnikError", async () => {
-            senderWallet.setAttribute("tokens", { tokens: [] });
+            senderWallet.setAttribute("tokens", {});
             walletManager.reindex(senderWallet);
             await expect(
                 handler.throwIfCannotBeApplied(transaction.build(), senderWallet, walletManager),

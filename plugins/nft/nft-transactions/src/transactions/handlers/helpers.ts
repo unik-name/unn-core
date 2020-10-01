@@ -23,11 +23,11 @@ export const removeNftFromWallet = async (
     walletManager: State.IWalletManager,
 ) => {
     const { tokenId } = getCurrentNftAsset(assets);
-
     const walletTokens: INftWalletAttributes = wallet.getAttribute<INftWalletAttributes>("tokens");
-    walletTokens.tokens = walletTokens.tokens.filter(t => t !== tokenId);
-    walletTokens.tokens.length > 0 ? wallet.setAttribute("tokens", walletTokens) : wallet.forgetAttribute("tokens");
-
+    delete walletTokens[tokenId];
+    Object.keys(walletTokens).length > 0
+        ? wallet.setAttribute("tokens", walletTokens)
+        : wallet.forgetAttribute("tokens");
     walletManager.reindex(wallet);
 };
 
@@ -36,13 +36,24 @@ export const addNftToWallet = async (
     assets: Interfaces.ITransactionAsset,
     walletManager: State.IWalletManager,
 ) => {
-    const { tokenId } = getCurrentNftAsset(assets);
+    const { tokenId, properties } = getCurrentNftAsset(assets);
 
-    // TODO UNS: remove useless 'tokens' level in attributes
-    const walletTokens: INftWalletAttributes = wallet.hasAttribute("tokens")
+    let walletTokens: INftWalletAttributes = wallet.hasAttribute("tokens")
         ? wallet.getAttribute<INftWalletAttributes>("tokens")
-        : { tokens: [] };
-    walletTokens.tokens = walletTokens.tokens.concat(tokenId);
+        : {};
+
+    const nftManager = app.resolvePlugin<NftsManager>("core-nft");
+
+    let tokenType: number = -1;
+    if (nftManager.constraints.hasConstraint("type")) {
+        if (!properties?.type) {
+            tokenType = parseInt((await nftManager.getProperty(tokenId, "type")).value);
+        } else {
+            tokenType = parseInt(properties.type);
+        }
+    }
+    walletTokens = { ...walletTokens, [tokenId]: { type: tokenType } };
+
     wallet.setAttribute("tokens", walletTokens);
 
     walletManager.reindex(wallet);

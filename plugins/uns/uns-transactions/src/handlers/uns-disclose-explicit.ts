@@ -102,7 +102,7 @@ export class DiscloseExplicitTransactionHandler extends Handlers.TransactionHand
         // check token ownership
         if (
             wallet.hasAttribute("tokens") &&
-            !wallet.getAttribute("tokens").tokens.includes(discloseDemand.payload.sub)
+            !Object.keys(wallet.getAttribute("tokens")).includes(discloseDemand.payload.sub)
         ) {
             throw new NftOwnerError(wallet, discloseDemand.payload.sub);
         }

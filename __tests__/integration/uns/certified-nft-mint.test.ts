@@ -99,7 +99,7 @@ describe("certifiedNftMint handler tests", () => {
         expect(forgeFactoryWallet.balance).toEqual(Utils.BigNumber.make(transaction.amount));
         expect(forgeFactoryWallet.balance).toStrictEqual(transaction.asset.certification.payload.cost);
 
-        expect(senderWallet.getAttribute("tokens").tokens.includes(tokenId)).toBeTrue();
+        expect(Object.keys(senderWallet.getAttribute("tokens")).includes(tokenId)).toBeTrue();
     });
 
     it("wallet bootstrap for mint transaction with voucher", async () => {
@@ -139,6 +139,6 @@ describe("certifiedNftMint handler tests", () => {
         const foundationWallet = walletManager.findByAddress(Identities.Address.fromPublicKey(foundationPublicKey));
         expect(foundationWallet.balance).toStrictEqual(Utils.BigNumber.make(rewards.foundation));
 
-        expect(senderWallet.getAttribute("tokens").tokens.includes(tokenId)).toBeTrue();
+        expect(Object.keys(senderWallet.getAttribute("tokens")).includes(tokenId)).toBeTrue();
     });
 });

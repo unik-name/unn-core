@@ -4,7 +4,6 @@ import { Container, Database } from "@arkecosystem/core-interfaces";
 import { Wallets } from "@arkecosystem/core-state";
 import { WalletManager } from "@arkecosystem/core-state/src/wallets";
 import { Constants, Identities, Managers, Networks, Utils } from "@arkecosystem/crypto";
-import { nftRepository } from "@uns/core-nft";
 import { UNSDelegateRegisterBuilder } from "@uns/crypto";
 import * as NftSupport from "../../functional/transaction-forging/__support__/nft";
 import { TransactionFactory } from "../../helpers";
@@ -15,7 +14,7 @@ let container: Container.IContainer;
 let walletManager: WalletManager;
 let database: Database.IDatabaseService;
 let stateBuilder: StateBuilder;
-const tokenId = "a99ee098dd4fd00ba513e1ca09abb8522a8ba94fa2a7a81dd674eac27ce66b94";
+const tokenId = NftSupport.generateNftId();
 const { SATOSHI } = Constants;
 
 beforeAll(async () => {
@@ -41,16 +40,10 @@ describe("unsDelegateRegister handler tests", () => {
         },
         reward: Utils.BigNumber.ZERO,
     };
-    const delegateType = "2";
+    const delegateType = 2;
 
     it("wallet bootstrap for unsDelegateRegister", async () => {
         await database.reset();
-        jest.spyOn(nftRepository(), "findPropertyBatch").mockResolvedValueOnce([
-            {
-                nftId: tokenId,
-                value: delegateType,
-            },
-        ]);
 
         // Generate delegate wallet
         const delegatePassphrase = `delegate secret`;
@@ -58,6 +51,7 @@ describe("unsDelegateRegister handler tests", () => {
         const delegateWallet = new Wallets.Wallet(Identities.Address.fromPassphrase(delegatePassphrase));
         delegateWallet.balance = Utils.BigNumber.make(1000 * SATOSHI);
         delegateWallet.publicKey = delegateKey;
+        delegateWallet.setAttribute("tokens", { [tokenId]: { type: delegateType } });
         walletManager.reindex(delegateWallet);
 
         const transaction = new TransactionFactory(new UNSDelegateRegisterBuilder().usernameAsset(tokenId))
@@ -75,7 +69,7 @@ describe("unsDelegateRegister handler tests", () => {
 
         // check delegate attributes
         const delegateAttributes = delegateWallet.getAttributes();
-        expect(delegateAttributes.delegate.type).toEqual(parseInt(delegateType));
+        expect(delegateAttributes.delegate.type).toEqual(delegateType);
         const nbIndividuals = Managers.configManager.getMilestone().nbDelegatesByType.individual;
         expect(delegateAttributes.delegate.rank).toEqual(nbIndividuals + 1);
     });

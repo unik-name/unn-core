@@ -24,7 +24,7 @@ describe("Nft update handler", () => {
         builder = new Builders.NftUpdateBuilder(Fixtures.nftName, Fixtures.nftId);
         walletManager = new Wallets.WalletManager();
         senderWallet = Fixtures.wallet();
-        senderWallet.setAttribute("tokens", { tokens: [Fixtures.nftId] });
+        senderWallet.setAttribute("tokens", { [Fixtures.nftId]: { type: 66 } });
         walletManager.reindex(senderWallet);
     });
 
@@ -46,7 +46,7 @@ describe("Nft update handler", () => {
 
         it("should fail because sender doesn't own token", () => {
             const fakeToken = Fixtures.nftId.replace("e", "a");
-            senderWallet.setAttribute("tokens", { tokens: [fakeToken] });
+            senderWallet.setAttribute("tokens", { [fakeToken]: 1 });
             walletManager.reindex(senderWallet);
 
             const transaction = builder

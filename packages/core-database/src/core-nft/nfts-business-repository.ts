@@ -3,7 +3,17 @@ import { Blockchain, Database, NFT, State } from "@arkecosystem/core-interfaces"
 import { TransactionReader } from "@arkecosystem/core-transactions";
 import { delegateCalculator, supplyCalculator } from "@arkecosystem/core-utils";
 import { Interfaces, Managers, Transactions, Utils } from "@arkecosystem/crypto";
-import { DIDHelpers, DIDTypes, UnsTransactionGroup, UnsTransactionType } from "@uns/crypto";
+import { getTokenId } from "@uns/core-nft-crypto";
+import {
+    DIDHelpers,
+    DIDTypes,
+    getDidType,
+    getRewardsFromDidType,
+    hasVoucher,
+    isAliveDemand,
+    UnsTransactionGroup,
+    UnsTransactionType,
+} from "@uns/crypto";
 import limitRows from "../repositories/utils/limit-rows";
 import { SearchParameterConverter } from "../repositories/utils/search-parameter-converter";
 
@@ -51,15 +61,44 @@ export class NftsBusinessRepository implements NFT.INftsBusinessRepository {
         return this.connection.db.nfts.findTransactionsByAsset(asset, types, typeGroup, order);
     }
 
-    public async getNftTotalRewards(height: number, nftName: string = "unik"): Promise<Utils.BigNumber> {
-        const { milestones } = app.getConfig().all();
-        const reader: TransactionReader = await TransactionReader.create(this.connection, ({
+    public async getNftTotalRewards(height: number): Promise<Utils.BigNumber> {
+        // get nft mint transactions
+        let reader: TransactionReader = await TransactionReader.create(this.connection, ({
             type: UnsTransactionType.UnsCertifiedNftMint,
             typeGroup: UnsTransactionGroup,
         } as any) as Transactions.TransactionConstructor);
 
         let totalRewards: Utils.BigNumber = Utils.BigNumber.ZERO;
-        let milestonesIdx: number = 0;
+        while (reader.hasNext()) {
+            const transactions = await reader.read();
+
+            for (const transaction of transactions) {
+                if (transaction.blockHeight > height) {
+                    break;
+                }
+                const didType: DIDTypes = getDidType(transaction.asset);
+                if (
+                    hasVoucher(transaction.asset) &&
+                    (!Managers.configManager.getMilestone(transaction.blockHeight).unsTokenEcoV2 ||
+                        didType !== DIDTypes.INDIVIDUAL)
+                ) {
+                    const rewards = getRewardsFromDidType(didType, transaction.blockHeight);
+                    totalRewards = totalRewards
+                        .plus(Utils.BigNumber.make(rewards.foundation))
+                        .plus(Utils.BigNumber.make(rewards.sender))
+                        .plus(Utils.BigNumber.make(rewards.forger));
+                }
+
+            }
+        }
+        const walletManager: State.IWalletManager = this.connection.walletManager;
+
+        // get nft update transactions
+        reader = await TransactionReader.create(this.connection, ({
+            type: UnsTransactionType.UnsCertifiedNftUpdate,
+            typeGroup: UnsTransactionGroup,
+        } as any) as Transactions.TransactionConstructor);
+
         while (reader.hasNext()) {
             const transactions = await reader.read();
 
@@ -67,20 +106,21 @@ export class NftsBusinessRepository implements NFT.INftsBusinessRepository {
                 if (transaction.blockHeight > height) {
                     return totalRewards;
                 }
-                if (transaction.blockHeight === milestones[milestonesIdx + 1].height) {
-                    milestonesIdx++;
-                }
-                const properties = transaction.asset.nft[nftName].properties;
-                const rewards =
-                    milestones[milestonesIdx].voucherRewards[
-                        DIDHelpers.fromCode(parseInt(properties.type)).toLowerCase()
-                    ];
+                if (
+                    Managers.configManager.getMilestone(transaction.blockHeight).unsTokenEcoV2 &&
+                    isAliveDemand(transaction.asset)
+                ) {
+                    const senderWallet: State.IWallet = walletManager.findByPublicKey(transaction.senderPublicKey);
+                    const tokenId = getTokenId(transaction.asset);
+                    const didType: DIDTypes = senderWallet.getAttribute("tokens")[tokenId].type;
+                    if (didType === DIDTypes.INDIVIDUAL) {
+                        const rewards = getRewardsFromDidType(didType, transaction.blockHeight);
 
-                if (properties?.UnikVoucherId) {
-                    totalRewards = totalRewards
-                        .plus(Utils.BigNumber.make(rewards.foundation))
-                        .plus(Utils.BigNumber.make(rewards.sender))
-                        .plus(Utils.BigNumber.make(rewards.forger));
+                        totalRewards = totalRewards
+                            .plus(Utils.BigNumber.make(rewards.foundation))
+                            .plus(Utils.BigNumber.make(rewards.sender))
+                            .plus(Utils.BigNumber.make(rewards.forger));
+                    }
                 }
             }
         }

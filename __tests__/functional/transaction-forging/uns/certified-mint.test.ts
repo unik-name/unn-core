@@ -1,5 +1,7 @@
 import { Managers, Utils } from "@arkecosystem/crypto";
 import { DIDTypes, getRewardsFromDidType } from "@uns/crypto";
+import { utils } from "../../../integration/core-api/utils";
+import genesisBlock from "../../../utils/config/dalinet/genesisBlock.json";
 import * as support from "../__support__";
 import * as NftSupport from "../__support__/nft";
 import * as UnsSupport from "../__support__/uns";
@@ -61,5 +63,16 @@ describe("Uns certified mint", () => {
 
         await expect(trx.id).toBeForged();
         await expect({ tokenId, properties }).toMatchProperties();
+
+        // Check total supply
+        const response = await utils.request("GET", "blockchain");
+        expect(response).toBeSuccessfulResponse();
+        const premine = parseInt(genesisBlock.totalAmount);
+        const totalSupply = response.data.data.supply;
+        const blockReward = Managers.configManager.getMilestone().reward;
+        const totalBlockRewards = response.data.data.block.height * blockReward;
+        expect(+totalSupply).toEqual(
+            premine + totalBlockRewards + rewards.sender + rewards.forger + rewards.foundation,
+        );
     });
 });

@@ -4,6 +4,8 @@ import { IWalletManager } from "@arkecosystem/core-interfaces/dist/core-state";
 import { Identities, Managers, Utils } from "@arkecosystem/crypto";
 import { DIDTypes, getRewardsFromDidType, LIFE_CYCLE_PROPERTY_KEY, LifeCycleGrades } from "@uns/crypto";
 import { getFoundationWallet } from "@uns/uns-transactions/src/handlers/utils/helpers";
+import { utils } from "../../../integration/core-api/utils";
+import genesisBlock from "../../../utils/config/dalinet/genesisBlock.json";
 import * as support from "../__support__";
 import * as NftSupport from "../__support__/nft";
 import * as UnsSupport from "../__support__/uns";
@@ -77,6 +79,17 @@ describe("Uns certified update", () => {
         expect(foundationWallet.balance).toStrictEqual(Utils.BigNumber.make(rewards.foundation).minus(serviceCost));
 
         expect(forgeFactoryWallet.balance).toEqual(forgeFactoryInitialBalance);
+
+        // Check total supply
+        const response = await utils.request("GET", "blockchain");
+        expect(response).toBeSuccessfulResponse();
+        const premine = parseInt(genesisBlock.totalAmount);
+        const totalSupply = response.data.data.supply;
+        const blockReward = Managers.configManager.getMilestone().reward;
+        const totalBlockRewards = response.data.data.block.height * blockReward;
+        expect(+totalSupply).toEqual(
+            premine + totalBlockRewards + rewards.sender + rewards.forger + rewards.foundation,
+        );
     });
 
     it("mint organization unik and claim alive status", async () => {

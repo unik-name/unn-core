@@ -7,7 +7,7 @@ import { Managers, Identities, Utils, Interfaces } from "@arkecosystem/crypto";
 import { CertifiedNftMintTransactionHandler, Errors as unsErrors } from "@uns/uns-transactions";
 import * as Fixtures from "../__fixtures__";
 import { nftRepository } from "@uns/core-nft";
-import { UNSCertifiedNftMintBuilder, getVoucherRewards } from "@uns/crypto";
+import { UNSCertifiedNftMintBuilder, getMintVoucherRewards } from "@uns/crypto";
 import { buildCertifiedDemand } from "../helpers";
 
 let handler;
@@ -99,13 +99,13 @@ describe("CertifiedNtfMint Transaction", () => {
 
     describe("custom methods", () => {
         it("should get voucher rewards", async () => {
-            expect(getVoucherRewards(builder.build().data.asset)).toEqual(
+            expect(getMintVoucherRewards(builder.build().data.asset)).toEqual(
                 Managers.configManager.getMilestone().voucherRewards.individual,
             );
         });
 
         it("checkEmptyBalance", async () => {
-            expect(handler.checkEmptyBalance(builder.build())).toBeFalse();
+            expect(await handler.checkEmptyBalance(builder.build())).toBeFalse();
         });
     });
 
@@ -121,7 +121,7 @@ describe("CertifiedNtfMint Transaction", () => {
             it("should apply voucher token eco", async () => {
                 const transaction = builder.build();
                 await expect(handler.apply(transaction, walletManager)).toResolve();
-                const rewards = getVoucherRewards(transaction.data.asset);
+                const rewards = getMintVoucherRewards(transaction.data.asset);
                 expect(foundationWallet.balance).toStrictEqual(Utils.BigNumber.make(rewards.foundation));
                 expect(senderWallet.balance).toStrictEqual(Utils.BigNumber.make(rewards.sender));
             });
@@ -130,7 +130,7 @@ describe("CertifiedNtfMint Transaction", () => {
         describe("revert", () => {
             it("should revert voucher token eco", async () => {
                 const transaction = builder.build();
-                const rewards = getVoucherRewards(transaction.data.asset);
+                const rewards = getMintVoucherRewards(transaction.data.asset);
 
                 senderWallet.nonce = Utils.BigNumber.make(1);
                 senderWallet.balance = Utils.BigNumber.make(rewards.sender);

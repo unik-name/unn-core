@@ -1,7 +1,9 @@
 /* tslint:disable:no-empty */
 export const coreNft = {
     getProperty: jest.fn(),
+    insert: jest.fn(),
     insertProperty: jest.fn(),
+    insertProperties: jest.fn(),
     updateProperty: () => {},
     manageProperties: jest.fn(),
     getProperties: jest.fn(),

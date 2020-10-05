@@ -46,7 +46,7 @@ describe("Nft update handler", () => {
 
         it("should fail because sender doesn't own token", () => {
             const fakeToken = Fixtures.nftId.replace("e", "a");
-            senderWallet.setAttribute("tokens", { [fakeToken]: 1 });
+            senderWallet.setAttribute("tokens", { [fakeToken]: { type: 1337 } });
             walletManager.reindex(senderWallet);
 
             const transaction = builder

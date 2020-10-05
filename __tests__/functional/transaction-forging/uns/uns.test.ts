@@ -39,7 +39,7 @@ describe("Uns delegate scenario", () => {
         await expect(trx.id).toBeForged();
         await expect({
             tokenId: nftId,
-            properties: { type: nftType, [DELEGATE_BADGE.replace(/\//g, "%2F")]: "true" },
+            properties: { type: nftType, [DELEGATE_BADGE]: "true" },
         }).toMatchProperties();
 
         const walletManager: IWalletManager = app.resolvePlugin<Database.IDatabaseService>("database").walletManager;
@@ -97,7 +97,7 @@ describe("Uns delegate scenario", () => {
         await expect(trx.id).toBeForged();
         await expect({
             tokenId: nftId,
-            properties: { [DELEGATE_BADGE.replace(/\//g, "%2F")]: "false" },
+            properties: { [DELEGATE_BADGE]: "false" },
         }).toMatchProperties();
     });
 });

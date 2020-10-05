@@ -3,4 +3,5 @@ export const nftDatabase = {
     findById: jest.fn(),
     // tslint:disable-next-line: no-empty
     findPropertyByKey: () => {},
+    findProperties: jest.fn(),
 };

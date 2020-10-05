@@ -1,5 +1,5 @@
 import { Managers, Utils } from "@arkecosystem/crypto";
-import { buildCertifiedDemand } from "../../../unit/uns-crypto/helpers";
+import { DIDTypes, getRewardsFromDidType } from "@uns/crypto";
 import * as support from "../__support__";
 import * as NftSupport from "../__support__/nft";
 import * as UnsSupport from "../__support__/uns";
@@ -14,41 +14,51 @@ afterAll(support.tearDown);
 
 describe("Uns certified mint", () => {
     it("nft certified mint", async () => {
-        const tokenId = "deadbeefdd4fd00ba513e1ca09abb8522a8ba94fa2a7a81dd674eac27ce66b94";
+        const tokenId = NftSupport.generateNftId();
         const properties = {
             type: "1",
         };
 
-        const demand = buildCertifiedDemand(
+        const serviceCost = Utils.BigNumber.make("666");
+        const fee = 100000000;
+        const trx = await UnsSupport.certifiedMintAndWait(
             tokenId,
-            properties,
             NftSupport.defaultPassphrase,
-            Utils.BigNumber.make("666"),
             UnsSupport.forgerFactoryTokenId,
             UnsSupport.forgerFactoryPassphrase,
+            properties,
+            serviceCost,
+            fee,
         );
-        const trx = await UnsSupport.certifiedMintAndWait(tokenId, properties, demand);
+
         await expect(trx.id).toBeForged();
         await expect({ tokenId, properties }).toMatchProperties();
     });
 
     it("nft certified mint with voucher", async () => {
-        const tokenId = "deadbabedd4fd00ba513e1ca09abb8522a8ba94fa2a7a81dd674eac27ce66b94";
+        const tokenId = NftSupport.generateNftId();
+        const passphrase = "the passphrase " + tokenId.substr(0, 10);
         const voucherId = "6trg50ZxgEPl9Av8V67c0";
+        const didType = DIDTypes.INDIVIDUAL;
         const properties = {
-            type: "1",
+            type: didType.toString(),
             UnikVoucherId: voucherId,
         };
-        const passphrase = "user passphrase";
-        const demand = buildCertifiedDemand(
+
+        const rewards = getRewardsFromDidType(didType);
+        const serviceCost = Utils.BigNumber.ZERO;
+        const fee = rewards.forger;
+
+        const trx = await UnsSupport.certifiedMintAndWait(
             tokenId,
-            properties,
             passphrase,
-            Utils.BigNumber.ZERO,
             UnsSupport.forgerFactoryTokenId,
             UnsSupport.forgerFactoryPassphrase,
+            properties,
+            serviceCost,
+            fee,
         );
-        const trx = await UnsSupport.certifiedMintAndWait(tokenId, properties, demand, passphrase);
+
         await expect(trx.id).toBeForged();
         await expect({ tokenId, properties }).toMatchProperties();
     });

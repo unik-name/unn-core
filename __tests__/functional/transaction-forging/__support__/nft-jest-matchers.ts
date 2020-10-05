@@ -21,7 +21,9 @@ const nftPropertiesAreUpdated = async (tokenId: string, properties): Promise<any
 
     for (const [key, value] of Object.entries(properties)) {
         try {
-            const { body } = await got.get(`${publicAPIEndpoint}/${NftSupport.nftName}s/${tokenId}/properties/${key}`);
+            const { body } = await got.get(
+                `${publicAPIEndpoint}/${NftSupport.nftName}s/${tokenId}/properties/${encodeURIComponent(key)}`,
+            );
             const { data } = JSON.parse(body);
 
             if (data !== value) {

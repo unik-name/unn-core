@@ -2,7 +2,17 @@ import { app } from "@arkecosystem/core-container";
 import { Logger, Shared, State } from "@arkecosystem/core-interfaces";
 import { Handlers, Interfaces as TransactionInterfaces } from "@arkecosystem/core-transactions";
 import { Enums, Identities, Interfaces, Managers, Utils } from "@arkecosystem/crypto";
-import { DIDTypes, getVoucherRewards, hasVoucher, UnsTransactionGroup, UnsTransactionType } from "@uns/crypto";
+import { getTokenId } from "@uns/core-nft-crypto";
+import {
+    DIDTypes,
+    getDidType,
+    getMintVoucherRewards,
+    getRewardsFromDidType,
+    hasVoucher,
+    isAliveDemand,
+    UnsTransactionGroup,
+    UnsTransactionType,
+} from "@uns/crypto";
 import pluralize from "pluralize";
 import { WalletIndexAlreadyRegisteredError, WalletIndexNotFoundError } from "./errors";
 import { TempWalletManager } from "./temp-wallet-manager";
@@ -369,7 +379,7 @@ export class WalletManager implements State.IWalletManager {
         const sender: State.IWallet = this.findByPublicKey(transaction.data.senderPublicKey);
         const recipient: State.IWallet = this.findByAddress(transaction.data.recipientId);
 
-        this.updateVoteBalances(sender, recipient, transaction.data, lockWallet, lockTransaction);
+        await this.updateVoteBalances(sender, recipient, transaction.data, lockWallet, lockTransaction);
     }
 
     public async revertTransaction(transaction: Interfaces.ITransaction): Promise<void> {
@@ -397,7 +407,7 @@ export class WalletManager implements State.IWalletManager {
         }
 
         // Revert vote balance updates
-        this.updateVoteBalances(sender, recipient, data, lockWallet, lockTransaction, true);
+        await this.updateVoteBalances(sender, recipient, data, lockWallet, lockTransaction, true);
     }
 
     public canBePurged(wallet: State.IWallet): boolean {
@@ -552,14 +562,14 @@ export class WalletManager implements State.IWalletManager {
      *
      * If revert is set to true, the operations are reversed (plus -> minus, minus -> plus).
      */
-    private updateVoteBalances(
+    private async updateVoteBalances(
         sender: State.IWallet,
         recipient: State.IWallet,
         transaction: Interfaces.ITransactionData,
         lockWallet: State.IWallet,
         lockTransaction: Interfaces.ITransactionData,
         revert: boolean = false,
-    ): void {
+    ): Promise<void> {
         if (
             (transaction.type === Enums.TransactionType.Vote &&
                 transaction.typeGroup === Enums.TransactionTypeGroup.Core) ||
@@ -605,13 +615,31 @@ export class WalletManager implements State.IWalletManager {
                 let newVoteBalance: Utils.BigNumber;
 
                 if (
+                    // handle Certified updates rewards
+                    transaction.type === UnsTransactionType.UnsCertifiedNftUpdate &&
+                    transaction.typeGroup === UnsTransactionGroup &&
+                    Managers.configManager.getMilestone().unsTokenEcoV2 &&
+                    isAliveDemand(transaction.asset)
+                ) {
+                    // Apply voucher rewards to delegate vote balance
+                    const tokenId = getTokenId(transaction.asset);
+                    const didType = sender.getAttribute("tokens")[tokenId].type;
+                    if (didType === DIDTypes.INDIVIDUAL) {
+                        const rewards = getRewardsFromDidType(didType);
+                        newVoteBalance = revert ? voteBalance.minus(rewards.sender) : voteBalance.plus(rewards.sender);
+                    }
+                } else if (
+                    // handle Certified mint rewards
                     transaction.type === UnsTransactionType.UnsCertifiedNftMint &&
                     transaction.typeGroup === UnsTransactionGroup &&
                     hasVoucher(transaction.asset)
                 ) {
-                    // Apply voucher rewards to delegate vote balance
-                    const rewards = getVoucherRewards(transaction.asset);
-                    newVoteBalance = revert ? voteBalance.minus(rewards.sender) : voteBalance.plus(rewards.sender);
+                    const didType = getDidType(transaction.asset);
+                    if (!Managers.configManager.getMilestone().unsTokenEcoV2 || didType !== DIDTypes.INDIVIDUAL) {
+                        // Apply voucher rewards to delegate vote balance
+                        const rewards = getMintVoucherRewards(transaction.asset);
+                        newVoteBalance = revert ? voteBalance.minus(rewards.sender) : voteBalance.plus(rewards.sender);
+                    }
                 } else if (
                     transaction.type === Enums.TransactionType.HtlcLock &&
                     transaction.typeGroup === Enums.TransactionTypeGroup.Core
@@ -675,25 +703,26 @@ export class WalletManager implements State.IWalletManager {
             }
 
             if (
+                // handle Certified updates rewards for foundation
+                transaction.type === UnsTransactionType.UnsCertifiedNftUpdate &&
+                transaction.typeGroup === UnsTransactionGroup &&
+                Managers.configManager.getMilestone().unsTokenEcoV2 &&
+                isAliveDemand(transaction.asset)
+            ) {
+                const tokenId = getTokenId(transaction.asset);
+                const didType = sender.getAttribute("tokens")[tokenId].type;
+                if (didType === DIDTypes.INDIVIDUAL) {
+                    this.applyFoundationRewardsToDelegate(didType, revert);
+                }
+            } else if (
+                // handle Certified mint rewards
                 transaction.type === UnsTransactionType.UnsCertifiedNftMint &&
                 transaction.typeGroup === UnsTransactionGroup &&
                 hasVoucher(transaction.asset)
             ) {
-                const foundationPublicKey = Managers.configManager.get("network.foundation.publicKey");
-                const foundationWallet: State.IWallet = this.findByPublicKey(foundationPublicKey);
-
-                // Apply foundation voucher rewards to delegate vote balance
-                if (foundationWallet.hasVoted()) {
-                    const delegate: State.IWallet = this.findByPublicKey(foundationWallet.getAttribute("vote"));
-                    const voteBalance: Utils.BigNumber = delegate.getAttribute(
-                        "delegate.voteBalance",
-                        Utils.BigNumber.ZERO,
-                    );
-                    const rewards = getVoucherRewards(transaction.asset);
-                    delegate.setAttribute(
-                        "delegate.voteBalance",
-                        revert ? voteBalance.minus(rewards.foundation) : voteBalance.plus(rewards.foundation),
-                    );
+                const didType = getDidType(transaction.asset);
+                if (!Managers.configManager.getMilestone().unsTokenEcoV2 || didType !== DIDTypes.INDIVIDUAL) {
+                    this.applyFoundationRewardsToDelegate(didType, revert);
                 }
             }
 
@@ -715,6 +744,21 @@ export class WalletManager implements State.IWalletManager {
                     revert ? voteBalance.minus(transaction.amount) : voteBalance.plus(transaction.amount),
                 );
             }
+        }
+    }
+
+    private applyFoundationRewardsToDelegate(didType: DIDTypes, revert: boolean) {
+        const foundationPublicKey = Managers.configManager.get("network.foundation.publicKey");
+        const foundationWallet: State.IWallet = this.findByPublicKey(foundationPublicKey);
+        // Apply foundation voucher rewards to delegate vote balance
+        if (foundationWallet.hasVoted()) {
+            const delegate: State.IWallet = this.findByPublicKey(foundationWallet.getAttribute("vote"));
+            const voteBalance: Utils.BigNumber = delegate.getAttribute("delegate.voteBalance", Utils.BigNumber.ZERO);
+            const rewards = getRewardsFromDidType(didType);
+            delegate.setAttribute(
+                "delegate.voteBalance",
+                revert ? voteBalance.minus(rewards.foundation) : voteBalance.plus(rewards.foundation),
+            );
         }
     }
 }

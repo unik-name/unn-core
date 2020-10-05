@@ -121,5 +121,14 @@
                 "UnsCertifiedNftMint": 100000000
             }
         }
+    },
+    {
+        "height": 1388487,
+        "unsTokenEcoV2": true,
+        "fees": {
+            "staticFees": {
+                "unsCertifiedNftUpdate": 100000000
+            }
+        }
     }
 ]

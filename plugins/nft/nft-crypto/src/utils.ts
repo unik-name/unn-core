@@ -17,3 +17,5 @@ export const getCurrentNftAsset = (asset: Interfaces.ITransactionAsset): NftInte
     }
     throw new Error(`Nft asset should be defined in transaction data.`);
 };
+
+export const getTokenId = (asset: Interfaces.ITransactionAsset): string => getCurrentNftAsset(asset).tokenId;

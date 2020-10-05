@@ -1,8 +1,9 @@
 import { app } from "@arkecosystem/core-container";
 import { Database, State } from "@arkecosystem/core-interfaces";
 import { IWalletManager } from "@arkecosystem/core-interfaces/dist/core-state";
-import { Interfaces } from "@arkecosystem/crypto";
+import { Identities, Interfaces, Managers } from "@arkecosystem/crypto";
 import { nftRepository, NftsManager } from "@uns/core-nft";
+import { DIDTypes } from "@uns/crypto";
 
 export const EXPLICIT_PROP_KEY = "explicitValues";
 
@@ -74,4 +75,12 @@ export const checkAndGetPublicKey = async (unikId: string, walletManager: State.
         throw new Error(`publicKey not found for UNIK ID: ${unikId}`);
     }
     return foundPublicKey;
+};
+
+export const getDidTypeFromProperties = (properties: Array<{ key: string; value: string }>): DIDTypes =>
+    parseInt(properties.find(entry => entry.key === "type").value);
+
+export const getFoundationWallet = (walletManager: State.IWalletManager): State.IWallet => {
+    const foundationPublicKey = Managers.configManager.get("network.foundation.publicKey");
+    return walletManager.findByAddress(Identities.Address.fromPublicKey(foundationPublicKey));
 };

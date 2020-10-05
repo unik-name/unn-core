@@ -1,7 +1,7 @@
-import { Utils } from "@arkecosystem/crypto";
 import { Builders } from "@uns/core-nft-crypto";
-import { UnsTransactionGroup, UnsTransactionStaticFees, UnsTransactionType } from "../enums";
+import { UnsTransactionGroup, UnsTransactionType } from "../enums";
 import { INftUpdateDemandCertification, INftUpdateDemandPayload } from "../interfaces";
+import { CertifiedNftUpdateTransaction } from "../transactions";
 import { applyMixins } from "../utils";
 import { IUNSCertifiedNftBuilder, UNSCertifiedNftBuilder } from "./uns-certified-nft-common";
 
@@ -11,7 +11,7 @@ export class UNSCertifiedNftUpdateBuilder extends Builders.NftUpdateBuilder {
     }
 
     protected fees() {
-        return Utils.BigNumber.make(UnsTransactionStaticFees.UnsCertifiedNftUpdate);
+        return CertifiedNftUpdateTransaction.staticFee();
     }
 
     protected type() {

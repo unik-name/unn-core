@@ -46,10 +46,10 @@ export const addNftToWallet = async (
 
     let tokenType: number = -1;
     if (nftManager.constraints.hasConstraint("type")) {
-        if (!properties?.type) {
-            tokenType = parseInt((await nftManager.getProperty(tokenId, "type")).value);
-        } else {
+        if (properties?.type) {
             tokenType = parseInt(properties.type);
+        } else {
+            tokenType = parseInt((await nftManager.getProperty(tokenId, "type")).value);
         }
     }
     walletTokens = { ...walletTokens, [tokenId]: { type: tokenType } };

@@ -5,7 +5,7 @@ import { Interfaces, Managers, Transactions } from "@arkecosystem/crypto";
 import { NftMintTransactionHandler, NftOwnerError } from "@uns/core-nft";
 import { DelegateRegisterTransaction, DIDHelpers, DIDTypes, isUnikId } from "@uns/crypto";
 import { CryptoAccountHasSeveralUniksError, InvalidUnikTypeError, UnikNameNotDisclosedError } from "../errors";
-import { EXPLICIT_PROP_KEY, getNftsManager } from "./utils/helpers";
+import { EXPLICIT_PROP_KEY, getDidTypeFromProperties, getNftsManager } from "./utils/helpers";
 
 export const DELEGATE_BADGE = "Badges/NP/Delegate";
 export class DelegateRegisterTransactionHandler extends DelegateRegistrationTransactionHandler {
@@ -66,10 +66,10 @@ export class DelegateRegisterTransactionHandler extends DelegateRegistrationTran
         }
 
         // check UNIK Type
-        const nftType = parseInt(properties.find(elt => elt.key === "type").value);
+        const didType = getDidTypeFromProperties(properties);
 
-        if (!(nftType === DIDTypes.INDIVIDUAL || nftType === DIDTypes.ORGANIZATION) && !this.isWhitelisted(nftId)) {
-            throw new InvalidUnikTypeError(DIDHelpers.fromCode(nftType));
+        if (!(didType === DIDTypes.INDIVIDUAL || didType === DIDTypes.ORGANIZATION) && !this.isWhitelisted(nftId)) {
+            throw new InvalidUnikTypeError(DIDHelpers.fromCode(didType));
         }
 
         return super.throwIfCannotBeApplied(transaction, wallet, walletManager);

@@ -1,9 +1,17 @@
 import { app } from "@arkecosystem/core-container";
-import { Database } from "@arkecosystem/core-interfaces";
+import { Database, State } from "@arkecosystem/core-interfaces";
 import { Managers, Utils } from "@arkecosystem/crypto";
 import Boom from "@hapi/boom";
-import { getCurrentNftAsset } from "@uns/core-nft-crypto";
-import { DIDHelpers, hasVoucher, UnsTransactionGroup, UnsTransactionType } from "@uns/crypto";
+import { getTokenId } from "@uns/core-nft-crypto";
+import {
+    DIDTypes,
+    getDidType,
+    getRewardsFromDidType,
+    hasVoucher,
+    isAliveDemand,
+    UnsTransactionGroup,
+    UnsTransactionType,
+} from "@uns/crypto";
 import { ServerCache } from "../../services";
 import { paginate, respondWithResource, toPagination } from "../utils";
 
@@ -29,21 +37,53 @@ const show = async request => {
 
     if (block.numberOfTransactions) {
         const transactions: Database.ITransactionsPaginated = await transactionsRepository.findAllByBlock(block.id);
-        const rewards = Managers.configManager.getMilestone(block.height).voucherRewards;
+        const milestone = Managers.configManager.getMilestone(block.height);
         let unikMintRewards = Utils.BigNumber.ZERO;
         let foundationRewards = Utils.BigNumber.ZERO;
         for (const transaction of transactions.rows) {
-            if (
-                transaction.typeGroup === UnsTransactionGroup &&
+            if (milestone.unsTokenEcoV2) {
+                if (
+                    transaction.type === UnsTransactionType.UnsCertifiedNftMint &&
+                    transaction.typeGroup === UnsTransactionGroup &&
+                    hasVoucher(transaction.asset)
+                ) {
+                    const didType = getDidType(transaction.asset);
+                    if (didType !== DIDTypes.INDIVIDUAL) {
+                        const rewards = getRewardsFromDidType(didType, block.height);
+                        unikMintRewards = unikMintRewards
+                            .plus(Utils.BigNumber.make(rewards.sender))
+                            .plus(Utils.BigNumber.make(rewards.forger));
+                        foundationRewards = Utils.BigNumber.make(rewards.foundation);
+                    }
+                } else if (
+                    transaction.type === UnsTransactionType.UnsCertifiedNftUpdate &&
+                    transaction.typeGroup === UnsTransactionGroup &&
+                    isAliveDemand(transaction.asset)
+                ) {
+                    const sender: State.IWallet = databaseService.walletManager.findByPublicKey(
+                        transaction.senderPublicKey,
+                    );
+                    const tokenId = getTokenId(transaction.asset);
+                    const didType = sender.getAttribute("tokens")[tokenId].type;
+                    if (didType === DIDTypes.INDIVIDUAL) {
+                        const rewards = getRewardsFromDidType(didType, block.height);
+                        unikMintRewards = unikMintRewards
+                            .plus(Utils.BigNumber.make(rewards.sender))
+                            .plus(Utils.BigNumber.make(rewards.forger));
+                        foundationRewards = Utils.BigNumber.make(rewards.foundation);
+                    }
+                }
+            } else if (
                 transaction.type === UnsTransactionType.UnsCertifiedNftMint &&
+                transaction.typeGroup === UnsTransactionGroup &&
                 hasVoucher(transaction.asset)
             ) {
-                const type: number = parseInt(getCurrentNftAsset(transaction.asset).properties.type);
-                const rewardsByType = rewards[DIDHelpers.fromCode(type).toLowerCase()];
+                const didType = getDidType(transaction.asset);
+                const rewards = getRewardsFromDidType(didType, block.height);
                 unikMintRewards = unikMintRewards
-                    .plus(Utils.BigNumber.make(rewardsByType.sender))
-                    .plus(Utils.BigNumber.make(rewardsByType.forger));
-                foundationRewards = Utils.BigNumber.make(rewardsByType.foundation);
+                    .plus(Utils.BigNumber.make(rewards.sender))
+                    .plus(Utils.BigNumber.make(rewards.forger));
+                foundationRewards = Utils.BigNumber.make(rewards.foundation);
             }
         }
         (block as any).unikMintRewards = unikMintRewards;

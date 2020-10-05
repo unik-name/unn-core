@@ -2,8 +2,6 @@ import { app } from "@arkecosystem/core-container";
 import { Database } from "@arkecosystem/core-interfaces";
 import { IWalletManager } from "@arkecosystem/core-interfaces/dist/core-state";
 import { Identities, Managers, Utils } from "@arkecosystem/crypto";
-import * as Fixtures from "../../../unit/uns-crypto/__fixtures__";
-import { buildCertifiedDemand } from "../../../unit/uns-crypto/helpers";
 import * as support from "../__support__";
 import * as NftSupport from "../__support__/nft";
 import * as UnsSupport from "../__support__/uns";
@@ -20,15 +18,15 @@ afterAll(support.tearDown);
 
 describe("Uns certified update", () => {
     it("mint nft and verify url", async () => {
-        const tokenId = "deadbeefdd4fd00ba513e1ca09abb8522a8ba94fa2a7a81dd674eac27ce66b94";
-        const senderPassphrase = "the sender passphrase";
+        const tokenId = NftSupport.generateNftId();
+        const senderPassphrase = "my passphrase " + tokenId.substr(0, 10);
         const senderAddress = Identities.Address.fromPassphrase(senderPassphrase);
         const senderWallet = walletManager.findByAddress(senderAddress);
 
         await NftSupport.transferAndWait(senderAddress, 33);
         const senderInitBalance = senderWallet.balance;
 
-        const properties = {
+        const mintProperties = {
             type: "1",
         };
 
@@ -36,30 +34,44 @@ describe("Uns certified update", () => {
         const forgeFactoryWallet = walletManager.findByAddress(forgeFactoryAddress);
         const forgeFactoryInitialBalance = forgeFactoryWallet.balance;
 
-        const mintCost = Utils.BigNumber.make("666");
-        const demand = buildCertifiedDemand(
+        const mintCost = Utils.BigNumber.make("123666");
+        const mintFee = 10000000;
+
+        const mintTx = await UnsSupport.certifiedMintAndWait(
             tokenId,
-            properties,
             senderPassphrase,
-            mintCost,
             UnsSupport.forgerFactoryTokenId,
             UnsSupport.forgerFactoryPassphrase,
+            mintProperties,
+            mintCost,
+            mintFee,
         );
-        const mintTx = await UnsSupport.certifiedMintAndWait(tokenId, properties, demand, senderPassphrase);
+
         await expect(mintTx.id).toBeForged();
-        await expect({ tokenId, properties }).toMatchProperties();
+        await expect({ tokenId, properties: mintProperties }).toMatchProperties();
 
-        const builder = Fixtures.buildUrlCheckerTransaction(
-            {
-                tokenId: UnsSupport.forgerFactoryTokenId,
-                address: forgeFactoryAddress,
-                passphrase: UnsSupport.forgerFactoryPassphrase,
-            },
-            { tokenId, address: senderAddress, passphrase: senderPassphrase },
+        const properties = {
+            "Verified/URL/MyUrl": "https://www.toto.lol",
+            "Verified/URL/MyUrl/proof":
+                '{"iat":1598434813,"exp":1598694013,"jti":"SyjfEteA8tSAPRjV4b_lw","sig":"jwtSignature"}',
+        };
+
+        const serviceCost = Utils.BigNumber.make(100000000);
+        const updateFee = 100000000;
+
+        const updateTx = await UnsSupport.certifiedUpdateAndWait(
+            tokenId,
+            senderPassphrase,
+            UnsSupport.forgerFactoryTokenId,
+            UnsSupport.forgerFactoryPassphrase,
+            properties,
+            serviceCost,
+            updateFee,
         );
 
-        const updateTx = await UnsSupport.certifiedUpdateAndWait(builder, senderPassphrase);
         await expect(updateTx.id).toBeForged();
+
+        await expect({ tokenId, properties: { ...mintProperties, ...properties } }).toMatchProperties();
 
         expect(forgeFactoryWallet.balance).toEqual(
             forgeFactoryInitialBalance.plus(mintTx.amount).plus(updateTx.amount),
@@ -67,9 +79,9 @@ describe("Uns certified update", () => {
         expect(senderWallet.balance).toEqual(
             senderInitBalance
                 .minus(mintCost)
-                .minus(mintTx.fee)
-                .minus(updateTx.amount)
-                .minus(updateTx.fee),
+                .minus(mintFee)
+                .minus(serviceCost)
+                .minus(updateFee),
         );
     });
 });

@@ -1,7 +1,8 @@
-import { Identities } from "@arkecosystem/crypto";
+import { Identities, Utils } from "@arkecosystem/crypto";
 import {
+    CertifiedNftMintTransaction,
+    CertifiedNftUpdateTransaction,
     DIDTypes,
-    UNSCertifiedNftMintBuilder,
     UNSDelegateRegisterBuilder,
     UNSDelegateResignBuilder,
     UNSDiscloseExplicitBuilder,
@@ -9,6 +10,7 @@ import {
 } from "@uns/crypto";
 import { snoozeForBlock } from ".";
 import { TransactionFactory } from "../../../helpers";
+import { NFTTransactionFactory } from "../../../helpers/nft-transaction-factory";
 import { buildDiscloseDemand } from "../../../unit/uns-crypto/helpers";
 import * as NftSupport from "./nft";
 import "./nft-jest-matchers";
@@ -81,28 +83,47 @@ export const setupForgeFactory = async () => {
     return forgerFactoryTokenId;
 };
 
-export const certifiedMintAndWait = async (nftId, properties, demand, passphrase = NftSupport.defaultPassphrase) => {
-    const t = new TransactionFactory(
-        new UNSCertifiedNftMintBuilder("unik", nftId)
-            .properties(properties)
-            .demand(demand.demand)
-            .certification(demand.certification, Identities.Address.fromPassphrase(forgerFactoryPassphrase)),
-    )
-        .withNetwork(NftSupport.network)
-        .withPassphrase(passphrase)
-        .createOne();
-
+export const certifiedMintAndWait = async (
+    tokenId: string,
+    senderPassphrase: string,
+    issUnikId: string,
+    issPassphrase: string,
+    properties,
+    serviceCost: Utils.BigNumber,
+    fee: number = +CertifiedNftMintTransaction.staticFee(),
+) => {
+    const t = NFTTransactionFactory.nftCertifiedMint(
+        tokenId,
+        senderPassphrase,
+        issUnikId,
+        issPassphrase,
+        properties,
+        serviceCost,
+        fee,
+    ).createOne();
     await expect(t).toBeAccepted();
     await snoozeForBlock(1);
     return t;
 };
 
-export const certifiedUpdateAndWait = async (builder, passphrase = NftSupport.defaultPassphrase) => {
-    const t = new TransactionFactory(builder)
-        .withNetwork(NftSupport.network)
-        .withPassphrase(passphrase)
-        .createOne();
-
+export const certifiedUpdateAndWait = async (
+    tokenId: string,
+    senderPassphrase: string,
+    issUnikId: string,
+    issPassphrase: string,
+    properties,
+    serviceCost: Utils.BigNumber,
+    fee: number = +CertifiedNftUpdateTransaction.staticFee(),
+) => {
+    const t = NFTTransactionFactory.nftCertifiedUpdate(
+        tokenId,
+        senderPassphrase,
+        issUnikId,
+        issPassphrase,
+        properties,
+        serviceCost,
+        fee,
+    ).createOne();
     await expect(t).toBeAccepted();
     await snoozeForBlock(1);
     return t;

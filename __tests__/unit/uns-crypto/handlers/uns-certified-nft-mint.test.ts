@@ -108,6 +108,12 @@ describe("CertifiedNtfMint Transaction", () => {
         });
     });
 
+    describe("custom methods", () => {
+        it("checkEmptyBalance", async () => {
+            expect(await handler.checkEmptyBalance(builder.build())).toBeTrue();
+        });
+    });
+
     describe("apply", () => {
         it("should apply service costs", async () => {
             await expect(handler.apply(builder.build(), walletManager)).toResolve();

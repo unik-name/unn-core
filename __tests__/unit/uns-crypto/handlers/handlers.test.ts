@@ -67,5 +67,14 @@ describe("Registry register uns transaction", () => {
                 Utils.BigNumber.make(264),
             );
         });
+
+        it("should return zero after token eco v2 milestone", async () => {
+            const handler = await Handlers.Registry.get(UnsTransactionType.UnsCertifiedNftMint, UnsTransactionGroup);
+            Managers.configManager.getMilestone().unsTokenEcoV2 = true;
+            const transaction = Fixtures.unsCertifiedNftMintTransaction().build();
+            expect(handler.dynamicFee({ addonBytes: 0, satoshiPerByte: 0, transaction } as any)).toEqual(
+                Utils.BigNumber.ZERO,
+            );
+        });
     });
 });

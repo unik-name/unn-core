@@ -4,7 +4,8 @@ import { Container, Database, State } from "@arkecosystem/core-interfaces";
 import { WalletManager } from "@arkecosystem/core-state/src/wallets";
 import { Identities, Managers, Networks, Utils } from "@arkecosystem/crypto";
 import { nftRepository } from "@uns/core-nft";
-import { DIDTypes, getRewardsFromDidType } from "@uns/crypto";
+import { DIDTypes, getRewardsFromDidType, IUnsRewards, LIFE_CYCLE_PROPERTY_KEY, LifeCycleGrades } from "@uns/crypto";
+import { getFoundationWallet } from "@uns/uns-transactions/src/handlers/utils/helpers";
 import * as NftSupport from "../../functional/transaction-forging/__support__/nft";
 import { NFTTransactionFactory } from "../../helpers/nft-transaction-factory";
 import * as Fixtures from "../../unit/uns-crypto/__fixtures__/index";
@@ -19,7 +20,10 @@ const tokenId = NftSupport.generateNftId();
 
 beforeAll(async () => {
     container = await NftSupport.setUp();
+
+    // force v2 token Eco
     Managers.configManager.setFromPreset(Fixtures.network);
+    Managers.configManager.getMilestone().unsTokenEcoV2 = true;
 
     walletManager = new WalletManager();
     database = container.resolvePlugin<Database.IDatabaseService>("database");
@@ -31,7 +35,7 @@ afterAll(async () => {
     await tearDown();
 });
 
-describe("certifiedNftMint handler tests", () => {
+describe("certifiedNftMint handler tests for token eco v2", () => {
     const optionsDefault = {
         timestamp: 12345689,
         previousBlock: {
@@ -61,13 +65,14 @@ describe("certifiedNftMint handler tests", () => {
     });
 
     it("wallet bootstrap for mint transaction", async () => {
-        const senderInitialBalance = Utils.BigNumber.make("200000000");
-        senderWallet.balance = senderInitialBalance;
-        walletManager.reindex(senderWallet);
-        const serviceCost = Utils.BigNumber.make("100000000");
         const properties = {
-            type: "1",
+            type: DIDTypes.INDIVIDUAL.toString(),
+            [LIFE_CYCLE_PROPERTY_KEY]: LifeCycleGrades.MINTED.toString(),
         };
+        const serviceCost = Utils.BigNumber.make(654321);
+        const fee = 12345;
+        senderWallet.balance = Utils.BigNumber.make(fee).plus(serviceCost);
+        walletManager.reindex(senderWallet);
 
         const transaction = NFTTransactionFactory.nftCertifiedMint(
             tokenId,
@@ -76,6 +81,7 @@ describe("certifiedNftMint handler tests", () => {
             Fixtures.issPassphrase,
             properties,
             serviceCost,
+            fee,
         ).createOne();
 
         const delegate = new Delegate("delegate passphrase", Networks.dalinet.network);
@@ -87,26 +93,23 @@ describe("certifiedNftMint handler tests", () => {
         await stateBuilder.run();
 
         // check sender balance
-        expect(senderWallet.balance).toEqual(senderInitialBalance.minus(serviceCost).minus(transaction.fee));
+        expect(senderWallet.balance).toEqual(Utils.BigNumber.ZERO);
 
         // check forgeFactory balance
         expect(forgeFactoryWallet.balance).toEqual(serviceCost);
-        expect(forgeFactoryWallet.balance).toStrictEqual(transaction.asset.certification.payload.cost);
 
         expect(Object.keys(senderWallet.getAttribute("tokens")).includes(tokenId)).toBeTrue();
     });
 
-    it("wallet bootstrap for mint transaction with voucher", async () => {
+    it("wallet bootstrap for individual mint transaction with voucher", async () => {
         const voucherId = "6trg50ZxgEPl9Av8V67c0";
         const serviceCost = Utils.BigNumber.ZERO;
-        const didType = DIDTypes.INDIVIDUAL;
-        const rewards = getRewardsFromDidType(didType);
-
+        const fee = 0;
         const properties = {
-            type: didType.toString(),
+            type: DIDTypes.INDIVIDUAL.toString(),
             UnikVoucherId: voucherId,
+            [LIFE_CYCLE_PROPERTY_KEY]: LifeCycleGrades.MINTED.toString(),
         };
-
         const transaction = NFTTransactionFactory.nftCertifiedMint(
             tokenId,
             passphrase,
@@ -114,7 +117,7 @@ describe("certifiedNftMint handler tests", () => {
             Fixtures.issPassphrase,
             properties,
             serviceCost,
-            rewards.forger,
+            fee,
         ).createOne();
 
         const delegate = new Delegate("delegate passphrase", Networks.dalinet.network);
@@ -126,12 +129,53 @@ describe("certifiedNftMint handler tests", () => {
         await stateBuilder.run();
 
         // check sender balance
-        expect(senderWallet.balance).toEqual(Utils.BigNumber.make(rewards.sender));
+        expect(senderWallet.balance).toEqual(Utils.BigNumber.ZERO);
 
         // check foundation balance
-        const foundationPublicKey = Managers.configManager.get("network.foundation.publicKey");
-        const foundationWallet = walletManager.findByAddress(Identities.Address.fromPublicKey(foundationPublicKey));
-        expect(foundationWallet.balance).toStrictEqual(Utils.BigNumber.make(rewards.foundation));
+
+        const foundationWallet = getFoundationWallet(walletManager);
+        expect(foundationWallet.balance).toStrictEqual(Utils.BigNumber.ZERO);
+
+        expect(Object.keys(senderWallet.getAttribute("tokens")).includes(tokenId)).toBeTrue();
+    });
+
+    it("wallet bootstrap for organization mint transaction with voucher", async () => {
+        const voucherId = "6trg50ZxgEPl9Av8V67c0";
+        const serviceCost = Utils.BigNumber.ZERO;
+        const didType = DIDTypes.ORGANIZATION;
+
+        const rewards: IUnsRewards = getRewardsFromDidType(didType);
+        const fee = rewards.forger;
+
+        const properties = {
+            type: didType.toString(),
+            UnikVoucherId: voucherId,
+            [LIFE_CYCLE_PROPERTY_KEY]: LifeCycleGrades.MINTED.toString(),
+        };
+        const transaction = NFTTransactionFactory.nftCertifiedMint(
+            tokenId,
+            passphrase,
+            Fixtures.issUnikId,
+            Fixtures.issPassphrase,
+            properties,
+            serviceCost,
+            fee,
+        ).createOne();
+
+        const delegate = new Delegate("delegate passphrase", Networks.dalinet.network);
+
+        const block = delegate.forge([transaction], optionsDefault);
+
+        await database.connection.saveBlock(block);
+
+        await stateBuilder.run();
+
+        // check sender balance
+        expect(+senderWallet.balance).toEqual(rewards.sender);
+
+        // check foundation balance
+        const foundationWallet = getFoundationWallet(walletManager);
+        expect(+foundationWallet.balance).toStrictEqual(rewards.foundation);
 
         expect(Object.keys(senderWallet.getAttribute("tokens")).includes(tokenId)).toBeTrue();
     });

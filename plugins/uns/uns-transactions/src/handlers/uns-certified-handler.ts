@@ -1,11 +1,14 @@
 import { Database, State } from "@arkecosystem/core-interfaces";
-import { Identities, Interfaces } from "@arkecosystem/crypto";
+import { Identities, Interfaces, Utils } from "@arkecosystem/crypto";
 import {
+    DIDTypes,
+    getRewardsFromDidType,
     INftDemand,
     INftMintDemand,
     INftMintDemandCertificationPayload,
     IPayloadHashBuffer,
     IPayloadSigner,
+    IUnsRewards,
     unsCrypto,
 } from "@uns/crypto";
 import {
@@ -15,9 +18,20 @@ import {
     NftCertificationBadSignatureError,
     NftTransactionParametersError,
 } from "../errors";
-import { checkAndGetPublicKey } from "./utils/helpers";
+import { checkAndGetPublicKey, getFoundationWallet } from "./utils/helpers";
 
 export abstract class CertifiedTransactionHandler {
+    public applyRewardsToFoundation(walletManager: State.IWalletManager, didType: DIDTypes, height?: number): void {
+        const rewards: IUnsRewards = getRewardsFromDidType(didType, height);
+        const foundationWallet = getFoundationWallet(walletManager);
+        foundationWallet.balance = foundationWallet.balance.plus(Utils.BigNumber.make(rewards.foundation));
+    }
+
+    public revertRewardsForFoundation(walletManager: State.IWalletManager, didType: DIDTypes): void {
+        const rewards: IUnsRewards = getRewardsFromDidType(didType);
+        const foundationWallet = getFoundationWallet(walletManager);
+        foundationWallet.balance = foundationWallet.balance.minus(Utils.BigNumber.make(rewards.foundation));
+    }
     protected abstract getPayloadSigner(payload: INftMintDemandCertificationPayload): IPayloadSigner;
     protected abstract getPayloadHashBuffer(demand: INftDemand): IPayloadHashBuffer;
 

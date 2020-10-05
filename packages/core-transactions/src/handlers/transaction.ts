@@ -71,7 +71,7 @@ export abstract class TransactionHandler implements ITransactionHandler {
         sender.verifyTransactionNonceApply(transaction);
 
         if (
-            this.checkEmptyBalance(transaction) &&
+            this.checkEmptyBalance(transaction, sender) &&
             sender.balance
                 .minus(data.amount)
                 .minus(data.fee)
@@ -142,7 +142,7 @@ export abstract class TransactionHandler implements ITransactionHandler {
         walletManager: State.IWalletManager,
     ): Promise<void> {
         if (
-            this.checkEmptyBalance(transaction) &&
+            this.checkEmptyBalance(transaction, sender) &&
             !walletManager.hasByPublicKey(sender.publicKey) &&
             walletManager.findByAddress(sender.address).balance.isZero()
         ) {
@@ -278,7 +278,7 @@ export abstract class TransactionHandler implements ITransactionHandler {
         return isEnabled === undefined ? true : isEnabled;
     }
 
-    protected checkEmptyBalance(_: Interfaces.ITransaction): boolean {
+    protected checkEmptyBalance(_: Interfaces.ITransaction, senderWallet: State.IWallet): boolean {
         return true;
     }
 }

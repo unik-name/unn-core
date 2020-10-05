@@ -131,3 +131,15 @@ export class VoteUnikTypeError extends Errors.TransactionError {
         );
     }
 }
+
+export class NoPropertiesError extends Errors.TransactionError {
+    constructor(transactionId: string, tokenId: string) {
+        super(`Failed to apply transaction ${transactionId}: Unable to retrieve properties of token ${tokenId}`);
+    }
+}
+
+export class WrongServiceCostError extends Errors.TransactionError {
+    constructor(transactionId: string) {
+        super(`Failed to apply transaction ${transactionId}: amount does not match required service cost`);
+    }
+}

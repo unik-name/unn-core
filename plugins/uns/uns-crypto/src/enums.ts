@@ -18,3 +18,15 @@ export const UnsTransactionStaticFees = {
     UnsVoucherNftMint: 100000000,
     UnsVote: 100000000,
 };
+
+// Uns system properties
+
+/* LifeCycle */
+export const LIFE_CYCLE_PROPERTY_KEY = "LifeCycle/Status";
+export enum LifeCycleGrades {
+    ISSUED = 1,
+    MINTED = 2,
+    LIVE = 3,
+    ABORTED = 4,
+    EVERLASTING = 100,
+}

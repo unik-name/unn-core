@@ -1,7 +1,7 @@
 import { app } from "@arkecosystem/core-container";
 import { Database, State } from "@arkecosystem/core-interfaces";
 import { Crypto, Enums, Identities, Interfaces, Managers, Utils } from "@arkecosystem/crypto";
-import { UnsTransactionGroup, UnsTransactionType } from "@uns/crypto";
+import { LIFE_CYCLE_PROPERTY_KEY, LifeCycleGrades, UnsTransactionGroup, UnsTransactionType } from "@uns/crypto";
 
 import dayjs from "dayjs";
 import partition from "lodash.partition";
@@ -128,13 +128,32 @@ export class TransactionsRepository extends Repository implements Database.ITran
                     const foundationPubKey = Managers.configManager.get("network.foundation.publicKey");
                     // Special handler for UNS Foundation wallet
                     if (foundationPubKey && walletAddress === Identities.Address.fromPublicKey(foundationPubKey)) {
-                        // Find voucher nft mints
-                        condition = condition.or(
-                            this.query.type
-                                .equals(UnsTransactionType.UnsCertifiedNftMint)
-                                .and(this.query.type_group.equals(UnsTransactionGroup))
-                                .and(this.query.asset.path("{nft,unik,properties,UnikVoucherId}").isNotNull()),
-                        );
+                        const liveDemandAsset = {
+                            nft: {
+                                unik: {
+                                    properties: {
+                                        [LIFE_CYCLE_PROPERTY_KEY]: LifeCycleGrades.LIVE.toString(),
+                                    },
+                                },
+                            },
+                        };
+
+                        condition = condition
+                            .or(
+                                // Find voucher nft mints.
+                                this.query.type
+                                    .equals(UnsTransactionType.UnsCertifiedNftMint)
+                                    .and(this.query.type_group.equals(UnsTransactionGroup))
+                                    .and(this.query.asset.path("{nft,unik,properties,UnikVoucherId}").isNotNull())
+                                    .and(this.query.asset.contains(liveDemandAsset)),
+                            )
+                            .or(
+                                // Find Alive demands
+                                this.query.type
+                                    .equals(UnsTransactionType.UnsCertifiedNftUpdate)
+                                    .and(this.query.type_group.equals(UnsTransactionGroup))
+                                    .and(this.query.asset.contains(liveDemandAsset)),
+                            );
                     }
 
                     query[useWhere ? "where" : "and"](condition);

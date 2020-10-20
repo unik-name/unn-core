@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+-   remove useless long dependency in certified cost serializer ([#3062])
 -   fix bootstrap for nft update ([#2987])
 -   foundation rewards in blocks api ([#2981])
 

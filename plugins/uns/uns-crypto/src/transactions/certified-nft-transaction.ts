@@ -1,6 +1,5 @@
 import { Identities, Interfaces, Utils } from "@arkecosystem/crypto";
 import ByteBuffer from "bytebuffer";
-import Long from "long";
 
 import {
     ICertifiedDemand,
@@ -16,12 +15,13 @@ interface ICertifiedTransactionPayloadSerializable {
 
 export abstract class CertifiedNftTransaction implements ICertifiedTransactionPayloadSerializable {
     public static serializeCertificationPayload(payload: INftMintDemandCertificationPayload): ByteBuffer {
-        const payloadBufferSize: number = 32 /*iss*/ + 32 /*sub*/ + 8 /*iat*/;
+        const payloadBufferSize: number = 32 /*iss*/ + 32 /*sub*/ + 8 /*iat*/ + 8 /*cost*/;
         const buffer = new ByteBuffer(payloadBufferSize, true);
         buffer.append(payload.sub, "hex");
         buffer.append(payload.iss, "hex");
         buffer.writeUint64(payload.iat);
-        buffer.writeUint64(Long.fromString(payload.cost.toString()));
+        // @ts-ignore - The ByteBuffer types say we can't use strings but the code actually handles them.
+        buffer.writeUint64(payload.cost.toString());
         return buffer;
     }
 
@@ -78,7 +78,7 @@ export abstract class CertifiedNftTransaction implements ICertifiedTransactionPa
         this.deserializeDemand(buf);
         this.deserializeCertification(buf);
 
-        // Recipient (forger factory)
+        // Recipient (forge factory)
         this.data.recipientId = Identities.Address.fromBuffer(buf.readBytes(21).toBuffer());
     }
 

@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 -   add alive demand transactions in foundation wallet's transaction route ([#3056])
 
+### Fixed
+
+-   nft last transaction query ([#3049])
+
 ## [5.4.2] - 2020-09-24
 
 ### Added

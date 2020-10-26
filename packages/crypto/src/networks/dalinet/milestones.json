@@ -127,7 +127,7 @@
         "unsTokenEcoV2": true,
         "fees": {
             "staticFees": {
-                "unsCertifiedNftUpdate": 100000000
+                "UnsCertifiedNftUpdate": 100000000
             }
         }
     }

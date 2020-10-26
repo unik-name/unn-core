@@ -8,7 +8,7 @@ WHERE
     )
     OR
     (
-        type = 3
+        type IN (3,4)
         AND transactions.type_group = 2001
     )
 )

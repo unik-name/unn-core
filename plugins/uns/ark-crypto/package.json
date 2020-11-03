@@ -16,9 +16,12 @@
     ],
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
+    "module": "dist/esm/index.js",
+    "sideEffects": false,
     "scripts": {
         "build": "yarn clean && tsc",
-        "build:rollup": "yarn clean && tsc && rollup -c",
+        "build:module": "tsc -p esm-tsconfig.json",
+        "build:rollup": "yarn clean && tsc && yarn build:module && rollup -c",
         "build:watch": "yarn clean && yarn compile -w",
         "clean": "del dist",
         "compile": "../../../node_modules/typescript/bin/tsc",

@@ -21,11 +21,11 @@
     "scripts": {
         "build": "yarn clean && tsc",
         "build:module": "tsc -p esm-tsconfig.json",
-        "build:rollup": "yarn clean && tsc && yarn build:module && rollup -c",
+        "build:rollup": "yarn clean && tsc && rollup -c",
         "build:watch": "yarn clean && yarn compile -w",
         "clean": "del dist",
         "compile": "../../../node_modules/typescript/bin/tsc",
-        "prepublishOnly": "yarn build:rollup"
+        "prepublishOnly": "yarn build && yarn build:module"
     },
     "dependencies": {
         "@arkecosystem/utils": "^1.1",

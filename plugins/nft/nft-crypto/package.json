@@ -11,14 +11,17 @@
     ],
     "main": "dist/index",
     "types": "dist/index",
+    "module": "dist/esm/index.js",
+    "sideEffects": false,
     "scripts": {
         "build": "yarn clean && yarn compile",
+        "build:module": "tsc -p esm-tsconfig.json",
         "build:watch": "yarn clean && yarn compile -w",
         "clean": "del dist",
         "compile": "../../../node_modules/typescript/bin/tsc",
         "restore_backup": "mv package.json.back package.json",
         "uns_rebrand": "../../../scripts/uns_publish_rebrand.sh $PWD",
-        "prepublishOnly": "yarn build && yarn uns_rebrand",
+        "prepublishOnly": "yarn build && yarn build:module && yarn uns_rebrand",
         "postpublish": "yarn restore_backup"
     },
     "dependencies": {

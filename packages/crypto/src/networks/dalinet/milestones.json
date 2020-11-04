@@ -133,6 +133,9 @@
     },
     {
         "height": 1529215,
+        "p2p": {
+            "minimumVersions": ["^5.5.1 || ^5.5.1-dev"]
+        },
         "voterMaximumWeight": {
             "individual": 1000000000000
         }

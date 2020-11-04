@@ -103,6 +103,9 @@
     },
     {
         "height": 1567130,
+        "p2p": {
+            "minimumVersions": ["^5.5.1 || ^5.5.1-dev"]
+        },
         "unsTokenEcoV2": true,
         "fees": {
             "staticFees": {

@@ -422,24 +422,31 @@ export class WalletManager implements State.IWalletManager {
     }
 
     public delegateWeightedBalance(delegate: State.IWallet): Utils.BigNumber {
-        let weightedBalance: Utils.BigNumber = delegate.getAttribute("delegate.voteBalance");
-        const voterWeight = Managers.configManager.getMilestone()?.voterMaximumWeight;
-        if (voterWeight) {
+        let cappedBalance = Utils.BigNumber.ZERO;
+        const voteBalance = delegate.getAttribute("delegate.voteBalance");
+        const cappedVotesMilestone = Managers.configManager.getMilestone()?.voterMaximumWeight;
+        if (cappedVotesMilestone) {
             if (delegate.getAttribute<number>("delegate.type") === DIDTypes.INDIVIDUAL) {
                 const voters = this.allByAddress().filter(
                     wallet => wallet.getAttribute<string>("vote", "") === delegate.publicKey,
                 );
                 for (const voter of voters) {
-                    const maxVotes = Utils.BigNumber.make(voterWeight.individual);
+                    const maxVotes = Utils.BigNumber.make(cappedVotesMilestone.individual);
                     const diff = voter.balance.comparedTo(maxVotes);
                     if (diff > 0) {
-                        weightedBalance = maxVotes;
+                        cappedBalance = cappedBalance.plus(maxVotes);
+                    } else {
+                        cappedBalance = cappedBalance.plus(voter.balance);
                     }
                 }
+
+                delegate.setAttribute("delegate.weightedVoteBalance", cappedBalance);
+                return cappedBalance;
+            } else {
+                delegate.setAttribute("delegate.weightedVoteBalance", voteBalance);
             }
-            delegate.setAttribute("delegate.weightedVoteBalance", weightedBalance);
         }
-        return weightedBalance;
+        return voteBalance;
     }
 
     public buildDelegateRanking(roundInfo?: Shared.IRoundInfo): State.IWallet[] {

@@ -23,5 +23,17 @@ RUN rm -rf /opt/uns/packages/*/src
 RUN chown -R node:node /opt/uns/uns-init.sh /opt/uns/packages/core/bin/
 RUN ln -s /opt/uns/packages/core/bin/run /usr/bin/uns
 
+ARG BUILD_DATE
+ARG VCS_REF
+ARG VERSION
+
+LABEL org.label-schema.schema-version="1.0" \
+    org.label-schema.name="UNS Core" \
+    org.label-schema.vendor="Unikname" \
+    org.label-schema.url="https://uns.network" \
+    org.label-schema.vcs-ref=$VCS_REF \
+    org.label-schema.build-date=$BUILD_DATE\
+    org.label-schema.version=$VERSION
+
 USER node
 CMD [ "/opt/uns/uns-init.sh" ]

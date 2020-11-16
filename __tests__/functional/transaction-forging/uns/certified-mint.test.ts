@@ -14,8 +14,16 @@ beforeAll(async () => {
 });
 afterAll(support.tearDown);
 
+const getUnikNumber = async () => {
+    const response = await utils.request("GET", "nfts/status");
+    expect(response).toBeSuccessfulResponse();
+    return response.data.data[0];
+};
+
 describe("Uns certified mint", () => {
     it("nft certified mint", async () => {
+        const nbUniks = parseInt((await getUnikNumber()).individual);
+
         const tokenId = NftSupport.generateNftId();
         const properties = {
             type: "1",
@@ -35,6 +43,7 @@ describe("Uns certified mint", () => {
 
         await expect(trx.id).toBeForged();
         await expect({ tokenId, properties }).toMatchProperties();
+        expect((await getUnikNumber()).individual).toEqual((nbUniks + 1).toString());
     });
 
     it("nft certified mint with voucher", async () => {

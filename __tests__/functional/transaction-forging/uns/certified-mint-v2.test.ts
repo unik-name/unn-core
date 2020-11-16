@@ -19,7 +19,7 @@ beforeAll(async () => {
     // force v2 token Eco
     Managers.configManager.getMilestone().unsTokenEcoV2 = true;
 });
-afterAll(support.tearDown);
+afterAll(async () => support.tearDown());
 
 describe("Uns certified mint", () => {
     it("certified mint paid with UNS", async () => {

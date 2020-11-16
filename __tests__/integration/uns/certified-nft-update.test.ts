@@ -1,30 +1,30 @@
+import { app } from "@arkecosystem/core-container";
 import { StateBuilder } from "@arkecosystem/core-database-postgres/src";
 import { Delegate } from "@arkecosystem/core-forger/src/delegate";
-import { Container, Database, State } from "@arkecosystem/core-interfaces";
+import { Database, State } from "@arkecosystem/core-interfaces";
 import { Wallets } from "@arkecosystem/core-state";
 import { WalletManager } from "@arkecosystem/core-state/src/wallets";
 import { Identities, Managers, Networks, Utils } from "@arkecosystem/crypto";
 import { DIDTypes, getRewardsFromDidType, LIFE_CYCLE_PROPERTY_KEY, LifeCycleGrades } from "@uns/crypto";
 import { getFoundationWallet } from "@uns/uns-transactions/src/handlers/utils/helpers";
+import * as support from "../../functional/transaction-forging/__support__";
 import * as NftSupport from "../../functional/transaction-forging/__support__/nft";
 import { NFTTransactionFactory } from "../../helpers/nft-transaction-factory";
 import * as Fixtures from "../../unit/uns-crypto/__fixtures__/index";
 import genesisBlock from "../../utils/config/dalinet/genesisBlock.json";
-import { tearDown } from "../core-transactions/__support__/setup";
 
-let container: Container.IContainer;
 let walletManager: WalletManager;
 let database: Database.IDatabaseService;
 let stateBuilder: StateBuilder;
 
 beforeAll(async () => {
-    container = await NftSupport.setUp();
+    await NftSupport.setUp({ disableP2P: true });
     walletManager = new WalletManager();
-    database = container.resolvePlugin<Database.IDatabaseService>("database");
+    database = app.resolvePlugin<Database.IDatabaseService>("database");
     stateBuilder = new StateBuilder(database.connection, walletManager);
 });
 
-afterAll(tearDown);
+afterAll(async () => support.tearDown());
 
 describe("certifiedNftupdate handler tests", () => {
     const optionsDefault = {
@@ -157,7 +157,7 @@ describe("certifiedNftupdate handler tests", () => {
             serviceCost,
             fee,
         ).build()[0];
-        console.log(foundationWallet);
+
         const delegate = new Delegate("delegate passphrase", Networks.dalinet.network);
         const block = delegate.forge([transaction.data], optionsDefault);
         await database.connection.saveBlock(block);

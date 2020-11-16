@@ -1,19 +1,12 @@
-import { app } from "@arkecosystem/core-container";
-import { Database } from "@arkecosystem/core-interfaces";
 import * as support from "../../../../functional/transaction-forging/__support__";
 import * as NftSupport from "../../../../functional/transaction-forging/__support__/nft";
 import { utils } from "../../../core-api/utils";
 
-beforeAll(NftSupport.setUp);
-afterAll(support.tearDown);
+beforeAll(async () => NftSupport.setUp());
+afterAll(async () => support.tearDown());
 
 describe("API 2.0 - NFTS", () => {
     describe("GET /nfts/status", () => {
-        beforeEach(async () => {
-            const database = app.resolvePlugin<Database.IDatabaseService>("database");
-            await database.reset();
-        });
-
         it("should GET the empty nfts UNIK tokens status", async () => {
             const response = await utils.request("GET", "nfts/status");
             expect(response).toBeSuccessfulResponse();

@@ -21,7 +21,7 @@ beforeAll(async () => {
     // force v2 token Eco
     Managers.configManager.getMilestone().unsTokenEcoV2 = true;
 });
-afterAll(support.tearDown);
+afterAll(async () => support.tearDown());
 
 describe("Uns certified update", () => {
     it("mint individual unik and claim alive status", async () => {

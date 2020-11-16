@@ -12,7 +12,7 @@ beforeAll(async () => {
 
     await UnsSupport.setupForgeFactory();
 });
-afterAll(support.tearDown);
+afterAll(async () => support.tearDown());
 
 const getUnikNumber = async () => {
     const response = await utils.request("GET", "nfts/status");

@@ -14,7 +14,7 @@ beforeAll(async () => {
     await UnsSupport.setupForgeFactory();
     walletManager = app.resolvePlugin<Database.IDatabaseService>("database").walletManager;
 });
-afterAll(support.tearDown);
+afterAll(async () => support.tearDown());
 
 describe("Uns certified update", () => {
     it("mint nft and verify url", async () => {

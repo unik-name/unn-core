@@ -1,8 +1,8 @@
 import * as support from "./__support__";
 import * as NftSupport from "./__support__/nft";
 
-beforeAll(NftSupport.setUp);
-afterAll(support.tearDown);
+beforeAll(async () => NftSupport.setUp());
+afterAll(async () => support.tearDown());
 
 describe("Transaction Nft", () => {
     it("should mint new unik token with genesis property", async () => {

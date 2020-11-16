@@ -3,8 +3,8 @@ import * as support from "../__support__";
 import * as NftSupport from "../__support__/nft";
 import * as UnsSupport from "../__support__/uns";
 
-beforeAll(NftSupport.setUp);
-afterAll(support.tearDown);
+beforeAll(async () => NftSupport.setUp());
+afterAll(async () => support.tearDown());
 
 describe("disclose transaction Nft ", () => {
     let discloseDemand;

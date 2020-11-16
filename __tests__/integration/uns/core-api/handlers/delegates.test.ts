@@ -1,22 +1,22 @@
 import { app } from "@arkecosystem/core-container";
 import { State } from "@arkecosystem/core-interfaces";
 import { Managers } from "@arkecosystem/crypto";
+import * as support from "../../../../functional/transaction-forging/__support__";
 import * as NftSupport from "../../../../functional/transaction-forging/__support__/nft";
 import { buildDelegatePool } from "../../../../unit/uns-crypto/helpers";
-import { tearDown } from "../../../core-api/__support__/setup";
 import { utils } from "../../../core-api/utils";
 
 let wm: State.IWalletManager;
 
 beforeAll(async () => {
-    await NftSupport.setUp();
+    await NftSupport.setUp({ disableP2P: true });
     wm = app.resolvePlugin("database").walletManager;
     buildDelegatePool(wm, 10);
     const height = Managers.configManager.getMilestones().find(milestone => !!milestone.nbDelegatesByType).height;
     Managers.configManager.setHeight(height);
 });
 
-afterAll(tearDown);
+afterAll(async () => support.tearDown());
 
 describe("API 2.0 - Delegates", () => {
     describe("GET /delegates", () => {

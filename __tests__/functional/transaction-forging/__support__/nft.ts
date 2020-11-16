@@ -28,8 +28,12 @@ export const genesisPassphrase: string =
     "enrich account dirt wedding noise acquire pipe rescue link quality laugh rough";
 export const defaultPassphrase: string = genesisPassphrase;
 
-export const setUp = async (): Promise<Container.IContainer> => {
+export const setUp = async (options?: any): Promise<Container.IContainer> => {
     process.env.CORE_P2P_PORT = "4002";
+    if (options?.disableP2P) {
+        process.env.DISABLE_P2P_SERVER = options.disableP2P;
+    }
+
     Managers.configManager.setFromPreset(network);
 
     // tslint:disable-next-line

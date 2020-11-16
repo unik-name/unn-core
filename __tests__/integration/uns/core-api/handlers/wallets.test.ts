@@ -19,12 +19,12 @@ let walletManager;
 let database: Database.IDatabaseService;
 
 beforeAll(async () => {
-    await NftSupport.setUp();
+    await NftSupport.setUp({ disableP2P: true });
     database = app.resolvePlugin("database");
     walletManager = new WalletManager();
     stateBuilder = new StateBuilder(database.connection, walletManager);
 });
-afterAll(support.tearDown);
+afterAll(async () => support.tearDown());
 
 describe("GET /wallets/:id/transactions", () => {
     it("should GET all the transactions containing rewards for the foundation Wallet", async () => {

@@ -1,16 +1,16 @@
+import { app } from "@arkecosystem/core-container";
 import { StateBuilder } from "@arkecosystem/core-database-postgres/src";
 import { Delegate } from "@arkecosystem/core-forger/src/delegate";
-import { Container, Database } from "@arkecosystem/core-interfaces";
+import { Database } from "@arkecosystem/core-interfaces";
 import { Wallets } from "@arkecosystem/core-state";
 import { WalletManager } from "@arkecosystem/core-state/src/wallets";
 import { Constants, Identities, Managers, Networks, Utils } from "@arkecosystem/crypto";
 import { UNSDelegateRegisterBuilder } from "@uns/crypto";
+import * as support from "../../functional/transaction-forging/__support__";
 import * as NftSupport from "../../functional/transaction-forging/__support__/nft";
 import { TransactionFactory } from "../../helpers";
 import genesisBlock from "../../utils/config/dalinet/genesisBlock.json";
-import { tearDown } from "../core-transactions/__support__/setup";
 
-let container: Container.IContainer;
 let walletManager: WalletManager;
 let database: Database.IDatabaseService;
 let stateBuilder: StateBuilder;
@@ -18,18 +18,15 @@ const tokenId = NftSupport.generateNftId();
 const { SATOSHI } = Constants;
 
 beforeAll(async () => {
-    container = await NftSupport.setUp();
+    await NftSupport.setUp({ disableP2P: true });
     walletManager = new WalletManager();
-    database = container.resolvePlugin<Database.IDatabaseService>("database");
+    database = app.resolvePlugin<Database.IDatabaseService>("database");
     stateBuilder = new StateBuilder(database.connection, walletManager);
     const height = Managers.configManager.getMilestones().find(milestone => !!milestone.nbDelegatesByType).height;
     Managers.configManager.setHeight(height);
 });
 
-afterAll(async () => {
-    await database.reset();
-    await tearDown();
-});
+afterAll(async () => support.tearDown());
 
 describe("unsDelegateRegister handler tests", () => {
     const optionsDefault = {

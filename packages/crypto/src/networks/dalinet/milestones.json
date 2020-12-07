@@ -139,5 +139,14 @@
         "voterMaximumWeight": {
             "individual": 1000000000000
         }
+    },
+    {
+        "height": 1667920,
+        "activeDelegates": 6,
+        "nbDelegatesByType": {
+            "individual": 3,
+            "organization": 2,
+            "network": 1
+        }
     }
 ]

@@ -6,10 +6,10 @@ import { Handlers } from "@arkecosystem/core-transactions";
 import { Identities, Managers, Utils } from "@arkecosystem/crypto";
 import { CertifiedNftUpdateTransactionHandler } from "@uns/uns-transactions";
 import * as Fixtures from "../__fixtures__";
-import { nftRepository } from "@uns/core-nft";
 import { LIFE_CYCLE_PROPERTY_KEY, LifeCycleGrades, getRewardsFromDidType, DIDTypes, IUnsRewards } from "@uns/crypto";
 import { NFTTransactionFactory } from "../../../helpers/nft-transaction-factory";
 import { generateNftId } from "../../../functional/transaction-forging/__support__/nft";
+import * as transactionHelpers from "@uns/uns-transactions/dist/handlers/utils/helpers";
 
 let handler;
 let transaction;
@@ -44,11 +44,6 @@ describe("CertifiedNtfUpdate Transaction", () => {
         forgeFactoryWallet.publicKey = issuerPubKey;
         walletManager.reindex(forgeFactoryWallet);
 
-        jest.spyOn(nftRepository(), "findById").mockResolvedValue({
-            tokenId: Fixtures.issUnikId,
-            ownerId: Fixtures.issuerAddress,
-        });
-
         const properties = {
             [LIFE_CYCLE_PROPERTY_KEY]: LifeCycleGrades.LIVE.toString(),
         };
@@ -73,12 +68,14 @@ describe("CertifiedNtfUpdate Transaction", () => {
 
     describe("throwIfCannotBeApplied", () => {
         it("should not throw for alive demand", async () => {
+            jest.spyOn(transactionHelpers, "getUnikOwner").mockResolvedValueOnce(Fixtures.issKeys.publicKey);
             await expect(handler.throwIfCannotBeApplied(transaction, senderWallet, walletManager)).toResolve();
         });
     });
 
     describe("apply", () => {
         it("should apply service costs", async () => {
+            jest.spyOn(transactionHelpers, "getUnikOwner").mockResolvedValueOnce(Fixtures.issKeys.publicKey);
             await expect(handler.apply(transaction, walletManager)).toResolve();
             expect(forgeFactoryWallet.balance).toStrictEqual(transaction.data.amount);
             expect(senderWallet.balance.toString()).toEqual(rewards.sender.toString());

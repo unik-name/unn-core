@@ -10,8 +10,7 @@ import * as Fixtures from "../__fixtures__";
 import { Wallets } from "@arkecosystem/core-state";
 import { Handlers } from "@arkecosystem/core-transactions";
 import { IWallet } from "@arkecosystem/core-interfaces/dist/core-state";
-import { INftAsset } from "@uns/core-nft-crypto/dist/interfaces";
-import { nftRepository } from "@uns/core-nft";
+import * as transactionHelpers from "@uns/uns-transactions/dist/handlers/utils/helpers";
 
 let transaction;
 let handler: DiscloseExplicitTransactionHandler;
@@ -80,20 +79,18 @@ describe("UnsDiscloseExplicit Transaction", () => {
             }
         });
 
-        jest.spyOn(nftRepository(), "findById").mockImplementation(
-            (tokenId): Promise<INftAsset> => {
-                let ownerId;
+        jest.spyOn(transactionHelpers, "getUnikOwner").mockImplementation(
+            (tokenId): Promise<string> => {
+                let ownerPubKey;
                 switch (tokenId) {
                     case ISS_UNIK_ID:
-                        ownerId = issuerAddress;
+                        ownerPubKey = issuerPubKey;
                         break;
                     case TOKEN_ID:
-                        ownerId = demanderAddress;
+                        ownerPubKey = demanderPubKey;
                         break;
-                    default:
-                        return undefined;
                 }
-                return Promise.resolve({ tokenId, ownerId });
+                return Promise.resolve(ownerPubKey);
             },
         );
         // Allow ISS_UNIK_ID to forge unikname

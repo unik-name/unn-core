@@ -20,7 +20,7 @@ export interface INftsRepository extends Database.IRepository {
     findTransactionsByAsset(
         asset: any,
         types: number[],
-        typeGroup: number,
+        typeGroups: number[],
         order?: string,
     ): Promise<Interfaces.ITransactionData[]>;
 }

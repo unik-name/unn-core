@@ -9,6 +9,7 @@ import * as Fixtures from "../__fixtures__";
 import { nftRepository } from "@uns/core-nft";
 import { UNSCertifiedNftMintBuilder, getMintVoucherRewards } from "@uns/crypto";
 import { buildCertifiedDemand } from "../helpers";
+import * as transactionHelpers from "@uns/uns-transactions/dist/handlers/utils/helpers";
 
 let handler;
 let builder;
@@ -62,10 +63,7 @@ describe("CertifiedNtfMint Transaction", () => {
 
     describe("throwIfCannotBeApplied", () => {
         beforeEach(() => {
-            jest.spyOn(nftRepository(), "findById").mockResolvedValue({
-                tokenId: Fixtures.issUnikId,
-                ownerId: Fixtures.issuerAddress,
-            });
+            jest.spyOn(transactionHelpers, "getUnikOwner").mockResolvedValueOnce(forgeFactoryWallet.publicKey);
         });
 
         it("should not throw with voucher", async () => {
@@ -119,6 +117,8 @@ describe("CertifiedNtfMint Transaction", () => {
 
         describe("apply", () => {
             it("should apply voucher token eco", async () => {
+                jest.spyOn(transactionHelpers, "getUnikOwner").mockResolvedValueOnce(forgeFactoryWallet.publicKey);
+
                 const transaction = builder.build();
                 await expect(handler.apply(transaction, walletManager)).toResolve();
                 const rewards = getMintVoucherRewards(transaction.data.asset);

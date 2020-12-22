@@ -18,7 +18,7 @@ import {
     NftCertificationBadSignatureError,
     NftTransactionParametersError,
 } from "../errors";
-import { checkAndGetPublicKey, getFoundationWallet } from "./utils/helpers";
+import { getFoundationWallet, getUnikOwner } from "./utils/helpers";
 
 export abstract class CertifiedTransactionHandler {
     public applyRewardsToFoundation(walletManager: State.IWalletManager, didType: DIDTypes, height?: number): void {
@@ -37,7 +37,7 @@ export abstract class CertifiedTransactionHandler {
 
     protected async throwIfCannotBeCertified(
         transaction: Interfaces.ITransaction,
-        walletManager: State.IWalletManager,
+        _: State.IWalletManager,
     ): Promise<void> {
         const certification = transaction.data.asset.certification;
 
@@ -51,7 +51,7 @@ export abstract class CertifiedTransactionHandler {
         // ISSUER FOR CERTIFICATION (FORGE FACTORY)
         let issuerPublicKey: string;
         try {
-            issuerPublicKey = await checkAndGetPublicKey(certification.payload.iss, walletManager);
+            issuerPublicKey = await getUnikOwner(certification.payload.iss);
         } catch (error) {
             throw new IssuerNotFound(transaction.id, error.message);
         }

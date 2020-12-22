@@ -6,10 +6,10 @@ import { Handlers } from "@arkecosystem/core-transactions";
 import { Managers, Utils, Identities } from "@arkecosystem/crypto";
 import { CertifiedNftUpdateTransactionHandler } from "@uns/uns-transactions";
 import * as Fixtures from "../__fixtures__";
-import { nftRepository } from "@uns/core-nft";
 import { NFTTransactionFactory } from "../../../helpers/nft-transaction-factory";
 import { generateNftId } from "../../../functional/transaction-forging/__support__/nft";
 import { CertifiedNftUpdateTransaction } from "@uns/crypto";
+import * as transactionHelpers from "@uns/uns-transactions/dist/handlers/utils/helpers";
 
 let handler;
 let transaction;
@@ -26,6 +26,8 @@ describe("CertifiedNtfUpdate Transaction", () => {
 
     Handlers.Registry.registerTransactionHandler(CertifiedNftUpdateTransactionHandler);
 
+    const getOwnerMock = jest.spyOn(transactionHelpers, "getUnikOwner");
+
     beforeEach(() => {
         handler = new CertifiedNftUpdateTransactionHandler();
         walletManager = new Wallets.WalletManager();
@@ -41,11 +43,6 @@ describe("CertifiedNtfUpdate Transaction", () => {
         forgeFactoryWallet = new Wallets.Wallet(Fixtures.issuerAddress);
         forgeFactoryWallet.publicKey = issuerPubKey;
         walletManager.reindex(forgeFactoryWallet);
-
-        jest.spyOn(nftRepository(), "findById").mockResolvedValue({
-            tokenId: Fixtures.issUnikId,
-            ownerId: Fixtures.issuerAddress,
-        });
 
         const properties = {
             myProperty: "OhMyProperty",
@@ -66,6 +63,7 @@ describe("CertifiedNtfUpdate Transaction", () => {
 
     describe("throwIfCannotBeApplied", () => {
         it("should not throw ", async () => {
+            getOwnerMock.mockResolvedValueOnce(forgeFactoryWallet.publicKey);
             await expect(handler.throwIfCannotBeApplied(transaction, senderWallet, walletManager)).toResolve();
         });
 
@@ -84,6 +82,7 @@ describe("CertifiedNtfUpdate Transaction", () => {
                 properties,
                 serviceCost,
             ).build()[0];
+            getOwnerMock.mockResolvedValueOnce(forgeFactoryWallet.publicKey);
             await expect(handler.throwIfCannotBeApplied(transaction, senderWallet, walletManager)).toResolve();
         });
 
@@ -102,10 +101,7 @@ describe("CertifiedNtfUpdate Transaction", () => {
             // Allow Url checker to milestone whitelist
             Managers.configManager.getMilestone().urlCheckers.push(urlCheckerUnikId);
 
-            jest.spyOn(nftRepository(), "findById").mockResolvedValueOnce({
-                tokenId: urlCheckerUnikId,
-                ownerId: Identities.Address.fromPassphrase(urlCheckerPassphrase),
-            });
+            getOwnerMock.mockResolvedValueOnce(urlCheckerWallet.publicKey);
 
             const properties = {
                 "Verified/URL/MyUrl": "https://www.toto.lol",
@@ -127,6 +123,7 @@ describe("CertifiedNtfUpdate Transaction", () => {
 
     describe("apply", () => {
         it("should apply service costs", async () => {
+            getOwnerMock.mockResolvedValueOnce(forgeFactoryWallet.publicKey);
             await expect(handler.apply(transaction, walletManager)).toResolve();
             expect(forgeFactoryWallet.balance).toStrictEqual(serviceCost);
             expect(senderWallet.balance).toStrictEqual(Utils.BigNumber.ZERO);

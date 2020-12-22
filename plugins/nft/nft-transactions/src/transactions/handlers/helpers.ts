@@ -2,6 +2,7 @@ import { app } from "@arkecosystem/core-container";
 import { State } from "@arkecosystem/core-interfaces";
 import { Identities, Interfaces } from "@arkecosystem/crypto";
 import { Enums, getCurrentNftAsset, getNftName, Interfaces as NftInterfaces } from "@uns/core-nft-crypto";
+import { UnsTransactionGroup, UnsTransactionType } from "@uns/crypto";
 import { NftPropertyTooLongError } from "../../errors";
 import { INftWalletAttributes } from "../../interfaces";
 import { nftRepository, NftsManager } from "../../manager";
@@ -81,8 +82,13 @@ export const revertProperties = async (transaction: Interfaces.ITransactionData)
     const asset = { nft: { [nftName]: { tokenId } } };
     const transactions = await nftRepository().findTransactionsByAsset(
         asset,
-        [Enums.NftTransactionType.NftMint, transaction.type],
-        transaction.typeGroup,
+        [
+            Enums.NftTransactionType.NftMint,
+            Enums.NftTransactionType.NftUpdate,
+            UnsTransactionType.UnsCertifiedNftMint,
+            UnsTransactionType.UnsCertifiedNftUpdate,
+        ],
+        [transaction.typeGroup, UnsTransactionGroup],
         "desc",
     );
 

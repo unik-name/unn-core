@@ -8,12 +8,11 @@ import { generateNftId } from "../../../functional/transaction-forging/__support
 import { LIFE_CYCLE_PROPERTY_KEY, LifeCycleGrades, DIDTypes, getRewardsFromDidType } from "@uns/crypto";
 import { Handlers } from "@arkecosystem/core-transactions";
 import { CertifiedNftUpdateTransactionHandler } from "@uns/uns-transactions";
+import * as transactionHelpers from "@uns/uns-transactions/dist/handlers/utils/helpers";
 import { State } from "@arkecosystem/core-interfaces";
 import { nftRepository } from "@uns/core-nft";
-// import { app } from "@arkecosystem/core-container";
 
 let walletManager: State.IWalletManager;
-// const nftManager = app.resolvePlugin("core-nft");
 
 describe("Models - Wallet", () => {
     Managers.configManager.setFromPreset("dalinet");
@@ -49,10 +48,7 @@ describe("Models - Wallet", () => {
 
         Managers.configManager.set("network.forgeFactory.unikidWhiteList", [issuerTokenId]);
 
-        jest.spyOn(nftRepository(), "findById").mockResolvedValueOnce({
-            tokenId: issuerTokenId,
-            ownerId: issuerWallet.address,
-        });
+        jest.spyOn(transactionHelpers, "getUnikOwner").mockResolvedValueOnce(issuerWallet.publicKey);
     });
 
     it("should apply certified mint transaction for individual", async () => {

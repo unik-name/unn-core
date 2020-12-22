@@ -6,11 +6,11 @@ import { Handlers } from "@arkecosystem/core-transactions";
 import { Managers, Identities, Utils } from "@arkecosystem/crypto";
 import { CertifiedNftMintTransactionHandler } from "@uns/uns-transactions";
 import * as Fixtures from "../__fixtures__";
-import { nftRepository } from "@uns/core-nft";
 import { generateNftId } from "../../../functional/transaction-forging/__support__/nft";
 import { NFTTransactionFactory } from "../../../helpers/nft-transaction-factory";
 import { DIDTypes, getRewardsFromDidType, IUnsRewards } from "@uns/crypto";
 import { getFoundationWallet } from "@uns/uns-transactions/src/handlers/utils/helpers";
+import * as transactionHelpers from "@uns/uns-transactions/dist/handlers/utils/helpers";
 
 let handler;
 let senderWallet: State.IWallet;
@@ -41,11 +41,6 @@ describe("CertifiedNtfMint Transaction", () => {
         forgeFactoryWallet.publicKey = Identities.PublicKey.fromPassphrase(Fixtures.issPassphrase);
         walletManager.reindex(forgeFactoryWallet);
 
-        jest.spyOn(nftRepository(), "findById").mockResolvedValue({
-            tokenId: Fixtures.issUnikId,
-            ownerId: Identities.Address.fromPassphrase(Fixtures.issPassphrase),
-        });
-
         const properties = {
             type: didType.toString(),
             UnikVoucherId,
@@ -68,6 +63,7 @@ describe("CertifiedNtfMint Transaction", () => {
 
     describe("throwIfCannotBeApplied", () => {
         it("should not throw", async () => {
+            jest.spyOn(transactionHelpers, "getUnikOwner").mockResolvedValueOnce(Fixtures.issKeys.publicKey);
             await expect(handler.throwIfCannotBeApplied(transaction, senderWallet, walletManager)).toResolve();
         });
     });
@@ -80,6 +76,7 @@ describe("CertifiedNtfMint Transaction", () => {
 
     describe("apply", () => {
         it("should apply ", async () => {
+            jest.spyOn(transactionHelpers, "getUnikOwner").mockResolvedValueOnce(Fixtures.issKeys.publicKey);
             await expect(handler.apply(transaction, walletManager)).toResolve();
             expect(+forgeFactoryWallet.balance).toStrictEqual(0);
             expect(+senderWallet.balance).toStrictEqual(rewards.sender);

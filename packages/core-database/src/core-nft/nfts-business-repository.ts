@@ -55,10 +55,10 @@ export class NftsBusinessRepository implements NFT.INftsBusinessRepository {
     public async findTransactionsByAsset(
         asset: any,
         types: number[],
-        typeGroup: number,
+        typeGroups: number[],
         order: string = "asc",
     ): Promise<Interfaces.ITransactionData[]> {
-        return this.connection.db.nfts.findTransactionsByAsset(asset, types, typeGroup, order);
+        return this.connection.db.nfts.findTransactionsByAsset(asset, types, typeGroups, order);
     }
 
     public async getNftTotalRewards(height: number): Promise<Utils.BigNumber> {

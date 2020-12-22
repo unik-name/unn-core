@@ -14,7 +14,7 @@ import {
     DiscloseDemandSubInvalidError,
     IssuerNotFound,
 } from "../errors";
-import { checkAndGetPublicKey, EXPLICIT_PROP_KEY, revertExplicitValue, setExplicitValue } from "./utils/helpers";
+import { EXPLICIT_PROP_KEY, getUnikOwner, revertExplicitValue, setExplicitValue } from "./utils/helpers";
 
 export class DiscloseExplicitTransactionHandler extends Handlers.TransactionHandler {
     private get nftsRepository(): NFT.INftsRepository {
@@ -56,7 +56,7 @@ export class DiscloseExplicitTransactionHandler extends Handlers.TransactionHand
         // ISSUER FOR CERTIFICATION (FORGE FACTORY)
         let forgeFactoryPublicKey: string;
         try {
-            forgeFactoryPublicKey = await checkAndGetPublicKey(discloseDemandCertif.payload.iss, walletManager);
+            forgeFactoryPublicKey = await getUnikOwner(discloseDemandCertif.payload.iss);
         } catch (error) {
             throw new IssuerNotFound(transaction.id, error.message);
         }
@@ -64,7 +64,7 @@ export class DiscloseExplicitTransactionHandler extends Handlers.TransactionHand
         // ISSUER FOR DEMAND (CLIENT)
         let demandPublicKey: string;
         try {
-            demandPublicKey = await checkAndGetPublicKey(discloseDemand.payload.iss, walletManager);
+            demandPublicKey = await getUnikOwner(discloseDemand.payload.iss);
         } catch (error) {
             throw new CertifiedDemandIssuerNotFound(transaction.id, error.message);
         }

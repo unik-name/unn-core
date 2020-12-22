@@ -95,7 +95,7 @@ export class CertifiedNftMintTransactionHandler extends NftMintTransactionHandle
             const transactions = await nftRepository().findTransactionsByAsset(
                 asset,
                 [transaction.type],
-                transaction.typeGroup,
+                [transaction.typeGroup],
             );
             if (transactions?.length) {
                 throw new VoucherAlreadyUsedError(voucherId);

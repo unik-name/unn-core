@@ -9,7 +9,7 @@ import { LIFE_CYCLE_PROPERTY_KEY, LifeCycleGrades, DIDTypes, getRewardsFromDidTy
 import { Handlers } from "@arkecosystem/core-transactions";
 import { CertifiedNftUpdateTransactionHandler } from "@uns/uns-transactions";
 import { State } from "@arkecosystem/core-interfaces";
-import { nftRepository } from "@uns/core-nft";
+import * as transactionHelpers from "@uns/uns-transactions/dist/handlers/utils/helpers";
 
 let walletManager: State.IWalletManager;
 
@@ -46,10 +46,7 @@ describe("Models - Wallet", () => {
 
         Managers.configManager.set("network.forgeFactory.unikidWhiteList", [issuerTokenId]);
 
-        jest.spyOn(nftRepository(), "findById").mockResolvedValueOnce({
-            tokenId: issuerTokenId,
-            ownerId: issuerWallet.address,
-        });
+        jest.spyOn(transactionHelpers, "getUnikOwner").mockResolvedValueOnce(issuerWallet.publicKey);
     });
 
     it("should apply certified mint transaction", async () => {

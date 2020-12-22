@@ -192,13 +192,13 @@ export class NftsRepository extends Repository implements NFT.INftsRepository {
     public async findTransactionsByAsset(
         asset: any,
         types: number[],
-        typeGroup: number,
+        typeGroups: number[],
         order: string = "asc",
     ): Promise<Interfaces.ITransactionData[]> {
         return await this.db.manyOrNone(sql.findTransactionsByAsset, {
             asset: JSON.stringify(asset),
             types,
-            typeGroup,
+            typeGroups,
             order: order.toUpperCase(),
         });
     }

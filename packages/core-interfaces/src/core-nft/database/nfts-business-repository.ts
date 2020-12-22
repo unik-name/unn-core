@@ -11,7 +11,7 @@ export interface INftsBusinessRepository {
     findTransactionsByAsset(
         asset: any,
         types: number[],
-        typeGroup: number,
+        typeGroups: number[],
         order?: string,
     ): Promise<Interfaces.ITransactionData[]>;
     getNftTotalRewards(height: number, nftName?: string): Promise<Utils.BigNumber>;

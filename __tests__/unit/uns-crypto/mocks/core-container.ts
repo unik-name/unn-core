@@ -1,7 +1,12 @@
 import { Wallets } from "@arkecosystem/core-state";
 import { Managers } from "@arkecosystem/crypto";
+import { blockchain } from "../../core-blockchain/mocks/blockchain";
 import { coreNft } from "./core-nft";
 import { nftDatabase } from "./database";
+
+export const blocksBusinessRepository = {
+    findById: jest.fn(),
+};
 
 jest.mock("@arkecosystem/core-container", () => {
     return {
@@ -41,7 +46,11 @@ jest.mock("@arkecosystem/core-container", () => {
                                     ),
                                 ),
                         },
+                        blocksBusinessRepository,
                     };
+                }
+                if (name === "blockchain") {
+                    return blockchain;
                 }
                 return {};
             },

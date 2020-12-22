@@ -6,8 +6,8 @@ import { Handlers } from "@arkecosystem/core-transactions";
 import { Managers, Identities, Utils } from "@arkecosystem/crypto";
 import { CertifiedNftMintTransactionHandler, Errors as unsErrors } from "@uns/uns-transactions";
 import * as Fixtures from "../__fixtures__";
-import { nftRepository } from "@uns/core-nft";
 import { Errors } from "@arkecosystem/core-transactions";
+import * as transactionHelpers from "@uns/uns-transactions/dist/handlers/utils/helpers";
 
 let handler;
 let builder;
@@ -27,16 +27,9 @@ describe("CertifiedNtfMint Transaction", () => {
         senderWallet = Fixtures.wallet();
         walletManager.reindex(senderWallet);
 
-        const issuerPubKey = Fixtures.issKeys.publicKey;
-
         forgeFactoryWallet = new Wallets.Wallet(Fixtures.issuerAddress);
-        forgeFactoryWallet.publicKey = issuerPubKey;
+        forgeFactoryWallet.publicKey = Fixtures.issKeys.publicKey;
         walletManager.reindex(forgeFactoryWallet);
-
-        jest.spyOn(nftRepository(), "findById").mockResolvedValue({
-            tokenId: Fixtures.issUnikId,
-            ownerId: Fixtures.issuerAddress,
-        });
 
         builder = Fixtures.unsCertifiedNftMintTransaction();
 
@@ -45,6 +38,10 @@ describe("CertifiedNtfMint Transaction", () => {
     });
 
     describe("throwIfCannotBeApplied", () => {
+        beforeEach(() => {
+            jest.spyOn(transactionHelpers, "getUnikOwner").mockResolvedValueOnce(Fixtures.issKeys.publicKey);
+        });
+
         it("should not throw", async () => {
             await expect(handler.throwIfCannotBeApplied(builder.build(), senderWallet, walletManager)).toResolve();
         });

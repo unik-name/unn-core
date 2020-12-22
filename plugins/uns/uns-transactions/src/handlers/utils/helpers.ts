@@ -1,9 +1,10 @@
 import { app } from "@arkecosystem/core-container";
-import { Database, State } from "@arkecosystem/core-interfaces";
+import { Blockchain, Database, State } from "@arkecosystem/core-interfaces";
 import { IWalletManager } from "@arkecosystem/core-interfaces/dist/core-state";
 import { Identities, Interfaces, Managers } from "@arkecosystem/crypto";
 import { nftRepository, NftsManager } from "@uns/core-nft";
-import { DIDTypes } from "@uns/crypto";
+import { Enums } from "@uns/core-nft-crypto";
+import { DIDTypes, UnsTransactionGroup, UnsTransactionType } from "@uns/crypto";
 
 export const EXPLICIT_PROP_KEY = "explicitValues";
 
@@ -43,7 +44,7 @@ export const revertExplicitValue = async (transaction: Interfaces.ITransactionDa
     const transactions = await nftRepository().findTransactionsByAsset(
         asset,
         [transaction.type],
-        transaction.typeGroup,
+        [transaction.typeGroup],
     );
     let retrievedExplicits = [];
 
@@ -59,22 +60,55 @@ export const revertExplicitValue = async (transaction: Interfaces.ITransactionDa
 };
 
 /**
- * Check and find the unikid owner public key in the current Blockchain.
+ * Get Unik owner at the requested height.
  *
  * @returns publicKey
  *
  */
-export const checkAndGetPublicKey = async (unikId: string, walletManager: State.IWalletManager): Promise<string> => {
-    // check existence of UNIK
-    const unik = await nftRepository().findById(unikId);
-    if (!unik) {
-        throw new Error(`UNIK Id \"${unikId}\" not found.`);
+export const getUnikOwner = async (tokenId: string, height?: number): Promise<string> => {
+    const asset = { nft: { unik: { tokenId } } };
+    const transactions = await nftRepository().findTransactionsByAsset(
+        asset,
+        [
+            Enums.NftTransactionType.NftMint,
+            Enums.NftTransactionType.NftTransfer,
+            UnsTransactionType.UnsCertifiedNftMint,
+            UnsTransactionType.UnsCertifiedNftTransfer,
+        ],
+        [UnsTransactionGroup, Enums.NftTransactionGroup],
+    );
+
+    if (!transactions.length) {
+        throw new Error(`UNIK Id \"${tokenId}\" not found.`);
     }
-    const foundPublicKey = walletManager.findByAddress(unik.ownerId)?.publicKey;
-    if (!foundPublicKey) {
-        throw new Error(`publicKey not found for UNIK ID: ${unikId}`);
+
+    if (!height) {
+        const blockchain = app.resolvePlugin<Blockchain.IBlockchain>("blockchain");
+        height = blockchain ? blockchain.getLastBlock().data.height : 0;
     }
-    return foundPublicKey;
+
+    let ownerPubKey = transactions.find(
+        tx => tx.type === UnsTransactionType.UnsCertifiedNftMint || tx.type === Enums.NftTransactionType.NftMint,
+    ).senderPublicKey;
+
+    const transferTransactions = transactions.filter(
+        tx =>
+            tx.type === UnsTransactionType.UnsCertifiedNftTransfer || tx.type === Enums.NftTransactionType.NftTransfer,
+    );
+    if (!transferTransactions.length) {
+        return ownerPubKey;
+    }
+
+    const blocksRepo = app.resolvePlugin<Database.IDatabaseService>("database").blocksBusinessRepository;
+    for (const tx of transferTransactions) {
+        const block = await blocksRepo.findById(tx.blockId);
+        if (block.height <= height) {
+            ownerPubKey = tx.recipientId;
+        } else {
+            break;
+        }
+    }
+    return ownerPubKey;
 };
 
 export const getDidTypeFromProperties = (properties: Array<{ key: string; value: string }>): DIDTypes =>

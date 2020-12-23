@@ -44,6 +44,7 @@ export const network = "dalinet";
 export const properties = { foo: "true" };
 export const recipient: string = "DA3BSpo52UqTnKVjZ4MhEVV2zzZT8WhVHf";
 export const propertiesAssets: any[] = [
+    {},
     {
         propKey: "propValue",
     },

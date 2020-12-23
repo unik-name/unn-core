@@ -1,5 +1,8 @@
 import { ICertifiedDemand, INftDemand, INftDemandCertificationPayload, INftDemandPayload } from "./certification";
 
+export type INftDemandCertification = ICertifiedDemand<INftDemandCertificationPayload>;
+
+// TODO remove these types and use generic certified demand types
 export type INftMintDemand = INftDemand;
 export type INftMintDemandPayload = INftDemandPayload;
 export type INftMintDemandCertification = ICertifiedDemand<INftDemandCertificationPayload>;

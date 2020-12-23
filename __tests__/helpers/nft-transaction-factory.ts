@@ -4,6 +4,7 @@ import {
     CertifiedNftMintTransaction,
     CertifiedNftUpdateTransaction,
     INftDemand,
+    INftDemandCertification,
     NftMintDemandCertificationSigner,
     NftMintDemandHashBuffer,
     NftMintDemandSigner,
@@ -12,8 +13,8 @@ import {
 } from "@uns/crypto";
 import { TransactionFactory } from "./transaction-factory";
 
-export const buildCertifiedDemand = (properties, sender, issuer, cost: Utils.BigNumber) => {
-    const updateDemand: INftDemand = {
+export const buildCertifiedDemand = (properties, sender, issuer, cost: Utils.BigNumber = Utils.BigNumber.ZERO) => {
+    const asset: INftDemand = {
         nft: {
             unik: {
                 tokenId: sender.tokenId,
@@ -31,9 +32,9 @@ export const buildCertifiedDemand = (properties, sender, issuer, cost: Utils.Big
         },
     };
 
-    updateDemand.demand.signature = new NftMintDemandSigner(updateDemand).sign(sender.passphrase);
+    asset.demand.signature = new NftMintDemandSigner(asset).sign(sender.passphrase);
 
-    const hash = new NftMintDemandHashBuffer(updateDemand).getPayloadHashBuffer();
+    const hash = new NftMintDemandHashBuffer(asset).getPayloadHashBuffer();
 
     const demandCertificationPayload = {
         sub: hash,
@@ -42,12 +43,12 @@ export const buildCertifiedDemand = (properties, sender, issuer, cost: Utils.Big
         cost,
     };
 
-    const certification = {
+    const certification: INftDemandCertification = {
         payload: demandCertificationPayload,
         signature: new NftMintDemandCertificationSigner(demandCertificationPayload).sign(issuer.passphrase),
     };
 
-    return { ...updateDemand, certification };
+    return { ...asset, certification };
 };
 
 export class NFTTransactionFactory extends TransactionFactory {

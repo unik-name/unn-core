@@ -1,14 +1,15 @@
 import { Transactions } from "@arkecosystem/crypto";
 import ByteBuffer from "bytebuffer";
+import { INftProperties } from "../interfaces";
 import { getCurrentNftAsset, getNftName } from "../utils";
 import { computePropertiesSize } from "./utils";
 
 export abstract class AbstractNftWithPropertiesTransaction extends Transactions.Transaction {
-    public static serializeNftWithProperties(payload: any): ByteBuffer {
+    public static serializeNftWithProperties(payload: any, addOnBytes: number = 0): ByteBuffer {
         const nftAsset = getCurrentNftAsset(payload);
         const nftNameBuf = Buffer.from(getNftName(payload), "utf8");
-        const properties: { [_: string]: string } = nftAsset.properties || {};
-        const bufferSize = 32 + 1 + computePropertiesSize(properties) + nftNameBuf.length;
+        const properties: INftProperties = nftAsset.properties || {};
+        const bufferSize = 32 + 1 + computePropertiesSize(properties) + nftNameBuf.length + addOnBytes;
         const buffer = new ByteBuffer(bufferSize, true);
 
         // Use unsigned 8 bits int for nft name length (should not be longer than 255)
@@ -48,8 +49,8 @@ export abstract class AbstractNftWithPropertiesTransaction extends Transactions.
         this.deserializePayload(buf);
     }
 
-    public serializePayload(payload: any): ByteBuffer {
-        return AbstractNftWithPropertiesTransaction.serializeNftWithProperties(payload);
+    public serializePayload(payload: any, addOnBytes?: number): ByteBuffer {
+        return AbstractNftWithPropertiesTransaction.serializeNftWithProperties(payload, addOnBytes);
     }
 
     public deserializePayload(buf: ByteBuffer): void {

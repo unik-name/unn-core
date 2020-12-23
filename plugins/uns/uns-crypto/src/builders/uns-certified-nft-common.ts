@@ -1,4 +1,5 @@
 import { Interfaces } from "@arkecosystem/crypto";
+import { UNSCertifiedNftMintBuilder, UNSCertifiedNftUpdateBuilder } from ".";
 import { ICertificationable, ICertifiedDemand, INftDemandCertificationPayload, INftDemandPayload } from "../interfaces";
 
 export interface IUNSCertifiedNftBuilder<T extends INftDemandPayload, U extends ICertifiedDemand<ICertificationable>> {
@@ -8,9 +9,9 @@ export interface IUNSCertifiedNftBuilder<T extends INftDemandPayload, U extends 
     demand(demand: ICertifiedDemand<T>): this;
 
     /**
-     * @param certification The certification itself, according to the demande set by #demand()
+     * @param certification The certification itself, according to the demand set by #demand()
      */
-    certification(certification: U, issuerAddress: string): this;
+    certification(certification: U, issuerAddress?: string): this;
 }
 
 export class UNSCertifiedNftBuilder<
@@ -24,10 +25,12 @@ export class UNSCertifiedNftBuilder<
         return this;
     }
 
-    public certification(certification: U, issuerAddress: string): this {
+    public certification(certification: U, issuerAddress?: string): this {
         this.data.asset.certification = certification;
-        this.data.amount = certification.payload.cost;
-        this.data.recipientId = issuerAddress;
+        if (this instanceof UNSCertifiedNftMintBuilder || this instanceof UNSCertifiedNftUpdateBuilder) {
+            this.data.amount = certification.payload.cost;
+            this.recipientId(issuerAddress);
+        }
         return this;
     }
 }

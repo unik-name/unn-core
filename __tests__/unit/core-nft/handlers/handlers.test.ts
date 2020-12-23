@@ -68,7 +68,7 @@ describe("Registry register nft transaction", () => {
                 .recipientId(recipient)
                 .sign("passphrase")
                 .build();
-            expect(handler.dynamicFee({ transaction, satoshiPerByte: 0 } as any)).toEqual(Utils.BigNumber.make(91));
+            expect(handler.dynamicFee({ transaction, satoshiPerByte: 0 } as any)).toEqual(Utils.BigNumber.make(92));
         });
     });
 });

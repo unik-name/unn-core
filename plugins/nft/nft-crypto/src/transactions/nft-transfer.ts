@@ -2,12 +2,12 @@ import { Transactions, Utils } from "@arkecosystem/crypto";
 import bs58check from "bs58check";
 import ByteBuffer from "bytebuffer";
 import { NftTransactionGroup, NftTransactionStaticFees, NftTransactionType } from "../enums";
-import { getCurrentNftAsset, getNftName } from "../utils";
+import { AbstractNftWithPropertiesTransaction } from "./abstract-nft-with-properties";
 import { NftSchemas } from "./utils";
 
 const { schemas } = Transactions;
 
-export class NftTransferTransaction extends Transactions.Transaction {
+export class NftTransferTransaction extends AbstractNftWithPropertiesTransaction {
     public static typeGroup: number = NftTransactionGroup;
     public static type: number = NftTransactionType.NftTransfer;
     public static key: string = "NftTransfer";
@@ -30,32 +30,15 @@ export class NftTransferTransaction extends Transactions.Transaction {
 
     public serialize(): ByteBuffer {
         const { data } = this;
-        const nftNameBuf = Buffer.from(getNftName(data.asset), "utf8");
-        const bufferSize = 32 + 1 + 21 + nftNameBuf.length;
-        const buffer = new ByteBuffer(bufferSize, true);
-
-        // Use unsigned 8 bits int for nft name length (should not be longer than 255)
-        buffer.writeUint8(nftNameBuf.length);
-        buffer.append(nftNameBuf, "utf8");
-        buffer.append(Buffer.from(getCurrentNftAsset(data.asset).tokenId, "hex"));
+        const recipientBytesSize = 21;
+        const buffer = this.serializePayload(data.asset, recipientBytesSize);
         buffer.append(bs58check.decode(data.recipientId));
-
         return buffer;
     }
 
     public deserialize(buf: ByteBuffer): void {
         const { data } = this;
-
-        const nftNameSize = buf.readUint8();
-        const nftName = buf.readBytes(nftNameSize).toUTF8();
-
-        data.asset = {
-            nft: {
-                [nftName]: {
-                    tokenId: buf.readBytes(32).toString("hex"),
-                },
-            },
-        };
+        this.deserializePayload(buf);
         data.recipientId = bs58check.encode(buf.readBytes(21).toBuffer());
     }
 }

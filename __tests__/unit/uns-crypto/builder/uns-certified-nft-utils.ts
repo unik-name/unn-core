@@ -1,4 +1,4 @@
-import { Identities, Managers } from "@arkecosystem/crypto";
+import { Managers } from "@arkecosystem/crypto";
 import "jest-extended";
 import * as Fixtures from "../__fixtures__";
 
@@ -20,16 +20,18 @@ export const testCertifiedBuilder = builder => {
 
     describe("should have properties", () => {
         it("specific", () => {
-            expect(builder).toHaveProperty("data.asset.certification.payload.cost", Fixtures.cost);
-            expect(builder).toHaveProperty("data.amount", Fixtures.cost);
-            expect(builder).toHaveProperty(
-                "data.recipientId",
-                Identities.Address.fromPublicKey(Fixtures.issKeys.publicKey),
-            );
-            expect(builder).toHaveProperty(
-                "data.asset.demand.payload.cryptoAccountAddress",
-                Fixtures.cryptoAccountAddress,
-            );
+            expect(builder).toHaveProperty("data.asset.demand.payload.iss");
+            expect(builder).toHaveProperty("data.asset.demand.payload.sub");
+            expect(builder).toHaveProperty("data.asset.demand.payload.iat");
+            expect(builder).toHaveProperty("data.asset.demand.payload.cryptoAccountAddress");
+
+            expect(builder).toHaveProperty("data.asset.certification.payload.iss");
+            expect(builder).toHaveProperty("data.asset.certification.payload.sub");
+            expect(builder).toHaveProperty("data.asset.certification.payload.iat");
+            expect(builder).toHaveProperty("data.asset.certification.payload.cost");
+
+            expect(builder).toHaveProperty("data.amount");
+            expect(builder).toHaveProperty("data.recipientId");
         });
     });
 };

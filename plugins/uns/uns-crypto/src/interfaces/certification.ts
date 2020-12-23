@@ -1,5 +1,6 @@
 import { Utils } from "@arkecosystem/crypto";
 import { Interfaces } from "@uns/core-nft-crypto";
+import { INftDemandCertification } from "./certified-nft";
 
 /*ts-lint:disable:interface-over-type-literal*/
 export interface ICertificationable {
@@ -25,6 +26,6 @@ export type INftDemand = Interfaces.ITransactionNftAssetData & {
     demand: ICertifiedDemand<INftDemandPayload>;
 };
 
-export type INftDemandCertification = Interfaces.ITransactionNftAssetData & {
-    certification: ICertifiedDemand<INftDemandCertificationPayload>;
+export type INftCertificationAsset = Interfaces.ITransactionNftAssetData & {
+    certification: INftDemandCertification;
 };

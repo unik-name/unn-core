@@ -16,29 +16,29 @@ describe("Nft update transaction", () => {
             builder = new Builders.NftUpdateBuilder(Fixtures.nftName, Fixtures.nftId);
         });
 
-        for (let i = 0; i++; Fixtures.propertiesAssets.length) {
-            const propertiesAsset = Fixtures.propertiesAssets[i];
-            it(`should ser/deserialize with properties (${i})`, () => {
-                const transaction = builder
-                    .properties(propertiesAsset)
-                    .sign("passphrase")
-                    .getStruct();
+        test.each(Fixtures.propertiesAssets)("should ser/deserialize with properties", propertiesAsset => {
+            if (!Object.keys(propertiesAsset).length) {
+                return;
+            }
+            const transaction = builder
+                .properties(propertiesAsset)
+                .sign("passphrase")
+                .getStruct();
 
-                const serialized = Transactions.TransactionFactory.fromData(transaction).serialized.toString("hex");
-                const deserialized = Transactions.Deserializer.deserialize(serialized);
+            const serialized = Transactions.TransactionFactory.fromData(transaction).serialized.toString("hex");
+            const deserialized = Transactions.Deserializer.deserialize(serialized);
 
-                checkCommonFields(deserialized, transaction);
-                const expectedAsset = {
-                    nft: {
-                        [Fixtures.nftName]: {
-                            tokenId: Fixtures.nftId,
-                            properties: propertiesAsset,
-                        },
+            checkCommonFields(deserialized, transaction);
+            const expectedAsset = {
+                nft: {
+                    [Fixtures.nftName]: {
+                        tokenId: Fixtures.nftId,
+                        properties: propertiesAsset,
                     },
-                };
-                expect(deserialized.data.asset).toStrictEqual(expectedAsset);
-            });
-        }
+                },
+            };
+            expect(deserialized.data.asset).toStrictEqual(expectedAsset);
+        });
     });
 
     testNftAssetSchema(

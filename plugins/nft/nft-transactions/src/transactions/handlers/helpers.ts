@@ -8,13 +8,17 @@ import { INftWalletAttributes } from "../../interfaces";
 import { nftRepository, NftsManager } from "../../manager";
 
 export const applyNftMintDb = async (senderPublicKey: string, assets: Interfaces.ITransactionAsset): Promise<void> => {
-    const { tokenId, properties } = getCurrentNftAsset(assets);
+    const { tokenId } = getCurrentNftAsset(assets);
     const senderAddr = Identities.Address.fromPublicKey(senderPublicKey);
     const nftManager = app.resolvePlugin<NftsManager>("core-nft");
     await nftManager.insert(tokenId, senderAddr);
+};
 
-    if (properties) {
-        await nftManager.insertProperties(properties, tokenId);
+export const applyProperties = async (asset: Interfaces.ITransactionAsset): Promise<void> => {
+    const { tokenId, properties } = getCurrentNftAsset(asset);
+    const nftManager = app.resolvePlugin<NftsManager>("core-nft");
+    if (properties && Object.keys(properties).length) {
+        await nftManager.manageProperties(properties, tokenId);
     }
 };
 
@@ -64,7 +68,9 @@ export const applyNftTransferDb = async (
     recipientAddress: string,
     assets: Interfaces.ITransactionAsset,
 ): Promise<void> => {
-    return app.resolvePlugin<NftsManager>("core-nft").updateOwner(getCurrentNftAsset(assets).tokenId, recipientAddress);
+    const { tokenId } = getCurrentNftAsset(assets);
+    const nftManager = app.resolvePlugin<NftsManager>("core-nft");
+    await nftManager.updateOwner(tokenId, recipientAddress);
 };
 
 export const checkAssetPropertiesSize = (properties: NftInterfaces.INftProperties) => {
@@ -77,45 +83,47 @@ export const checkAssetPropertiesSize = (properties: NftInterfaces.INftPropertie
 
 export const revertProperties = async (transaction: Interfaces.ITransactionData): Promise<void> => {
     const { tokenId, properties } = getCurrentNftAsset(transaction.asset);
-    const nftName: string = getNftName(transaction.asset);
+    if (properties && Object.keys(properties).length) {
+        const nftName: string = getNftName(transaction.asset);
 
-    const asset = { nft: { [nftName]: { tokenId } } };
-    const transactions = await nftRepository().findTransactionsByAsset(
-        asset,
-        [
-            Enums.NftTransactionType.NftMint,
-            Enums.NftTransactionType.NftUpdate,
-            UnsTransactionType.UnsCertifiedNftMint,
-            UnsTransactionType.UnsCertifiedNftUpdate,
-        ],
-        [transaction.typeGroup, UnsTransactionGroup],
-        "desc",
-    );
+        const asset = { nft: { [nftName]: { tokenId } } };
+        const transactions = await nftRepository().findTransactionsByAsset(
+            asset,
+            [
+                Enums.NftTransactionType.NftMint,
+                Enums.NftTransactionType.NftUpdate,
+                UnsTransactionType.UnsCertifiedNftMint,
+                UnsTransactionType.UnsCertifiedNftUpdate,
+            ],
+            [transaction.typeGroup, UnsTransactionGroup],
+            "desc",
+        );
 
-    const retrievedProperties = {};
-    let modifiedPropertyKeys = Object.keys(properties);
-    // parse transactions from the last to first to get last value of modified keys
-    for (const tx of transactions) {
-        if (tx.id === transaction.id) {
-            continue;
-        }
-        for (const key of modifiedPropertyKeys) {
-            const txProperties = getCurrentNftAsset(tx.asset).properties;
-            if (txProperties.hasOwnProperty(key)) {
-                retrievedProperties[key] = txProperties[key];
-                modifiedPropertyKeys = modifiedPropertyKeys.filter(elt => elt !== key);
+        const retrievedProperties = {};
+        let modifiedPropertyKeys = Object.keys(properties);
+        // parse transactions from the last to first to get last value of modified keys
+        for (const tx of transactions) {
+            if (tx.id === transaction.id) {
+                continue;
+            }
+            for (const key of modifiedPropertyKeys) {
+                const txProperties = getCurrentNftAsset(tx.asset).properties;
+                if (txProperties.hasOwnProperty(key)) {
+                    retrievedProperties[key] = txProperties[key];
+                    modifiedPropertyKeys = modifiedPropertyKeys.filter(elt => elt !== key);
+                }
+            }
+            if (!modifiedPropertyKeys.length) {
+                break;
             }
         }
-        if (!modifiedPropertyKeys.length) {
-            break;
-        }
-    }
 
-    const manager = app.resolvePlugin<NftsManager>("core-nft");
-    // delete the new created properties (no last known value)
-    for (const key of modifiedPropertyKeys) {
-        await manager.deleteProperty(key, tokenId);
+        const manager = app.resolvePlugin<NftsManager>("core-nft");
+        // delete the new created properties (no last known value)
+        for (const key of modifiedPropertyKeys) {
+            await manager.deleteProperty(key, tokenId);
+        }
+        // revert updated properties with last known value
+        await manager.manageProperties(retrievedProperties, tokenId);
     }
-    // revert updated properties with last known value
-    await manager.manageProperties(retrievedProperties, tokenId);
 };

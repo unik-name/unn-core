@@ -20,7 +20,7 @@ export class CertifiedNftUpdateTransaction extends NftTransactions.NftUpdateTran
                 ...schemas.extend(
                     NftSchemas.nft,
                     schemas.extend(
-                        schemas.extend(NftSchemas.nftProperties, NftSchemas.nftUpdateProperties),
+                        schemas.extend(NftSchemas.nftProperties, NftSchemas.requireProperties),
                         unsCertifiedProperties,
                     ),
                 ),

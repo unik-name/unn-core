@@ -4,7 +4,7 @@ export interface INftAsset {
 }
 
 export interface INftProperties {
-    [_: string]: string;
+    [_: string]: string | null;
 }
 
 export interface ITransactionNftAssetData {

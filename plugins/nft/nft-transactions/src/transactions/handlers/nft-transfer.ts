@@ -4,7 +4,14 @@ import { Interfaces, Transactions } from "@arkecosystem/crypto";
 import { getCurrentNftAsset, Transactions as NftTransactions } from "@uns/core-nft-crypto";
 import { NftOwnerError } from "../../errors";
 import { INftWalletAttributes } from "../../interfaces";
-import { addNftToWallet, applyNftTransferDb, removeNftFromWallet } from "./helpers";
+import {
+    addNftToWallet,
+    applyNftTransferDb,
+    applyProperties,
+    checkAssetPropertiesSize,
+    removeNftFromWallet,
+    revertProperties,
+} from "./helpers";
 
 export class NftTransferTransactionHandler extends Handlers.TransactionHandler {
     public async isActivated(): Promise<boolean> {
@@ -47,7 +54,7 @@ export class NftTransferTransactionHandler extends Handlers.TransactionHandler {
         wallet: State.IWallet,
         walletManager: State.IWalletManager,
     ): Promise<void> {
-        const { tokenId } = getCurrentNftAsset(transaction.data.asset);
+        const { tokenId, properties } = getCurrentNftAsset(transaction.data.asset);
 
         // check if sender owns token
         if (
@@ -56,6 +63,8 @@ export class NftTransferTransactionHandler extends Handlers.TransactionHandler {
         ) {
             throw new NftOwnerError(wallet, tokenId);
         }
+
+        checkAssetPropertiesSize(properties);
 
         return super.throwIfCannotBeApplied(transaction, wallet, walletManager);
     }
@@ -78,7 +87,8 @@ export class NftTransferTransactionHandler extends Handlers.TransactionHandler {
         const wallet: State.IWallet = walletManager.findById(senderPublicKey);
         await removeNftFromWallet(wallet, asset, walletManager);
         if (updateDb) {
-            return applyNftTransferDb(recipientId, asset);
+            await applyNftTransferDb(recipientId, asset);
+            await applyProperties(asset);
         }
     }
 
@@ -92,7 +102,8 @@ export class NftTransferTransactionHandler extends Handlers.TransactionHandler {
         const wallet: State.IWallet = walletManager.findById(senderPublicKey);
         await addNftToWallet(wallet, asset, walletManager);
         if (updateDb) {
-            return applyNftTransferDb(wallet.address, asset);
+            await applyNftTransferDb(wallet.address, asset);
+            await revertProperties(transaction.data);
         }
     }
 

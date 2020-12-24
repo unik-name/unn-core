@@ -5,9 +5,9 @@ import {
     CertifiedNftUpdateTransaction,
     INftDemand,
     INftDemandCertification,
-    NftMintDemandCertificationSigner,
-    NftMintDemandHashBuffer,
-    NftMintDemandSigner,
+    NftCertificationSigner,
+    NftDemandHashBuffer,
+    NftDemandSigner,
     UNSCertifiedNftMintBuilder,
     UNSCertifiedNftUpdateBuilder,
 } from "@uns/crypto";
@@ -32,9 +32,9 @@ export const buildCertifiedDemand = (properties, sender, issuer, cost: Utils.Big
         },
     };
 
-    asset.demand.signature = new NftMintDemandSigner(asset).sign(sender.passphrase);
+    asset.demand.signature = new NftDemandSigner(asset).sign(sender.passphrase);
 
-    const hash = new NftMintDemandHashBuffer(asset).getPayloadHashBuffer();
+    const hash = new NftDemandHashBuffer(asset).getPayloadHashBuffer();
 
     const demandCertificationPayload = {
         sub: hash,
@@ -45,7 +45,7 @@ export const buildCertifiedDemand = (properties, sender, issuer, cost: Utils.Big
 
     const certification: INftDemandCertification = {
         payload: demandCertificationPayload,
-        signature: new NftMintDemandCertificationSigner(demandCertificationPayload).sign(issuer.passphrase),
+        signature: new NftCertificationSigner(demandCertificationPayload).sign(issuer.passphrase),
     };
 
     return { ...asset, certification };

@@ -12,11 +12,7 @@ import {
     getMintVoucherRewards,
     getRewardsFromDidType,
     hasVoucher,
-    INftDemand,
-    INftMintDemandCertificationPayload,
     IUnsRewards,
-    NftMintDemandCertificationSigner,
-    NftMintDemandHashBuffer,
 } from "@uns/crypto";
 import { VoucherAlreadyUsedError, WrongFeeError, WrongServiceCostError } from "../errors";
 import { CertifiedTransactionHandler } from "./uns-certified-handler";
@@ -163,14 +159,6 @@ export class CertifiedNftMintTransactionHandler extends NftMintTransactionHandle
         } else {
             return super.dynamicFee(context);
         }
-    }
-
-    protected getPayloadSigner(payload: INftMintDemandCertificationPayload): NftMintDemandCertificationSigner {
-        return new NftMintDemandCertificationSigner(payload);
-    }
-
-    protected getPayloadHashBuffer(demand: INftDemand): NftMintDemandHashBuffer {
-        return new NftMintDemandHashBuffer(demand);
     }
 
     protected checkEmptyBalance(transaction: Interfaces.ITransaction): boolean {

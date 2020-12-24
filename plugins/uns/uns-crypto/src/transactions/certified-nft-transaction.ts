@@ -3,9 +3,9 @@ import ByteBuffer from "bytebuffer";
 
 import {
     ICertifiedDemand,
-    INftMintDemandCertification,
-    INftMintDemandCertificationPayload,
-    INftMintDemandPayload,
+    INftDemandCertification,
+    INftDemandCertificationPayload,
+    INftDemandPayload,
 } from "../interfaces";
 
 interface ICertifiedTransactionPayloadSerializable {
@@ -14,7 +14,7 @@ interface ICertifiedTransactionPayloadSerializable {
 }
 
 export abstract class CertifiedNftTransaction implements ICertifiedTransactionPayloadSerializable {
-    public static serializeCertificationPayload(payload: INftMintDemandCertificationPayload): ByteBuffer {
+    public static serializeCertificationPayload(payload: INftDemandCertificationPayload): ByteBuffer {
         const payloadBufferSize: number = 32 /*iss*/ + 32 /*sub*/ + 8 /*iat*/ + 8 /*cost*/;
         const buffer = new ByteBuffer(payloadBufferSize, true);
         buffer.append(payload.sub, "hex");
@@ -25,7 +25,7 @@ export abstract class CertifiedNftTransaction implements ICertifiedTransactionPa
         return buffer;
     }
 
-    public static serializeDemandPayload(demand: ICertifiedDemand<INftMintDemandPayload>): ByteBuffer {
+    public static serializeDemandPayload(demand: ICertifiedDemand<INftDemandPayload>): ByteBuffer {
         const cryptoAccountBuffer: Buffer = Identities.Address.toBuffer(demand.payload.cryptoAccountAddress)
             .addressBuffer;
         const signatureBuffer: Buffer = Buffer.from(demand.signature, "hex");
@@ -58,8 +58,8 @@ export abstract class CertifiedNftTransaction implements ICertifiedTransactionPa
                 .flip()
                 .toBuffer(),
         );
-        const certification: INftMintDemandCertification = data.asset.certification;
-        const certificationPayload: INftMintDemandCertificationPayload = certification.payload;
+        const certification: INftDemandCertification = data.asset.certification;
+        const certificationPayload: INftDemandCertificationPayload = certification.payload;
 
         const certificationPayloadBuffer: ByteBuffer = CertifiedNftTransaction.serializeCertificationPayload(
             certificationPayload,

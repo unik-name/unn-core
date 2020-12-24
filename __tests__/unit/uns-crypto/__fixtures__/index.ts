@@ -6,12 +6,10 @@ import {
     ICertifiedDemand,
     IDiscloseDemandCertificationPayload,
     IDiscloseDemandPayload,
-    INftMintDemand,
-    INftMintDemandCertification,
-    INftMintDemandCertificationPayload,
-    INftMintDemandPayload,
-    INftUpdateDemand,
-    INftUpdateDemandCertification,
+    INftDemand,
+    INftDemandCertification,
+    INftDemandCertificationPayload,
+    INftDemandPayload,
     UNSCertifiedNftMintBuilder,
     UNSCertifiedNftUpdateBuilder,
     UnsTransactionGroup,
@@ -74,14 +72,14 @@ export const payloadNftMintDemandCertificationSignature =
 
 export const cost = new Utils.BigNumber(1234);
 export const certifIat = 12345678;
-export const nftMintDemandCertificationPayload: INftMintDemandCertificationPayload = {
+export const nftMintDemandCertificationPayload: INftDemandCertificationPayload = {
     sub: "78df95c0eb364043499c83ee6045e3395f21dbfb5f8bfe58590f59cb639ab8e1", // 32 bytes
     iss: issUnikId,
     iat: certifIat,
     cost,
 };
 
-const certification: INftMintDemandCertification = {
+const certification: INftDemandCertification = {
     payload: nftMintDemandCertificationPayload,
     signature: payloadNftMintDemandCertificationSignature,
 };
@@ -89,7 +87,7 @@ const certification: INftMintDemandCertification = {
 export const payloadNftMintDemandHashBuffer = "78df95c0eb364043499c83ee6045e3395f21dbfb5f8bfe58590f59cb639ab8e1";
 export const cryptoAccountAddress = "DQLiVPs2b6rHYCANjVk7vWVfQqdo5rLvDU";
 
-export const nftMintDemand: ICertifiedDemand<INftMintDemandPayload> = {
+export const nftMintDemand: ICertifiedDemand<INftDemandPayload> = {
     payload: {
         iss: tokenId,
         sub: tokenId,
@@ -103,7 +101,7 @@ const mintProperties = {
     type: "1",
     anotherProperty: "12345",
 };
-export const nftMintRequest: INftMintDemand = {
+export const nftMintRequest: INftDemand = {
     nft: {
         unik: {
             tokenId,
@@ -113,7 +111,7 @@ export const nftMintRequest: INftMintDemand = {
     demand: nftMintDemand,
 };
 
-export const unsCertifiedNftMintTransaction = (cert: INftMintDemandCertification = certification) => {
+export const unsCertifiedNftMintTransaction = (cert: INftDemandCertification = certification) => {
     return new UNSCertifiedNftMintBuilder("unik", tokenId)
         .properties(mintProperties)
         .demand(nftMintDemand)
@@ -123,8 +121,8 @@ export const unsCertifiedNftMintTransaction = (cert: INftMintDemandCertification
 };
 
 export const unsCertifiedNftUpdateTransaction = (
-    cert: INftUpdateDemandCertification = certification,
-    demand: INftUpdateDemand = nftMintRequest,
+    cert: INftDemandCertification = certification,
+    demand: INftDemand = nftMintRequest,
     senderPassphrase: string = ownerPassphrase,
     issuer: string = issuerAddress,
     fee: string = CertifiedNftUpdateTransaction.staticFee().toString(),

@@ -4,11 +4,10 @@ import {
     DIDTypes,
     getRewardsFromDidType,
     INftDemand,
-    INftMintDemand,
-    INftMintDemandCertificationPayload,
-    IPayloadHashBuffer,
-    IPayloadSigner,
+    INftDemandCertificationPayload,
     IUnsRewards,
+    NftCertificationSigner,
+    NftDemandHashBuffer,
     unsCrypto,
 } from "@uns/crypto";
 import {
@@ -32,8 +31,14 @@ export abstract class CertifiedTransactionHandler {
         const foundationWallet = getFoundationWallet(walletManager);
         foundationWallet.balance = foundationWallet.balance.minus(Utils.BigNumber.make(rewards.foundation));
     }
-    protected abstract getPayloadSigner(payload: INftMintDemandCertificationPayload): IPayloadSigner;
-    protected abstract getPayloadHashBuffer(demand: INftDemand): IPayloadHashBuffer;
+
+    protected getPayloadSigner(payload: INftDemandCertificationPayload): NftCertificationSigner {
+        return new NftCertificationSigner(payload);
+    }
+
+    protected getPayloadHashBuffer(demand: INftDemand): NftDemandHashBuffer {
+        return new NftDemandHashBuffer(demand);
+    }
 
     protected async throwIfCannotBeCertified(
         transaction: Interfaces.ITransaction,
@@ -63,7 +68,7 @@ export abstract class CertifiedTransactionHandler {
         }
 
         // Check the sub content generated from the "payload" of the transaction: the asset itself, without the "certification property"
-        const certifiedContent = { ...transaction.data.asset } as INftMintDemand;
+        const certifiedContent = { ...transaction.data.asset } as INftDemand;
         const payloadHashBuffer = this.getPayloadHashBuffer(certifiedContent);
         if (payloadHashBuffer.getPayloadHashBuffer() !== certification.payload.sub) {
             throw new NftCertificationBadPayloadSubjectError();

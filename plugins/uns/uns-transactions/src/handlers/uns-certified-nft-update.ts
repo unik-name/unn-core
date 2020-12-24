@@ -8,11 +8,7 @@ import {
     CertifiedNftUpdateTransaction,
     DIDTypes,
     getRewardsFromDidType,
-    INftDemand,
-    INftUpdateDemandCertificationPayload,
     isAliveDemand,
-    NftUpdateDemandCertificationSigner,
-    NftUpdateDemandHashBuffer,
 } from "@uns/crypto";
 import * as Errors from "../errors";
 import { CertifiedTransactionHandler } from "./uns-certified-handler";
@@ -159,14 +155,6 @@ export class CertifiedNftUpdateTransactionHandler extends NftUpdateTransactionHa
             }
         }
         await super.revertForSender(transaction, walletManager, updateDb);
-    }
-
-    protected getPayloadSigner(payload: INftUpdateDemandCertificationPayload): NftUpdateDemandCertificationSigner {
-        return new NftUpdateDemandCertificationSigner(payload);
-    }
-
-    protected getPayloadHashBuffer(demand: INftDemand): NftUpdateDemandHashBuffer {
-        return new NftUpdateDemandHashBuffer(demand);
     }
 
     protected checkEmptyBalance(transaction: Interfaces.ITransaction, sender: State.IWallet): boolean {

@@ -5,10 +5,10 @@ import {
     IDiscloseDemandPayload,
     INftDemand,
     INftDemandCertificationPayload,
-    INftMintDemandPayload,
-    NftMintDemandCertificationSigner,
-    NftMintDemandHashBuffer,
-    NftMintDemandSigner,
+    INftDemandPayload,
+    NftCertificationSigner,
+    NftDemandHashBuffer,
+    NftDemandSigner,
     unsCrypto,
     UNSDiscloseExplicitBuilder,
 } from "@uns/crypto";
@@ -59,7 +59,7 @@ export const buildCertifiedDemand = (
     issUnikId: string = Fixtures.issUnikId,
     issPassphrase: string = Fixtures.issPassphrase,
 ) => {
-    const demandPayload: INftMintDemandPayload = {
+    const demandPayload: INftDemandPayload = {
         iss: tokenId,
         sub: tokenId,
         iat: 1579165954,
@@ -69,17 +69,17 @@ export const buildCertifiedDemand = (
         nft: { unik: { tokenId, properties } },
         demand: { payload: demandPayload, signature: "" },
     };
-    demandAsset.demand.signature = new NftMintDemandSigner(demandAsset).sign(demanderPassphrase);
+    demandAsset.demand.signature = new NftDemandSigner(demandAsset).sign(demanderPassphrase);
 
     const certificationPayload: INftDemandCertificationPayload = {
         iss: issUnikId,
-        sub: new NftMintDemandHashBuffer(demandAsset).getPayloadHashBuffer(),
+        sub: new NftDemandHashBuffer(demandAsset).getPayloadHashBuffer(),
         iat: 12345678,
         cost,
     };
     const certification = {
         payload: certificationPayload,
-        signature: new NftMintDemandCertificationSigner(certificationPayload).sign(issPassphrase),
+        signature: new NftCertificationSigner(certificationPayload).sign(issPassphrase),
     };
     return {
         demand: demandAsset.demand,

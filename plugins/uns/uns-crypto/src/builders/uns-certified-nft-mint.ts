@@ -1,13 +1,23 @@
 import { Builders } from "@uns/core-nft-crypto";
 import { UnsTransactionGroup, UnsTransactionType } from "../enums";
-import { INftMintDemandCertification, INftMintDemandPayload } from "../interfaces";
+import { INftDemand, INftDemandCertification } from "../interfaces";
 import { CertifiedNftMintTransaction } from "../transactions";
-import { applyMixins } from "../utils";
-import { IUNSCertifiedNftBuilder, UNSCertifiedNftBuilder } from "./uns-certified-nft-common";
 
 export class UNSCertifiedNftMintBuilder extends Builders.NftMintBuilder {
     constructor(protected nftName: string, tokenId: string) {
         super(nftName, tokenId);
+    }
+
+    public certification(certification: INftDemandCertification, issuerAddress: string): this {
+        this.data.asset.certification = certification;
+        this.data.amount = certification.payload.cost;
+        this.recipientId(issuerAddress);
+        return this;
+    }
+
+    public demand(demand: INftDemand): this {
+        this.data.asset.demand = demand;
+        return this;
     }
 
     protected fees() {
@@ -22,9 +32,3 @@ export class UNSCertifiedNftMintBuilder extends Builders.NftMintBuilder {
         return UnsTransactionGroup;
     }
 }
-
-// Mixins must have the same interface name as the class
-// tslint:disable-next-line:interface-name
-export interface UNSCertifiedNftMintBuilder
-    extends IUNSCertifiedNftBuilder<INftMintDemandPayload, INftMintDemandCertification> {}
-applyMixins(UNSCertifiedNftMintBuilder, [UNSCertifiedNftBuilder]);

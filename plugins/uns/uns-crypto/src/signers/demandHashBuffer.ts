@@ -1,14 +1,14 @@
 import { Crypto } from "@arkecosystem/crypto";
 import { Transactions } from "@uns/core-nft-crypto";
-import { INftMintDemand } from "../../interfaces";
-import { CertifiedNftTransaction } from "../../transactions/certified-nft-transaction";
-import { IPayloadHashBuffer } from "../signers";
+import { IPayloadHashBuffer } from ".";
+import { INftDemand } from "../interfaces";
+import { CertifiedNftTransaction } from "../transactions/certified-nft-transaction";
 
-export class NftUpdateDemandHashBuffer implements IPayloadHashBuffer {
-    constructor(private payload: INftMintDemand) {}
+export class NftDemandHashBuffer implements IPayloadHashBuffer {
+    constructor(private payload: INftDemand) {}
 
     public getPayloadHashBuffer(): string {
-        let bb = Transactions.NftUpdateTransaction.serializeNftWithProperties(this.payload);
+        let bb = Transactions.AbstractNftWithPropertiesTransaction.serializeNftWithProperties(this.payload);
         bb.append(
             CertifiedNftTransaction.serializeDemandPayload(this.payload.demand)
                 .flip()

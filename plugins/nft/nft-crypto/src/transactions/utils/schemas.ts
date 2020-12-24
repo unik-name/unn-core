@@ -52,7 +52,7 @@ export const nftProperties = {
     },
 };
 
-export const requireProperties = {
+export const requiredProperties = {
     asset: {
         properties: {
             nft: {

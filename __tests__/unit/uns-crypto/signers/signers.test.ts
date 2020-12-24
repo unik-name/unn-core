@@ -1,10 +1,10 @@
 import { Identities } from "@arkecosystem/crypto";
 import {
-    INftMintDemandCertificationPayload,
+    INftDemandCertificationPayload,
     IPayloadHashBuffer,
     IPayloadSigner,
-    NftMintDemandCertificationSigner,
-    NftMintDemandHashBuffer,
+    NftCertificationSigner,
+    NftDemandHashBuffer,
 } from "@uns/crypto";
 import * as Fixtures from "../__fixtures__";
 
@@ -13,7 +13,7 @@ describe("Signers", () => {
     // Theses tests can handle all type of *Signers
 
     describe("Validate xxxSigner functions", () => {
-        const payload: INftMintDemandCertificationPayload = Fixtures.nftMintDemandCertificationPayload;
+        const payload: INftDemandCertificationPayload = Fixtures.nftMintDemandCertificationPayload;
 
         let signer: IPayloadSigner;
 
@@ -24,7 +24,7 @@ describe("Signers", () => {
         let payloadCopy;
 
         beforeEach(() => {
-            signer = new NftMintDemandCertificationSigner(payload);
+            signer = new NftCertificationSigner(payload);
         });
 
         describe("Should pass", () => {
@@ -48,7 +48,7 @@ describe("Signers", () => {
             it("wrong payload iat: should fail to verify signature", () => {
                 payloadCopy.iat = 456123;
 
-                const signer: IPayloadSigner = new NftMintDemandCertificationSigner(payloadCopy);
+                const signer: IPayloadSigner = new NftCertificationSigner(payloadCopy);
                 const res = signer.verify(payloadSignature, issuerPublicKey);
                 expect(res).toBeFalse();
             });
@@ -75,7 +75,7 @@ describe("Signers", () => {
         const payload = Fixtures.nftMintRequest;
 
         beforeEach(() => {
-            payloadHashBuffer = new NftMintDemandHashBuffer(payload);
+            payloadHashBuffer = new NftDemandHashBuffer(payload);
         });
 
         it("should get payload hash", () => {

@@ -20,7 +20,7 @@ export class NftUpdateTransaction extends AbstractNftWithPropertiesTransaction {
                 amount: { bignumber: { minimum: 0, maximum: 0 } },
                 ...schemas.extend(
                     NftSchemas.nft,
-                    schemas.extend(NftSchemas.nftProperties, NftSchemas.requireProperties),
+                    schemas.extend(NftSchemas.nftProperties, NftSchemas.requiredProperties),
                 ), // nft.properties is required
             },
         });

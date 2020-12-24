@@ -45,14 +45,19 @@ describe("Nft mint transaction", () => {
                 const deserialized = Transactions.Deserializer.deserialize(serialized);
 
                 checkCommonFields(deserialized, transaction);
+
+                let nftfields: any = {
+                    tokenId: Fixtures.nftId,
+                };
+                if (Object.keys(propertiesAsset).length) {
+                    nftfields = { ...nftfields, properties: propertiesAsset };
+                }
                 const expectedAsset = {
                     nft: {
-                        [Fixtures.nftName]: {
-                            tokenId: Fixtures.nftId,
-                            properties: propertiesAsset,
-                        },
+                        [Fixtures.nftName]: nftfields,
                     },
                 };
+
                 expect(deserialized.data.asset).toStrictEqual(expectedAsset);
             });
         }

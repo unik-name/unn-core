@@ -6,7 +6,7 @@ import { getCurrentNftAsset, Transactions as NftTransactions } from "@uns/core-n
 import { NftOwnerError } from "../../errors";
 import { INftWalletAttributes } from "../../interfaces";
 import { NftsManager } from "../../manager";
-import { checkAssetPropertiesSize, revertProperties } from "./helpers";
+import { applyProperties, checkAssetPropertiesSize, revertProperties } from "./helpers";
 
 export class NftUpdateTransactionHandler extends Handlers.TransactionHandler {
     public async isActivated(): Promise<boolean> {
@@ -67,11 +67,7 @@ export class NftUpdateTransactionHandler extends Handlers.TransactionHandler {
     ): Promise<void> {
         await super.applyToSender(transaction, walletManager);
         if (updateDb) {
-            const assets = getCurrentNftAsset(transaction.data.asset);
-
-            if (assets.properties) {
-                return app.resolvePlugin<NftsManager>("core-nft").manageProperties(assets.properties, assets.tokenId);
-            }
+            await applyProperties(transaction.data.asset);
         }
     }
 

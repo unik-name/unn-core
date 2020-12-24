@@ -21,7 +21,7 @@ export class NftTransferTransaction extends AbstractNftWithPropertiesTransaction
                 typeGroup: { const: NftTransactionGroup },
                 amount: { bignumber: { minimum: 0, maximum: 0 } },
                 recipientId: { $ref: "address" },
-                ...NftSchemas.nft,
+                ...schemas.extend(NftSchemas.nft, NftSchemas.nftProperties),
             },
         });
     }

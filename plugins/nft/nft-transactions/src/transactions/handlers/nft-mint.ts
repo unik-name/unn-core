@@ -6,7 +6,13 @@ import { getCurrentNftAsset, Transactions as NftTransactions } from "@uns/core-n
 import { NftOwnedError } from "../../errors";
 import { INftWalletAttributes } from "../../interfaces";
 import { NftsManager } from "../../manager";
-import { addNftToWallet, applyNftMintDb, checkAssetPropertiesSize, removeNftFromWallet } from "./helpers";
+import {
+    addNftToWallet,
+    applyNftMintDb,
+    applyProperties,
+    checkAssetPropertiesSize,
+    removeNftFromWallet,
+} from "./helpers";
 
 export class NftMintTransactionHandler extends Handlers.TransactionHandler {
     public async isActivated(): Promise<boolean> {
@@ -83,7 +89,8 @@ export class NftMintTransactionHandler extends Handlers.TransactionHandler {
         const wallet: State.IWallet = walletManager.findById(senderPublicKey);
         await addNftToWallet(wallet, asset, walletManager);
         if (updateDb) {
-            return applyNftMintDb(senderPublicKey, asset);
+            await applyNftMintDb(senderPublicKey, asset);
+            await applyProperties(asset);
         }
     }
 

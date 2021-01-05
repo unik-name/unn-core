@@ -2,6 +2,7 @@ import { Identities, Types, Utils } from "@arkecosystem/crypto";
 import { Builders } from "@uns/core-nft-crypto";
 import {
     CertifiedNftMintTransaction,
+    CertifiedNftTransferTransaction,
     CertifiedNftUpdateTransaction,
     INftDemand,
     INftDemandCertification,
@@ -9,11 +10,18 @@ import {
     NftDemandHashBuffer,
     NftDemandSigner,
     UNSCertifiedNftMintBuilder,
+    UNSCertifiedNftTransferBuilder,
     UNSCertifiedNftUpdateBuilder,
 } from "@uns/crypto";
 import { TransactionFactory } from "./transaction-factory";
 
-export const buildCertifiedDemand = (properties, sender, issuer, cost: Utils.BigNumber = Utils.BigNumber.ZERO) => {
+export const buildCertifiedDemand = (
+    properties,
+    sender,
+    issuer,
+    cost: Utils.BigNumber = Utils.BigNumber.ZERO,
+    recipientAddress = undefined,
+) => {
     const asset: INftDemand = {
         nft: {
             unik: {
@@ -26,7 +34,7 @@ export const buildCertifiedDemand = (properties, sender, issuer, cost: Utils.Big
                 iss: sender.tokenId,
                 sub: sender.tokenId,
                 iat: 1579165954,
-                cryptoAccountAddress: Identities.Address.fromPassphrase(issuer.passphrase),
+                cryptoAccountAddress: recipientAddress || Identities.Address.fromPassphrase(issuer.passphrase),
             },
             signature: "",
         },
@@ -119,6 +127,35 @@ export class NFTTransactionFactory extends TransactionFactory {
                 .properties(properties)
                 .demand(asset.demand)
                 .certification(asset.certification, asset.demand.payload.cryptoAccountAddress),
+        )
+            .withNetwork(NFTTransactionFactory.network)
+            .withFee(fee)
+            .withPassphrase(senderPassphrase);
+    }
+
+    public static nftCertifiedTransfer(
+        tokenId: string,
+        senderPassphrase: string,
+        issuerUNID,
+        issuerPassphrase,
+        properties,
+        cost = Utils.BigNumber.make(100000000),
+        fee: number = +CertifiedNftTransferTransaction.staticFee(),
+        recipientAddress: string,
+    ) {
+        const asset = buildCertifiedDemand(
+            properties,
+            { tokenId, passphrase: senderPassphrase },
+            { tokenId: issuerUNID, passphrase: issuerPassphrase },
+            cost,
+            recipientAddress,
+        );
+        return new TransactionFactory(
+            new UNSCertifiedNftTransferBuilder(NFTTransactionFactory.nftName, tokenId)
+                .demand(asset.demand)
+                .certification(asset.certification)
+                .properties(properties)
+                .recipientId(recipientAddress),
         )
             .withNetwork(NFTTransactionFactory.network)
             .withFee(fee)

@@ -8,7 +8,7 @@ import { generateNftId } from "../../../functional/transaction-forging/__support
 import { LIFE_CYCLE_PROPERTY_KEY, LifeCycleGrades, DIDTypes, getRewardsFromDidType } from "@uns/crypto";
 import { Handlers } from "@arkecosystem/core-transactions";
 import { CertifiedNftUpdateTransactionHandler } from "@uns/uns-transactions";
-import * as transactionHelpers from "@uns/uns-transactions/dist/handlers/utils/helpers";
+import * as transactionHelpers from "@uns/uns-transactions/dist/handlers/utils";
 import { State } from "@arkecosystem/core-interfaces";
 import { nftRepository } from "@uns/core-nft";
 

@@ -10,7 +10,7 @@ import * as Fixtures from "../__fixtures__";
 import { Wallets } from "@arkecosystem/core-state";
 import { Handlers } from "@arkecosystem/core-transactions";
 import { IWallet } from "@arkecosystem/core-interfaces/dist/core-state";
-import * as transactionHelpers from "@uns/uns-transactions/dist/handlers/utils/helpers";
+import * as transactionHelpers from "@uns/uns-transactions/dist/handlers/utils";
 
 let transaction;
 let handler: DiscloseExplicitTransactionHandler;
@@ -79,20 +79,10 @@ describe("UnsDiscloseExplicit Transaction", () => {
             }
         });
 
-        jest.spyOn(transactionHelpers, "getUnikOwner").mockImplementation(
-            (tokenId): Promise<string> => {
-                let ownerPubKey;
-                switch (tokenId) {
-                    case ISS_UNIK_ID:
-                        ownerPubKey = issuerPubKey;
-                        break;
-                    case TOKEN_ID:
-                        ownerPubKey = demanderPubKey;
-                        break;
-                }
-                return Promise.resolve(ownerPubKey);
-            },
-        );
+        jest.spyOn(transactionHelpers, "getUnikOwner")
+            .mockResolvedValueOnce(issuerPubKey)
+            .mockResolvedValueOnce(demanderPubKey);
+
         // Allow ISS_UNIK_ID to forge unikname
         Managers.configManager.set("network.forgeFactory.unikidWhiteList", [ISS_UNIK_ID]);
     });

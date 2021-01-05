@@ -7,7 +7,7 @@ import { Managers, Identities, Utils } from "@arkecosystem/crypto";
 import { CertifiedNftMintTransactionHandler, Errors as unsErrors } from "@uns/uns-transactions";
 import * as Fixtures from "../__fixtures__";
 import { Errors } from "@arkecosystem/core-transactions";
-import * as transactionHelpers from "@uns/uns-transactions/dist/handlers/utils/helpers";
+import * as transactionHelpers from "@uns/uns-transactions/dist/handlers/utils";
 
 let handler;
 let builder;

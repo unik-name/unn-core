@@ -9,7 +9,7 @@ import * as Fixtures from "../__fixtures__";
 import { nftRepository } from "@uns/core-nft";
 import { UNSCertifiedNftMintBuilder, getMintVoucherRewards } from "@uns/crypto";
 import { buildCertifiedDemand } from "../helpers";
-import * as transactionHelpers from "@uns/uns-transactions/dist/handlers/utils/helpers";
+import * as transactionHelpers from "@uns/uns-transactions/dist/handlers/utils";
 
 let handler;
 let builder;

@@ -9,7 +9,7 @@ import { LIFE_CYCLE_PROPERTY_KEY, LifeCycleGrades, DIDTypes, getRewardsFromDidTy
 import { Handlers } from "@arkecosystem/core-transactions";
 import { CertifiedNftUpdateTransactionHandler } from "@uns/uns-transactions";
 import { State } from "@arkecosystem/core-interfaces";
-import * as transactionHelpers from "@uns/uns-transactions/dist/handlers/utils/helpers";
+import * as transactionHelpers from "@uns/uns-transactions/dist/handlers/utils";
 
 let walletManager: State.IWalletManager;
 

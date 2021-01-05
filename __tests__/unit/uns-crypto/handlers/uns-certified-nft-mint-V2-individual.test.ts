@@ -9,7 +9,7 @@ import * as Fixtures from "../__fixtures__";
 import { generateNftId } from "../../../functional/transaction-forging/__support__/nft";
 import { NFTTransactionFactory } from "../../../helpers/nft-transaction-factory";
 import { DIDTypes } from "@uns/crypto";
-import * as transactionHelpers from "@uns/uns-transactions/dist/handlers/utils/helpers";
+import * as transactionHelpers from "@uns/uns-transactions/dist/handlers/utils";
 
 let handler;
 let senderWallet: State.IWallet;

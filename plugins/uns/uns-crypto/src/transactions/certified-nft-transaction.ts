@@ -1,6 +1,7 @@
 import { Identities, Interfaces, Utils } from "@arkecosystem/crypto";
 import ByteBuffer from "bytebuffer";
 
+import { UnsTransactionType } from "../enums";
 import {
     ICertifiedDemand,
     INftDemandCertification,
@@ -78,7 +79,6 @@ export abstract class CertifiedNftTransaction implements ICertifiedTransactionPa
         this.deserializeDemand(buf);
         this.deserializeCertification(buf);
 
-        // Recipient (forge factory)
         this.data.recipientId = Identities.Address.fromBuffer(buf.readBytes(21).toBuffer());
     }
 
@@ -109,7 +109,11 @@ export abstract class CertifiedNftTransaction implements ICertifiedTransactionPa
         data.asset.certification.payload.sub = buf.readBytes(32).toString("hex");
         data.asset.certification.payload.iss = buf.readBytes(32).toString("hex");
         data.asset.certification.payload.iat = buf.readUint64().toNumber();
-        data.asset.certification.payload.cost = data.amount = Utils.BigNumber.make(buf.readUint64().toString());
+        data.asset.certification.payload.cost = Utils.BigNumber.make(buf.readUint64().toString());
+
+        if (this.data.type !== UnsTransactionType.UnsCertifiedNftTransfer) {
+            data.amount = data.asset.certification.payload.cost;
+        }
 
         const signatureLength: number = this.getSignatureLength(buf);
 

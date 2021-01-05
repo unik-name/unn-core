@@ -9,6 +9,7 @@ import {
     NftCertificationSigner,
     NftDemandHashBuffer,
     unsCrypto,
+    UnsTransactionType,
 } from "@uns/crypto";
 import {
     CertifiedDemandNotAllowedIssuerError,
@@ -17,7 +18,7 @@ import {
     NftCertificationBadSignatureError,
     NftTransactionParametersError,
 } from "../errors";
-import { getFoundationWallet, getUnikOwner } from "./utils/helpers";
+import { getFoundationWallet, getUnikOwner } from "./utils";
 
 export abstract class CertifiedTransactionHandler {
     public applyRewardsToFoundation(walletManager: State.IWalletManager, didType: DIDTypes, height?: number): void {
@@ -73,13 +74,20 @@ export abstract class CertifiedTransactionHandler {
         if (payloadHashBuffer.getPayloadHashBuffer() !== certification.payload.sub) {
             throw new NftCertificationBadPayloadSubjectError();
         }
-        // check certified service cost corresponds to transaction amount
-        if (!certification.payload.cost.isEqualTo(transaction.data.amount)) {
+
+        // check certified service cost corresponds to transaction amount, except for transfer
+        if (
+            transaction.data.type !== UnsTransactionType.UnsCertifiedNftTransfer &&
+            !certification.payload.cost.isEqualTo(transaction.data.amount)
+        ) {
             throw new NftTransactionParametersError("amount");
         }
 
-        // check certified service payment recipient corresponds to transaction recipient
-        if (transaction.data.recipientId !== Identities.Address.fromPublicKey(issuerPublicKey)) {
+        // check certified service payment recipient corresponds to transaction recipient, except for transfer
+        if (
+            transaction.data.type !== UnsTransactionType.UnsCertifiedNftTransfer &&
+            transaction.data.recipientId !== Identities.Address.fromPublicKey(issuerPublicKey)
+        ) {
             throw new NftTransactionParametersError("recipient");
         }
     }
@@ -95,5 +103,45 @@ export abstract class CertifiedTransactionHandler {
     protected revertCostToRecipient(transaction: Interfaces.ITransaction, walletManager: State.IWalletManager): void {
         const recipient: State.IWallet = walletManager.findByAddress(transaction.data.recipientId);
         recipient.balance = recipient.balance.minus(transaction.data.amount);
+    }
+
+    protected async applyCostToFactory(
+        transaction: Interfaces.ITransactionData | Database.IBootstrapTransaction,
+        walletManager: State.IWalletManager,
+        height?: number,
+    ): Promise<void> {
+        const certifPayload: INftDemandCertificationPayload = transaction.asset.certification.payload;
+        const factoryPubKey = await getUnikOwner(certifPayload.iss, height);
+        const factoryWallet: State.IWallet = walletManager.findByPublicKey(factoryPubKey);
+        factoryWallet.balance = factoryWallet.balance.plus(certifPayload.cost);
+    }
+
+    protected async revertCostForFactory(
+        transaction: Interfaces.ITransactionData | Database.IBootstrapTransaction,
+        walletManager: State.IWalletManager,
+        height?: number,
+    ): Promise<void> {
+        const certifPayload: INftDemandCertificationPayload = transaction.asset.certification.payload;
+        const factoryPubKey = await getUnikOwner(certifPayload.iss, height);
+        const factoryWallet: State.IWallet = walletManager.findByPublicKey(factoryPubKey);
+        factoryWallet.balance = factoryWallet.balance.minus(certifPayload.cost);
+    }
+
+    protected applyCostToSender(
+        transaction: Interfaces.ITransactionData | Database.IBootstrapTransaction,
+        walletManager: State.IWalletManager,
+    ): void {
+        const certifPayload: INftDemandCertificationPayload = transaction.asset.certification.payload;
+        const sender: State.IWallet = walletManager.findByPublicKey(transaction.senderPublicKey);
+        sender.balance = sender.balance.minus(certifPayload.cost);
+    }
+
+    protected revertCostForSender(
+        transaction: Interfaces.ITransactionData | Database.IBootstrapTransaction,
+        walletManager: State.IWalletManager,
+    ): void {
+        const certifPayload: INftDemandCertificationPayload = transaction.asset.certification.payload;
+        const sender: State.IWallet = walletManager.findByPublicKey(transaction.senderPublicKey);
+        sender.balance = sender.balance.plus(certifPayload.cost);
     }
 }

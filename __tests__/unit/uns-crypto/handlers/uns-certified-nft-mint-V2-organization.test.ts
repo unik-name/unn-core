@@ -9,8 +9,7 @@ import * as Fixtures from "../__fixtures__";
 import { generateNftId } from "../../../functional/transaction-forging/__support__/nft";
 import { NFTTransactionFactory } from "../../../helpers/nft-transaction-factory";
 import { DIDTypes, getRewardsFromDidType, IUnsRewards } from "@uns/crypto";
-import { getFoundationWallet } from "@uns/uns-transactions/src/handlers/utils/helpers";
-import * as transactionHelpers from "@uns/uns-transactions/dist/handlers/utils/helpers";
+import * as transactionHelpers from "@uns/uns-transactions/dist/handlers/utils";
 
 let handler;
 let senderWallet: State.IWallet;
@@ -80,7 +79,7 @@ describe("CertifiedNtfMint Transaction", () => {
             await expect(handler.apply(transaction, walletManager)).toResolve();
             expect(+forgeFactoryWallet.balance).toStrictEqual(0);
             expect(+senderWallet.balance).toStrictEqual(rewards.sender);
-            const foundationWallet = getFoundationWallet(walletManager);
+            const foundationWallet = transactionHelpers.getFoundationWallet(walletManager);
             expect(+foundationWallet.balance).toStrictEqual(rewards.foundation);
         });
     });
@@ -91,7 +90,7 @@ describe("CertifiedNtfMint Transaction", () => {
             senderWallet.setAttribute("tokens", { [Fixtures.nftMintDemand.payload.sub]: { type: didType } });
             senderWallet.balance = Utils.BigNumber.make(rewards.sender);
             walletManager.reindex(senderWallet);
-            const foundationWallet = getFoundationWallet(walletManager);
+            const foundationWallet = transactionHelpers.getFoundationWallet(walletManager);
             foundationWallet.balance = Utils.BigNumber.make(rewards.foundation);
             walletManager.reindex(foundationWallet);
 

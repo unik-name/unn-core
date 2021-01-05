@@ -129,6 +129,31 @@ export const certifiedUpdateAndWait = async (
     return t;
 };
 
+export const certifiedTransferAndWait = async (
+    tokenId: string,
+    senderPassphrase: string,
+    issUnikId: string,
+    issPassphrase: string,
+    properties,
+    serviceCost: Utils.BigNumber,
+    recipient: string,
+    fee: number = +CertifiedNftUpdateTransaction.staticFee(),
+) => {
+    const t = NFTTransactionFactory.nftCertifiedTransfer(
+        tokenId,
+        senderPassphrase,
+        issUnikId,
+        issPassphrase,
+        properties,
+        serviceCost,
+        fee,
+        recipient,
+    ).createOne();
+    await expect(t).toBeAccepted();
+    await snoozeForBlock(1);
+    return t;
+};
+
 export const voteAndWait = async (delegatePubKey, passphrase = NftSupport.defaultPassphrase) => {
     const t = new TransactionFactory(new UNSVoteBuilder().votesAsset([`+${delegatePubKey}`]))
         .withNetwork(NftSupport.network)

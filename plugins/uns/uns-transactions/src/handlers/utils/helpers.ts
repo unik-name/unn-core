@@ -1,5 +1,5 @@
 import { app } from "@arkecosystem/core-container";
-import { Blockchain, Database, State } from "@arkecosystem/core-interfaces";
+import { Database, State } from "@arkecosystem/core-interfaces";
 import { IWalletManager } from "@arkecosystem/core-interfaces/dist/core-state";
 import { Identities, Interfaces, Managers } from "@arkecosystem/crypto";
 import { nftRepository, NftsManager } from "@uns/core-nft";
@@ -66,49 +66,49 @@ export const revertExplicitValue = async (transaction: Interfaces.ITransactionDa
  *
  */
 export const getUnikOwner = async (tokenId: string, height?: number): Promise<string> => {
-    const asset = { nft: { unik: { tokenId } } };
-    const transactions = await nftRepository().findTransactionsByAsset(
-        asset,
-        [
-            Enums.NftTransactionType.NftMint,
-            Enums.NftTransactionType.NftTransfer,
-            UnsTransactionType.UnsCertifiedNftMint,
-            UnsTransactionType.UnsCertifiedNftTransfer,
-        ],
-        [UnsTransactionGroup, Enums.NftTransactionGroup],
-    );
-
-    if (!transactions || !transactions.length) {
-        throw new Error(`UNIK Id \"${tokenId}\" not found.`);
-    }
-
     if (!height) {
-        const blockchain = app.resolvePlugin<Blockchain.IBlockchain>("blockchain");
-        height = blockchain ? blockchain.getLastBlock().data.height : 0;
-    }
+        const unik = await nftRepository().findById(tokenId);
+        return getWalletManager().findByAddress(unik.ownerId).publicKey;
+    } else {
+        const asset = { nft: { unik: { tokenId } } };
+        const transactions = await nftRepository().findTransactionsByAsset(
+            asset,
+            [
+                Enums.NftTransactionType.NftMint,
+                Enums.NftTransactionType.NftTransfer,
+                UnsTransactionType.UnsCertifiedNftMint,
+                UnsTransactionType.UnsCertifiedNftTransfer,
+            ],
+            [UnsTransactionGroup, Enums.NftTransactionGroup],
+        );
 
-    let ownerPubKey = transactions.find(
-        tx => tx.type === UnsTransactionType.UnsCertifiedNftMint || tx.type === Enums.NftTransactionType.NftMint,
-    ).senderPublicKey;
+        if (!transactions || !transactions.length) {
+            throw new Error(`UNIK Id \"${tokenId}\" not found.`);
+        }
 
-    const transferTransactions = transactions.filter(
-        tx =>
-            tx.type === UnsTransactionType.UnsCertifiedNftTransfer || tx.type === Enums.NftTransactionType.NftTransfer,
-    );
-    if (!transferTransactions.length) {
+        let ownerPubKey = transactions.find(tx =>
+            [UnsTransactionType.UnsCertifiedNftMint, Enums.NftTransactionType.NftMint].includes(tx.type),
+        ).senderPublicKey;
+
+        const transferTransactions = transactions.filter(tx =>
+            [UnsTransactionType.UnsCertifiedNftTransfer, Enums.NftTransactionType.NftTransfer].includes(tx.type),
+        );
+
+        if (!transferTransactions.length) {
+            return ownerPubKey;
+        }
+
+        const blocksRepo = app.resolvePlugin<Database.IDatabaseService>("database").blocksBusinessRepository;
+        for (const tx of transferTransactions) {
+            const block = await blocksRepo.findById(tx.blockId);
+            if (block.height <= height) {
+                ownerPubKey = tx.recipientId;
+            } else {
+                break;
+            }
+        }
         return ownerPubKey;
     }
-
-    const blocksRepo = app.resolvePlugin<Database.IDatabaseService>("database").blocksBusinessRepository;
-    for (const tx of transferTransactions) {
-        const block = await blocksRepo.findById(tx.blockId);
-        if (block.height <= height) {
-            ownerPubKey = tx.recipientId;
-        } else {
-            break;
-        }
-    }
-    return ownerPubKey;
 };
 
 export const getDidTypeFromProperties = (properties: Array<{ key: string; value: string }>): DIDTypes =>

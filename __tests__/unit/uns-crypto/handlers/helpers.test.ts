@@ -8,7 +8,7 @@ import { UnsTransactionType } from "@uns/crypto";
 import { Interfaces } from "@arkecosystem/crypto";
 import { blocksBusinessRepository } from "../mocks/core-container";
 
-const unikId = nftRepository();
+const nftRepo = nftRepository();
 const senderPublicKey = "senderPubKey";
 const lastblockHeight = 10;
 
@@ -25,8 +25,8 @@ describe("Transaction helpers tests", () => {
                 type: UnsTransactionType.UnsCertifiedNftMint,
                 senderPublicKey,
             } as Interfaces.ITransactionData;
-            jest.spyOn(unikId, "findTransactionsByAsset").mockResolvedValueOnce([mintTransaction]);
-            expect(await getUnikOwner(generateNftId())).toEqual(senderPublicKey);
+            jest.spyOn(nftRepo, "findTransactionsByAsset").mockResolvedValueOnce([mintTransaction]);
+            expect(await getUnikOwner(generateNftId(), lastblockHeight)).toEqual(senderPublicKey);
         });
 
         it("should retrieve unik owner. Minted + transferred", async () => {
@@ -41,12 +41,15 @@ describe("Transaction helpers tests", () => {
                 blockId: "blockId",
             } as Interfaces.ITransactionData;
 
-            jest.spyOn(unikId, "findTransactionsByAsset").mockResolvedValueOnce([mintTransaction, transferTransaction]);
+            jest.spyOn(nftRepo, "findTransactionsByAsset").mockResolvedValueOnce([
+                mintTransaction,
+                transferTransaction,
+            ]);
             blocksBusinessRepository.findById.mockResolvedValueOnce({
                 height: lastblockHeight,
             } as Interfaces.IBlockData);
 
-            expect(await getUnikOwner(generateNftId())).toEqual(newOwnerPubKey);
+            expect(await getUnikOwner(generateNftId(), lastblockHeight)).toEqual(newOwnerPubKey);
         });
 
         it("should retrieve unik owner before transfer", async () => {
@@ -61,7 +64,10 @@ describe("Transaction helpers tests", () => {
                 blockId: "blockId",
             } as Interfaces.ITransactionData;
 
-            jest.spyOn(unikId, "findTransactionsByAsset").mockResolvedValueOnce([mintTransaction, transferTransaction]);
+            jest.spyOn(nftRepo, "findTransactionsByAsset").mockResolvedValueOnce([
+                mintTransaction,
+                transferTransaction,
+            ]);
             blocksBusinessRepository.findById.mockResolvedValueOnce({
                 height: lastblockHeight,
             } as Interfaces.IBlockData);

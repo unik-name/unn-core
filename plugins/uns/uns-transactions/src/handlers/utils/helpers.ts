@@ -78,7 +78,7 @@ export const getUnikOwner = async (tokenId: string, height?: number): Promise<st
         [UnsTransactionGroup, Enums.NftTransactionGroup],
     );
 
-    if (!transactions.length) {
+    if (!transactions || !transactions.length) {
         throw new Error(`UNIK Id \"${tokenId}\" not found.`);
     }
 

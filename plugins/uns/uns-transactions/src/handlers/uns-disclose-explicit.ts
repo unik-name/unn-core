@@ -14,7 +14,7 @@ import {
     DiscloseDemandSubInvalidError,
     IssuerNotFound,
 } from "../errors";
-import { EXPLICIT_PROP_KEY, getUnikOwner, revertExplicitValue, setExplicitValue } from "./utils/helpers";
+import { EXPLICIT_PROP_KEY, getUnikOwner, revertExplicitValue, setExplicitValue } from "./utils";
 
 export class DiscloseExplicitTransactionHandler extends Handlers.TransactionHandler {
     private get nftsRepository(): NFT.INftsRepository {

@@ -9,7 +9,7 @@ import * as Fixtures from "../__fixtures__";
 import { NFTTransactionFactory } from "../../../helpers/nft-transaction-factory";
 import { generateNftId } from "../../../functional/transaction-forging/__support__/nft";
 import { CertifiedNftUpdateTransaction } from "@uns/crypto";
-import * as transactionHelpers from "@uns/uns-transactions/dist/handlers/utils/helpers";
+import * as transactionHelpers from "@uns/uns-transactions/dist/handlers/utils";
 
 let handler;
 let transaction;
@@ -62,7 +62,7 @@ describe("CertifiedNtfUpdate Transaction", () => {
     });
 
     describe("throwIfCannotBeApplied", () => {
-        it("should not throw ", async () => {
+        it("should not throw", async () => {
             getOwnerMock.mockResolvedValueOnce(forgeFactoryWallet.publicKey);
             await expect(handler.throwIfCannotBeApplied(transaction, senderWallet, walletManager)).toResolve();
         });

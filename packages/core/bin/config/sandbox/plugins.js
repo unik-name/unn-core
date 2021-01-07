@@ -18,8 +18,7 @@ module.exports = {
             database: process.env.CORE_DB_DATABASE || `${process.env.CORE_TOKEN}_${process.env.CORE_NETWORK_NAME}`,
             user: process.env.CORE_DB_USERNAME || process.env.CORE_TOKEN,
             password: process.env.CORE_DB_PASSWORD || "password",
-        },
-        estimateTotalCount: false // TODO: uns : otherwise total count of nfts was incorrect
+        }
     },
     "@arkecosystem/core-transaction-pool": {
         enabled: !process.env.CORE_TRANSACTION_POOL_DISABLED,

@@ -13,7 +13,7 @@ const DEFAULT_UNIK_PROPERTIES = ["type", "explicitValues"];
 export class NftsRepository extends Repository implements NFT.INftsRepository {
     // Arguments with types is a protection!
     constructor(protected db: pgPromise.IDatabase<any>, pgp: pgPromise.IMain, options) {
-        super(db, pgp, options);
+        super(db, pgp, { ...options, estimateTotalCount: false });
     }
 
     /**

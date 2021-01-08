@@ -3,7 +3,7 @@
     "npmClient": "yarn",
     "packages": ["packages/*", "plugins/*"],
     "useWorkspaces": true,
-    "version": "5.5.1",
+    "version": "5.5.2",
     "command": {
         "publish": {
             "allowBranch": ["develop", "release-*"]

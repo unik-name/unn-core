@@ -30,7 +30,8 @@
         "bridgechainUpdate": { "enable": false },
         "businessRegistration": { "enable": false },
         "businessResignation": { "enable": false },
-        "businessUpdate": { "enable": false }
+        "businessUpdate": { "enable": false },
+        "UnsCertifiedNftTransfer": { "enable": false }
     },
     "forgeFactory": {
         "unikidWhiteList": [

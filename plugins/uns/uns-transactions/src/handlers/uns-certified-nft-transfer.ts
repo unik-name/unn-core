@@ -10,7 +10,7 @@ import { getUnikOwner } from "./utils";
 
 export class CertifiedNftTransferTransactionHandler extends NftTransferTransactionHandler {
     public async isActivated(): Promise<boolean> {
-        return true;
+        return this.isTransactionActivated();
     }
 
     public dependencies(): ReadonlyArray<Handlers.TransactionHandlerConstructor> {

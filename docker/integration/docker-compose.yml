@@ -23,7 +23,7 @@ services:
       service: forger
     container_name: uns_dalinet_forger1
     environment:
-     FORGERS_SECRET: '"square climb witness lecture shoot unveil change afford license mesh chair regret","long blouse wagon huge range version owner marine raise surprise rhythm shy","cactus cute please spirit reveal raw goose emotion latin subject forum panic"'
+     FORGERS_SECRET: '"odor soft erode vanish gloom family atom mushroom resist elegant negative other","square climb witness lecture shoot unveil change afford license mesh chair regret","long blouse wagon huge range version owner marine raise surprise rhythm shy","cactus cute please spirit reveal raw goose emotion latin subject forum panic","ramp mechanic urban ugly warfare jacket weasel observe advance vivid tone race","minimum milk betray arena denial razor okay final muscle charge write pioneer","future symptom next dance pig seat afraid clump history drip powder tower","place kite expand energy tool air donkey public puppy dilemma total idea"'
     #  BOOTSTRAP: "true"
      CORE_DB_DATABASE: uns_dalinet_forger1
     ports:

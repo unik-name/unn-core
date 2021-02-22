@@ -1,7 +1,7 @@
 version: '2'
 services:
   postgres:
-    build:   
+    build:
       context: ./dcore-db/
       dockerfile: Dockerfile
     image: "universalnamesystem/dcore-db"
@@ -12,7 +12,7 @@ services:
     volumes:
       - 'postgres:/var/lib/postgresql/data'
     networks:
-      - core 
+      - core
     environment:
      POSTGRES_PASSWORD: password
      POSTGRES_USER: uns
@@ -33,6 +33,17 @@ services:
      - postgres
     depends_on:
      - postgres
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.uns.entrypoints=websecure
+      - traefik.http.routers.uns.rule=Host(`forger1.dalinet.uns.network`)
+      - traefik.http.routers.uns.tls=true
+      - traefik.http.routers.uns.tls.certresolver=myhttpchallenge
+      - traefik.http.routers.uns.service=uns
+      - traefik.http.routers.uns.middlewares=uns-headers
+      - traefik.http.services.uns.loadbalancer.server.port=4003
+      - traefik.http.services.uns.loadbalancer.server.scheme=http
+      - traefik.http.middlewares.uns-headers.headers.stsSeconds=15552000
 #   forger2:
 #     extends:
 #       file: forger-commons.yml
@@ -63,6 +74,29 @@ services:
 #     depends_on:
 #      - forger2
 #      - postgres
+
+  traefik:
+    image: traefik:v2.4
+    container_name: traefik
+    command:
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --certificatesresolvers.myhttpchallenge.acme.httpchallenge=true
+      - --certificatesresolvers.myhttpchallenge.acme.httpchallenge.entrypoint=web
+      - --certificatesresolvers.myhttpchallenge.acme.email=sysadmins@spacelephant.org
+      - --certificatesresolvers.myhttpchallenge.acme.storage=/letsencrypt/acme.json
+      - --serverstransport.insecureskipverify
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - "./letsencrypt:/letsencrypt"
+    restart: unless-stopped
+    networks:
+      - core
 
 volumes:
   postgres:

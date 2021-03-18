@@ -3,6 +3,7 @@ import { Blockchain, Database, Logger, P2P, TransactionPool } from "@arkecosyste
 import { isBlockChained } from "@arkecosystem/core-utils";
 import { Blocks, Crypto, Interfaces } from "@arkecosystem/crypto";
 import pluralize from "pluralize";
+import { constants } from "../../constants";
 import { MissingCommonBlockError } from "../../errors";
 import { IPeerPingResponse } from "../../interfaces";
 import { isWhitelisted } from "../../utils";
@@ -14,8 +15,9 @@ export const getPeers = ({ service }: { service: P2P.IPeerService }): P2P.IPeerB
     return service
         .getStorage()
         .getPeers()
-        .map(peer => peer.toBroadcast())
-        .sort((a, b) => a.latency - b.latency);
+        .sort((a, b) => a.latency - b.latency)
+        .slice(0, constants.MAX_PEERS_GETPEERS)
+        .map(peer => peer.toBroadcast());
 };
 
 export const getCommonBlocks = async ({
@@ -125,6 +127,11 @@ export const getBlocks = async ({ req }): Promise<Interfaces.IBlockData[] | Data
     const reqBlockHeight: number = +req.data.lastBlockHeight + 1;
     const reqBlockLimit: number = +req.data.blockLimit || 400;
     const reqHeadersOnly: boolean = !!req.data.headersOnly;
+
+    const lastHeight: number = app.resolvePlugin<Blockchain.IBlockchain>("blockchain").getLastHeight();
+    if (reqBlockHeight > lastHeight) {
+        return [];
+    }
 
     const blocks: Database.IDownloadBlock[] = await database.getBlocksForDownload(
         reqBlockHeight,

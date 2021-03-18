@@ -79,6 +79,7 @@ describe("API 2.0 - Transactions", () => {
                 last: "/transactions?transform=true&page=2&limit=100",
                 next: "/transactions?transform=true&page=2&limit=100",
                 pageCount: 2,
+                // tslint:disable-next-line: no-null-keyword
                 previous: null,
                 self: "/transactions?transform=true&page=1&limit=100",
                 totalCount: expect.any(Number), // for some reason it can give a different number,
@@ -645,12 +646,9 @@ describe("API 2.0 - Transactions", () => {
                     vote: "100000000",
                 },
                 "2": {
-                    bridgechainRegistration: "5000000000",
-                    bridgechainResignation: "5000000000",
-                    bridgechainUpdate: "5000000000",
-                    businessRegistration: "5000000000",
-                    businessResignation: "5000000000",
-                    businessUpdate: "5000000000",
+                    entityRegistration: "5000000000",
+                    entityResignation: "500000000",
+                    entityUpdate: "500000000",
                 },
             });
         });

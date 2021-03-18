@@ -53,7 +53,8 @@
             "packages/core-transactions/src/handlers/transaction.ts",
             "packages/core-transactions/src/handlers/transfer.ts",
             "__tests__/integration/core-transaction-pool/processor.test.ts",
-            "__tests__/unit/core-utils/tree.test.ts"
+            "__tests__/unit/core-utils/tree.test.ts",
+            "__tests__/integration/core-api/handlers/entities.test.ts"
         ]
     }
 }

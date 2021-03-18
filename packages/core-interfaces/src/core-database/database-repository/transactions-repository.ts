@@ -75,9 +75,18 @@ export interface ITransactionsRepository extends IRepository {
     }>;
 
     getFeeStatistics(
-        days: number,
-        minFeeBroadcast: number,
-    ): Promise<Array<{ type: number; fee: number; timestamp: number }>>;
+        days?: number,
+        minFeeBroadcast?: number,
+    ): Promise<
+        Array<{
+            type: number;
+            typeGroup: number;
+            avg: number;
+            min: number;
+            max: number;
+            sum: number;
+        }>
+    >;
 
     deleteByBlockId(blockIds: string[], db: any): Promise<void>;
 

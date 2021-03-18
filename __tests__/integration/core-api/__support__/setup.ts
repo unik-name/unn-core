@@ -23,6 +23,7 @@ const options = {
     host: "0.0.0.0",
     port: 4003,
     whitelist: ["*"],
+    cache: { enabled: false },
 };
 
 const setUp = async () => {

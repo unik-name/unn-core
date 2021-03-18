@@ -1,6 +1,7 @@
 import { app } from "@arkecosystem/core-container";
 import { P2P } from "@arkecosystem/core-interfaces";
 import { create, SCClientSocket } from "socketcluster-client";
+import { constants } from "./constants";
 import { PeerRepository } from "./peer-repository";
 import { codec } from "./utils/sc-codec";
 
@@ -44,6 +45,7 @@ export class PeerConnector implements P2P.IPeerConnector {
 
         if (connection) {
             (connection as any).transport.socket.terminate();
+            connection.destroy();
 
             this.connections.forget(peer.ip);
         }
@@ -74,33 +76,45 @@ export class PeerConnector implements P2P.IPeerConnector {
             port: peer.port,
             hostname: peer.ip,
             ackTimeout: Math.max(app.resolveOptions("p2p").getBlocksTimeout, app.resolveOptions("p2p").verifyTimeout),
+            autoConnect: false,
             perMessageDeflate: false,
             codecEngine: codec,
+            // @ts-ignore
+            maxPayload: 102400, // initialized to 100KB, will then be updated
         });
 
-        const socket = (connection as any).transport.socket;
+        connection.on("connecting", () => {
+            setImmediate(() => {
+                const socket = (connection as any).transport.socket;
 
-        socket.on("ping", () => this.terminate(peer));
-        socket.on("pong", () => this.terminate(peer));
-        socket.on("message", data => {
-            if (data === "#1") {
-                // this is to establish some rate limit on #1 messages
-                // a simple rate limit of 1 per second doesnt seem to be enough, so decided to give some margin
-                // and allow up to 10 per second which should be more than enough
-                const timeNow: number = new Date().getTime();
-                socket._last10Pings = socket._last10Pings || [];
-                socket._last10Pings.push(timeNow);
-                if (socket._last10Pings.length >= 10) {
-                    socket._last10Pings = socket._last10Pings.slice(socket._last10Pings.length - 10);
-                    if (timeNow - socket._last10Pings[0] < 1000) {
-                        this.terminate(peer);
+                socket.on("ping", () => this.terminate(peer));
+                socket.on("pong", () => this.terminate(peer));
+                socket.on("message", data => {
+                    if (data.length > 1000) {
+                        // reset max payload to default after receiving a message
+                        // (the 1k length condition helps discarding SC messages and also some of our own
+                        // that would not need a max payload reset)
+                        socket._receiver._maxPayload = constants.DEFAULT_MAX_PAYLOAD_CLIENT;
                     }
-                }
-            }
+
+                    // this is to establish some rate limit on socket messages
+                    // 30 messages per second is enough for socketcluster's + our own messages
+                    const timeNow: number = new Date().getTime();
+                    socket._last30Messages = socket._last30Messages || [];
+                    socket._last30Messages.push(timeNow);
+                    if (socket._last30Messages.length >= 30) {
+                        socket._last30Messages = socket._last30Messages.slice(socket._last30Messages.length - 30);
+                        if (timeNow - socket._last30Messages[0] < 1000) {
+                            this.terminate(peer);
+                        }
+                    }
+                });
+            });
         });
 
         connection.on("error", () => this.disconnect(peer));
 
+        connection.connect();
         return connection;
     }
 }

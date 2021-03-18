@@ -8,7 +8,7 @@ export const defaults = {
     /**
      * The minimum peer version we expect
      */
-    minimumVersions: ["^2.6", "^2.6.0-next.0", "^2.6.12-next.0"],
+    minimumVersions: ["^2.6", "^2.6.0-next.0", "^2.7", "^2.7.0-next.0"],
     /**
      * The number of peers we expect to be available to start a relay
      */
@@ -21,7 +21,7 @@ export const defaults = {
      * The timeout to download a batch of blocks (400). Notice that we start
      * 25 concurrent such downloads, so the network may be saturated. [milliseconds]
      */
-    getBlocksTimeout: 600000,
+    getBlocksTimeout: 30000,
     /**
      * The maximum number of peers we will broadcast data to
      */

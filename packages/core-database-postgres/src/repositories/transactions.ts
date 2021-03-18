@@ -1,5 +1,6 @@
 import { app } from "@arkecosystem/core-container";
 import { Database, State } from "@arkecosystem/core-interfaces";
+import { Handlers } from "@arkecosystem/core-transactions";
 import { Crypto, Enums, Identities, Interfaces, Managers, Utils } from "@arkecosystem/crypto";
 import { LIFE_CYCLE_PROPERTY_KEY, LifeCycleGrades, UnsTransactionGroup, UnsTransactionType } from "@uns/crypto";
 
@@ -257,18 +258,55 @@ export class TransactionsRepository extends Repository implements Database.ITran
     }
 
     public async getFeeStatistics(
-        days: number,
+        days?: number,
         minFee?: number,
-    ): Promise<Array<{ type: number; fee: number; timestamp: number }>> {
+    ): Promise<
+        Array<{
+            type: number;
+            typeGroup: number;
+            avg: number;
+            min: number;
+            max: number;
+            sum: number;
+        }>
+    > {
         minFee = minFee || 0;
 
-        const age = Crypto.Slots.getTime(
-            dayjs()
-                .subtract(days, "day")
-                .valueOf(),
-        );
+        if (days) {
+            const age = Crypto.Slots.getTime(
+                dayjs()
+                    .subtract(days, "day")
+                    .valueOf(),
+            );
 
-        return this.db.manyOrNone(queries.transactions.feeStatistics, { age, minFee });
+            return this.db.manyOrNone(queries.transactions.feeStatistics, { age, minFee });
+        }
+
+        // no days parameter, take the stats from each type for its last 20 txs
+        const feeStatistics = [];
+        const activatedHandlers = await Handlers.Registry.getActivatedTransactionHandlers();
+        const types = activatedHandlers.map(h => ({
+            type: h.getConstructor().type,
+            typeGroup: h.getConstructor().typeGroup,
+        }));
+        for (const feeStatsByType of types) {
+            const feeStatsForType = await this.db.oneOrNone(queries.transactions.feeStatisticsByType, {
+                type: feeStatsByType.type,
+                typeGroup: feeStatsByType.typeGroup,
+            });
+            feeStatistics.push(
+                feeStatsForType ?? {
+                    type: feeStatsByType.type,
+                    typeGroup: feeStatsByType.typeGroup,
+                    avg: 0,
+                    min: 0,
+                    max: 0,
+                    sum: 0,
+                },
+            );
+        }
+
+        return feeStatistics;
     }
 
     public getModel(): Transaction {

@@ -1,7 +1,7 @@
 // tslint:disable:max-classes-per-file
 import { app } from "@arkecosystem/core-container";
 import { Database, Logger, P2P, Shared, State } from "@arkecosystem/core-interfaces";
-import { CappedSet, NSect, roundCalculator } from "@arkecosystem/core-utils";
+import { NSect, roundCalculator } from "@arkecosystem/core-utils";
 import { Blocks, Interfaces } from "@arkecosystem/crypto";
 import assert from "assert";
 import pluralize from "pluralize";
@@ -21,7 +21,6 @@ export class PeerVerifier {
      * A cache of verified blocks' ids. A block is verified if it is connected to a chain
      * in which all blocks (including that one) are signed by the corresponding delegates.
      */
-    private static readonly verifiedBlocks = new CappedSet();
     private readonly database: Database.IDatabaseService = app.resolvePlugin<Database.IDatabaseService>("database");
     private readonly logger: Logger.ILogger = app.resolvePlugin<Logger.ILogger>("logger");
     private logPrefix: string;
@@ -77,7 +76,7 @@ export class PeerVerifier {
         claimedState: P2P.IPeerState,
         deadline: number,
     ): Promise<PeerVerificationResult | undefined> {
-        if (!this.checkStateHeader(claimedState)) {
+        if (!(await this.checkStateHeader(claimedState))) {
             return undefined;
         }
 
@@ -102,7 +101,7 @@ export class PeerVerifier {
         return new PeerVerificationResult(ourHeight, claimedHeight, highestCommonBlockHeight);
     }
 
-    private checkStateHeader(claimedState: P2P.IPeerState): boolean {
+    private async checkStateHeader(claimedState: P2P.IPeerState): Promise<boolean> {
         const blockHeader: Interfaces.IBlockData = claimedState.header as Interfaces.IBlockData;
         const claimedHeight: number = Number(blockHeader.height);
         if (claimedHeight !== claimedState.height) {
@@ -126,9 +125,17 @@ export class PeerVerifier {
                 return true;
             }
 
-            const claimedBlock: Interfaces.IBlock = Blocks.BlockFactory.fromData(blockHeader);
-            if (claimedBlock.verifySignature()) {
-                return true;
+            if (claimedHeight < this.ourHeight()) {
+                const roundInfo = roundCalculator.calculateRound(claimedHeight);
+                const delegates = await this.getDelegatesByRound(roundInfo);
+                if (await this.verifyPeerBlock(blockHeader, claimedHeight, delegates)) {
+                    return true;
+                }
+            } else {
+                const claimedBlock: Interfaces.IBlock = Blocks.BlockFactory.fromData(blockHeader);
+                if (claimedBlock.verifySignature()) {
+                    return true;
+                }
             }
 
             this.log(
@@ -461,15 +468,6 @@ export class PeerVerifier {
         expectedHeight: number,
         delegatesByPublicKey: Record<string, State.IWallet>,
     ): Promise<boolean> {
-        if (PeerVerifier.verifiedBlocks.has(blockData.id)) {
-            this.log(
-                Severity.DEBUG_EXTRA,
-                `accepting block at height ${blockData.height}, already successfully verified before`,
-            );
-
-            return true;
-        }
-
         const block = Blocks.BlockFactory.fromData(blockData);
         if (!block.verifySignature()) {
             this.log(
@@ -494,8 +492,6 @@ export class PeerVerifier {
                 Severity.DEBUG_EXTRA,
                 `successfully verified block at height ${height}, signed by ` + block.data.generatorPublicKey,
             );
-
-            PeerVerifier.verifiedBlocks.add(block.data.id);
 
             return true;
         }

@@ -141,6 +141,8 @@ all_tests: &all_tests
   - F-second-signature-registration
   - F-transfer
   - F-vote
+  - F-entity-register
+  - F-entity-resign
   - F-nft
   - Badges
   - F-UNS
@@ -398,6 +400,18 @@ jobs:
     #   - run: yarn test:coverage __tests__/functional/transaction-forging/vote.test.ts
     #   - *coverage
       - *notif
+  F-entity-register:
+    <<: *job_test_config
+    steps:
+      - *attach
+      - run: yarn test __tests__/functional/transaction-forging/entity-register.test.ts
+      - *notif
+  F-entity-resign:
+    <<: *job_test_config
+    steps:
+      - *attach
+      - run: yarn test __tests__/functional/transaction-forging/entity-resign.test.ts
+      - *notif
 
   e2e:
     machine:
@@ -631,6 +645,17 @@ workflow: &workflow
         *arksTestsBranches
       requires:
         *nft_uns_related_tests
+  - F-entity-register:
+      filters:
+        *arksTestsBranches
+      requires:
+        *nft_uns_related_tests
+  - F-entity-resign:
+      filters:
+        *arksTestsBranches
+      requires:
+        *nft_uns_related_tests
+
   - e2e:
       filters:
         *arksTestsBranches

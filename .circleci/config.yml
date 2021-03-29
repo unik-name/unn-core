@@ -517,17 +517,12 @@ orbs:
 ####################################
 ## Workflows
 ####################################
-arksTestsBranches: &arksTestsBranches
-  branches:
-    only:
-      - develop
-      - /[Rr]elease-.*/
 
 deployBranches: &deployBranches
    branches:
      only:
        - develop
-       - /release-\d+\.\d+\.x/
+       - /[Rr]elease-\d+\.\d+\.x/
 
 workflow: &workflow
   - prepare
@@ -561,104 +556,66 @@ workflow: &workflow
         - build
 # Ark's tests
   - F-bridgechain-registration:
-      filters:
-        *arksTestsBranches
       requires:
         *nft_uns_related_tests
   - F-bridgechain-resignation:
-      filters:
-        *arksTestsBranches
       requires:
         *nft_uns_related_tests
   - F-bridgechain-update:
-      filters:
-        *arksTestsBranches
       requires:
         *nft_uns_related_tests
   - F-business-registration:
-      filters:
-        *arksTestsBranches
       requires:
         *nft_uns_related_tests
   - F-business-resignation:
-      filters:
-        *arksTestsBranches
       requires:
         *nft_uns_related_tests
   - F-business-update:
-      filters:
-        *arksTestsBranches
       requires:
         *nft_uns_related_tests
   - F-delegate-registration:
-      filters:
-        *arksTestsBranches
       requires:
         *nft_uns_related_tests
   - F-delegate-resignation:
-      filters:
-        *arksTestsBranches
       requires:
         *nft_uns_related_tests
   - F-htlc-claim:
-      filters:
-        *arksTestsBranches
       requires:
         *nft_uns_related_tests
   - F-htlc-lock:
-      filters:
-        *arksTestsBranches
       requires:
         *nft_uns_related_tests
   - F-htlc-refund:
-      filters:
-        *arksTestsBranches
       requires:
         *nft_uns_related_tests
   - F-ipfs:
-      filters:
-        *arksTestsBranches
       requires:
         *nft_uns_related_tests
   - F-multi-payment:
-      filters:
-        *arksTestsBranches
       requires:
         *nft_uns_related_tests
   - F-multi-signature-registration:
-      filters:
-        *arksTestsBranches
       requires:
         *nft_uns_related_tests
   - F-second-signature-registration:
-      filters:
-        *arksTestsBranches
       requires:
         *nft_uns_related_tests
   - F-transfer:
-      filters:
-        *arksTestsBranches
       requires:
         *nft_uns_related_tests
   - F-vote:
-      filters:
-        *arksTestsBranches
       requires:
         *nft_uns_related_tests
   - F-entity-register:
-      filters:
-        *arksTestsBranches
       requires:
         *nft_uns_related_tests
   - F-entity-resign:
-      filters:
-        *arksTestsBranches
       requires:
         *nft_uns_related_tests
 
   - e2e:
       filters:
-        *arksTestsBranches
+        *deployBranches
       requires:
         *nft_uns_related_tests
 

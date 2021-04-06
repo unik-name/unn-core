@@ -163,7 +163,7 @@ test_requirements: &test_requirements
     - build
 
 coverage: &coverage
-  run: ./node_modules/.bin/codecov
+  run: ./node_modules/.bin/codecov --token=$CODECOV_TOKEN
 
 notif: &notif
   slack/status:
@@ -268,149 +268,134 @@ jobs:
     <<: *job_test_config
     steps:
       - *attach
-      - run: yarn test __tests__/functional/transaction-forging/bridgechain-registration.test.ts
-    #   - run: yarn test:coverage __tests__/functional/transaction-forging/bridgechain-registration.test.ts
-    #   - *coverage
+      - run: yarn test:coverage __tests__/functional/transaction-forging/bridgechain-registration.test.ts
+      - *coverage
       - *notif
   F-bridgechain-resignation:
     <<: *job_test_config
     steps:
       - *attach
-      - run: yarn test __tests__/functional/transaction-forging/bridgechain-resignation.test.ts
-    #   - run: yarn test:coverage __tests__/functional/transaction-forging/bridgechain-resignation.test.ts
-    #   - *coverage
+      - run: yarn test:coverage __tests__/functional/transaction-forging/bridgechain-resignation.test.ts
+      - *coverage
       - *notif
   F-bridgechain-update:
     <<: *job_test_config
     steps:
       - *attach
-      - run: yarn test __tests__/functional/transaction-forging/bridgechain-update.test.ts
-    #   - run: yarn test:coverage __tests__/functional/transaction-forging/bridgechain-update.test.ts
-    #   - *coverage
+      - run: yarn test:coverage __tests__/functional/transaction-forging/bridgechain-update.test.ts
+      - *coverage
       - *notif
   F-business-registration:
     <<: *job_test_config
     steps:
       - *attach
-      - run: yarn test __tests__/functional/transaction-forging/business-registration.test.ts
-    #   - run: yarn test:coverage __tests__/functional/transaction-forging/business-registration.test.ts
-    #   - *coverage
+      - run: yarn test:coverage __tests__/functional/transaction-forging/business-registration.test.ts
+      - *coverage
       - *notif
   F-business-resignation:
     <<: *job_test_config
     steps:
       - *attach
-      - run: yarn test __tests__/functional/transaction-forging/business-resignation.test.ts
-    #   - run: yarn test:coverage __tests__/functional/transaction-forging/business-resignation.test.ts
-    #   - *coverage
+      - run: yarn test:coverage __tests__/functional/transaction-forging/business-resignation.test.ts
+      - *coverage
       - *notif
   F-business-update:
     <<: *job_test_config
     steps:
       - *attach
-      - run: yarn test __tests__/functional/transaction-forging/business-update.test.ts
-    #   - run: yarn test:coverage __tests__/functional/transaction-forging/business-update.test.ts
-    #   - *coverage
+      - run: yarn test:coverage __tests__/functional/transaction-forging/business-update.test.ts
+      - *coverage
       - *notif
   F-delegate-registration:
     <<: *job_test_config
     steps:
       - *attach
-      - run: yarn test __tests__/functional/transaction-forging/delegate-registration.test.ts
-    #   - run: yarn test:coverage __tests__/functional/transaction-forging/delegate-registration.test.ts
-    #   - *coverage
+      - run: yarn test:coverage __tests__/functional/transaction-forging/delegate-registration.test.ts
+      - *coverage
       - *notif
   F-delegate-resignation:
     <<: *job_test_config
     steps:
       - *attach
-      - run: yarn test __tests__/functional/transaction-forging/bridgechain-resignation.test.ts
-    #   - run: yarn test:coverage __tests__/functional/transaction-forging/bridgechain-resignation.test.ts
-    #   - *coverage
+      - run: yarn test:coverage __tests__/functional/transaction-forging/bridgechain-resignation.test.ts
+      - *coverage
       - *notif
   F-htlc-claim:
     <<: *job_test_config
     steps:
       - *attach
-      - run: yarn test __tests__/functional/transaction-forging/htlc-claim.test.ts
-    #   - run: yarn test:coverage __tests__/functional/transaction-forging/htlc-claim.test.ts
-    #   - *coverage
+      - run: yarn test:coverage __tests__/functional/transaction-forging/htlc-claim.test.ts
+      - *coverage
       - *notif
   F-htlc-lock:
     <<: *job_test_config
     steps:
       - *attach
-      - run: yarn test __tests__/functional/transaction-forging/htlc-lock.test.ts
-    #   - run: yarn test:coverage __tests__/functional/transaction-forging/htlc-lock.test.ts
-    #   - *coverage
+      - run: yarn test:coverage __tests__/functional/transaction-forging/htlc-lock.test.ts
+      - *coverage
       - *notif
   F-htlc-refund:
     <<: *job_test_config
     steps:
       - *attach
-      - run: yarn test __tests__/functional/transaction-forging/htlc-refund.test.ts
-    #   - run: yarn test:coverage __tests__/functional/transaction-forging/htlc-refund.test.ts
-    #   - *coverage
+      - run: yarn test:coverage __tests__/functional/transaction-forging/htlc-refund.test.ts
+      - *coverage
       - *notif
   F-ipfs:
     <<: *job_test_config
     steps:
       - *attach
-      - run: yarn test __tests__/functional/transaction-forging/ipfs.test.ts
-    #   - run: yarn test:coverage __tests__/functional/transaction-forging/ipfs.test.ts
-    #   - *coverage
+      - run: yarn test:coverage __tests__/functional/transaction-forging/ipfs.test.ts
+      - *coverage
       - *notif
   F-multi-payment:
     <<: *job_test_config
     steps:
       - *attach
-      - run: yarn test __tests__/functional/transaction-forging/multi-payment.test.ts
-    #   - run: yarn test:coverage __tests__/functional/transaction-forging/multi-payment.test.ts
-    #   - *coverage
+      - run: yarn test:coverage __tests__/functional/transaction-forging/multi-payment.test.ts
+      - *coverage
       - *notif
   F-multi-signature-registration:
     <<: *job_test_config
     steps:
       - *attach
-      - run: yarn test __tests__/functional/transaction-forging/multi-signature-registration.test.ts
-    #   - run: yarn test:coverage __tests__/functional/transaction-forging/multi-signature-registration.test.ts
-    #   - *coverage
+      - run: yarn test:coverage __tests__/functional/transaction-forging/multi-signature-registration.test.ts
+      - *coverage
       - *notif
   F-second-signature-registration:
     <<: *job_test_config
     steps:
       - *attach
-      - run: yarn test __tests__/functional/transaction-forging/second-signature-registration.test.ts
-    #   - run: yarn test:coverage __tests__/functional/transaction-forging/second-signature-registration.test.ts
-    #   - *coverage
+      - run: yarn test:coverage __tests__/functional/transaction-forging/second-signature-registration.test.ts
+      - *coverage
       - *notif
   F-transfer:
     <<: *job_test_config
     steps:
       - *attach
-      - run: yarn test __tests__/functional/transaction-forging/transfer.test.ts
-    #   - run: yarn test:coverage __tests__/functional/transaction-forging/transfer.test.ts
-    #   - *coverage
+      - run: yarn test:coverage __tests__/functional/transaction-forging/transfer.test.ts
+      - *coverage
       - *notif
   F-vote:
     <<: *job_test_config
     steps:
       - *attach
-      - run: yarn test __tests__/functional/transaction-forging/vote.test.ts
-    #   - run: yarn test:coverage __tests__/functional/transaction-forging/vote.test.ts
-    #   - *coverage
+      - run: yarn test:coverage __tests__/functional/transaction-forging/vote.test.ts
+      - *coverage
       - *notif
   F-entity-register:
     <<: *job_test_config
     steps:
       - *attach
-      - run: yarn test __tests__/functional/transaction-forging/entity-register.test.ts
+      - run: yarn test:coverage __tests__/functional/transaction-forging/entity-register.test.ts
+      - *coverage
       - *notif
   F-entity-resign:
     <<: *job_test_config
     steps:
       - *attach
-      - run: yarn test __tests__/functional/transaction-forging/entity-resign.test.ts
+      - run: yarn test:coverage __tests__/functional/transaction-forging/entity-resign.test.ts
+      - *coverage
       - *notif
 
   e2e:

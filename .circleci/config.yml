@@ -161,10 +161,10 @@ test_requirements: &test_requirements
     - build
 
 coverage: &coverage
-  run: ./node_modules/.bin/codecov --token=$CODECOV_TOKEN -F functional
+  run: ./node_modules/.bin/codecov -y ./codecov.yml --token=$CODECOV_TOKEN -F functional
 
 coverage_unit: &coverage_unit
-  run: ./node_modules/.bin/codecov --token=$CODECOV_TOKEN -F unit
+  run: ./node_modules/.bin/codecov -y ./codecov.yml --token=$CODECOV_TOKEN -F unit
 
 notif: &notif
   slack/status:

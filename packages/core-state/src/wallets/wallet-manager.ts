@@ -423,7 +423,8 @@ export class WalletManager implements State.IWalletManager {
 
     public delegateWeightedBalance(delegate: State.IWallet): Utils.BigNumber {
         let cappedBalance = Utils.BigNumber.ZERO;
-        const voteBalance = delegate.getAttribute("delegate.voteBalance");
+        const attributes = delegate.getAttributes();
+        const voteBalance = attributes.delegate.voteBalance;
         const cappedVotesMilestone = Managers.configManager.getMilestone()?.voterMaximumWeight;
         if (cappedVotesMilestone) {
             if (delegate.getAttribute<number>("delegate.type") === DIDTypes.INDIVIDUAL) {
@@ -445,6 +446,8 @@ export class WalletManager implements State.IWalletManager {
             } else {
                 delegate.setAttribute("delegate.weightedVoteBalance", voteBalance);
             }
+        } else if (attributes.delegate.weightedVoteBalance) {
+            delegate.forgetAttribute("delegate.weightedVoteBalance");
         }
         return voteBalance;
     }

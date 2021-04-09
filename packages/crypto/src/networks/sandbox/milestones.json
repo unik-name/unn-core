@@ -115,9 +115,6 @@
     },
     {
         "height": 9999999,
-        "voterMaximumWeight": {
-            "individual": 1000000000000
-        },
         "voucherRewards": {
             "individual": {
                 "forger": 100000000,

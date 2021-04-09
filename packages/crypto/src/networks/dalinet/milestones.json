@@ -148,5 +148,9 @@
             "organization": 2,
             "network": 1
         }
+    },
+    {
+        "height": 3006813,
+        "voterMaximumWeight": false
     }
 ]

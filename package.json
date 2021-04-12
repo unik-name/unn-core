@@ -116,6 +116,9 @@
         "typesync": "^0.6.1",
         "uuid": "^3.3.3"
     },
+    "dependencies": {
+        "@foly/socket-event-forwarder": "^1.0.7"
+    },
     "workspaces": [
         "packages/crypto",
         "packages/core-utils",

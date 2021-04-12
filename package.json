@@ -132,7 +132,8 @@
         "packages/core",
         "packages/core-api",
         "plugins/uns/*",
-        "plugins/nft/*"
+        "plugins/nft/*",
+        "plugins/socket-event-forwarder"
     ],
     "resolutions": {
         "@arkecosystem/core-event-emitter": "2.7.25",

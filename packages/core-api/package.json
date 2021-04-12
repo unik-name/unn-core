@@ -41,8 +41,8 @@
         "lodash.snakecase": "^4.1.1",
         "semver": "^7.0.0",
         "@arkecosystem/core-database": "^2.7.25",
-        "@uns/crypto": "^5.5.0",
-        "@uns/core-nft-crypto": "^5.5.0"
+        "@uns/crypto": "^5.6.0",
+        "@uns/core-nft-crypto": "^5.6.0"
     },
     "devDependencies": {
         "@types/hapi__boom": "^7.4.0",

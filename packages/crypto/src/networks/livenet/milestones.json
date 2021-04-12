@@ -98,5 +98,11 @@
                 "UnsCertifiedNftUpdate": 100000000
             }
         }
+    },
+    {
+        "height": 4378216,
+        "p2p": {
+            "minimumVersions": ["^5.6.0 || ^5.6.0-dev"]
+        }
     }
 ]

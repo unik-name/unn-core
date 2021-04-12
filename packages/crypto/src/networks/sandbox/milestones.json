@@ -114,7 +114,10 @@
         }
     },
     {
-        "height": 9999999,
+        "height": 3090149,
+        "p2p": {
+            "minimumVersions": ["^5.6.0 || ^5.6.0-dev"]
+        },
         "voucherRewards": {
             "individual": {
                 "forger": 100000000,

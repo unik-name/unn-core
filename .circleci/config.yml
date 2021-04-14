@@ -480,6 +480,7 @@ jobs:
           name: Docker build and publish
           command: |
            echo "$DOCKERHUB_PASS" | docker login --username $DOCKERHUB_USER --password-stdin
+           git fetch
            TAG=$(git tag --points-at HEAD)
            if [[ "$CIRCLE_BRANCH" != "develop" && "$TAG" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then TARGET=$TAG; else TARGET=integration; fi
            echo "Build and publish docker images for $TARGET"

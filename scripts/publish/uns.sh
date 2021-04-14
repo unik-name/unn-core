@@ -13,6 +13,7 @@ if [[ -n "$CI" ]];then
     echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
     set -x
 
+    git fetch
     TAG=$(git tag --points-at HEAD)
     #publish release
     if [[ "$CIRCLE_BRANCH" != "develop" && "$TAG" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then

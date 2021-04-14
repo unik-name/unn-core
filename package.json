@@ -148,7 +148,8 @@
         "@arkecosystem/core-magistrate-transactions": "2.7.25",
         "@arkecosystem/core-transaction-pool": "2.7.25",
         "@arkecosystem/core-wallet-api": "2.7.25",
-        "@arkecosystem/core-webhooks": "2.7.25"
+        "@arkecosystem/core-webhooks": "2.7.25",
+        "socket.io": "^4.0.1"
     },
     "husky": {
         "hooks": {

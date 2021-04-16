@@ -99,7 +99,7 @@ module.exports = {
             ? process.env.EVENT_FORWARDER_CHAIN_EVENTS.split(",").map(s => s.trim())
             : [], // Events that you want to forward
         confirmations: process.env.EVENT_FORWARDER_CUSTOM_EVENT_TRANSACTION_CONFIRMATIONS
-            ? process.env.EVENT_FORWARDER_CUSTOM_EVENT_TRANSACTION_CONFIRMATIONS.split(",").map(s => s.trim())
+            ? process.env.EVENT_FORWARDER_CUSTOM_EVENT_TRANSACTION_CONFIRMATIONS.split(",").map(s => parseInt(s.trim()))
             : [], // The amount of confirmations needed before firing the transaction.confirmed event
         customEvents: process.env.EVENT_FORWARDER_CUSTOM_EVENTS
             ? process.env.EVENT_FORWARDER_CUSTOM_EVENTS.split(",").map(s => s.trim())

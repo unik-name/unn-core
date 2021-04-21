@@ -13,6 +13,6 @@ const unitnet = dalinet;
 export { devnet, mainnet, testnet, unitnet };
 
 // TODO: uns : find better way to import new network
-// export { dalinet } from "./dalinet";
+export { dalinet };
 export { sandbox } from "./sandbox";
 export { livenet } from "./livenet";

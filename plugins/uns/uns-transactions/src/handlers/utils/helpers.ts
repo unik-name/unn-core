@@ -1,5 +1,5 @@
 import { app } from "@arkecosystem/core-container";
-import { Database, State } from "@arkecosystem/core-interfaces";
+import { Database, Logger, State } from "@arkecosystem/core-interfaces";
 import { IWalletManager } from "@arkecosystem/core-interfaces/dist/core-state";
 import { Identities, Interfaces, Managers } from "@arkecosystem/crypto";
 import { nftRepository, NftsManager } from "@uns/core-nft";
@@ -66,9 +66,14 @@ export const revertExplicitValue = async (transaction: Interfaces.ITransactionDa
  *
  */
 export const getUnikOwner = async (tokenId: string, height?: number): Promise<string> => {
+    const logger = app.resolvePlugin<Logger.ILogger>("logger");
+    const start = Date.now();
     if (!height) {
         const unik = await nftRepository().findById(tokenId);
-        return getWalletManager().findByAddress(unik.ownerId).publicKey;
+        const res = getWalletManager().findByAddress(unik.ownerId).publicKey;
+        const ms = Date.now() - start;
+        logger.debug(`Unik ${tokenId} owner found in ${ms}ms`);
+        return res;
     } else {
         const asset = { nft: { unik: { tokenId } } };
         const transactions = await nftRepository().findTransactionsByAsset(
@@ -83,7 +88,9 @@ export const getUnikOwner = async (tokenId: string, height?: number): Promise<st
         );
 
         if (!transactions || !transactions.length) {
-            throw new Error(`UNIK Id \"${tokenId}\" not found.`);
+            throw new Error(
+                `UNIK Id \"${tokenId}\" owner not found at ` + height ? `height ${height}.` : "current height.",
+            );
         }
 
         let ownerPubKey = transactions.find(tx =>
@@ -95,6 +102,8 @@ export const getUnikOwner = async (tokenId: string, height?: number): Promise<st
         );
 
         if (!transferTransactions.length) {
+            const ms = Date.now() - start;
+            logger.debug(`Unik ${tokenId} owner found for height ${height} in ${ms}ms. No transfer transactions`);
             return ownerPubKey;
         }
 
@@ -107,6 +116,10 @@ export const getUnikOwner = async (tokenId: string, height?: number): Promise<st
                 break;
             }
         }
+        const ms = Date.now() - start;
+        logger.debug(
+            `Unik ${tokenId} owner found for height ${height} in ${ms}ms. ${transferTransactions.length} transfer transactions`,
+        );
         return ownerPubKey;
     }
 };

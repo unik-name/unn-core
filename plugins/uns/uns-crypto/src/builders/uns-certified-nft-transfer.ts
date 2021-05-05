@@ -1,6 +1,6 @@
 import { Builders } from "@uns/core-nft-crypto";
 import { UnsTransactionGroup, UnsTransactionType } from "../enums";
-import { INftDemand, INftDemandCertification } from "../interfaces";
+import { ICertifiedDemand, INftDemandCertification, INftDemandPayload } from "../interfaces";
 import { CertifiedNftTransferTransaction } from "../transactions";
 
 export class UNSCertifiedNftTransferBuilder extends Builders.NftTransferBuilder {
@@ -13,7 +13,7 @@ export class UNSCertifiedNftTransferBuilder extends Builders.NftTransferBuilder 
         return this;
     }
 
-    public demand(demand: INftDemand): this {
+    public demand(demand: ICertifiedDemand<INftDemandPayload>): this {
         this.data.asset.demand = demand;
         return this;
     }

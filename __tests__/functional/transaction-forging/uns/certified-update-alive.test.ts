@@ -1,4 +1,5 @@
 import { app } from "@arkecosystem/core-container";
+import { NftsBusinessRepository } from "@arkecosystem/core-database";
 import { Database } from "@arkecosystem/core-interfaces";
 import { IWalletManager } from "@arkecosystem/core-interfaces/dist/core-state";
 import { Identities, Managers, Utils } from "@arkecosystem/crypto";
@@ -24,7 +25,7 @@ beforeAll(async () => {
 afterAll(async () => support.tearDown());
 
 describe("Uns certified update", () => {
-    it("mint individual unik and claim alive status", async () => {
+    it("mint individual unik, claim alive status then transfer unik", async () => {
         const tokenId = NftSupport.generateNftId();
         const senderPassphrase = "the passphrase " + tokenId.substr(0, 10);
         const UnikVoucherId = "my voucher" + tokenId.substr(0, 10);
@@ -69,8 +70,8 @@ describe("Uns certified update", () => {
         );
 
         await expect(updateTx.id).toBeForged();
-
-        await expect({ tokenId, properties: { ...mintProperties, ...properties } }).toMatchProperties();
+        const expectedProperties = { ...mintProperties, ...properties };
+        await expect({ tokenId, properties: expectedProperties }).toMatchProperties();
 
         const senderWallet = walletManager.findByAddress(Identities.Address.fromPassphrase(senderPassphrase));
         expect(+senderWallet.balance).toEqual(rewards.sender);
@@ -87,9 +88,40 @@ describe("Uns certified update", () => {
         const totalSupply = response.data.data.supply;
         const blockReward = Managers.configManager.getMilestone().reward;
         const totalBlockRewards = response.data.data.block.height * blockReward;
-        expect(+totalSupply).toEqual(
-            premine + totalBlockRewards + rewards.sender + rewards.forger + rewards.foundation,
+
+        const activationRewards = rewards.sender + rewards.forger + rewards.foundation;
+        expect(+totalSupply).toEqual(premine + totalBlockRewards + activationRewards);
+
+        // transfer unik
+        const recipientPassphrase = "the recipient passphrase";
+        const recipientWallet = walletManager.findByAddress(Identities.Address.fromPassphrase(recipientPassphrase));
+        recipientWallet.publicKey = Identities.PublicKey.fromPassphrase(recipientPassphrase);
+        walletManager.reindex(recipientWallet);
+
+        const transfer = await UnsSupport.certifiedTransferAndWait(
+            tokenId,
+            senderPassphrase,
+            UnsSupport.forgerFactoryTokenId,
+            UnsSupport.forgerFactoryPassphrase,
+            {},
+            serviceCost,
+            recipientWallet.address,
+            100000000,
         );
+
+        await expect(transfer.id).toBeForged();
+
+        // transferred unik should keep its properties
+        await expect({ tokenId, properties: expectedProperties }).toMatchProperties();
+
+        // check total rewards
+        const nftsRepository = new NftsBusinessRepository(app.resolvePlugin("database-manager").connection());
+        const lastHeight = app
+            .resolvePlugin("state")
+            .getStore()
+            .getLastHeight();
+        const totalrewards = await nftsRepository.getNftTotalRewards(lastHeight);
+        expect(+totalrewards).toEqual(activationRewards);
     });
 
     it("mint organization unik and claim alive status", async () => {

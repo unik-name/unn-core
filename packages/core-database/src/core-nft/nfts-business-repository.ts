@@ -111,7 +111,17 @@ export class NftsBusinessRepository implements NFT.INftsBusinessRepository {
                 ) {
                     const senderWallet: State.IWallet = walletManager.findByPublicKey(transaction.senderPublicKey);
                     const tokenId = getTokenId(transaction.asset);
-                    const didType: DIDTypes = senderWallet.getAttribute("tokens")[tokenId].type;
+                    let didType: DIDTypes;
+                    if (
+                        senderWallet.getAttribute("tokens") &&
+                        Object.keys(senderWallet.getAttribute("tokens")).includes(tokenId)
+                    ) {
+                        didType = senderWallet.getAttribute("tokens")[tokenId].type;
+                    } else {
+                        // NFT is not anymore owned by this wallet
+                        didType = parseInt((await this.findProperty(tokenId, "type")).value);
+                    }
+
                     if (didType === DIDTypes.INDIVIDUAL) {
                         const rewards = getRewardsFromDidType(didType, transaction.blockHeight);
 

@@ -1,5 +1,5 @@
 import { Utils } from "@arkecosystem/crypto";
-import { DelegateRegistrationBuilder } from "@arkecosystem/crypto/dist/transactions/builders/transactions/delegate-registration";
+import { DelegateRegistrationBuilder } from "@arkecosystem/crypto";
 import { UnsTransactionGroup, UnsTransactionStaticFees, UnsTransactionType } from "../enums";
 
 export class UNSDelegateRegisterBuilder extends DelegateRegistrationBuilder {

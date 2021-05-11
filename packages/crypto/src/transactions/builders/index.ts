@@ -10,7 +10,7 @@ import { SecondSignatureBuilder } from "./transactions/second-signature";
 import { TransferBuilder } from "./transactions/transfer";
 import { VoteBuilder } from "./transactions/vote";
 
-export * from "./transactions/transaction";
+export * from "./transactions";
 
 export class BuilderFactory {
     public static transfer(): TransferBuilder {

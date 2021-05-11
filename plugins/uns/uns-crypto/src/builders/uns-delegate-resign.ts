@@ -1,5 +1,5 @@
 import { Utils } from "@arkecosystem/crypto";
-import { DelegateResignationBuilder } from "@arkecosystem/crypto/dist/transactions/builders/transactions/delegate-resignation";
+import { DelegateResignationBuilder } from "@arkecosystem/crypto";
 import { UnsTransactionGroup, UnsTransactionStaticFees, UnsTransactionType } from "../enums";
 
 export class UNSDelegateResignBuilder extends DelegateResignationBuilder {

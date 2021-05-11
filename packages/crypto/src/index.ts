@@ -27,3 +27,19 @@ export {
     Utils,
     Validation,
 };
+
+// Required for tree shaking to reduce client-side app size
+export * from "./constants";
+export * from "./crypto";
+export * from "./enums";
+export * from "./errors";
+export * from "./identities";
+export * from "./interfaces";
+export * from "./managers";
+export * from "./networks";
+export * from "./transactions";
+export * from "./types";
+export * from "./utils";
+export * from "./validation";
+// Module "./transactions" has already exported a member named 'Deserializer'. Consider explicitly re-exporting to resolve the ambiguity.
+// export * from "./blocks";

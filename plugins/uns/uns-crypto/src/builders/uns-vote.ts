@@ -1,5 +1,5 @@
 import { Utils } from "@arkecosystem/crypto";
-import { VoteBuilder } from "@arkecosystem/crypto/dist/transactions/builders/transactions/vote";
+import { VoteBuilder } from "@arkecosystem/crypto";
 import { UnsTransactionGroup, UnsTransactionStaticFees, UnsTransactionType } from "../enums";
 
 export class UNSVoteBuilder extends VoteBuilder {

@@ -1,7 +1,7 @@
 import { Database, State } from "@arkecosystem/core-interfaces";
 import { Handlers, TransactionReader } from "@arkecosystem/core-transactions";
 import { Interfaces, Transactions } from "@arkecosystem/crypto";
-import { NftTransferTransactionHandler } from "@uns/core-nft";
+import { applyNftTransferInWallets, NftTransferTransactionHandler } from "@uns/core-nft";
 import { applyMixins, CertifiedNftTransferTransaction, INftDemandPayload } from "@uns/crypto";
 import * as Errors from "../errors";
 import { CertifiedTransactionHandler } from "./uns-certified-handler";
@@ -32,6 +32,8 @@ export class CertifiedNftTransferTransactionHandler extends NftTransferTransacti
             const transactions = await reader.read();
 
             for (const transaction of transactions) {
+                await applyNftTransferInWallets(transaction, walletManager);
+
                 this.applyCostToSender(transaction, walletManager);
                 await this.applyCostToFactory(transaction, walletManager, transaction.blockHeight);
             }

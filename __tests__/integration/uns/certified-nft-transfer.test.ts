@@ -59,12 +59,12 @@ describe("certifiedNftTransfer handler tests", () => {
         senderWallet.balance = serviceCost.plus(fee);
         walletManager.reindex(senderWallet);
 
-        const recipientPassphrase = "the recipient passphrase";
+        const recipientPassphrase = "the new owner passphrase";
         recipientWallet = walletManager.findByAddress(Identities.Address.fromPassphrase(recipientPassphrase));
         recipientWallet.publicKey = Identities.PublicKey.fromPassphrase(recipientPassphrase);
-        walletManager.reindex(recipientWallet);
 
         jest.spyOn(transactionHelpers, "getUnikOwner").mockResolvedValueOnce(Fixtures.issKeys.publicKey);
+        jest.spyOn(app.resolvePlugin("core-nft"), "getProperty").mockResolvedValueOnce({ value: didType.toString() });
     });
 
     it("wallet bootstrap for nft transfer transaction", async () => {
@@ -87,8 +87,14 @@ describe("certifiedNftTransfer handler tests", () => {
         // check sender balance
         expect(senderWallet.balance).toEqual(Utils.BigNumber.ZERO);
 
+        // check sender tokens
+        expect(senderWallet.getAttribute("tokens")).toBeUndefined();
+
         // check recipient balance
         expect(recipientWallet.balance).toEqual(Utils.BigNumber.ZERO);
+
+        // check recipient tokens
+        expect(recipientWallet.getAttribute("tokens")).toEqual({ [tokenId]: { type: didType } });
 
         // check forgeFactory balance
         expect(factoryWallet.balance).toStrictEqual(serviceCost);

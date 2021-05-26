@@ -7,6 +7,7 @@ import { INftWalletAttributes } from "../../interfaces";
 import {
     addNftToWallet,
     applyNftTransferDb,
+    applyNftTransferInWallets,
     applyProperties,
     checkAssetPropertiesSize,
     removeNftFromWallet,
@@ -40,11 +41,7 @@ export class NftTransferTransactionHandler extends Handlers.TransactionHandler {
             const transactions = await reader.read();
 
             for (const transaction of transactions) {
-                const { asset, senderPublicKey, recipientId } = transaction;
-                const senderWallet: State.IWallet = walletManager.findById(senderPublicKey);
-                await removeNftFromWallet(senderWallet, asset, walletManager);
-                const recipientWallet: State.IWallet = walletManager.findByAddress(recipientId);
-                await addNftToWallet(recipientWallet, asset, walletManager);
+                await applyNftTransferInWallets(transaction, walletManager);
             }
         }
     }

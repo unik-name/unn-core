@@ -1,5 +1,5 @@
 import { app } from "@arkecosystem/core-container";
-import { State } from "@arkecosystem/core-interfaces";
+import { Database, State } from "@arkecosystem/core-interfaces";
 import { Identities, Interfaces } from "@arkecosystem/crypto";
 import { Enums, getCurrentNftAsset, getNftName, Interfaces as NftInterfaces } from "@uns/core-nft-crypto";
 import { UnsTransactionGroup, UnsTransactionType } from "@uns/crypto";
@@ -71,6 +71,17 @@ export const applyNftTransferDb = async (
     const { tokenId } = getCurrentNftAsset(assets);
     const nftManager = app.resolvePlugin<NftsManager>("core-nft");
     await nftManager.updateOwner(tokenId, recipientAddress);
+};
+
+export const applyNftTransferInWallets = async (
+    transaction: Database.IBootstrapTransaction,
+    walletManager: State.IWalletManager,
+): Promise<void> => {
+    const { asset, senderPublicKey, recipientId } = transaction;
+    const senderWallet: State.IWallet = walletManager.findById(senderPublicKey);
+    await removeNftFromWallet(senderWallet, asset, walletManager);
+    const recipientWallet: State.IWallet = walletManager.findByAddress(recipientId);
+    await addNftToWallet(recipientWallet, asset, walletManager);
 };
 
 export const checkAssetPropertiesSize = (properties: NftInterfaces.INftProperties) => {

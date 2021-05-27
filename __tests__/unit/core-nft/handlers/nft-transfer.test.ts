@@ -125,7 +125,7 @@ describe("Nft transfer handler", () => {
             walletManager.reindex(senderWallet);
             await removeNftFromWallet(senderWallet, transaction.data.asset, walletManager);
             expect(senderWallet.hasAttribute("tokens")).toBeFalse();
-            await addNftToWallet(senderWallet, transaction.data.asset, walletManager);
+            await addNftToWallet(senderWallet, walletManager, Fixtures.nftId, tokenType);
             expect(senderWallet.hasAttribute("tokens")).toBeTrue();
             expect(senderWallet.getAttribute("tokens")).toEqual({ [Fixtures.nftId]: { type: tokenType } });
         });

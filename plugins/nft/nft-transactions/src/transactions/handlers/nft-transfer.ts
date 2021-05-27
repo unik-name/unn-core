@@ -1,9 +1,11 @@
+import { app } from "@arkecosystem/core-container";
 import { Database, State, TransactionPool } from "@arkecosystem/core-interfaces";
 import { Handlers, TransactionReader } from "@arkecosystem/core-transactions";
 import { Interfaces, Transactions } from "@arkecosystem/crypto";
 import { getCurrentNftAsset, Transactions as NftTransactions } from "@uns/core-nft-crypto";
 import { NftOwnerError } from "../../errors";
 import { INftWalletAttributes } from "../../interfaces";
+import { NftsManager } from "../../manager";
 import {
     addNftToWallet,
     applyNftTransferDb,
@@ -96,10 +98,13 @@ export class NftTransferTransactionHandler extends Handlers.TransactionHandler {
     ): Promise<void> {
         await super.revertForSender(transaction, walletManager);
         const { senderPublicKey, asset } = transaction.data;
-        const wallet: State.IWallet = walletManager.findById(senderPublicKey);
-        await addNftToWallet(wallet, asset, walletManager);
+        const senderWallet: State.IWallet = walletManager.findById(senderPublicKey);
+        const { tokenId } = getCurrentNftAsset(asset);
+        const nftManager = app.resolvePlugin<NftsManager>("core-nft");
+        const didType = parseInt((await nftManager.getProperty(tokenId, "type")).value);
+        await addNftToWallet(walletManager, senderWallet, tokenId, didType);
         if (updateDb) {
-            await applyNftTransferDb(wallet.address, asset);
+            await applyNftTransferDb(senderWallet.address, asset);
             await revertProperties(transaction.data);
         }
     }
@@ -110,8 +115,11 @@ export class NftTransferTransactionHandler extends Handlers.TransactionHandler {
         // tslint:disable-next-line: no-empty
     ): Promise<void> {
         const { asset, recipientId } = transaction.data;
-        const wallet: State.IWallet = walletManager.findByAddress(recipientId);
-        await addNftToWallet(wallet, asset, walletManager);
+        const { tokenId } = getCurrentNftAsset(asset);
+        const recipientWallet: State.IWallet = walletManager.findByAddress(recipientId);
+        const nftManager = app.resolvePlugin<NftsManager>("core-nft");
+        const didType = parseInt((await nftManager.getProperty(tokenId, "type")).value);
+        await addNftToWallet(walletManager, recipientWallet, tokenId, didType);
         // db update is done in applyToSender method
     }
 

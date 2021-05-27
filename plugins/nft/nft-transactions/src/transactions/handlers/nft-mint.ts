@@ -39,7 +39,8 @@ export class NftMintTransactionHandler extends Handlers.TransactionHandler {
 
             for (const transaction of transactions) {
                 const wallet: State.IWallet = walletManager.findById(transaction.senderPublicKey);
-                await addNftToWallet(wallet, transaction.asset, walletManager);
+                const { tokenId, properties } = getCurrentNftAsset(transaction.asset);
+                await addNftToWallet(walletManager, wallet, tokenId, parseInt(properties!.type));
             }
         }
     }
@@ -86,8 +87,9 @@ export class NftMintTransactionHandler extends Handlers.TransactionHandler {
     ): Promise<void> {
         await super.applyToSender(transaction, walletManager);
         const { senderPublicKey, asset } = transaction.data;
+        const { tokenId, properties } = getCurrentNftAsset(asset);
         const wallet: State.IWallet = walletManager.findById(senderPublicKey);
-        await addNftToWallet(wallet, asset, walletManager);
+        await addNftToWallet(walletManager, wallet, tokenId, parseInt(properties!.type));
         if (updateDb) {
             await applyNftMintDb(senderPublicKey, asset);
             await applyProperties(asset);

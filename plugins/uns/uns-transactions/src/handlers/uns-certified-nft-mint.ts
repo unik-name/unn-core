@@ -42,12 +42,13 @@ export class CertifiedNftMintTransactionHandler extends NftMintTransactionHandle
 
             for (const transaction of transactions) {
                 const sender: State.IWallet = walletManager.findByPublicKey(transaction.senderPublicKey);
-                await addNftToWallet(sender, transaction.asset, walletManager);
+                const { tokenId } = getCurrentNftAsset(transaction.asset);
+                const didType = getDidType(transaction.asset);
 
+                await addNftToWallet(walletManager, sender, tokenId, didType);
                 this.applyCostToRecipient(transaction, walletManager);
 
                 if (this.hasRewards(transaction.asset, transaction.blockHeight)) {
-                    const didType = getDidType(transaction.asset);
                     this.applyRewardsToFoundation(walletManager, didType, transaction.blockHeight);
                     const rewards: IUnsRewards = getRewardsFromDidType(didType, transaction.blockHeight);
                     // fee will be deduced in wallets state generation

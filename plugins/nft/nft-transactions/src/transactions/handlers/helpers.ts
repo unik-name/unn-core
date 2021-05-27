@@ -2,7 +2,7 @@ import { app } from "@arkecosystem/core-container";
 import { Database, State } from "@arkecosystem/core-interfaces";
 import { Identities, Interfaces } from "@arkecosystem/crypto";
 import { Enums, getCurrentNftAsset, getNftName, Interfaces as NftInterfaces } from "@uns/core-nft-crypto";
-import { UnsTransactionGroup, UnsTransactionType } from "@uns/crypto";
+import { DIDTypes, UnsTransactionGroup, UnsTransactionType } from "@uns/crypto";
 import { NftPropertyTooLongError } from "../../errors";
 import { INftWalletAttributes } from "../../interfaces";
 import { nftRepository, NftsManager } from "../../manager";
@@ -37,27 +37,16 @@ export const removeNftFromWallet = async (
 };
 
 export const addNftToWallet = async (
-    wallet: State.IWallet,
-    assets: Interfaces.ITransactionAsset,
     walletManager: State.IWalletManager,
+    wallet: State.IWallet,
+    tokenId: string,
+    type: DIDTypes,
 ) => {
-    const { tokenId, properties } = getCurrentNftAsset(assets);
-
     let walletTokens: INftWalletAttributes = wallet.hasAttribute("tokens")
         ? wallet.getAttribute<INftWalletAttributes>("tokens")
         : {};
 
-    const nftManager = app.resolvePlugin<NftsManager>("core-nft");
-
-    let tokenType: number = -1;
-    if (nftManager.constraints.hasConstraint("type")) {
-        if (properties?.type) {
-            tokenType = parseInt(properties.type);
-        } else {
-            tokenType = parseInt((await nftManager.getProperty(tokenId, "type")).value);
-        }
-    }
-    walletTokens = { ...walletTokens, [tokenId]: { type: tokenType } };
+    walletTokens = { ...walletTokens, [tokenId]: { type } };
 
     wallet.setAttribute("tokens", walletTokens);
 
@@ -78,10 +67,12 @@ export const applyNftTransferInWallets = async (
     walletManager: State.IWalletManager,
 ): Promise<void> => {
     const { asset, senderPublicKey, recipientId } = transaction;
+    const { tokenId } = getCurrentNftAsset(asset);
     const senderWallet: State.IWallet = walletManager.findById(senderPublicKey);
+    const didType = senderWallet.getAttribute<INftWalletAttributes>("tokens")[tokenId].type;
     await removeNftFromWallet(senderWallet, asset, walletManager);
     const recipientWallet: State.IWallet = walletManager.findByAddress(recipientId);
-    await addNftToWallet(recipientWallet, asset, walletManager);
+    await addNftToWallet(walletManager, recipientWallet, tokenId, didType);
 };
 
 export const checkAssetPropertiesSize = (properties: NftInterfaces.INftProperties) => {

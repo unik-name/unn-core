@@ -1,12 +1,12 @@
 import { Database, State } from "@arkecosystem/core-interfaces";
 import { Handlers, TransactionReader } from "@arkecosystem/core-transactions";
-import { Interfaces, Transactions } from "@arkecosystem/crypto";
+import { Identities, Interfaces, Transactions } from "@arkecosystem/crypto";
 import { applyNftTransferInWallets, NftTransferTransactionHandler } from "@uns/core-nft";
 import { applyMixins, CertifiedNftTransferTransaction, INftDemandPayload } from "@uns/crypto";
 import * as Errors from "../errors";
 import { CertifiedTransactionHandler } from "./uns-certified-handler";
 import { CertifiedNftMintTransactionHandler } from "./uns-certified-nft-mint";
-import { getUnikOwner } from "./utils";
+import { getUnikOwnerAddress } from "./utils";
 
 export class CertifiedNftTransferTransactionHandler extends NftTransferTransactionHandler {
     public async isActivated(): Promise<boolean> {
@@ -52,7 +52,9 @@ export class CertifiedNftTransferTransactionHandler extends NftTransferTransacti
         const demandPayload: INftDemandPayload = transaction.data.asset.demand.payload;
 
         // assert sender corresponds to the demand sub
-        if (transaction.data.senderPublicKey !== (await getUnikOwner(demandPayload.sub))) {
+        const ownerAddr = await getUnikOwnerAddress(demandPayload.sub);
+
+        if (Identities.Address.fromPublicKey(transaction.data.senderPublicKey) !== ownerAddr) {
             throw new Errors.NftTransactionParametersError("sender");
         }
 

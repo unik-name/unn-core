@@ -79,9 +79,9 @@ describe("UnsDiscloseExplicit Transaction", () => {
             }
         });
 
-        jest.spyOn(transactionHelpers, "getUnikOwner")
-            .mockResolvedValueOnce(issuerPubKey)
-            .mockResolvedValueOnce(demanderPubKey);
+        jest.spyOn(transactionHelpers, "getUnikOwnerAddress")
+            .mockResolvedValueOnce(issuerAddress)
+            .mockResolvedValueOnce(demanderAddress);
 
         // Allow ISS_UNIK_ID to forge unikname
         Managers.configManager.set("network.forgeFactory.unikidWhiteList", [ISS_UNIK_ID]);

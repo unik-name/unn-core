@@ -65,15 +65,14 @@ export const revertExplicitValue = async (transaction: Interfaces.ITransactionDa
  * @returns publicKey
  *
  */
-export const getUnikOwner = async (tokenId: string, height?: number): Promise<string> => {
+export const getUnikOwnerAddress = async (tokenId: string, height?: number): Promise<string> => {
     const logger = app.resolvePlugin<Logger.ILogger>("logger");
     const start = Date.now();
     if (!height) {
         const unik = await nftRepository().findById(tokenId);
-        const res = getWalletManager().findByAddress(unik.ownerId).publicKey;
         const ms = Date.now() - start;
         logger.debug(`Unik ${tokenId} owner found in ${ms}ms`);
-        return res;
+        return unik.ownerId;
     } else {
         const asset = { nft: { unik: { tokenId } } };
         const transactions = await nftRepository().findTransactionsByAsset(
@@ -93,9 +92,11 @@ export const getUnikOwner = async (tokenId: string, height?: number): Promise<st
             );
         }
 
-        let ownerPubKey = transactions.find(tx =>
+        // get Unik minter address
+        const ownerPubKey = transactions.find(tx =>
             [UnsTransactionType.UnsCertifiedNftMint, Enums.NftTransactionType.NftMint].includes(tx.type),
         ).senderPublicKey;
+        let ownerAddress = Identities.Address.fromPublicKey(ownerPubKey);
 
         const transferTransactions = transactions.filter(tx =>
             [UnsTransactionType.UnsCertifiedNftTransfer, Enums.NftTransactionType.NftTransfer].includes(tx.type),
@@ -104,14 +105,15 @@ export const getUnikOwner = async (tokenId: string, height?: number): Promise<st
         if (!transferTransactions.length) {
             const ms = Date.now() - start;
             logger.debug(`Unik ${tokenId} owner found for height ${height} in ${ms}ms. No transfer transactions`);
-            return ownerPubKey;
+            return ownerAddress;
         }
 
+        // parse transfer transactions to find last owner
         const blocksRepo = app.resolvePlugin<Database.IDatabaseService>("database").blocksBusinessRepository;
         for (const tx of transferTransactions) {
             const block = await blocksRepo.findById(tx.blockId);
             if (block.height <= height) {
-                ownerPubKey = tx.recipientId;
+                ownerAddress = tx.recipientId;
             } else {
                 break;
             }
@@ -120,7 +122,7 @@ export const getUnikOwner = async (tokenId: string, height?: number): Promise<st
         logger.debug(
             `Unik ${tokenId} owner found for height ${height} in ${ms}ms. ${transferTransactions.length} transfer transactions`,
         );
-        return ownerPubKey;
+        return ownerAddress;
     }
 };
 

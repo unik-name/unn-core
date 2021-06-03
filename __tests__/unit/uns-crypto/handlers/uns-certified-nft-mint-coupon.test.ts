@@ -63,7 +63,7 @@ describe("CertifiedNtfMint Transaction", () => {
 
     describe("throwIfCannotBeApplied", () => {
         beforeEach(() => {
-            jest.spyOn(transactionHelpers, "getUnikOwner").mockResolvedValueOnce(forgeFactoryWallet.publicKey);
+            jest.spyOn(transactionHelpers, "getUnikOwnerAddress").mockResolvedValueOnce(forgeFactoryWallet.address);
         });
 
         it("should not throw with voucher", async () => {
@@ -117,7 +117,7 @@ describe("CertifiedNtfMint Transaction", () => {
 
         describe("apply", () => {
             it("should apply voucher token eco", async () => {
-                jest.spyOn(transactionHelpers, "getUnikOwner").mockResolvedValueOnce(forgeFactoryWallet.publicKey);
+                jest.spyOn(transactionHelpers, "getUnikOwnerAddress").mockResolvedValueOnce(forgeFactoryWallet.address);
 
                 const transaction = builder.build();
                 await expect(handler.apply(transaction, walletManager)).toResolve();

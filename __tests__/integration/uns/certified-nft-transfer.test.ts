@@ -62,7 +62,7 @@ describe("certifiedNftTransfer handler tests", () => {
         const recipientPassphrase = "the new owner passphrase";
         recipientWallet = walletManager.findByAddress(Identities.Address.fromPassphrase(recipientPassphrase));
         recipientWallet.publicKey = Identities.PublicKey.fromPassphrase(recipientPassphrase);
-        jest.spyOn(transactionHelpers, "getUnikOwner").mockResolvedValueOnce(Fixtures.issKeys.publicKey);
+        jest.spyOn(transactionHelpers, "getUnikOwnerAddress").mockResolvedValueOnce(factoryWallet.address);
     });
 
     it("wallet bootstrap for nft transfer transaction", async () => {

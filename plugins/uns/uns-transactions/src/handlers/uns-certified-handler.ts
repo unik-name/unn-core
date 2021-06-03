@@ -1,5 +1,5 @@
 import { Database, State } from "@arkecosystem/core-interfaces";
-import { Identities, Interfaces, Utils } from "@arkecosystem/crypto";
+import { Interfaces, Utils } from "@arkecosystem/crypto";
 import {
     DIDTypes,
     getRewardsFromDidType,
@@ -18,7 +18,7 @@ import {
     NftCertificationBadSignatureError,
     NftTransactionParametersError,
 } from "../errors";
-import { getFoundationWallet, getUnikOwner } from "./utils";
+import { getFoundationWallet, getUnikOwnerAddress } from "./utils";
 
 export abstract class CertifiedTransactionHandler {
     public applyRewardsToFoundation(walletManager: State.IWalletManager, didType: DIDTypes, height?: number): void {
@@ -43,7 +43,7 @@ export abstract class CertifiedTransactionHandler {
 
     protected async throwIfCannotBeCertified(
         transaction: Interfaces.ITransaction,
-        _: State.IWalletManager,
+        walletManager: State.IWalletManager,
     ): Promise<void> {
         const certification = transaction.data.asset.certification;
 
@@ -55,16 +55,16 @@ export abstract class CertifiedTransactionHandler {
         }
 
         // ISSUER FOR CERTIFICATION (FORGE FACTORY)
-        let issuerPublicKey: string;
+        let factoryAddress: string;
         try {
-            issuerPublicKey = await getUnikOwner(certification.payload.iss);
+            factoryAddress = await getUnikOwnerAddress(certification.payload.iss);
         } catch (error) {
             throw new IssuerNotFound(transaction.id, error.message);
         }
 
         // check certification signature
         const signer = this.getPayloadSigner(certification.payload);
-        if (!signer.verify(certification.signature, issuerPublicKey)) {
+        if (!signer.verify(certification.signature, walletManager.findByAddress(factoryAddress).publicKey)) {
             throw new NftCertificationBadSignatureError();
         }
 
@@ -86,7 +86,7 @@ export abstract class CertifiedTransactionHandler {
         // check certified service payment recipient corresponds to transaction recipient, except for transfer
         if (
             transaction.data.type !== UnsTransactionType.UnsCertifiedNftTransfer &&
-            transaction.data.recipientId !== Identities.Address.fromPublicKey(issuerPublicKey)
+            transaction.data.recipientId !== factoryAddress
         ) {
             throw new NftTransactionParametersError("recipient");
         }
@@ -111,8 +111,8 @@ export abstract class CertifiedTransactionHandler {
         height?: number,
     ): Promise<void> {
         const certifPayload: INftDemandCertificationPayload = transaction.asset.certification.payload;
-        const factoryPubKey = await getUnikOwner(certifPayload.iss, height);
-        const factoryWallet: State.IWallet = walletManager.findByPublicKey(factoryPubKey);
+        const factoryAddress = await getUnikOwnerAddress(certifPayload.iss, height);
+        const factoryWallet: State.IWallet = walletManager.findByAddress(factoryAddress);
         factoryWallet.balance = factoryWallet.balance.plus(certifPayload.cost);
     }
 
@@ -122,8 +122,8 @@ export abstract class CertifiedTransactionHandler {
         height?: number,
     ): Promise<void> {
         const certifPayload: INftDemandCertificationPayload = transaction.asset.certification.payload;
-        const factoryPubKey = await getUnikOwner(certifPayload.iss, height);
-        const factoryWallet: State.IWallet = walletManager.findByPublicKey(factoryPubKey);
+        const factoryAddress = await getUnikOwnerAddress(certifPayload.iss, height);
+        const factoryWallet: State.IWallet = walletManager.findByAddress(factoryAddress);
         factoryWallet.balance = factoryWallet.balance.minus(certifPayload.cost);
     }
 

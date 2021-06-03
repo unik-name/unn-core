@@ -39,7 +39,7 @@ describe("CertifiedNtfMint Transaction", () => {
 
     describe("throwIfCannotBeApplied", () => {
         beforeEach(() => {
-            jest.spyOn(transactionHelpers, "getUnikOwner").mockResolvedValueOnce(Fixtures.issKeys.publicKey);
+            jest.spyOn(transactionHelpers, "getUnikOwnerAddress").mockResolvedValueOnce(forgeFactoryWallet.address);
         });
 
         it("should not throw", async () => {

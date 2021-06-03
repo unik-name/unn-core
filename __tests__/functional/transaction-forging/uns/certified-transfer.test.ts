@@ -38,7 +38,7 @@ describe("Uns certified transfer", () => {
 
         const recipientPassphrase = "the recipient passphrase";
         const recipientWallet = walletManager.findByAddress(Identities.Address.fromPassphrase(recipientPassphrase));
-        recipientWallet.publicKey = Identities.PublicKey.fromPassphrase(recipientPassphrase);
+        recipientWallet.balance = Utils.BigNumber.make(1000000000);
         walletManager.reindex(recipientWallet);
 
         const factoryWallet = walletManager.findByAddress(
@@ -73,12 +73,28 @@ describe("Uns certified transfer", () => {
         expect(senderWallet.balance).toStrictEqual(Utils.BigNumber.ZERO);
         expect(senderWallet.hasAttribute("tokens")).toBeFalse();
 
-        expect(recipientWallet.balance).toStrictEqual(Utils.BigNumber.ZERO);
         expect(recipientWallet.hasAttribute("tokens")).toBeTrue();
         expect(recipientWallet.getAttributes()).toEqual({ tokens: { [tokenId]: { type: didType } } });
 
         expect(factoryWallet.balance).toEqual(factoryInitialBalance.plus(serviceCost));
 
         await expect({ tokenId, properties }).toMatchProperties();
+
+        // Send back unik
+        const transfer2 = await UnsSupport.certifiedTransferAndWait(
+            tokenId,
+            recipientPassphrase,
+            UnsSupport.forgerFactoryTokenId,
+            UnsSupport.forgerFactoryPassphrase,
+            {},
+            serviceCost,
+            senderWallet.address,
+            fee,
+        );
+        await expect(transfer2.id).toBeForged();
+
+        expect(recipientWallet.hasAttribute("tokens")).toBeFalse();
+        expect(senderWallet.hasAttribute("tokens")).toBeTrue();
+        expect(senderWallet.getAttributes()).toEqual({ tokens: { [tokenId]: { type: didType } } });
     });
 });

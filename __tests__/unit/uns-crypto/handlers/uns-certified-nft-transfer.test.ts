@@ -72,9 +72,9 @@ describe("CertifiedNtfTransfer Transaction", () => {
 
     describe("throwIfCannotBeApplied", () => {
         it("should not throw", async () => {
-            jest.spyOn(transactionHelpers, "getUnikOwner")
-                .mockResolvedValueOnce(Fixtures.issKeys.publicKey)
-                .mockResolvedValueOnce(senderWallet.publicKey);
+            jest.spyOn(transactionHelpers, "getUnikOwnerAddress")
+                .mockResolvedValueOnce(forgeFactoryWallet.address)
+                .mockResolvedValueOnce(senderWallet.address);
 
             await expect(handler.throwIfCannotBeApplied(transaction, senderWallet, walletManager)).toResolve();
         });
@@ -82,10 +82,10 @@ describe("CertifiedNtfTransfer Transaction", () => {
 
     describe("apply", () => {
         it("should apply ", async () => {
-            jest.spyOn(transactionHelpers, "getUnikOwner")
-                .mockResolvedValueOnce(Fixtures.issKeys.publicKey)
-                .mockResolvedValueOnce(senderWallet.publicKey)
-                .mockResolvedValueOnce(Fixtures.issKeys.publicKey);
+            jest.spyOn(transactionHelpers, "getUnikOwnerAddress")
+                .mockResolvedValueOnce(forgeFactoryWallet.address)
+                .mockResolvedValueOnce(senderWallet.address)
+                .mockResolvedValueOnce(forgeFactoryWallet.address);
             app.resolvePlugin("core-nft").getProperty.mockResolvedValueOnce({ value: didType.toString() });
 
             await expect(handler.apply(transaction, walletManager)).toResolve();
@@ -105,7 +105,7 @@ describe("CertifiedNtfTransfer Transaction", () => {
         it("should revert", async () => {
             app.resolvePlugin("core-nft").getProperty.mockResolvedValueOnce({ value: didType.toString() });
 
-            jest.spyOn(transactionHelpers, "getUnikOwner").mockResolvedValueOnce(Fixtures.issKeys.publicKey);
+            jest.spyOn(transactionHelpers, "getUnikOwnerAddress").mockResolvedValueOnce(forgeFactoryWallet.address);
 
             recipientWallet.setAttribute("tokens", { [tokenId]: { type: didType } });
             walletManager.reindex(recipientWallet);

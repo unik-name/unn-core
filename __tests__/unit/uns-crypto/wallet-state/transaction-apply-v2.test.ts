@@ -48,7 +48,7 @@ describe("Models - Wallet", () => {
 
         Managers.configManager.set("network.forgeFactory.unikidWhiteList", [issuerTokenId]);
 
-        jest.spyOn(transactionHelpers, "getUnikOwner").mockResolvedValueOnce(issuerWallet.publicKey);
+        jest.spyOn(transactionHelpers, "getUnikOwnerAddress").mockResolvedValueOnce(issuerWallet.address);
     });
 
     it("should apply certified mint transaction for individual", async () => {

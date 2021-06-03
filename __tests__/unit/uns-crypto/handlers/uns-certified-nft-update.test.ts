@@ -26,7 +26,7 @@ describe("CertifiedNtfUpdate Transaction", () => {
 
     Handlers.Registry.registerTransactionHandler(CertifiedNftUpdateTransactionHandler);
 
-    const getOwnerMock = jest.spyOn(transactionHelpers, "getUnikOwner");
+    const getOwnerMock = jest.spyOn(transactionHelpers, "getUnikOwnerAddress");
 
     beforeEach(() => {
         handler = new CertifiedNftUpdateTransactionHandler();
@@ -63,7 +63,7 @@ describe("CertifiedNtfUpdate Transaction", () => {
 
     describe("throwIfCannotBeApplied", () => {
         it("should not throw", async () => {
-            getOwnerMock.mockResolvedValueOnce(forgeFactoryWallet.publicKey);
+            getOwnerMock.mockResolvedValueOnce(forgeFactoryWallet.address);
             await expect(handler.throwIfCannotBeApplied(transaction, senderWallet, walletManager)).toResolve();
         });
 
@@ -82,7 +82,7 @@ describe("CertifiedNtfUpdate Transaction", () => {
                 properties,
                 serviceCost,
             ).build()[0];
-            getOwnerMock.mockResolvedValueOnce(forgeFactoryWallet.publicKey);
+            getOwnerMock.mockResolvedValueOnce(forgeFactoryWallet.address);
             await expect(handler.throwIfCannotBeApplied(transaction, senderWallet, walletManager)).toResolve();
         });
 
@@ -101,7 +101,7 @@ describe("CertifiedNtfUpdate Transaction", () => {
             // Allow Url checker to milestone whitelist
             Managers.configManager.getMilestone().urlCheckers.push(urlCheckerUnikId);
 
-            getOwnerMock.mockResolvedValueOnce(urlCheckerWallet.publicKey);
+            getOwnerMock.mockResolvedValueOnce(urlCheckerWallet.address);
 
             const properties = {
                 "Verified/URL/MyUrl": "https://www.toto.lol",
@@ -123,7 +123,7 @@ describe("CertifiedNtfUpdate Transaction", () => {
 
     describe("apply", () => {
         it("should apply service costs", async () => {
-            getOwnerMock.mockResolvedValueOnce(forgeFactoryWallet.publicKey);
+            getOwnerMock.mockResolvedValueOnce(forgeFactoryWallet.address);
             await expect(handler.apply(transaction, walletManager)).toResolve();
             expect(forgeFactoryWallet.balance).toStrictEqual(serviceCost);
             expect(senderWallet.balance).toStrictEqual(Utils.BigNumber.ZERO);

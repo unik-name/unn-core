@@ -61,7 +61,7 @@ describe("CertifiedNtfMint Transaction", () => {
 
     describe("throwIfCannotBeApplied", () => {
         it("should not throw", async () => {
-            jest.spyOn(transactionHelpers, "getUnikOwner").mockResolvedValueOnce(Fixtures.issKeys.publicKey);
+            jest.spyOn(transactionHelpers, "getUnikOwnerAddress").mockResolvedValueOnce(forgeFactoryWallet.address);
             await expect(handler.throwIfCannotBeApplied(transaction, senderWallet, walletManager)).toResolve();
         });
     });
@@ -74,7 +74,7 @@ describe("CertifiedNtfMint Transaction", () => {
 
     describe("apply", () => {
         it("should apply ", async () => {
-            jest.spyOn(transactionHelpers, "getUnikOwner").mockResolvedValueOnce(Fixtures.issKeys.publicKey);
+            jest.spyOn(transactionHelpers, "getUnikOwnerAddress").mockResolvedValueOnce(forgeFactoryWallet.address);
             await expect(handler.apply(transaction, walletManager)).toResolve();
             expect(forgeFactoryWallet.balance).toStrictEqual(Utils.BigNumber.ZERO);
             expect(senderWallet.balance).toStrictEqual(Utils.BigNumber.ZERO);

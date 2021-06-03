@@ -14,7 +14,7 @@ import {
     DiscloseDemandSubInvalidError,
     IssuerNotFound,
 } from "../errors";
-import { EXPLICIT_PROP_KEY, getUnikOwner, revertExplicitValue, setExplicitValue } from "./utils";
+import { EXPLICIT_PROP_KEY, getUnikOwnerAddress, revertExplicitValue, setExplicitValue } from "./utils";
 
 export class DiscloseExplicitTransactionHandler extends Handlers.TransactionHandler {
     private get nftsRepository(): NFT.INftsRepository {
@@ -54,17 +54,17 @@ export class DiscloseExplicitTransactionHandler extends Handlers.TransactionHand
         }
 
         // ISSUER FOR CERTIFICATION (FORGE FACTORY)
-        let forgeFactoryPublicKey: string;
+        let factoryAddress: string;
         try {
-            forgeFactoryPublicKey = await getUnikOwner(discloseDemandCertif.payload.iss);
+            factoryAddress = await getUnikOwnerAddress(discloseDemandCertif.payload.iss);
         } catch (error) {
             throw new IssuerNotFound(transaction.id, error.message);
         }
 
         // ISSUER FOR DEMAND (CLIENT)
-        let demandPublicKey: string;
+        let ownerAddress: string;
         try {
-            demandPublicKey = await getUnikOwner(discloseDemand.payload.iss);
+            ownerAddress = await getUnikOwnerAddress(discloseDemand.payload.iss);
         } catch (error) {
             throw new CertifiedDemandIssuerNotFound(transaction.id, error.message);
         }
@@ -74,14 +74,20 @@ export class DiscloseExplicitTransactionHandler extends Handlers.TransactionHand
             !unsCrypto.verifyPayload(
                 discloseDemandCertif.payload,
                 discloseDemandCertif.signature,
-                forgeFactoryPublicKey,
+                walletManager.findByAddress(factoryAddress).publicKey,
             )
         ) {
             throw new DiscloseDemandCertificationSignatureError();
         }
 
         // check disclose demand signature correspond to issuer public key
-        if (!unsCrypto.verifyPayload(discloseDemand.payload, discloseDemand.signature, demandPublicKey)) {
+        if (
+            !unsCrypto.verifyPayload(
+                discloseDemand.payload,
+                discloseDemand.signature,
+                walletManager.findByAddress(ownerAddress).publicKey,
+            )
+        ) {
             throw new DiscloseDemandSignatureError();
         }
 

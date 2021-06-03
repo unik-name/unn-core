@@ -68,14 +68,14 @@ describe("CertifiedNtfUpdate Transaction", () => {
 
     describe("throwIfCannotBeApplied", () => {
         it("should not throw for alive demand", async () => {
-            jest.spyOn(transactionHelpers, "getUnikOwner").mockResolvedValueOnce(Fixtures.issKeys.publicKey);
+            jest.spyOn(transactionHelpers, "getUnikOwnerAddress").mockResolvedValueOnce(forgeFactoryWallet.address);
             await expect(handler.throwIfCannotBeApplied(transaction, senderWallet, walletManager)).toResolve();
         });
     });
 
     describe("apply", () => {
         it("should apply service costs", async () => {
-            jest.spyOn(transactionHelpers, "getUnikOwner").mockResolvedValueOnce(Fixtures.issKeys.publicKey);
+            jest.spyOn(transactionHelpers, "getUnikOwnerAddress").mockResolvedValueOnce(forgeFactoryWallet.address);
             await expect(handler.apply(transaction, walletManager)).toResolve();
             expect(forgeFactoryWallet.balance).toStrictEqual(transaction.data.amount);
             expect(senderWallet.balance.toString()).toEqual(rewards.sender.toString());

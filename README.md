@@ -1,38 +1,32 @@
-# ARK Core
+# UNS Core
 
-<p align="center">
-    <img src="https://raw.githubusercontent.com/ARKEcosystem/core/master/banner.png" />
-</p>
-
-[![Build Status](https://badgen.now.sh/github/status/ArkEcosystem/core/master)](https://github.com/ArkEcosystem/core/actions)
-[![Codecov](https://badgen.now.sh/codecov/c/github/arkecosystem/core)](https://codecov.io/gh/arkecosystem/core)
+[![Codecov](https://badgen.now.sh/codecov/c/github/unik-name/uns-core)](https://codecov.io/gh/unik-name/uns-core)
 [![License: MIT](https://badgen.now.sh/badge/license/MIT/green)](https://opensource.org/licenses/MIT)
-
-> Lead Maintainer: [Erwann Gentric](https://github.com/air1one)
 
 ## Introduction
 
-> This repository contains all plugins that make up the ARK Core.
+> This repository contains all plugins that make up the UNS Core. UNS Core is a fork from ARK Core blockchain framework.
 
-Check our [dedicated documentation site](https://learn.ark.dev) for information about all available plugins and [How to write a Core Plugin
+Check our [dedicated documentation site](https://docs.uns.network/) for information about UNS Network. Learn about all available ARK plugins and [How to write a Core Plugin
 ](https://learn.ark.dev/application-development/how-to-write-core-dapps) if you want to get started with developing your own plugins.
 
 ## Documentation
 
--   Development : https://learn.ark.dev/core-getting-started/setting-up-your-development-environment
--   Docker : https://guides.ark.dev/devops-guides/how-to-setup-a-node-with-docker
+-   Development : https://docs.uns.network/
+-   Docker : https://docs.uns.network/docker-configuration.html
 
 ## API Documentation
 
--   API v2 : https://api.ark.dev
+-   ARK Core API : https://api.ark.dev
+-   Unikname API : https://docs.uns.network/api.html
 
 ## GitHub Development Bounty
 
--   Get involved with the development and start earning ARK : https://bounty.ark.io
+-   Get involved with the development and start earning UNS : https://forum.unikname.com/t/community-bounty-program/452
 
 ## Security
 
-If you discover a security vulnerability within this package, please send an e-mail to security@ark.io. All security vulnerabilities will be promptly addressed.
+If you discover a security vulnerability within this package, please send an e-mail to security@unikname.com. All security vulnerabilities will be promptly addressed.
 
 ## Credits
 
@@ -40,4 +34,4 @@ This project exists thanks to all the people who [contribute](../../contributors
 
 ## License
 
-[MIT](LICENSE) © [ARK Ecosystem](https://ark.io)
+[MIT](LICENSE) © [Space Elephant SAS](https://www.spacelephant.org/)

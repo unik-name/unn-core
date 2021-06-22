@@ -10,6 +10,12 @@
 Check our [dedicated documentation site](https://docs.uns.network/) for information about UNS Network. Learn about all available ARK plugins and [How to write a Core Plugin
 ](https://learn.ark.dev/application-development/how-to-write-core-dapps) if you want to get started with developing your own plugins.
 
+## Development setup
+
+-   Build the node `yarn setup`
+-   Start dockerized postgres `yarn docker:db $network` with \$network=livenet|sandbox
+-   Run the node `cd packages/core && yarn $nodeType:$network` with \$nodeType=relay|forger
+
 ## Documentation
 
 -   Development : https://docs.uns.network/

@@ -302,6 +302,24 @@ export class WalletManager implements State.IWalletManager {
                 const voteBalance: Utils.BigNumber = votedDelegate.getAttribute("delegate.voteBalance");
                 votedDelegate.setAttribute("delegate.voteBalance", voteBalance.plus(increase));
             }
+
+            const mintEventMilestone = Managers.configManager.getMilestones().find(m => !!m.mintEvent);
+
+            if (mintEventMilestone && mintEventMilestone.height === block.data.height) {
+                const recipientAddr = mintEventMilestone.mintEvent.recipientAddr;
+                const amount = Utils.BigNumber.make(mintEventMilestone.mintEvent.amount);
+                const recipientWallet = this.findByAddress(recipientAddr);
+                recipientWallet.balance = recipientWallet.balance.plus(amount);
+
+                // Update recipient voteBalance
+                if (recipientWallet.hasVoted()) {
+                    const votedDelegate: State.IWallet = this.findByPublicKey(
+                        recipientWallet.getAttribute<string>("vote"),
+                    );
+                    const voteBalance: Utils.BigNumber = votedDelegate.getAttribute("delegate.voteBalance");
+                    votedDelegate.setAttribute("delegate.voteBalance", voteBalance.plus(amount));
+                }
+            }
         } catch (error) {
             this.logger.error("Failed to apply all transactions in block - reverting previous transactions");
 
@@ -343,6 +361,25 @@ export class WalletManager implements State.IWalletManager {
                 const votedDelegate: State.IWallet = this.findByPublicKey(delegate.getAttribute<string>("vote"));
                 const voteBalance: Utils.BigNumber = votedDelegate.getAttribute("delegate.voteBalance");
                 votedDelegate.setAttribute("delegate.voteBalance", voteBalance.minus(decrease));
+            }
+
+            // Revert mint event
+            const mintEventMilestone = Managers.configManager.getMilestones().find(m => !!m.mintEvent);
+
+            if (mintEventMilestone && mintEventMilestone.height === block.data.height) {
+                const recipientAddr = mintEventMilestone.mintEvent.recipientAddr;
+                const amount = Utils.BigNumber.make(mintEventMilestone.mintEvent.amount);
+                const recipientWallet = this.findByAddress(recipientAddr);
+                recipientWallet.balance = recipientWallet.balance.minus(amount);
+
+                // Update recipient voteBalance
+                if (recipientWallet.hasVoted()) {
+                    const votedDelegate: State.IWallet = this.findByPublicKey(
+                        recipientWallet.getAttribute<string>("vote"),
+                    );
+                    const voteBalance: Utils.BigNumber = votedDelegate.getAttribute("delegate.voteBalance");
+                    votedDelegate.setAttribute("delegate.voteBalance", voteBalance.minus(amount));
+                }
             }
         } catch (error) {
             this.logger.error(error.stack);

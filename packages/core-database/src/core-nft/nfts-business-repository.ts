@@ -61,6 +61,18 @@ export class NftsBusinessRepository implements NFT.INftsBusinessRepository {
         return this.connection.db.nfts.findTransactionsByAsset(asset, types, typeGroups, order);
     }
 
+    public async getTotalSupply(height: number): Promise<Utils.BigNumber> {
+        const rewardSupply = await this.getNftTotalRewards(height);
+        const blockRewards = Utils.BigNumber.make(supplyCalculator.calculate(height));
+        let totalSupply = rewardSupply.plus(blockRewards);
+
+        const mintEvent = Managers.configManager.getMilestone(height)?.mintEvent;
+        if (mintEvent) {
+            totalSupply = totalSupply.plus(mintEvent.amount);
+        }
+        return totalSupply;
+    }
+
     public async getNftTotalRewards(height: number): Promise<Utils.BigNumber> {
         // get nft mint transactions
         let reader: TransactionReader = await TransactionReader.create(this.connection, ({
@@ -150,9 +162,7 @@ export class NftsBusinessRepository implements NFT.INftsBusinessRepository {
             supply = totalVotes[DIDHelpers.fromCode(delegate.getAttribute<number>("delegate.type")).toLowerCase()];
         } else {
             const height = app.resolvePlugin<Blockchain.IBlockchain>("blockchain").getLastBlock().data.height;
-            supply = Utils.BigNumber.make(supplyCalculator.calculate(height)).plus(
-                await this.getNftTotalRewards(height),
-            );
+            supply = await this.getTotalSupply(height);
         }
 
         return delegateCalculator.toDecimal(voteBalance, supply);

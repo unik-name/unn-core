@@ -152,5 +152,12 @@
     {
         "height": 3006813,
         "voterMaximumWeight": false
+    },
+    {
+        "height": 4000000,
+        "mintEvent": {
+            "recipientAddr": "DArJ6pBH9pp4JcQPeqXr4R43oLn2L1YQ7X",
+            "amount": 100000000000
+        }
     }
 ]

@@ -128,6 +128,11 @@ export class ConfigManager {
                 );
             }
         }
+
+        // Only one MintEvent is allowed
+        if (this.config.milestones.filter(m => !!m.mintEvent).length > 1) {
+            throw new InvalidMilestoneConfigurationError("Invalid milestone: Only one MintEvent is allowed");
+        }
     }
 }
 

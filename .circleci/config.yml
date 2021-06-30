@@ -202,6 +202,13 @@ jobs:
       - *persist
       - *notif
 
+  code-analyze:
+    <<: *job_config
+    steps:
+      - *attach
+      - sonarcloud/scan
+      - *notif
+
   Unit:
     <<: *job_test_config_unit_tests
     steps:
@@ -499,6 +506,7 @@ jobs:
 ####################################
 orbs:
   slack: circleci/slack@3.3.0
+  sonarcloud: sonarsource/sonarcloud@1.0.1
 
 ####################################
 ## Workflows
@@ -515,6 +523,10 @@ workflow: &workflow
   - build:
       requires:
         - prepare
+  - code-analyze:
+      context: SonarCloud
+      requires:
+        - build
 # NFT, UNS and related tests
   - Unit:
       requires:

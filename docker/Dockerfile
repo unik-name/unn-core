@@ -32,9 +32,9 @@ ARG VCS_REF
 ARG VERSION
 
 LABEL org.label-schema.schema-version="1.0" \
-    org.label-schema.name="UNS Core" \
+    org.label-schema.name="Unikname Core" \
     org.label-schema.vendor="Unikname" \
-    org.label-schema.url="https://uns.network" \
+    org.label-schema.url="https://unikname.network" \
     org.label-schema.vcs-ref=$VCS_REF \
     org.label-schema.build-date=$BUILD_DATE\
     org.label-schema.version=$VERSION

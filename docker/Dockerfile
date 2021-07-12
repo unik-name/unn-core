@@ -23,6 +23,10 @@ RUN rm -rf /opt/uns/packages/*/src
 RUN chown -R node:node /opt/uns/uns-init.sh /opt/uns/packages/core/bin/
 RUN ln -s /opt/uns/packages/core/bin/run /usr/bin/uns
 
+# replace sandbox config symlink by its source file
+RUN unlink /opt/uns/packages/core/bin/config/livenet/sandbox-plugins.js
+RUN cp /opt/uns/packages/core/bin/config/sandbox/plugins.js /opt/uns/packages/core/bin/config/livenet/sandbox-plugins.js
+
 ARG BUILD_DATE
 ARG VCS_REF
 ARG VERSION

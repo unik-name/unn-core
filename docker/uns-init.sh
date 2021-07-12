@@ -6,11 +6,6 @@ TOKEN="uns"
 echo "network : $NETWORK"
 echo "token : $TOKEN"
 
-if [ "$NETWORK" == "livenet" ]; then
-  unlink /opt/uns/packages/core/bin/config/livenet/sandbox-plugins.js
-  cp /opt/uns/packages/core/bin/config/sandbox/plugins.js /opt/uns/packages/core/bin/config/livenet/sandbox-plugins.js
-fi
-
 CONFIG_DIR=~/.config/uns-core/$NETWORK
 
 # publish default config (from sources) to $CONFIG_DIR

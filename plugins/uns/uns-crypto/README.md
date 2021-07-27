@@ -1,6 +1,6 @@
-# UNS - Crypto
+# UNN - Crypto
 
-Crypto utilities for the UNS.network Blockchain
+Crypto utilities for the Unikname Network Blockchain
 
 ## Documentation
 

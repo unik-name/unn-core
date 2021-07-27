@@ -11,9 +11,9 @@
     "slip44": 1,
     "aip20": 0,
     "client": {
-        "token": "uns",
-        "symbol": "UNS",
-        "explorer": "https://explorer.uns.network"
+        "token": "unik",
+        "symbol": "UNIK",
+        "explorer": "https://explorer.unikname.network"
     },
     "transactionsConfig": {
         "delegateRegistration": { "enable": false },

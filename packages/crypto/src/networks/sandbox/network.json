@@ -11,9 +11,9 @@
     "slip44": 1,
     "aip20": 0,
     "client": {
-        "token": "suns",
-        "symbol": "SUNS",
-        "explorer": "https://sandbox.explorer.uns.network"
+        "token": "sunik",
+        "symbol": "SUNIK",
+        "explorer": "https://sandbox.explorer.unikname.network"
     },
     "transactionsConfig": {
         "delegateRegistration": { "enable": false },

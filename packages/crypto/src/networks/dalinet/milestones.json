@@ -152,5 +152,9 @@
     {
         "height": 3006813,
         "voterMaximumWeight": false
+    },
+    {
+        "height": 4999999,
+        "reward": 100000000
     }
 ]

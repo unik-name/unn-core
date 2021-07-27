@@ -154,7 +154,24 @@
         "voterMaximumWeight": false
     },
     {
-        "height": 4999999,
-        "reward": 100000000
+        "height": 4010018,
+        "reward": 100000000,
+        "voucherRewards": {
+            "individual": {
+                "forger": 100000000,
+                "sender": 1000000000,
+                "foundation": 0
+            },
+            "organization": {
+                "forger": 100000000,
+                "sender": 10000000000,
+                "foundation": 0
+            },
+            "network": {
+                "forger": 100000000,
+                "sender": 100000000000,
+                "foundation": 0
+            }
+        }
     }
 ]

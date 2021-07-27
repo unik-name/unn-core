@@ -11,9 +11,9 @@
     "slip44": 1,
     "aip20": 1,
     "client": {
-        "token": "DUNS",
-        "symbol": "DUNS",
-        "explorer": "https://dalinet.explorer.uns.network"
+        "token": "dunik",
+        "symbol": "DUNIK",
+        "explorer": "https://dalinet.explorer.unikname.network"
     },
     "transactionsConfig": {
         "delegateRegistration": { "enable": false },

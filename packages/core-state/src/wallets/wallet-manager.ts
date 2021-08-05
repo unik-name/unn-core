@@ -671,6 +671,8 @@ export class WalletManager implements State.IWalletManager {
                     if (didType === DIDTypes.INDIVIDUAL) {
                         const rewards = getRewardsFromDidType(didType);
                         newVoteBalance = revert ? voteBalance.minus(rewards.sender) : voteBalance.plus(rewards.sender);
+                    } else {
+                        newVoteBalance = voteBalance;
                     }
                 } else if (
                     // handle Certified mint rewards
@@ -683,6 +685,8 @@ export class WalletManager implements State.IWalletManager {
                         // Apply voucher rewards to delegate vote balance
                         const rewards = getMintVoucherRewards(transaction.asset);
                         newVoteBalance = revert ? voteBalance.minus(rewards.sender) : voteBalance.plus(rewards.sender);
+                    } else {
+                        newVoteBalance = voteBalance;
                     }
                 } else if (
                     transaction.type === Enums.TransactionType.HtlcLock &&

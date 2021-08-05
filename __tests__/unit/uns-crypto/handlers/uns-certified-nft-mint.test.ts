@@ -4,10 +4,15 @@ import { State } from "@arkecosystem/core-interfaces";
 import { Wallets } from "@arkecosystem/core-state";
 import { Handlers } from "@arkecosystem/core-transactions";
 import { Managers, Identities, Utils } from "@arkecosystem/crypto";
-import { CertifiedNftMintTransactionHandler, Errors as unsErrors } from "@uns/uns-transactions";
+import {
+    CertifiedNftMintTransactionHandler,
+    Errors as unsErrors,
+    UnsVoteTransactionHandler,
+} from "@uns/uns-transactions";
 import * as Fixtures from "../__fixtures__";
 import { Errors } from "@arkecosystem/core-transactions";
 import * as transactionHelpers from "@uns/uns-transactions/dist/handlers/utils";
+import { DIDTypes } from "@uns/crypto";
 
 let handler;
 let builder;
@@ -20,6 +25,7 @@ describe("CertifiedNtfMint Transaction", () => {
     Managers.configManager.setHeight(2);
 
     Handlers.Registry.registerTransactionHandler(CertifiedNftMintTransactionHandler);
+    Handlers.Registry.registerTransactionHandler(UnsVoteTransactionHandler);
 
     beforeEach(() => {
         handler = new CertifiedNftMintTransactionHandler();
@@ -101,6 +107,21 @@ describe("CertifiedNtfMint Transaction", () => {
             builder.data.recipientId = Identities.Address.fromPassphrase("trololol");
             await expect(handler.throwIfCannotBeApplied(builder.build(), senderWallet, walletManager)).rejects.toThrow(
                 unsErrors.NftTransactionParametersError,
+            );
+        });
+
+        it("should throw InvalidDidTypeError", async () => {
+            const delegatePassphrase = "delegatePassphrase";
+            const delegate = walletManager.findByAddress(Identities.Address.fromPassphrase(delegatePassphrase));
+            delegate.publicKey = Identities.PublicKey.fromPassphrase(delegatePassphrase);
+            delegate.setAttribute("delegate", { type: DIDTypes.ORGANIZATION });
+            walletManager.reindex(delegate);
+
+            senderWallet.setAttribute("vote", delegate.publicKey);
+            walletManager.reindex(senderWallet);
+
+            await expect(handler.throwIfCannotBeApplied(builder.build(), senderWallet, walletManager)).rejects.toThrow(
+                unsErrors.InvalidDidTypeError,
             );
         });
     });

@@ -1,5 +1,6 @@
 // tslint:disable:max-classes-per-file
 import { Errors } from "@arkecosystem/core-transactions";
+import { DIDHelpers, DIDTypes } from "@uns/crypto";
 
 export class DiscloseDemandSignatureError extends Errors.TransactionError {
     constructor() {
@@ -141,5 +142,17 @@ export class NoPropertiesError extends Errors.TransactionError {
 export class WrongServiceCostError extends Errors.TransactionError {
     constructor(transactionId: string) {
         super(`Failed to apply transaction ${transactionId}: amount does not match required service cost`);
+    }
+}
+
+export class InvalidDidTypeError extends Errors.TransactionError {
+    constructor(sender: DIDTypes, delegate: DIDTypes) {
+        super(
+            `Unable to mint ${DIDHelpers.fromCode(
+                sender,
+            ).toLowerCase()} UNIKNAME because wallet is voting for ${DIDHelpers.fromCode(
+                delegate,
+            ).toLowerCase()} delegate. Please unvote first`,
+        );
     }
 }

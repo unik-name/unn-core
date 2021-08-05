@@ -14,7 +14,7 @@ import {
     hasVoucher,
     IUnsRewards,
 } from "@uns/crypto";
-import { VoucherAlreadyUsedError, WrongFeeError, WrongServiceCostError } from "../errors";
+import { InvalidDidTypeError, VoucherAlreadyUsedError, WrongFeeError, WrongServiceCostError } from "../errors";
 import { CertifiedTransactionHandler } from "./uns-certified-handler";
 
 export class CertifiedNftMintTransactionHandler extends NftMintTransactionHandler {
@@ -68,6 +68,16 @@ export class CertifiedNftMintTransactionHandler extends NftMintTransactionHandle
         await this.throwIfCannotBeCertified(transaction, walletManager);
 
         const didType = getDidType(transaction.data.asset);
+        const sender: State.IWallet = walletManager.findByPublicKey(transaction.data.senderPublicKey);
+        if (sender.hasVoted()) {
+            // check type of delegate voted with a previously owned token
+            const delegate: State.IWallet = walletManager.findByPublicKey(sender.getAttribute("vote"));
+            const delegateType = delegate.getAttribute<DIDTypes>("delegate.type");
+            if (delegateType !== didType) {
+                throw new InvalidDidTypeError(didType, delegateType);
+            }
+        }
+
         if (hasVoucher(transaction.data.asset)) {
             if (!transaction.data.amount.isEqualTo(Utils.BigNumber.ZERO)) {
                 throw new WrongServiceCostError(transaction.data.id);

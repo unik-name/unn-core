@@ -70,7 +70,7 @@ export class CertifiedNftMintTransactionHandler extends NftMintTransactionHandle
         const didType = getDidType(transaction.data.asset);
         const sender: State.IWallet = walletManager.findByPublicKey(transaction.data.senderPublicKey);
         if (sender.hasVoted()) {
-            // check type of delegate voted with a previously owned token
+            // check type of delegate's vote with a previously owned token
             const delegate: State.IWallet = walletManager.findByPublicKey(sender.getAttribute("vote"));
             const delegateType = delegate.getAttribute<DIDTypes>("delegate.type");
             if (delegateType !== didType) {

@@ -50,31 +50,31 @@ export class CertifiedDemandNotAllowedIssuerError extends Errors.TransactionErro
 
 export class UnikNameNotDisclosedError extends Errors.TransactionError {
     constructor(tokenId) {
-        super(`Failed to apply transaction because the @unikname of token "${tokenId}" is not disclosed`);
+        super(`Failed to apply transaction because the UniknameID "${tokenId}" is not disclosed`);
     }
 }
 
 export class InvalidUnikTypeError extends Errors.TransactionError {
     constructor(type) {
-        super(`Failed to register Unik as delegate: Unik of type "${type}" are not allowed to be delegate`);
+        super(`Failed to register a UniknameID as a delegate: a UniknameID of type "${type}" is not allowed`);
     }
 }
 
 export class CryptoAccountAlreadyDelegateError extends Errors.TransactionError {
     constructor() {
-        super(`Failed to register Unik as delegate: crypto-account has already a delegate Unik`);
+        super(`Failed to register a UniknameID as a delegate: the crypto-account already owns at least one UniknameID as a delegate `);
     }
 }
 
 export class CryptoAccountNotADelegateError extends Errors.TransactionError {
     constructor() {
-        super(`Failed to apply transaction: crypto-account has no delegate Unik`);
+        super(`Failed to apply transaction: the crypto-account hasn't any UniknameID as a delegate`);
     }
 }
 
 export class CryptoAccountHasSeveralUniksError extends Errors.TransactionError {
     constructor() {
-        super(`Failed to apply transaction: crypto-account has several Uniks`);
+        super(`Failed to apply transaction: the crypto-account has several UniknameID`);
     }
 }
 export abstract class NftCertificationError extends Errors.TransactionError {
@@ -121,14 +121,14 @@ export class WrongFeeError extends Errors.TransactionError {
 
 export class NoUnikError extends Errors.TransactionError {
     constructor(transactionId: string) {
-        super(`Failed to apply transaction ${transactionId}: crypto-account has no UNIK token`);
+        super(`Failed to apply transaction ${transactionId}: the crypto-account has no UniknameID`);
     }
 }
 
 export class VoteUnikTypeError extends Errors.TransactionError {
     constructor(transactionId: string) {
         super(
-            `Failed to apply vote transaction ${transactionId}: voter UNIK type must be the same as delegate UNIK type`,
+            `Failed to apply vote transaction ${transactionId}: the type of the UniknameID supporter (voter) must be the same type as the one of the delegate`,
         );
     }
 }
@@ -150,9 +150,9 @@ export class InvalidDidTypeError extends Errors.TransactionError {
         super(
             `Unable to mint ${DIDHelpers.fromCode(
                 sender,
-            ).toLowerCase()} UNIKNAME because wallet is voting for ${DIDHelpers.fromCode(
+            ).toLowerCase()} UniknameID because the crypto-account is already supporting (voting for) ${DIDHelpers.fromCode(
                 delegate,
-            ).toLowerCase()} delegate. Please unvote first`,
+            ).toLowerCase()} delegate. Please remove your support (unvote) first`,
         );
     }
 }

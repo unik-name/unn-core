@@ -1,10 +1,11 @@
 import { app } from "@arkecosystem/core-container";
 import { Database, Logger, State } from "@arkecosystem/core-interfaces";
 import { IWalletManager } from "@arkecosystem/core-interfaces/dist/core-state";
-import { Identities, Interfaces, Managers } from "@arkecosystem/crypto";
+import { Identities, Interfaces, Managers, Utils } from "@arkecosystem/crypto";
 import { nftRepository, NftsManager } from "@uns/core-nft";
-import { Enums } from "@uns/core-nft-crypto";
+import { Enums, getCurrentNftAsset, getNftName } from "@uns/core-nft-crypto";
 import { DIDTypes, UnsTransactionGroup, UnsTransactionType } from "@uns/crypto";
+import { VoucherAlreadyUsedError, WrongFeeError, WrongServiceCostError } from "../../errors";
 
 export const EXPLICIT_PROP_KEY = "explicitValues";
 
@@ -132,4 +133,46 @@ export const getDidTypeFromProperties = (properties: Array<{ key: string; value:
 export const getFoundationWallet = (walletManager: State.IWalletManager): State.IWallet => {
     const foundationPublicKey = Managers.configManager.get("network.foundation.publicKey");
     return walletManager.findByAddress(Identities.Address.fromPublicKey(foundationPublicKey));
+};
+
+export const throwIfAlreadyUsedVoucher = async (transaction: Interfaces.ITransaction): Promise<void> => {
+    // Check voucher existence in DB
+    const voucherId = getCurrentNftAsset(transaction.data.asset).properties.UnikVoucherId;
+    const asset = {
+        nft: { [getNftName(transaction.data.asset)]: { properties: { UnikVoucherId: voucherId } } },
+    };
+    const transactions = await nftRepository().findTransactionsByAsset(
+        asset,
+        [transaction.type],
+        [transaction.typeGroup],
+    );
+    if (transactions?.length) {
+        throw new VoucherAlreadyUsedError(voucherId);
+    }
+};
+
+export const getDelegateType = (walletManager: State.IWalletManager, wallet: State.IWallet): DIDTypes | undefined => {
+    if (!wallet.hasVoted()) {
+        return undefined;
+    }
+    const delegate: State.IWallet = walletManager.findByPublicKey(wallet.getAttribute("vote"));
+    return delegate.getAttribute<DIDTypes>("delegate.type");
+};
+
+export const throwIfInvalidAmount = (
+    transaction: Interfaces.ITransaction,
+    expectedAmount: Utils.BigNumber = Utils.BigNumber.ZERO,
+): void => {
+    if (!transaction.data.amount.isEqualTo(expectedAmount)) {
+        throw new WrongServiceCostError(transaction.data.id);
+    }
+};
+
+export const throwIfInvalidFee = (
+    transaction: Interfaces.ITransaction,
+    expectedFee: Utils.BigNumber = Utils.BigNumber.ZERO,
+): void => {
+    if (!transaction.data.fee.isEqualTo(expectedFee)) {
+        throw new WrongFeeError(transaction.data.id);
+    }
 };

@@ -1,9 +1,9 @@
 import { Database, State } from "@arkecosystem/core-interfaces";
 import { Handlers, Interfaces as TrxInterfaces, TransactionReader } from "@arkecosystem/core-transactions";
 import { Interfaces, Managers, Transactions, Utils } from "@arkecosystem/crypto";
-import { NftMintTransactionHandler, nftRepository } from "@uns/core-nft";
+import { NftMintTransactionHandler } from "@uns/core-nft";
 import { addNftToWallet } from "@uns/core-nft";
-import { getCurrentNftAsset, getNftName } from "@uns/core-nft-crypto";
+import { getCurrentNftAsset } from "@uns/core-nft-crypto";
 import {
     applyMixins,
     CertifiedNftMintTransaction,
@@ -14,8 +14,9 @@ import {
     hasVoucher,
     IUnsRewards,
 } from "@uns/crypto";
-import { InvalidDidTypeError, VoucherAlreadyUsedError, WrongFeeError, WrongServiceCostError } from "../errors";
+import { InvalidDidTypeError } from "../errors";
 import { CertifiedTransactionHandler } from "./uns-certified-handler";
+import { getDelegateType, throwIfAlreadyUsedVoucher, throwIfInvalidAmount, throwIfInvalidFee } from "./utils";
 
 export class CertifiedNftMintTransactionHandler extends NftMintTransactionHandler {
     public async isActivated(): Promise<boolean> {
@@ -69,44 +70,23 @@ export class CertifiedNftMintTransactionHandler extends NftMintTransactionHandle
 
         const didType = getDidType(transaction.data.asset);
         const sender: State.IWallet = walletManager.findByPublicKey(transaction.data.senderPublicKey);
-        if (sender.hasVoted()) {
-            // check type of delegate's vote with a previously owned token
-            const delegate: State.IWallet = walletManager.findByPublicKey(sender.getAttribute("vote"));
-            const delegateType = delegate.getAttribute<DIDTypes>("delegate.type");
-            if (delegateType !== didType) {
-                throw new InvalidDidTypeError(didType, delegateType);
-            }
+
+        // check type of delegate's vote with a previously owned token
+        const delegateType = getDelegateType(walletManager, sender);
+        if (delegateType && delegateType !== didType) {
+            throw new InvalidDidTypeError(didType, delegateType);
         }
 
         if (hasVoucher(transaction.data.asset)) {
-            if (!transaction.data.amount.isEqualTo(Utils.BigNumber.ZERO)) {
-                throw new WrongServiceCostError(transaction.data.id);
-            }
+            throwIfInvalidAmount(transaction);
             if (Managers.configManager.getMilestone().unsTokenEcoV2 && didType === DIDTypes.INDIVIDUAL) {
-                if (!transaction.data.fee.isEqualTo(Utils.BigNumber.ZERO)) {
-                    throw new WrongFeeError(transaction.data.id);
-                }
+                throwIfInvalidFee(transaction);
             } else {
                 // Fees should be equal to forger reward
                 const rewards: IUnsRewards = getRewardsFromDidType(didType);
-                if (!transaction.data.fee.isEqualTo(Utils.BigNumber.make(rewards.forger))) {
-                    throw new WrongFeeError(transaction.data.id);
-                }
+                throwIfInvalidFee(transaction, Utils.BigNumber.make(rewards.forger));
             }
-
-            // Check voucher existence in DB
-            const voucherId = getCurrentNftAsset(transaction.data.asset).properties.UnikVoucherId;
-            const asset = {
-                nft: { [getNftName(transaction.data.asset)]: { properties: { UnikVoucherId: voucherId } } },
-            };
-            const transactions = await nftRepository().findTransactionsByAsset(
-                asset,
-                [transaction.type],
-                [transaction.typeGroup],
-            );
-            if (transactions?.length) {
-                throw new VoucherAlreadyUsedError(voucherId);
-            }
+            await throwIfAlreadyUsedVoucher(transaction);
         }
     }
 

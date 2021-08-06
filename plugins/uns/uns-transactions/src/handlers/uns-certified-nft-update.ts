@@ -10,8 +10,8 @@ import {
     getRewardsFromDidType,
     isAliveDemand,
 } from "@uns/crypto";
-import * as Errors from "../errors";
 import { CertifiedTransactionHandler } from "./uns-certified-handler";
+import { throwIfInvalidAmount, throwIfInvalidFee } from "./utils";
 
 export class CertifiedNftUpdateTransactionHandler extends NftUpdateTransactionHandler {
     public async isActivated(): Promise<boolean> {
@@ -73,15 +73,10 @@ export class CertifiedNftUpdateTransactionHandler extends NftUpdateTransactionHa
             const didType = wallet.getAttribute("tokens")[tokenId].type;
 
             if (didType === DIDTypes.INDIVIDUAL) {
-                if (!transaction.data.amount.isEqualTo(Utils.BigNumber.ZERO)) {
-                    throw new Errors.WrongServiceCostError(transaction.data.id);
-                }
-
+                throwIfInvalidAmount(transaction);
                 const rewards = getRewardsFromDidType(didType);
                 // Fees should be equal to forger reward
-                if (!transaction.data.fee.isEqualTo(Utils.BigNumber.make(rewards.forger))) {
-                    throw new Errors.WrongFeeError(transaction.data.id);
-                }
+                throwIfInvalidFee(transaction, Utils.BigNumber.make(rewards.forger));
             }
         }
     }

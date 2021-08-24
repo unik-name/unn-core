@@ -1,7 +1,7 @@
 version: '2'
 services:
   forger:
-    image: universalnamesystem/dcore:latest
+    image: universalnamesystem/dcore:integration
     restart: always
     environment:
       UNS_NET: dalinet

@@ -478,8 +478,13 @@ jobs:
       - *notif
 
   docker_build_publish:
+    parameters:
+      platform:
+        type: string
     machine:
       docker_layer_caching: true
+      image: ubuntu-2004:202101-01
+    resource_class: << parameters.platform >>
     working_directory: *repo_path
     steps:
       - *attach
@@ -487,11 +492,22 @@ jobs:
           name: Docker build and publish
           command: |
            echo "$DOCKERHUB_PASS" | docker login --username $DOCKERHUB_USER --password-stdin
-           TAG=$(git tag --points-at HEAD)
-           if [[ "$CIRCLE_BRANCH" != "develop" && "$TAG" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then TARGET=$TAG; else TARGET=integration; fi
-           echo "Build and publish docker images for $TARGET"
-           ./scripts/docker/build.sh $TARGET
-           ./scripts/docker/publish.sh $TARGET
+           . ./scripts/docker/build.sh
+           . ./scripts/docker/publish.sh
+      - *notif
+
+  docker_publish_multi_arch:
+    machine:
+        image: ubuntu-2004:202101-01
+        docker_layer_caching: true
+    working_directory: *repo_path
+    steps:
+      - *attach
+      - run:
+          name: Docker create manifest
+          command: |
+           echo "$DOCKERHUB_PASS" | docker login --username $DOCKERHUB_USER --password-stdin
+           . ./scripts/docker/publish-multi-arch.sh
       - *notif
 
   npm_publish:
@@ -623,6 +639,17 @@ workflow: &workflow
        *deployBranches
      requires:
        *all_tests
+
+     matrix:
+      parameters:
+        platform: ["arm.medium", "medium"]
+
+  - docker_publish_multi_arch:
+     filters:
+      *deployBranches
+     requires:
+      - docker_build_publish-medium
+      - docker_build_publish-arm.medium
   - npm_publish:
      filters:
        *deployBranches

@@ -2,23 +2,10 @@
 
 set -e
 
-ORG="universalnamesystem"
-REPO="core"
+#docker tag "$IMAGE":"$COMMIT"-"$arch" "$IMAGE":"$TAG"
 
-if [ "${1}" == "integration" ]; then
-    REPO="d"$REPO
-    TAG="latest"
-else
-    TAG="${1}"
-fi
+# docker push "$IMAGE":"$TAG"-"$arch"
+docker push "$IMAGE":"$COMMIT"-"$arch"
 
-IMAGE=$ORG"/"$REPO
-
-COMMIT=$(git rev-parse --short HEAD)
-
-docker tag "$IMAGE":"$COMMIT" "$IMAGE":"$TAG"
-
-docker push "$IMAGE":"$TAG"
-docker push "$IMAGE":"$COMMIT"
-
-echo "🎉 Successfully published UNS image : $IMAGE:$TAG"
+# echo "🎉 Successfully published UNN image : $IMAGE:$TAG"
+echo "🎉 Successfully published UNN image : $IMAGE:$COMMIT-$arch"

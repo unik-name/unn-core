@@ -482,7 +482,7 @@ jobs:
       platform:
         type: string
     machine:
-    #   docker_layer_caching: true
+      docker_layer_caching: true
       image: ubuntu-2004:202101-01
     resource_class: << parameters.platform >>
     working_directory: *repo_path
@@ -534,6 +534,7 @@ deployBranches: &deployBranches
        - /[Rr]elease-\d+\.\d+\.x/
        - feat/multi-arch
        - qsvtr_arm
+       - qsvtr_arm2
 
 workflow: &workflow
   - prepare

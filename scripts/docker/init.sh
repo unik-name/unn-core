@@ -19,7 +19,7 @@ if [ "$TARGET" == "integration" ]; then
     REPO="d"$REPO
 fi
 
-IMAGE=$ORG"/"$REPO
+IMAGE="$ORG/$REPO"
 
 arch=$(uname -m)
 

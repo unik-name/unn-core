@@ -8,7 +8,6 @@ echo "Build docker images for $1"
 
 DOCKER_BUILDKIT=1 docker build \
         -t "$IMAGE":"$COMMIT"-"$arch" \
-        -t "$IMAGE":"$TARGET"-"$arch" \
         --build-arg ARCH="$arch"/ \
         --build-arg VCS_REF="$COMMIT" \
         --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \

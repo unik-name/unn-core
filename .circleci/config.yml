@@ -479,7 +479,7 @@ jobs:
 
   docker_build_publish:
     parameters:
-      platform: 
+      platform:
         type: string
     machine:
       docker_layer_caching: true
@@ -503,7 +503,7 @@ jobs:
       - *attach
       - run:
           name: Docker create manifest
-          command: | 
+          command: |
            echo "$DOCKERHUB_PASS" | docker login --username $DOCKERHUB_USER --password-stdin
            . ./scripts/docker/publish-multi-arch.sh $TARGET
       - *notif
@@ -532,6 +532,7 @@ deployBranches: &deployBranches
        - develop
        - /[Rr]elease-\d+\.\d+\.x/
        - feat/multi-arch
+       - qsvtr_arm
 
 workflow: &workflow
   - prepare
@@ -649,11 +650,11 @@ workflow: &workflow
      requires:
       - docker_build_publish-medium
       - docker_build_publish-arm.medium
-  - npm_publish:
-     filters:
-       *deployBranches
-     requires:
-       *all_tests
+#   - npm_publish:
+#      filters:
+#        *deployBranches
+#      requires:
+#        *all_tests
 
 workflows:
   version: 2.1

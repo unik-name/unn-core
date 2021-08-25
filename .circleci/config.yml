@@ -537,109 +537,109 @@ deployBranches: &deployBranches
 
 workflow: &workflow
   - prepare
-  - build:
-      requires:
-        - prepare
-  - code-analyze:
-      context: SonarCloud
-      requires:
-        - build
+#   - build:
+#       requires:
+#         - prepare
+#   - code-analyze:
+#       context: SonarCloud
+#       requires:
+#         - build
 # NFT, UNS and related tests
-  - Unit:
-      requires:
-        - build
-  - Badges:
-      requires:
-        - build
-  - Integration:
-      requires:
-        - build
-  - UNS-Integration:
-      requires:
-        - build
-  - F-nft:
-      requires:
-        - build
-  - F-UNS:
-      requires:
-        - build
-  - F-uns-disclose:
-      requires:
-        - build
-  - F-uns-certified-mint:
-      requires:
-        - build
-# Ark's tests
-  - F-bridgechain-registration:
-      requires:
-        *nft_uns_related_tests
-  - F-bridgechain-resignation:
-      requires:
-        *nft_uns_related_tests
-  - F-bridgechain-update:
-      requires:
-        *nft_uns_related_tests
-  - F-business-registration:
-      requires:
-        *nft_uns_related_tests
-  - F-business-resignation:
-      requires:
-        *nft_uns_related_tests
-  - F-business-update:
-      requires:
-        *nft_uns_related_tests
-  - F-delegate-registration:
-      requires:
-        *nft_uns_related_tests
-  - F-delegate-resignation:
-      requires:
-        *nft_uns_related_tests
-  - F-htlc-claim:
-      requires:
-        *nft_uns_related_tests
-  - F-htlc-lock:
-      requires:
-        *nft_uns_related_tests
-  - F-htlc-refund:
-      requires:
-        *nft_uns_related_tests
-  - F-ipfs:
-      requires:
-        *nft_uns_related_tests
-  - F-multi-payment:
-      requires:
-        *nft_uns_related_tests
-  - F-multi-signature-registration:
-      requires:
-        *nft_uns_related_tests
-  - F-second-signature-registration:
-      requires:
-        *nft_uns_related_tests
-  - F-transfer:
-      requires:
-        *nft_uns_related_tests
-  - F-vote:
-      requires:
-        *nft_uns_related_tests
-  - F-entity-register:
-      requires:
-        *nft_uns_related_tests
-  - F-entity-resign:
-      requires:
-        *nft_uns_related_tests
+#   - Unit:
+#       requires:
+#         - build
+#   - Badges:
+#       requires:
+#         - build
+#   - Integration:
+#       requires:
+#         - build
+#   - UNS-Integration:
+#       requires:
+#         - build
+#   - F-nft:
+#       requires:
+#         - build
+#   - F-UNS:
+#       requires:
+#         - build
+#   - F-uns-disclose:
+#       requires:
+#         - build
+#   - F-uns-certified-mint:
+#       requires:
+#         - build
+# # Ark's tests
+#   - F-bridgechain-registration:
+#       requires:
+#         *nft_uns_related_tests
+#   - F-bridgechain-resignation:
+#       requires:
+#         *nft_uns_related_tests
+#   - F-bridgechain-update:
+#       requires:
+#         *nft_uns_related_tests
+#   - F-business-registration:
+#       requires:
+#         *nft_uns_related_tests
+#   - F-business-resignation:
+#       requires:
+#         *nft_uns_related_tests
+#   - F-business-update:
+#       requires:
+#         *nft_uns_related_tests
+#   - F-delegate-registration:
+#       requires:
+#         *nft_uns_related_tests
+#   - F-delegate-resignation:
+#       requires:
+#         *nft_uns_related_tests
+#   - F-htlc-claim:
+#       requires:
+#         *nft_uns_related_tests
+#   - F-htlc-lock:
+#       requires:
+#         *nft_uns_related_tests
+#   - F-htlc-refund:
+#       requires:
+#         *nft_uns_related_tests
+#   - F-ipfs:
+#       requires:
+#         *nft_uns_related_tests
+#   - F-multi-payment:
+#       requires:
+#         *nft_uns_related_tests
+#   - F-multi-signature-registration:
+#       requires:
+#         *nft_uns_related_tests
+#   - F-second-signature-registration:
+#       requires:
+#         *nft_uns_related_tests
+#   - F-transfer:
+#       requires:
+#         *nft_uns_related_tests
+#   - F-vote:
+#       requires:
+#         *nft_uns_related_tests
+#   - F-entity-register:
+#       requires:
+#         *nft_uns_related_tests
+#   - F-entity-resign:
+#       requires:
+#         *nft_uns_related_tests
 
-  - e2e:
-      filters:
-        *deployBranches
-      requires:
-        *nft_uns_related_tests
+#   - e2e:
+#       filters:
+#         *deployBranches
+#       requires:
+#         *nft_uns_related_tests
 
 # Post-tests operations
   - docker_build_publish:
      filters:
        *deployBranches
      requires:
-       *all_tests
+       - prepare
 
      matrix:
       parameters:

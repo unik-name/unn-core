@@ -11,7 +11,7 @@ DOCKER_BUILDKIT=1 docker build \
         --build-arg ARCH="$arch"/ \
         --build-arg VCS_REF="$COMMIT" \
         --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
-        --build-arg VERSION="$VERSION" \
+        --build-arg VERSION="$TARGET-multiarch" \
         -f ./docker/Dockerfile .
 
 echo "🎉 Successfully built UNN image : $IMAGE:$COMMIT-$arch"

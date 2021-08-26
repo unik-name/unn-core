@@ -10,7 +10,7 @@ else
     TARGET=integration
 fi
 
-echo $TARGET
+echo "Build & publish target: $TARGET"
 
 ORG="universalnamesystem"
 REPO="core"

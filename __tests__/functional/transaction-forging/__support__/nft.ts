@@ -34,6 +34,9 @@ export const setUp = async (options?: any): Promise<Container.IContainer> => {
         process.env.DISABLE_P2P_SERVER = options.disableP2P;
     }
 
+    if (options?.disableApiCache) {
+        process.env.CORE_API_DISABLE_CACHE = true as any;
+    }
     Managers.configManager.setFromPreset(network);
 
     // tslint:disable-next-line

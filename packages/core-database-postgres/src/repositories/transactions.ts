@@ -128,6 +128,14 @@ export class TransactionsRepository extends Repository implements Database.ITran
                     const foundationPubKey = Managers.configManager.get("network.foundation.publicKey");
                     // Special handler for UNS Foundation wallet
                     if (foundationPubKey && walletAddress === Identities.Address.fromPublicKey(foundationPubKey)) {
+                        const tokenEcoV3Height = Managers.configManager.getMilestones().find(m => !!m.unsTokenEcoV3)
+                            .height;
+                        const tokenEcoV3Timestamp = (
+                            await app
+                                .resolvePlugin<Database.IDatabaseService>("database")
+                                .getBlocksByHeight([tokenEcoV3Height])
+                        )[0].timestamp;
+
                         const liveDemandAsset = {
                             nft: {
                                 unik: {
@@ -152,10 +160,11 @@ export class TransactionsRepository extends Repository implements Database.ITran
                                 this.query.type
                                     .equals(UnsTransactionType.UnsCertifiedNftUpdate)
                                     .and(this.query.type_group.equals(UnsTransactionGroup))
-                                    .and(this.query.asset.contains(liveDemandAsset)),
+                                    .and(this.query.asset.contains(liveDemandAsset))
+                                    // After tokenEcoV3, foundation is no more rewarded for alive demands
+                                    .and(this.query.timestamp.lt(tokenEcoV3Timestamp)),
                             );
                     }
-
                     query[useWhere ? "where" : "and"](condition);
                 }
             }

@@ -4,7 +4,7 @@ import { Delegate } from "@arkecosystem/core-forger/src/delegate";
 import { Database } from "@arkecosystem/core-interfaces";
 import { Wallets } from "@arkecosystem/core-state";
 import { WalletManager } from "@arkecosystem/core-state/src/wallets";
-import { Identities, Networks, Utils } from "@arkecosystem/crypto";
+import { Identities, Interfaces, Networks, Utils } from "@arkecosystem/crypto";
 import { LIFE_CYCLE_PROPERTY_KEY, LifeCycleGrades, UnsTransactionType } from "@uns/crypto";
 import { getFoundationWallet } from "@uns/uns-transactions/src/handlers/utils/helpers";
 import * as support from "../../../../functional/transaction-forging/__support__";
@@ -61,6 +61,11 @@ describe("GET /wallets/:id/transactions", () => {
             },
             reward: Utils.BigNumber.ZERO,
         };
+
+        jest.spyOn(database, "getBlocksByHeight").mockResolvedValue([
+            { timestamp: forgeOptions.timestamp + 8 } as Interfaces.IBlockData,
+        ]);
+
         const block = delegate.forge([transaction], forgeOptions);
         await database.connection.saveBlock(block);
         await database.connection.buildWallets();

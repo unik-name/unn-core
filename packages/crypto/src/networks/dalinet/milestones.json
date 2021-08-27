@@ -156,6 +156,7 @@
     {
         "height": 4010018,
         "reward": 100000000,
+        "unsTokenEcoV3": true,
         "voucherRewards": {
             "individual": {
                 "forger": 100000000,

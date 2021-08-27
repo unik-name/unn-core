@@ -2,7 +2,7 @@ import "../../../utils";
 
 import { app } from "@arkecosystem/core-container";
 import { Database, State } from "@arkecosystem/core-interfaces";
-import { Identities, Utils } from "@arkecosystem/crypto";
+import { Identities, Interfaces, Utils } from "@arkecosystem/crypto";
 import { genesisBlock } from "../../../utils/fixtures/testnet/block-model";
 import { setUp, tearDown } from "../__support__/setup";
 import { utils } from "../utils";
@@ -66,6 +66,7 @@ describe("API 2.0 - Wallets", () => {
             const response = await utils.request("GET", "wallets");
             expect(response).toBeSuccessfulResponse();
 
+            // tslint:disable:no-null-keyword
             const expectedMeta = {
                 count: 53,
                 first: "/wallets?page=1&limit=100",
@@ -123,6 +124,9 @@ describe("API 2.0 - Wallets", () => {
 
     describe("GET /wallets/:id/transactions", () => {
         it("should GET all the transactions for the given wallet by id", async () => {
+            const db = app.resolvePlugin<Database.IDatabaseService>("database");
+            jest.spyOn(db, "getBlocksByHeight").mockResolvedValue([{ timestamp: 123456789 } as Interfaces.IBlockData]);
+
             const response = await utils.request("GET", `wallets/${address}/transactions`);
             expect(response).toBeSuccessfulResponse();
             expect(response.data.data).toBeArray();

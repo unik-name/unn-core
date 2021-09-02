@@ -138,7 +138,7 @@ export class NftsBusinessRepository implements NFT.INftsBusinessRepository {
 
     public async calculateDelegateApproval(delegate: State.IWallet, totalVotes): Promise<number> {
         let voteBalance = delegate.getAttribute<Utils.BigNumber>("delegate.voteBalance");
-        let supply: Utils.BigNumber;
+        let totalVotesByType: Utils.BigNumber;
         if (Managers.configManager.getMilestone()?.nbDelegatesByType) {
             if (!delegate.hasAttribute("delegate.type")) {
                 // Case of genesis delegate
@@ -147,18 +147,24 @@ export class NftsBusinessRepository implements NFT.INftsBusinessRepository {
             if (delegate.hasAttribute("delegate.weightedVoteBalance")) {
                 voteBalance = delegate.getAttribute<Utils.BigNumber>("delegate.weightedVoteBalance");
             }
-            supply = totalVotes[DIDHelpers.fromCode(delegate.getAttribute<number>("delegate.type")).toLowerCase()];
+
+            totalVotesByType =
+                totalVotes[DIDHelpers.fromCode(delegate.getAttribute<number>("delegate.type")).toLowerCase()];
         } else {
             const height = app.resolvePlugin<Blockchain.IBlockchain>("blockchain").getLastBlock().data.height;
-            supply = Utils.BigNumber.make(supplyCalculator.calculate(height)).plus(
+            totalVotesByType = Utils.BigNumber.make(supplyCalculator.calculate(height)).plus(
                 await this.getNftTotalRewards(height),
             );
         }
 
-        return delegateCalculator.toDecimal(voteBalance, supply);
+        if (totalVotesByType.isZero()) {
+            return 0;
+        }
+        return delegateCalculator.toDecimal(voteBalance, totalVotesByType);
     }
 
-    public getTotalVotesByType(delegates: ReadonlyArray<State.IWallet>) {
+    public getTotalVotesByType() {
+        const delegates: ReadonlyArray<State.IWallet> = this.connection.walletManager.allByUsername();
         const totalVotes = {
             individual: Utils.BigNumber.ZERO,
             organization: Utils.BigNumber.ZERO,

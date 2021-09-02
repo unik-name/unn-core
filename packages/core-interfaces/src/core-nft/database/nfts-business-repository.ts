@@ -19,7 +19,5 @@ export interface INftsBusinessRepository {
         delegate: State.IWallet,
         totalVotes: { individual: Utils.BigNumber; organization: Utils.BigNumber; network: Utils.BigNumber },
     ): Promise<number>;
-    getTotalVotesByType(
-        delegates: ReadonlyArray<State.IWallet>,
-    ): { individual: Utils.BigNumber; organization: Utils.BigNumber; network: Utils.BigNumber };
+    getTotalVotesByType(): { individual: Utils.BigNumber; organization: Utils.BigNumber; network: Utils.BigNumber };
 }

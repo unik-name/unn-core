@@ -160,7 +160,7 @@ export class WalletsBusinessRepository implements Database.IWalletsBusinessRepos
             forgedTotal: delegateCalculator.calculateForgedTotal,
         };
 
-        const totalVotes = this.databaseServiceProvider().nftsBusinessRepository.getTotalVotesByType(entries);
+        const totalVotes = this.databaseServiceProvider().nftsBusinessRepository.getTotalVotesByType();
         await Promise.all(
             entries.map(async delegate => {
                 const approval: number = await this.databaseServiceProvider().nftsBusinessRepository.calculateDelegateApproval(

@@ -1,19 +1,16 @@
-import { supplyCalculator } from "@arkecosystem/core-utils";
-import { Utils } from "@arkecosystem/crypto";
+import { app } from "@arkecosystem/core-container";
+import { Database } from "@arkecosystem/core-interfaces";
 import Boom from "@hapi/boom";
 import Hapi from "@hapi/hapi";
-import { nftsRepository } from "../../core-nft/handlers/methods";
 import { Controller } from "../shared/controller";
 
 export class BlockchainController extends Controller {
     public async index(request: Hapi.Request, h: Hapi.ResponseToolkit) {
         try {
-            const lastBlock = this.blockchain.getLastBlock();
+            const databaseService = app.resolvePlugin<Database.IDatabaseService>("database");
 
-            const rewardSupply: Utils.BigNumber = await nftsRepository.getNftTotalRewards(lastBlock.data.height);
-            const supply = Utils.BigNumber.make(supplyCalculator.calculate(lastBlock.data.height))
-                .plus(rewardSupply)
-                .toFixed();
+            const lastBlock = this.blockchain.getLastBlock();
+            const supply = databaseService.walletManager.getTotalSupply().toFixed();
             return {
                 data: {
                     block: {

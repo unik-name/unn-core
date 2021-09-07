@@ -85,9 +85,10 @@ describe("Uns certified update", () => {
         const response = await utils.request("GET", "blockchain");
         expect(response).toBeSuccessfulResponse();
         const premine = parseInt(genesisBlock.totalAmount);
-        const totalSupply = response.data.data.supply;
+        let totalSupply = response.data.data.supply;
         const blockReward = Managers.configManager.getMilestone().reward;
-        const totalBlockRewards = response.data.data.block.height * blockReward;
+        // Block 1 (genesis) has no block reward
+        const totalBlockRewards = (response.data.data.block.height - 1) * blockReward;
 
         const activationRewards = rewards.sender + rewards.forger + rewards.foundation;
         expect(+totalSupply).toEqual(premine + totalBlockRewards + activationRewards);
@@ -114,14 +115,19 @@ describe("Uns certified update", () => {
         // transferred unik should keep its properties
         await expect({ tokenId, properties: expectedProperties }).toMatchProperties();
 
-        // check total rewards
+        // check total rewards & supply
         const nftsRepository = new NftsBusinessRepository(app.resolvePlugin("database-manager").connection());
         const lastHeight = app
             .resolvePlugin("state")
             .getStore()
             .getLastHeight();
+
         const totalrewards = await nftsRepository.getNftTotalRewards(lastHeight);
         expect(+totalrewards).toEqual(activationRewards);
+
+        // Block 1 (genesis) has no block reward
+        totalSupply = premine + (lastHeight - 1) * blockReward + activationRewards;
+        expect(+walletManager.getTotalSupply()).toEqual(totalSupply);
     });
 
     it("mint organization unik and claim alive status", async () => {

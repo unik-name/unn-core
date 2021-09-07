@@ -584,6 +584,17 @@ export class WalletManager implements State.IWalletManager {
     }
 
     /**
+     * Get total supply.
+     */
+    public getTotalSupply(): Utils.BigNumber {
+        const premineSupply: string = app.getConfig().get("genesisBlock.totalAmount");
+        const addBalance = (accumulator: Utils.BigNumber, wallet: State.IWallet) => accumulator.plus(wallet.balance);
+        return this.allByAddress()
+            .reduce(addBalance, Utils.BigNumber.ZERO)
+            .plus(Utils.BigNumber.make(premineSupply));
+    }
+
+    /**
      * Updates the vote balances of the respective delegates of sender and recipient.
      * If the transaction is not a vote...
      *    1. fee + amount is removed from the sender's delegate vote balance

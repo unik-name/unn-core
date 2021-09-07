@@ -79,7 +79,8 @@ describe("Uns certified mint", () => {
         const premine = parseInt(genesisBlock.totalAmount);
         const totalSupply = response.data.data.supply;
         const blockReward = Managers.configManager.getMilestone().reward;
-        const totalBlockRewards = response.data.data.block.height * blockReward;
+        // Block 1 (genesis) has no block reward
+        const totalBlockRewards = (response.data.data.block.height - 1) * blockReward;
         expect(+totalSupply).toEqual(
             premine + totalBlockRewards + rewards.sender + rewards.forger + rewards.foundation,
         );

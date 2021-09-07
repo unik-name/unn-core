@@ -151,6 +151,8 @@ export interface IWalletManager {
     hasByPublicKey(publicKey: string): boolean;
 
     hasByUsername(username: string): boolean;
+
+    getTotalSupply(): Utils.BigNumber;
 }
 
 export interface IWalletIndex {

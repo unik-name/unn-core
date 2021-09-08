@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [5.6.3] - 2021-09-08
+
+### Fixed
+
+-   wallet nfts api metadatas (count and links) [issue](https://github.com/unik-name/unn-core/issues/337)
+-   get resigned delegate from api [issue](https://github.com/unik-name/explorer/issues/84)
+
+### Changed
+
+-   get total supply from wallet balances sum to speedup /blockchain route [issue](https://github.com/unik-name/unn-core/issues/335)
+
 ## [5.6.2] - 2021-06-15
 
 ### Fixed

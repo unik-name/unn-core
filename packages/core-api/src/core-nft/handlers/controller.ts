@@ -64,6 +64,9 @@ export class NftController extends Controller {
 
             // @ts-ignore
             const data = await request.server.methods.v2.nfts.search(request);
+
+            // needed to keep metadata links consistensy
+            delete request.query.ownerId;
             return super.respondWithCache(data, h);
         } catch (error) {
             return Boom.badImplementation(error);

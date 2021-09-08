@@ -1,7 +1,6 @@
 import { Database, NFT } from "@arkecosystem/core-interfaces";
 import { Interfaces } from "@arkecosystem/crypto";
 import pgPromise = require("pg-promise");
-import { isArray } from "util";
 import { Repository } from "../../repositories/repository";
 import { INftStatus } from "../models";
 import { Nft } from "../models/nft";
@@ -41,23 +40,41 @@ export class NftsRepository extends Repository implements NFT.INftsRepository {
             };
         }
 
-        // Blocks repo atm, doesn't search using any custom parameters
+        // Nfts repo doesn't search using any custom parameters
         const parameterList = parameters.parameters.filter(o => o.operator !== Database.SearchOperator.OP_CUSTOM);
+
+        const selectQuery = this.query.select().from(this.query);
+        const selectQueryCount = this.query.select(this.query.count().as("cnt")).from(this.query);
+        let whereParams: Database.ISearchParameter[] = [];
+
+        if (parameterList.length) {
+            let first;
+            do {
+                first = parameterList.shift();
+                // ignore params whose operator is unknown
+            } while (!first.operator && parameterList.length);
+
+            if (first) {
+                whereParams = [first, ...parameterList];
+
+                for (const query of [selectQuery, selectQueryCount]) {
+                    query.where(this.query[this.propToColumnName(first.field)][first.operator](first.value));
+                }
+                for (const param of parameterList) {
+                    for (const query of [selectQuery, selectQueryCount]) {
+                        query.and(this.query[this.propToColumnName(param.field)][param.operator](param.value));
+                    }
+                }
+            }
+        }
 
         const isUnikRequest: boolean =
             parameters.parameters.filter(
                 o => o.operator === Database.SearchOperator.OP_CUSTOM && o.field === "nftName" && o.value === "unik",
             ).length > 0;
 
-        const selectQuery = this.query.select().from(this.query);
-
-        const selectQueryCount = this.query.select(this.query.count().as("cnt")).from(this.query);
-
         if (isUnikRequest) {
-            const nftList = await this.getNftsWithProperties(
-                this.getWhereStatementParams(parameterList),
-                parameters.paginate,
-            );
+            const nftList = await this.getNftsWithProperties(whereParams, parameters.paginate);
 
             const countRow = await this.find(selectQueryCount);
             return {
@@ -66,11 +83,6 @@ export class NftsRepository extends Repository implements NFT.INftsRepository {
                 countIsEstimate: false,
             };
         }
-
-        this.getWhereStatementParams(parameterList).reduce((sQuery, param, index) => {
-            const query: any = this.query[this.propToColumnName(param.field)][param.operator](param.value);
-            return index === 0 ? sQuery.where(query) : sQuery.and(query);
-        }, selectQuery);
 
         return this.findManyWithCount(selectQuery, selectQueryCount, parameters.paginate, parameters.orderBy);
     }
@@ -203,22 +215,6 @@ export class NftsRepository extends Repository implements NFT.INftsRepository {
         });
     }
 
-    private getWhereStatementParams(parameterList: Database.ISearchParameter[]): Database.ISearchParameter[] {
-        let whereParams: Database.ISearchParameter[] = [];
-        if (parameterList.length) {
-            let first;
-            do {
-                first = parameterList.shift();
-                // ignore params whose operator is unknown
-            } while (!first.operator && parameterList.length);
-
-            if (first) {
-                whereParams = [first, ...parameterList];
-            }
-        }
-        return whereParams;
-    }
-
     private async getNftsWithProperties(
         wheres: Database.ISearchParameter[],
         paginate?: Database.ISearchPaginate,
@@ -230,13 +226,13 @@ export class NftsRepository extends Repository implements NFT.INftsRepository {
             const query: any = this.query[this.propToColumnName(param.field)][param.operator](param.value);
             return `${sQuery}${index === 0 ? "where " : " and "}${query.left.property} ${query.operator ||
                 param.operator} ${
-                isArray(param.value) ? `(${param.value.map(p => `'${p}'`).join(",")})` : `'${param.value}'`
+                Array.isArray(param.value) ? `(${param.value.map(p => `'${p}'`).join(",")})` : `'${param.value}'`
             }`;
         }, "");
 
         const nftsRows = await this.db.manyOrNone(sql.searchNftsWithProperties, {
             wheres: queryWheres,
-            properties: [...DEFAULT_UNIK_PROPERTIES],
+            properties: DEFAULT_UNIK_PROPERTIES,
             offset,
             limit,
         });

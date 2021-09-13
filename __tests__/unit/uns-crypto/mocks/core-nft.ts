@@ -9,6 +9,7 @@ export const coreNft = {
     getProperties: jest.fn(),
     findPropertyByKey: jest.fn(),
     deleteProperty: jest.fn(),
+    getPropertyBatch: jest.fn(),
     constraints: {
         applyGenesisPropertyConstraint: _ => true,
         applyConstraints: _ => true,

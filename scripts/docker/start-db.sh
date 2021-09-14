@@ -4,7 +4,7 @@ set -e
 
 NETWORK=${1}
 
-if [ -e $NETWORK ]; then
+if [ -z "$NETWORK" ]; then
     echo "Missing network parameter"
     exit 1
 fi

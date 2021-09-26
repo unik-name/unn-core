@@ -104,5 +104,11 @@
         "p2p": {
             "minimumVersions": ["^5.6.0 || ^5.6.0-dev"]
         }
+    },
+    {
+        "height": 5431495,
+        "p2p": {
+            "minimumVersions": ["^5.6.4 || ^5.6.4-dev"]
+        }
     }
 ]

@@ -2,6 +2,8 @@
 export const coreNft = {
     getProperty: jest.fn(),
     insert: jest.fn(),
+    delete: jest.fn(),
+    exists: jest.fn(),
     insertProperty: jest.fn(),
     insertProperties: jest.fn(),
     updateProperty: () => {},

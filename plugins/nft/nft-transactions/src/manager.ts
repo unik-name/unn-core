@@ -23,9 +23,9 @@ export class NftsManager {
         return nftRepository();
     }
 
-    public async exists(tokenId: string) {
+    public async exists(tokenId: string): Promise<boolean> {
         const token = await this.repository.findById(tokenId);
-        return token && token !== null;
+        return !!token;
     }
 
     public async insert(id: string, ownerId: string) {

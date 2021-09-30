@@ -3,8 +3,8 @@ import { Database, State, TransactionPool } from "@arkecosystem/core-interfaces"
 import { Handlers, TransactionReader } from "@arkecosystem/core-transactions";
 import { Interfaces, Managers, Transactions } from "@arkecosystem/crypto";
 import { getCurrentNftAsset, Transactions as NftTransactions } from "@uns/core-nft-crypto";
+import { nftRepository } from "../..";
 import { NftOwnedError } from "../../errors";
-import { INftWalletAttributes } from "../../interfaces";
 import { NftsManager } from "../../manager";
 import { addNftToWallet, applyNftMintDb, checkAssetPropertiesSize, removeNftFromWallet } from "./helpers";
 
@@ -44,22 +44,14 @@ export class NftMintTransactionHandler extends Handlers.TransactionHandler {
         walletManager: State.IWalletManager,
     ): Promise<void> {
         const { tokenId, properties } = getCurrentNftAsset(transaction.data.asset);
-
+        const nftManager = app.resolvePlugin<NftsManager>("core-nft");
         // check if token is already owned
-        if (
-            !!walletManager.allByAddress().find(wallet => {
-                if (wallet.hasAttribute("tokens")) {
-                    return Object.keys(wallet.getAttribute<INftWalletAttributes>("tokens")).includes(tokenId);
-                }
-                return false;
-            })
-        ) {
+        if (await nftManager.exists(tokenId)) {
             throw new NftOwnedError(tokenId);
         }
 
         checkAssetPropertiesSize(properties);
 
-        const nftManager = app.resolvePlugin<NftsManager>("core-nft");
         nftManager.constraints.applyGenesisPropertyConstraint(transaction.data);
         await nftManager.constraints.applyConstraints(transaction.data);
         return super.throwIfCannotBeApplied(transaction, wallet, walletManager);

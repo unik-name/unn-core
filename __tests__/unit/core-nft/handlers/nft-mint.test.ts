@@ -1,6 +1,6 @@
+/* tslint:disable:ordered-imports*/
 import "jest-extended";
 import "../mocks/core-container";
-
 import { Wallets } from "@arkecosystem/core-state";
 import { Handlers } from "@arkecosystem/core-transactions";
 import { Managers } from "@arkecosystem/crypto";
@@ -8,6 +8,7 @@ import { Builders } from "@uns/core-nft-crypto";
 import { NftOwnedError, NftPropertyTooLongError } from "@uns/core-nft/src/";
 import { NftMintTransactionHandler } from "@uns/core-nft/src/transactions";
 import * as Fixtures from "../__fixtures__";
+import { nftManager } from "../mocks/core-nft";
 
 describe("Nft mint handler", () => {
     Managers.configManager.setFromPreset(Fixtures.network);
@@ -29,10 +30,7 @@ describe("Nft mint handler", () => {
 
     describe("can be applied", () => {
         it("should fail because token is already owned", () => {
-            const ownerWallet = new Wallets.Wallet("D6gDk2j9xn71GCWSt4h6qJ383cDJdB5LqH");
-            ownerWallet.setAttribute("tokens", { [Fixtures.nftId]: { type: 66 } });
-            walletManager.reindex(ownerWallet);
-
+            nftManager.exists.mockResolvedValueOnce(true);
             const transaction = builder
                 .nonce("1")
                 .sign(Fixtures.walletPassphrase)
@@ -44,6 +42,8 @@ describe("Nft mint handler", () => {
         });
 
         it("should pass all checks", () => {
+            nftManager.exists.mockResolvedValueOnce(false);
+
             const transaction = builder
                 .properties({ foo: "true" })
                 .nonce("1")
@@ -56,6 +56,7 @@ describe("Nft mint handler", () => {
         });
 
         it("should fail because property value (in bytes) is too long", () => {
+            nftManager.exists.mockResolvedValueOnce(false);
             const transaction = builder
                 .properties({ foo: Fixtures.tooLongPropertyValue })
                 .nonce("1")

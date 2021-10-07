@@ -773,7 +773,7 @@ export class DatabaseService implements Database.IDatabaseService {
                 break;
             }
 
-            await tempWalletManager.revertBlock(blocks[i]);
+            await tempWalletManager.revertBlock(blocks[i], false);
         }
 
         const delegates: State.IWallet[] = tempWalletManager.loadActiveDelegateList(roundInfo);

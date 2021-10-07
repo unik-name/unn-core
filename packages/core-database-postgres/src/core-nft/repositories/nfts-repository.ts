@@ -215,6 +215,10 @@ export class NftsRepository extends Repository implements NFT.INftsRepository {
         });
     }
 
+    public async count(): Promise<number> {
+        return (await this.db.one(sql.count)).count;
+    }
+
     private async getNftsWithProperties(
         wheres: Database.ISearchParameter[],
         paginate?: Database.ISearchPaginate,

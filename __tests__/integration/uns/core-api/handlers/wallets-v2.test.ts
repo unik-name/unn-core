@@ -1,12 +1,12 @@
 import { app } from "@arkecosystem/core-container";
-import { StateBuilder } from "@arkecosystem/core-database-postgres/src";
-import { Delegate } from "@arkecosystem/core-forger/src/delegate";
+import { StateBuilder } from "@arkecosystem/core-database-postgres";
+import { Delegate } from "@arkecosystem/core-forger/dist/delegate";
 import { Database } from "@arkecosystem/core-interfaces";
 import { Wallets } from "@arkecosystem/core-state";
-import { WalletManager } from "@arkecosystem/core-state/src/wallets";
+import { WalletManager } from "@arkecosystem/core-state/dist/wallets";
 import { Identities, Managers, Networks, Utils } from "@arkecosystem/crypto";
 import { LIFE_CYCLE_PROPERTY_KEY, LifeCycleGrades, UnsTransactionType } from "@uns/crypto";
-import { getFoundationWallet } from "@uns/uns-transactions/src/handlers/utils/helpers";
+import { getFoundationWallet } from "@uns/uns-transactions/dist/handlers/utils/helpers";
 import * as support from "../../../../functional/transaction-forging/__support__";
 import * as NftSupport from "../../../../functional/transaction-forging/__support__/nft";
 import { NFTTransactionFactory } from "../../../../helpers/nft-transaction-factory";
@@ -27,6 +27,10 @@ beforeAll(async () => {
     // force v2 token Eco
     Managers.configManager.setFromPreset(Fixtures.network);
     Managers.configManager.getMilestone().unsTokenEcoV2 = true;
+
+    const nftRepo = (database.connection as any).db.nfts;
+    // needed for wallet boostrap integrity check
+    jest.spyOn(nftRepo, "count").mockResolvedValue(1);
 });
 
 afterAll(async () => support.tearDown());

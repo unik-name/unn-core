@@ -1,12 +1,13 @@
 import { app } from "@arkecosystem/core-container";
-import { StateBuilder } from "@arkecosystem/core-database-postgres/src";
-import { Delegate } from "@arkecosystem/core-forger/src/delegate";
+import { StateBuilder } from "@arkecosystem/core-database-postgres";
+import { NftsRepository } from "@arkecosystem/core-database-postgres/dist/core-nft";
+import { Delegate } from "@arkecosystem/core-forger/dist/delegate";
 import { Database, State } from "@arkecosystem/core-interfaces";
 import { Wallets } from "@arkecosystem/core-state";
-import { WalletManager } from "@arkecosystem/core-state/src/wallets";
+import { WalletManager } from "@arkecosystem/core-state/dist/wallets";
 import { Identities, Managers, Networks, Utils } from "@arkecosystem/crypto";
 import { DIDTypes, getRewardsFromDidType, LIFE_CYCLE_PROPERTY_KEY, LifeCycleGrades } from "@uns/crypto";
-import { getFoundationWallet } from "@uns/uns-transactions/src/handlers/utils/helpers";
+import { getFoundationWallet } from "@uns/uns-transactions/dist/handlers/utils/helpers";
 import * as support from "../../functional/transaction-forging/__support__";
 import * as NftSupport from "../../functional/transaction-forging/__support__/nft";
 import { NFTTransactionFactory } from "../../helpers/nft-transaction-factory";
@@ -16,12 +17,14 @@ import genesisBlock from "../../utils/config/dalinet/genesisBlock.json";
 let walletManager: WalletManager;
 let database: Database.IDatabaseService;
 let stateBuilder: StateBuilder;
+let nftRepo: NftsRepository;
 
 beforeAll(async () => {
     await NftSupport.setUp({ disableP2P: true });
     walletManager = new WalletManager();
     database = app.resolvePlugin<Database.IDatabaseService>("database");
     stateBuilder = new StateBuilder(database.connection, walletManager);
+    nftRepo = (database.connection as any).db.nfts;
 });
 
 afterAll(async () => support.tearDown());
@@ -94,6 +97,9 @@ describe("certifiedNftupdate handler tests", () => {
 
         const didType = DIDTypes.INDIVIDUAL;
         senderWallet.setAttribute("tokens", { [Fixtures.tokenId]: { type: didType } });
+        // needed for wallet boostrap integrity check
+        jest.spyOn(nftRepo, "count").mockResolvedValueOnce(1);
+
         walletManager.reindex(senderWallet);
         const serviceCost = Utils.BigNumber.ZERO;
         const properties = {
@@ -137,6 +143,9 @@ describe("certifiedNftupdate handler tests", () => {
         const serviceCost = Utils.BigNumber.make(6666);
         const fee = 789465;
         senderWallet.setAttribute("tokens", { [Fixtures.tokenId]: { type: didType } });
+        // needed for wallet boostrap integrity check
+        jest.spyOn(nftRepo, "count").mockResolvedValueOnce(1);
+
         senderWallet.balance = Utils.BigNumber.make(fee).plus(serviceCost);
         walletManager.reindex(senderWallet);
 

@@ -23,6 +23,10 @@ beforeAll(async () => {
     database = app.resolvePlugin("database");
     walletManager = new WalletManager();
     stateBuilder = new StateBuilder(database.connection, walletManager);
+
+    const nftRepo = (database.connection as any).db.nfts;
+    // needed for wallet boostrap integrity check
+    jest.spyOn(nftRepo, "count").mockResolvedValue(1);
 });
 afterAll(async () => support.tearDown());
 

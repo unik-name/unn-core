@@ -42,7 +42,7 @@ export class StateBuilder {
         );
         this.logger.info(`Number of registered delegates: ${Object.keys(this.walletManager.allByUsername()).length}`);
 
-        this.verifyWalletsConsistency();
+        await this.verifyWalletsConsistency();
 
         this.emitter.emit(ApplicationEvents.StateBuilderFinished);
     }
@@ -66,12 +66,13 @@ export class StateBuilder {
         }
     }
 
-    private verifyWalletsConsistency(): void {
+    private async verifyWalletsConsistency(): Promise<void> {
         const genesisPublicKeys: Record<string, true> = app
             .getConfig()
             .get("genesisBlock.transactions")
             .reduce((acc, curr) => Object.assign(acc, { [curr.senderPublicKey]: true }), {});
 
+        let unikCount = 0;
         for (const wallet of this.walletManager.allByAddress()) {
             if (wallet.balance.isLessThan(0) && !genesisPublicKeys[wallet.publicKey]) {
                 // Senders of whitelisted transactions that result in a negative balance,
@@ -96,6 +97,19 @@ export class StateBuilder {
 
                 throw new Error("Wallet with negative vote balance.");
             }
+
+            if (Handlers.Registry.isKnownWalletAttribute("tokens") && wallet.hasAttribute("tokens")) {
+                unikCount += Object.keys(wallet.getAttribute("tokens")).length;
+            }
+        }
+
+        const nftRepo = (this.connection as any).db.nfts;
+        const countFromDb = await nftRepo.count();
+        if (+countFromDb !== unikCount) {
+            this.logger.warn(
+                `Unikname count in db ${countFromDb} doesnt match wallets attribute unikname count ${unikCount}.`,
+            );
+            throw new Error("Unikname count in db doesnt match wallets unikname count.");
         }
     }
 }

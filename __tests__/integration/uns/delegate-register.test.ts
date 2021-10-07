@@ -1,9 +1,10 @@
 import { app } from "@arkecosystem/core-container";
-import { StateBuilder } from "@arkecosystem/core-database-postgres/src";
-import { Delegate } from "@arkecosystem/core-forger/src/delegate";
+import { StateBuilder } from "@arkecosystem/core-database-postgres";
+import { NftsRepository } from "@arkecosystem/core-database-postgres/dist/core-nft";
+import { Delegate } from "@arkecosystem/core-forger/dist/delegate";
 import { Database } from "@arkecosystem/core-interfaces";
 import { Wallets } from "@arkecosystem/core-state";
-import { WalletManager } from "@arkecosystem/core-state/src/wallets";
+import { WalletManager } from "@arkecosystem/core-state/dist/wallets";
 import { Constants, Identities, Managers, Networks, Utils } from "@arkecosystem/crypto";
 import { UNSDelegateRegisterBuilder } from "@uns/crypto";
 import * as support from "../../functional/transaction-forging/__support__";
@@ -16,6 +17,7 @@ let database: Database.IDatabaseService;
 let stateBuilder: StateBuilder;
 const tokenId = NftSupport.generateNftId();
 const { SATOSHI } = Constants;
+let nftRepo: NftsRepository;
 
 beforeAll(async () => {
     await NftSupport.setUp({ disableP2P: true });
@@ -24,6 +26,7 @@ beforeAll(async () => {
     stateBuilder = new StateBuilder(database.connection, walletManager);
     const height = Managers.configManager.getMilestones().find(milestone => !!milestone.nbDelegatesByType).height;
     Managers.configManager.setHeight(height);
+    nftRepo = (database.connection as any).db.nfts;
 });
 
 afterAll(async () => support.tearDown());
@@ -50,6 +53,9 @@ describe("unsDelegateRegister handler tests", () => {
         delegateWallet.publicKey = delegateKey;
         delegateWallet.setAttribute("tokens", { [tokenId]: { type: delegateType } });
         walletManager.reindex(delegateWallet);
+
+        // needed for wallet boostrap integrity check
+        jest.spyOn(nftRepo, "count").mockResolvedValueOnce(1);
 
         const transaction = new TransactionFactory(new UNSDelegateRegisterBuilder().usernameAsset(tokenId))
             .withNetwork(NftSupport.network)

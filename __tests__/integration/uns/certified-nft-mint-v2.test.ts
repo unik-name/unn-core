@@ -1,12 +1,13 @@
 import { app } from "@arkecosystem/core-container";
-import { StateBuilder } from "@arkecosystem/core-database-postgres/src";
-import { Delegate } from "@arkecosystem/core-forger/src/delegate";
+import { StateBuilder } from "@arkecosystem/core-database-postgres";
+import { NftsRepository } from "@arkecosystem/core-database-postgres/dist/core-nft";
+import { Delegate } from "@arkecosystem/core-forger/dist/delegate";
 import { Database, State } from "@arkecosystem/core-interfaces";
-import { WalletManager } from "@arkecosystem/core-state/src/wallets";
+import { WalletManager } from "@arkecosystem/core-state/dist/wallets";
 import { Identities, Managers, Networks, Utils } from "@arkecosystem/crypto";
 import { nftRepository } from "@uns/core-nft";
 import { DIDTypes, getRewardsFromDidType, IUnsRewards, LIFE_CYCLE_PROPERTY_KEY, LifeCycleGrades } from "@uns/crypto";
-import { getFoundationWallet } from "@uns/uns-transactions/src/handlers/utils/helpers";
+import { getFoundationWallet } from "@uns/uns-transactions/dist/handlers/utils/helpers";
 import * as support from "../../functional/transaction-forging/__support__";
 import * as NftSupport from "../../functional/transaction-forging/__support__/nft";
 import { NFTTransactionFactory } from "../../helpers/nft-transaction-factory";
@@ -17,6 +18,7 @@ let walletManager: WalletManager;
 let database: Database.IDatabaseService;
 let stateBuilder: StateBuilder;
 const tokenId = NftSupport.generateNftId();
+let nftRepo: NftsRepository;
 
 beforeAll(async () => {
     await NftSupport.setUp({ disableP2P: true });
@@ -28,6 +30,7 @@ beforeAll(async () => {
     walletManager = new WalletManager();
     database = app.resolvePlugin<Database.IDatabaseService>("database");
     stateBuilder = new StateBuilder(database.connection, walletManager);
+    nftRepo = (database.connection as any).db.nfts;
 });
 
 afterAll(async () => support.tearDown());
@@ -59,6 +62,9 @@ describe("certifiedNftMint handler tests for token eco v2", () => {
         senderWallet = walletManager.findByAddress(Identities.Address.fromPassphrase(passphrase));
         senderWallet.publicKey = Identities.PublicKey.fromPassphrase(passphrase);
         walletManager.reindex(senderWallet);
+
+        // needed for wallet boostrap integrity check
+        jest.spyOn(nftRepo, "count").mockResolvedValueOnce(1);
     });
 
     it("wallet bootstrap for mint transaction", async () => {

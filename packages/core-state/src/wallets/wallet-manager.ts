@@ -316,7 +316,7 @@ export class WalletManager implements State.IWalletManager {
         }
     }
 
-    public async revertBlock(block: Interfaces.IBlock): Promise<void> {
+    public async revertBlock(block: Interfaces.IBlock, applyInDb = true): Promise<void> {
         if (!this.has(block.data.generatorPublicKey)) {
             app.forceExit(`Failed to lookup generator '${block.data.generatorPublicKey}' of block '${block.data.id}'.`);
         }
@@ -329,7 +329,7 @@ export class WalletManager implements State.IWalletManager {
             // Revert the transactions from last to first
             for (let i = block.transactions.length - 1; i >= 0; i--) {
                 const transaction: Interfaces.ITransaction = block.transactions[i];
-                await this.revertTransaction(transaction);
+                await this.revertTransaction(transaction, applyInDb);
                 revertedTransactions.push(transaction);
             }
 
@@ -383,7 +383,7 @@ export class WalletManager implements State.IWalletManager {
         await this.updateVoteBalances(sender, recipient, transaction.data, lockWallet, lockTransaction);
     }
 
-    public async revertTransaction(transaction: Interfaces.ITransaction): Promise<void> {
+    public async revertTransaction(transaction: Interfaces.ITransaction, applyInDb = true): Promise<void> {
         const { data } = transaction;
 
         const transactionHandler: TransactionInterfaces.ITransactionHandler = await Handlers.Registry.get(
@@ -394,7 +394,7 @@ export class WalletManager implements State.IWalletManager {
         const recipient: State.IWallet = this.findByAddress(data.recipientId);
 
         // TODO: uns: find a better way to check state situation
-        await transactionHandler.revert(transaction, this, true);
+        await transactionHandler.revert(transaction, this, applyInDb);
 
         let lockWallet: State.IWallet;
         let lockTransaction: Interfaces.ITransactionData;

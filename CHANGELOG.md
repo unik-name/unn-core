@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 
 -   get resigned delegate from api
+-   do not revert transaction in db at bootstrap (#3485)
 
 ## [5.6.2] - 2021-06-15
 

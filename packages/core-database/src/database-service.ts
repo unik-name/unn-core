@@ -5,6 +5,8 @@ import { Wallets } from "@arkecosystem/core-state";
 import { Handlers } from "@arkecosystem/core-transactions";
 import { roundCalculator } from "@arkecosystem/core-utils";
 import { Blocks, Crypto, Identities, Interfaces, Managers, Transactions, Utils } from "@arkecosystem/crypto";
+import { Enums } from "@uns/core-nft-crypto";
+import { UnsTransactionGroup, UnsTransactionType } from "@uns/crypto";
 import assert from "assert";
 import cloneDeep from "lodash.clonedeep";
 
@@ -539,6 +541,23 @@ export class DatabaseService implements Database.IDatabaseService {
         if (blockStats.totalAmount !== transactionStats.totalAmount) {
             errors.push(
                 `Total transaction amounts: ${transactionStats.totalAmount}, total of block.totalAmount : ${blockStats.totalAmount}`,
+            );
+        }
+
+        const nftMintCount = await this.connection.transactionsRepository.getCountOfType(
+            Enums.NftTransactionType.NftMint,
+            Enums.NftTransactionGroup,
+        );
+        const certifiedNftMintCount = await this.connection.transactionsRepository.getCountOfType(
+            UnsTransactionType.UnsCertifiedNftMint,
+            UnsTransactionGroup,
+        );
+        const nftCount = await (this.connection as any).db.nfts.count();
+        // Sum of all mint & certified mint tx equals to the nft count
+        if (+nftCount !== nftMintCount + certifiedNftMintCount) {
+            errors.push(
+                `Total mint transaction count: ${nftMintCount +
+                    certifiedNftMintCount}, total count of Nft : ${nftCount}`,
             );
         }
 

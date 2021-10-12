@@ -1,7 +1,7 @@
 import { app } from "@arkecosystem/core-container";
 import { ConnectionManager } from "@arkecosystem/core-database";
 import { Database, NFT, State, TransactionPool } from "@arkecosystem/core-interfaces";
-import { Handlers, TransactionReader } from "@arkecosystem/core-transactions";
+import { Handlers, Interfaces as TrxInterfaces, TransactionReader } from "@arkecosystem/core-transactions";
 import { Interfaces, Transactions } from "@arkecosystem/crypto";
 import { NftMintTransactionHandler, NftOwnerError, nftRepository } from "@uns/core-nft";
 import { DiscloseExplicitTransaction, IDiscloseDemand, IDiscloseDemandCertification, unsCrypto } from "@uns/crypto";
@@ -124,9 +124,22 @@ export class DiscloseExplicitTransactionHandler extends Handlers.TransactionHand
         return this.typeFromSenderAlreadyInPool(data, pool);
     }
 
-    // tslint:disable-next-line: no-empty
-    public async bootstrap(connection: Database.IConnection, walletManager: State.IWalletManager): Promise<void> {}
+    public async bootstrap(
+        connection: Database.IConnection,
+        _: State.IWalletManager,
+        options: TrxInterfaces.IBootstrapOptions,
+    ): Promise<void> {
+        if (options.buildNftPropertiesTable) {
+            const reader: TransactionReader = await TransactionReader.create(connection, this.getConstructor());
+            while (reader.hasNext()) {
+                const transactions = await reader.read();
 
+                for (const transaction of transactions) {
+                    await setExplicitValue(transaction.asset);
+                }
+            }
+        }
+    }
     public async applyToSender(
         transaction: Interfaces.ITransaction,
         walletManager: State.IWalletManager,
@@ -134,7 +147,7 @@ export class DiscloseExplicitTransactionHandler extends Handlers.TransactionHand
     ): Promise<void> {
         await super.applyToSender(transaction, walletManager);
         if (updateDb) {
-            await setExplicitValue(transaction);
+            await setExplicitValue(transaction.data.asset);
         }
     }
 

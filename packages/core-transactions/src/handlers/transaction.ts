@@ -17,7 +17,7 @@ import {
     UnexpectedSecondSignatureError,
     UnsupportedMultiSignatureTransactionError,
 } from "../errors";
-import { IDynamicFeeContext, ITransactionHandler } from "../interfaces";
+import { IDynamicFeeContext, ITransactionHandler, IBootstrapOptions } from "../interfaces";
 
 export type TransactionHandlerConstructor = new () => TransactionHandler;
 
@@ -34,6 +34,7 @@ export abstract class TransactionHandler implements ITransactionHandler {
     public abstract async bootstrap(
         connection: Database.IConnection,
         walletManager: State.IWalletManager,
+        options?: IBootstrapOptions,
     ): Promise<void>;
 
     public async verify(transaction: Interfaces.ITransaction, walletManager: State.IWalletManager): Promise<boolean> {

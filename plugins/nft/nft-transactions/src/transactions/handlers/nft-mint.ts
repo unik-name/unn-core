@@ -1,6 +1,6 @@
 import { app } from "@arkecosystem/core-container";
 import { Database, State, TransactionPool } from "@arkecosystem/core-interfaces";
-import { Handlers, TransactionReader } from "@arkecosystem/core-transactions";
+import { Handlers, Interfaces as TrxInterfaces, TransactionReader } from "@arkecosystem/core-transactions";
 import { Interfaces, Managers, Transactions } from "@arkecosystem/crypto";
 import { getCurrentNftAsset, Transactions as NftTransactions } from "@uns/core-nft-crypto";
 import { NftOwnedError } from "../../errors";
@@ -31,7 +31,11 @@ export class NftMintTransactionHandler extends Handlers.TransactionHandler {
         return ["tokens"];
     }
 
-    public async bootstrap(connection: Database.IConnection, walletManager: State.IWalletManager): Promise<void> {
+    public async bootstrap(
+        connection: Database.IConnection,
+        walletManager: State.IWalletManager,
+        options: TrxInterfaces.IBootstrapOptions,
+    ): Promise<void> {
         const reader: TransactionReader = await TransactionReader.create(connection, this.getConstructor());
 
         while (reader.hasNext()) {
@@ -41,6 +45,10 @@ export class NftMintTransactionHandler extends Handlers.TransactionHandler {
                 const wallet: State.IWallet = walletManager.findById(transaction.senderPublicKey);
                 const { tokenId, properties } = getCurrentNftAsset(transaction.asset);
                 await addNftToWallet(wallet, walletManager, tokenId, parseInt(properties!.type));
+
+                if (options.buildNftTable) {
+                    await applyNftMintDb(transaction.senderPublicKey, transaction.asset);
+                }
             }
         }
     }
@@ -104,10 +112,9 @@ export class NftMintTransactionHandler extends Handlers.TransactionHandler {
         await super.revertForSender(transaction, walletManager);
         const wallet: State.IWallet = walletManager.findById(transaction.data.senderPublicKey);
         await removeNftFromWallet(wallet, transaction.data.asset, walletManager);
+        const tokenId = getCurrentNftAsset(transaction.data.asset).tokenId;
         if (updateDb) {
-            return app
-                .resolvePlugin<NftsManager>("core-nft")
-                .delete(getCurrentNftAsset(transaction.data.asset).tokenId);
+            await app.resolvePlugin<NftsManager>("core-nft").delete(tokenId);
         }
     }
 

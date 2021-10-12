@@ -1,8 +1,8 @@
 import { Database, State } from "@arkecosystem/core-interfaces";
-import { Handlers, TransactionReader } from "@arkecosystem/core-transactions";
+import { Handlers, Interfaces as TrxInterfaces, TransactionReader } from "@arkecosystem/core-transactions";
 import { Interfaces, Managers, Transactions, Utils } from "@arkecosystem/crypto";
 import { NftUpdateTransactionHandler } from "@uns/core-nft";
-import { getTokenId } from "@uns/core-nft-crypto";
+import { getCurrentNftAsset, getTokenId } from "@uns/core-nft-crypto";
 import {
     applyMixins,
     CertifiedNftUpdateTransaction,
@@ -10,6 +10,7 @@ import {
     getRewardsFromDidType,
     isAliveDemand,
 } from "@uns/crypto";
+import { getNftsManager } from ".";
 import { CertifiedTransactionHandler } from "./uns-certified-handler";
 import { throwIfInvalidAmount, throwIfInvalidFee } from "./utils";
 
@@ -30,7 +31,11 @@ export class CertifiedNftUpdateTransactionHandler extends NftUpdateTransactionHa
         return CertifiedNftUpdateTransaction;
     }
 
-    public async bootstrap(connection: Database.IConnection, walletManager: State.IWalletManager): Promise<void> {
+    public async bootstrap(
+        connection: Database.IConnection,
+        walletManager: State.IWalletManager,
+        options: TrxInterfaces.IBootstrapOptions,
+    ): Promise<void> {
         const reader: TransactionReader = await TransactionReader.create(connection, this.getConstructor());
 
         while (reader.hasNext()) {
@@ -55,6 +60,11 @@ export class CertifiedNftUpdateTransactionHandler extends NftUpdateTransactionHa
                             .plus(transaction.fee)
                             .plus(Utils.BigNumber.make(rewards.sender));
                     }
+                }
+
+                const asset = getCurrentNftAsset(transaction.asset);
+                if (asset.properties && options.buildNftPropertiesTable) {
+                    await getNftsManager().manageProperties(asset.properties, asset.tokenId);
                 }
             }
         }

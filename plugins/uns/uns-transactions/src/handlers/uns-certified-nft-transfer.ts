@@ -1,7 +1,7 @@
 import { Database, State } from "@arkecosystem/core-interfaces";
-import { Handlers, TransactionReader } from "@arkecosystem/core-transactions";
+import { Handlers, Interfaces as TrxInterfaces, TransactionReader } from "@arkecosystem/core-transactions";
 import { Identities, Interfaces, Transactions } from "@arkecosystem/crypto";
-import { applyNftTransferInWallets, NftTransferTransactionHandler } from "@uns/core-nft";
+import { applyNftTransferDb, applyNftTransferInWallets, NftTransferTransactionHandler } from "@uns/core-nft";
 import { applyMixins, CertifiedNftTransferTransaction, INftDemandPayload } from "@uns/crypto";
 import * as Errors from "../errors";
 import { CertifiedTransactionHandler } from "./uns-certified-handler";
@@ -25,7 +25,11 @@ export class CertifiedNftTransferTransactionHandler extends NftTransferTransacti
         return CertifiedNftTransferTransaction;
     }
 
-    public async bootstrap(connection: Database.IConnection, walletManager: State.IWalletManager): Promise<void> {
+    public async bootstrap(
+        connection: Database.IConnection,
+        walletManager: State.IWalletManager,
+        options: TrxInterfaces.IBootstrapOptions,
+    ): Promise<void> {
         const reader: TransactionReader = await TransactionReader.create(connection, this.getConstructor());
 
         while (reader.hasNext()) {
@@ -36,6 +40,11 @@ export class CertifiedNftTransferTransactionHandler extends NftTransferTransacti
 
                 this.applyCostToSender(transaction, walletManager);
                 await this.applyCostToFactory(transaction, walletManager, transaction.blockHeight);
+
+                if (options.buildNftTable) {
+                    const { asset, recipientId } = transaction;
+                    await applyNftTransferDb(recipientId, asset);
+                }
             }
         }
     }

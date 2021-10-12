@@ -1,8 +1,7 @@
 import { Database, State } from "@arkecosystem/core-interfaces";
 import { Handlers, Interfaces as TrxInterfaces, TransactionReader } from "@arkecosystem/core-transactions";
 import { Interfaces, Managers, Transactions, Utils } from "@arkecosystem/crypto";
-import { NftMintTransactionHandler } from "@uns/core-nft";
-import { addNftToWallet } from "@uns/core-nft";
+import { addNftToWallet, applyNftMintDb, NftMintTransactionHandler } from "@uns/core-nft";
 import { getCurrentNftAsset } from "@uns/core-nft-crypto";
 import {
     applyMixins,
@@ -35,7 +34,11 @@ export class CertifiedNftMintTransactionHandler extends NftMintTransactionHandle
         return CertifiedNftMintTransaction;
     }
 
-    public async bootstrap(connection: Database.IConnection, walletManager: State.IWalletManager): Promise<void> {
+    public async bootstrap(
+        connection: Database.IConnection,
+        walletManager: State.IWalletManager,
+        options: TrxInterfaces.IBootstrapOptions,
+    ): Promise<void> {
         const reader: TransactionReader = await TransactionReader.create(connection, this.getConstructor());
 
         while (reader.hasNext()) {
@@ -54,6 +57,10 @@ export class CertifiedNftMintTransactionHandler extends NftMintTransactionHandle
                     const rewards: IUnsRewards = getRewardsFromDidType(didType, transaction.blockHeight);
                     // fee will be deduced in wallets state generation
                     sender.balance = sender.balance.plus(transaction.fee).plus(Utils.BigNumber.make(rewards.sender));
+                }
+
+                if (options.buildNftTable) {
+                    await applyNftMintDb(transaction.senderPublicKey, transaction.asset);
                 }
             }
         }

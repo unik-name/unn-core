@@ -19,6 +19,7 @@ let stateBuilder: StateBuilder;
 let factoryWallet: State.IWallet;
 let senderWallet: State.IWallet;
 let recipientWallet: State.IWallet;
+let nftRepo;
 
 const tokenId = NftSupport.generateNftId();
 const didType = DIDTypes.INDIVIDUAL;
@@ -30,6 +31,7 @@ beforeAll(async () => {
     walletManager = new WalletManager();
     database = app.resolvePlugin<Database.IDatabaseService>("database");
     stateBuilder = new StateBuilder(database.connection, walletManager);
+    nftRepo = (database.connection as any).db.nfts;
 });
 
 afterAll(async () => support.tearDown());
@@ -62,7 +64,12 @@ describe("certifiedNftTransfer handler tests", () => {
         const recipientPassphrase = "the new owner passphrase";
         recipientWallet = walletManager.findByAddress(Identities.Address.fromPassphrase(recipientPassphrase));
         recipientWallet.publicKey = Identities.PublicKey.fromPassphrase(recipientPassphrase);
+
         jest.spyOn(transactionHelpers, "getUnikOwnerAddress").mockResolvedValueOnce(factoryWallet.address);
+
+        jest.spyOn(nftRepo, "count").mockResolvedValueOnce(1);
+        // trick to mock private function
+        jest.spyOn(StateBuilder.prototype as any, "verifyNftTableConsistency").mockResolvedValueOnce({} as any);
     });
 
     it("wallet bootstrap for nft transfer transaction", async () => {

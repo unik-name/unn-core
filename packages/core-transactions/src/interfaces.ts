@@ -9,7 +9,11 @@ export interface ITransactionHandler {
 
     walletAttributes(): ReadonlyArray<string>;
 
-    bootstrap(connection: Database.IConnection, walletManager: State.IWalletManager): Promise<void>;
+    bootstrap(
+        connection: Database.IConnection,
+        walletManager: State.IWalletManager,
+        options?: IBootstrapOptions,
+    ): Promise<void>;
 
     isActivated(): Promise<boolean>;
 
@@ -55,4 +59,9 @@ export interface IDynamicFeeContext {
     addonBytes: number;
     satoshiPerByte: number;
     height: number;
+}
+
+export interface IBootstrapOptions {
+    buildNftTable?: boolean;
+    buildNftPropertiesTable?: boolean;
 }

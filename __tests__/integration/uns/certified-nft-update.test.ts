@@ -16,12 +16,14 @@ import genesisBlock from "../../utils/config/dalinet/genesisBlock.json";
 let walletManager: WalletManager;
 let database: Database.IDatabaseService;
 let stateBuilder: StateBuilder;
+let nftRepo;
 
 beforeAll(async () => {
     await NftSupport.setUp({ disableP2P: true });
     walletManager = new WalletManager();
     database = app.resolvePlugin<Database.IDatabaseService>("database");
     stateBuilder = new StateBuilder(database.connection, walletManager);
+    nftRepo = (database.connection as any).db.nfts;
 });
 
 afterAll(async () => support.tearDown());
@@ -112,6 +114,9 @@ describe("certifiedNftupdate handler tests", () => {
         const delegate = new Delegate("delegate passphrase", Networks.dalinet.network);
         const block = delegate.forge([transaction.data], optionsDefault);
         await database.connection.saveBlock(block);
+        jest.spyOn(nftRepo, "count").mockResolvedValueOnce(1);
+        // trick to mock private function
+        jest.spyOn(StateBuilder.prototype as any, "verifyNftTableConsistency").mockResolvedValueOnce({} as any);
         await stateBuilder.run();
 
         const rewards = getRewardsFromDidType(didType);
@@ -161,6 +166,10 @@ describe("certifiedNftupdate handler tests", () => {
         const delegate = new Delegate("delegate passphrase", Networks.dalinet.network);
         const block = delegate.forge([transaction.data], optionsDefault);
         await database.connection.saveBlock(block);
+        jest.spyOn(nftRepo, "count").mockResolvedValueOnce(1);
+        // trick to mock private function
+        jest.spyOn(StateBuilder.prototype as any, "verifyNftTableConsistency").mockResolvedValueOnce({} as any);
+
         await stateBuilder.run();
 
         // check sender balance

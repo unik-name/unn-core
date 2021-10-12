@@ -1,6 +1,6 @@
 import { app } from "@arkecosystem/core-container";
 import { Database, State, TransactionPool } from "@arkecosystem/core-interfaces";
-import { Handlers } from "@arkecosystem/core-transactions";
+import { Handlers, Interfaces as TrxInterfaces, TransactionReader } from "@arkecosystem/core-transactions";
 import { Interfaces, Transactions } from "@arkecosystem/crypto";
 import { getCurrentNftAsset, Transactions as NftTransactions } from "@uns/core-nft-crypto";
 import { NftOwnerError } from "../../errors";
@@ -27,8 +27,24 @@ export class NftUpdateTransactionHandler extends Handlers.TransactionHandler {
         return [];
     }
 
-    public async bootstrap(connection: Database.IConnection, walletManager: State.IWalletManager): Promise<void> {
-        // nothing to do because we don't update wallet state
+    public async bootstrap(
+        connection: Database.IConnection,
+        _: State.IWalletManager,
+        options: TrxInterfaces.IBootstrapOptions,
+    ): Promise<void> {
+        if (options.buildNftPropertiesTable) {
+            const reader: TransactionReader = await TransactionReader.create(connection, this.getConstructor());
+            while (reader.hasNext()) {
+                const transactions = await reader.read();
+                for (const transaction of transactions) {
+                    const asset = getCurrentNftAsset(transaction.asset);
+                    if (asset.properties) {
+                        const nftManager = app.resolvePlugin<NftsManager>("core-nft");
+                        await nftManager.manageProperties(asset.properties, asset.tokenId);
+                    }
+                }
+            }
+        }
     }
 
     public async throwIfCannotBeApplied(

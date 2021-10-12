@@ -14,6 +14,8 @@ import genesisBlock from "../../utils/config/dalinet/genesisBlock.json";
 let walletManager: WalletManager;
 let database: Database.IDatabaseService;
 let stateBuilder: StateBuilder;
+let nftRepo;
+
 const tokenId = NftSupport.generateNftId();
 const { SATOSHI } = Constants;
 
@@ -24,6 +26,7 @@ beforeAll(async () => {
     stateBuilder = new StateBuilder(database.connection, walletManager);
     const height = Managers.configManager.getMilestones().find(milestone => !!milestone.nbDelegatesByType).height;
     Managers.configManager.setHeight(height);
+    nftRepo = (database.connection as any).db.nfts;
 });
 
 afterAll(async () => support.tearDown());
@@ -40,6 +43,10 @@ describe("unsDelegateRegister handler tests", () => {
     const delegateType = 2;
 
     it("wallet bootstrap for unsDelegateRegister", async () => {
+        jest.spyOn(nftRepo, "count").mockResolvedValueOnce(1);
+        // trick to mock private function
+        jest.spyOn(StateBuilder.prototype as any, "verifyNftTableConsistency").mockResolvedValueOnce({} as any);
+
         await database.reset();
 
         // Generate delegate wallet

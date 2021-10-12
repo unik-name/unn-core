@@ -18,5 +18,6 @@ export const queries = {
         findProperties: loadQueryFile(__dirname, "./nftproperties/find-by-nft-id.sql"),
         unikStatus: loadQueryFile(__dirname, "./nftproperties/unikStatus.sql"),
         findTransactionsByAsset: loadQueryFile(__dirname, "./transactions/find-by-asset.sql"),
+        count: loadQueryFile(__dirname, "./nfts/count.sql"),
     },
 };

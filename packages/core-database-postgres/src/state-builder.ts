@@ -3,6 +3,8 @@ import { ApplicationEvents } from "@arkecosystem/core-event-emitter";
 import { Database, EventEmitter, Logger, State } from "@arkecosystem/core-interfaces";
 import { Handlers } from "@arkecosystem/core-transactions";
 import { Utils } from "@arkecosystem/crypto";
+import { Enums } from "@uns/core-nft-crypto";
+import { UnsTransactionGroup, UnsTransactionType } from "@uns/crypto";
 
 export class StateBuilder {
     private readonly logger: Logger.ILogger = app.resolvePlugin<Logger.ILogger>("logger");
@@ -14,6 +16,10 @@ export class StateBuilder {
     ) {}
 
     public async run(): Promise<void> {
+        const nftRepo = (this.connection as any).db.nfts;
+        this.logger.info("Deleting NFT table and associated properties");
+        await nftRepo.truncate();
+
         const transactionHandlers: Handlers.TransactionHandler[] = Handlers.Registry.getAll();
         const steps = transactionHandlers.length + 3;
 
@@ -42,7 +48,8 @@ export class StateBuilder {
         );
         this.logger.info(`Number of registered delegates: ${Object.keys(this.walletManager.allByUsername()).length}`);
 
-        this.verifyWalletsConsistency();
+        await this.verifyNftTableConsistency();
+        await this.verifyWalletsConsistency();
 
         this.emitter.emit(ApplicationEvents.StateBuilderFinished);
     }
@@ -66,12 +73,33 @@ export class StateBuilder {
         }
     }
 
-    private verifyWalletsConsistency(): void {
+    private async verifyNftTableConsistency(): Promise<void> {
+        const nftMintCount = await this.connection.transactionsRepository.getCountOfType(
+            Enums.NftTransactionType.NftMint,
+            Enums.NftTransactionGroup,
+        );
+        const certifiedNftMintCount = await this.connection.transactionsRepository.getCountOfType(
+            UnsTransactionType.UnsCertifiedNftMint,
+            UnsTransactionGroup,
+        );
+        const nftCount = await (this.connection as any).db.nfts.count();
+        // Sum of all mint & certified mint should be equals to the nft count
+        if (+nftCount !== nftMintCount + certifiedNftMintCount) {
+            this.logger.warn(
+                `Unikname count in db (${nftCount}) does not match mint transactions count (${nftMintCount +
+                    certifiedNftMintCount}).`,
+            );
+            throw new Error("Nft count in database does not match mint transactions count.");
+        }
+    }
+
+    private async verifyWalletsConsistency(): Promise<void> {
         const genesisPublicKeys: Record<string, true> = app
             .getConfig()
             .get("genesisBlock.transactions")
             .reduce((acc, curr) => Object.assign(acc, { [curr.senderPublicKey]: true }), {});
 
+        let unikCount = 0;
         for (const wallet of this.walletManager.allByAddress()) {
             if (wallet.balance.isLessThan(0) && !genesisPublicKeys[wallet.publicKey]) {
                 // Senders of whitelisted transactions that result in a negative balance,
@@ -96,6 +124,20 @@ export class StateBuilder {
 
                 throw new Error("Wallet with negative vote balance.");
             }
+
+            if (Handlers.Registry.isKnownWalletAttribute("tokens") && wallet.hasAttribute("tokens")) {
+                const tokens = Object.keys(wallet.getAttribute("tokens"));
+                unikCount += tokens.length;
+            }
+        }
+
+        const nftRepo = (this.connection as any).db.nfts;
+        const countFromDb = await nftRepo.count();
+        if (+countFromDb !== unikCount) {
+            this.logger.warn(
+                `Unikname count in db ${countFromDb} doesnt match wallets attribute unikname count ${unikCount}.`,
+            );
+            throw new Error("Unikname count in db doesnt match wallets unikname count.");
         }
     }
 }

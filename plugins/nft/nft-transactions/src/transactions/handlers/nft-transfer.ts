@@ -44,6 +44,11 @@ export class NftTransferTransactionHandler extends Handlers.TransactionHandler {
 
             for (const transaction of transactions) {
                 await applyNftTransferInWallets(transaction, walletManager);
+                // Save changes in database
+                const { asset, recipientId } = transaction;
+                await applyNftTransferDb(recipientId, asset);
+                // allowed properties must be differents ones from updates
+                await applyProperties(asset);
             }
         }
     }

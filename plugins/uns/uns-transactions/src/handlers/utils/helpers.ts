@@ -3,15 +3,11 @@ import { Database, Logger, State } from "@arkecosystem/core-interfaces";
 import { IWalletManager } from "@arkecosystem/core-interfaces/dist/core-state";
 import { Identities, Interfaces, Managers, Utils } from "@arkecosystem/crypto";
 import { nftRepository, NftsManager } from "@uns/core-nft";
-import { Enums, getCurrentNftAsset, getNftName } from "@uns/core-nft-crypto";
+import { Enums, getCurrentNftAsset, getNftName, getTokenId } from "@uns/core-nft-crypto";
 import { DIDTypes, UnsTransactionGroup, UnsTransactionType } from "@uns/crypto";
 import { VoucherAlreadyUsedError, WrongFeeError, WrongServiceCostError } from "../../errors";
 
 export const EXPLICIT_PROP_KEY = "explicitValues";
-
-export const getCurrentTokenId = (transaction: Interfaces.ITransactionData): string => {
-    return transaction.asset["disclose-demand"].payload.sub;
-};
 
 export const getNftsManager = (): NftsManager => {
     return app.resolvePlugin<NftsManager>("core-nft");
@@ -21,9 +17,10 @@ export const getWalletManager = (): IWalletManager => {
     return app.resolvePlugin<Database.IDatabaseService>("database").walletManager;
 };
 
-export const setExplicitValue = async (transaction: Interfaces.ITransaction): Promise<any> => {
-    const tokenId = getCurrentTokenId(transaction.data);
-    let explicitValues = transaction.data.asset["disclose-demand"].payload.explicitValue;
+export const setExplicitValue = async (transactionAsset: Interfaces.ITransactionAsset): Promise<any> => {
+    const tokenId = getTokenId(transactionAsset);
+
+    let explicitValues = transactionAsset["disclose-demand"].payload.explicitValue;
 
     const currentValues = await getNftsManager().getProperty(tokenId, EXPLICIT_PROP_KEY);
     explicitValues = manageNewExplicitValues(currentValues?.value.split(","), explicitValues);
@@ -39,7 +36,7 @@ const manageNewExplicitValues = (currents: string[], newValues: string[]): strin
 };
 
 export const revertExplicitValue = async (transaction: Interfaces.ITransactionData): Promise<void> => {
-    const tokenId = getCurrentTokenId(transaction);
+    const tokenId = getTokenId(transaction.asset);
 
     const asset = { "disclose-demand": { payload: { sub: tokenId } } };
     const transactions = await nftRepository().findTransactionsByAsset(

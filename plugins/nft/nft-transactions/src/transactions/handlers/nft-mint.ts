@@ -41,6 +41,9 @@ export class NftMintTransactionHandler extends Handlers.TransactionHandler {
                 const wallet: State.IWallet = walletManager.findById(transaction.senderPublicKey);
                 const { tokenId, properties } = getCurrentNftAsset(transaction.asset);
                 await addNftToWallet(wallet, walletManager, tokenId, parseInt(properties!.type));
+
+                // Save changes in database
+                await applyNftMintDb(transaction.senderPublicKey, transaction.asset);
             }
         }
     }
@@ -104,10 +107,9 @@ export class NftMintTransactionHandler extends Handlers.TransactionHandler {
         await super.revertForSender(transaction, walletManager);
         const wallet: State.IWallet = walletManager.findById(transaction.data.senderPublicKey);
         await removeNftFromWallet(wallet, transaction.data.asset, walletManager);
+        const tokenId = getCurrentNftAsset(transaction.data.asset).tokenId;
         if (updateDb) {
-            return app
-                .resolvePlugin<NftsManager>("core-nft")
-                .delete(getCurrentNftAsset(transaction.data.asset).tokenId);
+            await app.resolvePlugin<NftsManager>("core-nft").delete(tokenId);
         }
     }
 

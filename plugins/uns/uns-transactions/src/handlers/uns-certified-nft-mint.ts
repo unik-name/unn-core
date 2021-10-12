@@ -1,8 +1,7 @@
 import { Database, State } from "@arkecosystem/core-interfaces";
 import { Handlers, Interfaces as TrxInterfaces, TransactionReader } from "@arkecosystem/core-transactions";
 import { Interfaces, Managers, Transactions, Utils } from "@arkecosystem/crypto";
-import { NftMintTransactionHandler } from "@uns/core-nft";
-import { addNftToWallet } from "@uns/core-nft";
+import { addNftToWallet, applyNftMintDb, NftMintTransactionHandler } from "@uns/core-nft";
 import { getCurrentNftAsset } from "@uns/core-nft-crypto";
 import {
     applyMixins,
@@ -55,6 +54,9 @@ export class CertifiedNftMintTransactionHandler extends NftMintTransactionHandle
                     // fee will be deduced in wallets state generation
                     sender.balance = sender.balance.plus(transaction.fee).plus(Utils.BigNumber.make(rewards.sender));
                 }
+
+                // Save changes in database
+                await applyNftMintDb(transaction.senderPublicKey, transaction.asset);
             }
         }
     }

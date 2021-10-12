@@ -182,6 +182,10 @@ export class NftsRepository extends Repository implements NFT.INftsRepository {
      */
     public async truncate(): Promise<void> {
         await super.truncate();
+        await this.truncateNftProperties();
+    }
+
+    public async truncateNftProperties(): Promise<void> {
         await this.db.none(`TRUNCATE nftproperties RESTART IDENTITY`);
     }
 
@@ -213,6 +217,10 @@ export class NftsRepository extends Repository implements NFT.INftsRepository {
             typeGroups,
             order: order.toUpperCase(),
         });
+    }
+
+    public async count(): Promise<number> {
+        return (await this.db.one(sql.count)).count;
     }
 
     private async getNftsWithProperties(

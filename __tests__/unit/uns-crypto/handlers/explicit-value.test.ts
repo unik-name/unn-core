@@ -38,14 +38,14 @@ describe("Disclose-explicit - setExplicitValue tests", () => {
             transactionClone = JSON.parse(JSON.stringify(transaction));
         });
         it("should insert single new property", async () => {
-            await setExplicitValue(transactionClone);
+            await setExplicitValue(transactionClone.data.asset);
             expect(nftManager.manageProperties).toHaveBeenCalledWith({ [EXPLICIT_PROP_KEY]: "discloseMe" }, TOKEN_ID);
         });
 
         it("should insert 3 new explicit values", async () => {
             const explicitValues = ["value1", "value2", "value3"];
             transactionClone.data.asset["disclose-demand"].payload.explicitValue = explicitValues;
-            await setExplicitValue(transactionClone);
+            await setExplicitValue(transactionClone.data.asset);
             expect(nftManager.manageProperties).toHaveBeenCalledWith(
                 { [EXPLICIT_PROP_KEY]: explicitValues.join(",") },
                 TOKEN_ID,
@@ -55,14 +55,14 @@ describe("Disclose-explicit - setExplicitValue tests", () => {
         it("should do nothing", async () => {
             const explicitValues = [];
             transactionClone.data.asset["disclose-demand"].payload.explicitValue = explicitValues;
-            await setExplicitValue(transactionClone);
+            await setExplicitValue(transactionClone.data.asset);
             expect(nftManager.manageProperties).toHaveBeenCalledWith({ [EXPLICIT_PROP_KEY]: "" }, TOKEN_ID);
         });
 
         it("should not set duplicate values", async () => {
             const explicitValues = ["value", "value"];
             transactionClone.data.asset["disclose-demand"].payload.explicitValue = explicitValues;
-            await setExplicitValue(transactionClone);
+            await setExplicitValue(transactionClone.data.asset);
             expect(nftManager.manageProperties).toHaveBeenCalledWith({ [EXPLICIT_PROP_KEY]: "value" }, TOKEN_ID);
         });
     });
@@ -78,7 +78,7 @@ describe("Disclose-explicit - setExplicitValue tests", () => {
         it("should add property in first place", async () => {
             const newValStr = "discloseMeFirst";
             transactionClone.data.asset["disclose-demand"].payload.explicitValue = [newValStr];
-            await setExplicitValue(transactionClone);
+            await setExplicitValue(transactionClone.data.asset);
             expect(nftManager.manageProperties).toHaveBeenCalledWith(
                 { [EXPLICIT_PROP_KEY]: [newValStr, initialValues].join(",") },
                 TOKEN_ID,
@@ -88,7 +88,7 @@ describe("Disclose-explicit - setExplicitValue tests", () => {
         it("should put titi first", async () => {
             const newValStr = "titi";
             transactionClone.data.asset["disclose-demand"].payload.explicitValue = [newValStr];
-            await setExplicitValue(transactionClone);
+            await setExplicitValue(transactionClone.data.asset);
             expect(nftManager.manageProperties).toHaveBeenCalledWith(
                 { [EXPLICIT_PROP_KEY]: newValStr + ",tata" },
                 TOKEN_ID,
@@ -98,14 +98,14 @@ describe("Disclose-explicit - setExplicitValue tests", () => {
         it("should do nothing", async () => {
             const newValStr = "tata";
             transactionClone.data.asset["disclose-demand"].payload.explicitValue = [newValStr];
-            await setExplicitValue(transactionClone);
+            await setExplicitValue(transactionClone.data.asset);
             expect(nftManager.manageProperties).toHaveBeenCalledWith({ [EXPLICIT_PROP_KEY]: initialValues }, TOKEN_ID);
         });
 
         it("should set toto,tata,titi", async () => {
             const newValArray = ["toto", "tata"];
             transactionClone.data.asset["disclose-demand"].payload.explicitValue = newValArray;
-            await setExplicitValue(transactionClone);
+            await setExplicitValue(transactionClone.data.asset);
             expect(nftManager.manageProperties).toHaveBeenCalledWith(
                 { [EXPLICIT_PROP_KEY]: newValArray.join(",") + ",titi" },
                 TOKEN_ID,
@@ -115,7 +115,7 @@ describe("Disclose-explicit - setExplicitValue tests", () => {
         it("should set tata,toto,titi", async () => {
             const newValArray = ["tata", "toto"];
             transactionClone.data.asset["disclose-demand"].payload.explicitValue = newValArray;
-            await setExplicitValue(transactionClone);
+            await setExplicitValue(transactionClone.data.asset);
             expect(nftManager.manageProperties).toHaveBeenCalledWith(
                 { [EXPLICIT_PROP_KEY]: newValArray.join(",") + ",titi" },
                 TOKEN_ID,
@@ -141,7 +141,7 @@ describe("Disclose-explicit - setExplicitValue tests", () => {
             });
 
             it("revert nft property", async () => {
-                await setExplicitValue(transaction);
+                await setExplicitValue(transaction.data.asset);
                 expect(nftManager.manageProperties).toHaveBeenNthCalledWith(
                     1,
                     { [EXPLICIT_PROP_KEY]: "discloseMe" },

@@ -40,7 +40,7 @@ export class CertifiedNftTransferTransactionHandler extends NftTransferTransacti
                 await applyNftTransferInWallets(transaction, walletManager);
 
                 this.applyCostToSender(transaction, walletManager);
-                await this.applyCostToFactory(transaction, walletManager, transaction.blockHeight);
+                await this.applyCostToFactory(transaction, walletManager);
 
                 // Save changes in database
                 const { asset, recipientId } = transaction;

@@ -108,10 +108,9 @@ export abstract class CertifiedTransactionHandler {
     protected async applyCostToFactory(
         transaction: Interfaces.ITransactionData | Database.IBootstrapTransaction,
         walletManager: State.IWalletManager,
-        height?: number,
     ): Promise<void> {
         const certifPayload: INftDemandCertificationPayload = transaction.asset.certification.payload;
-        const factoryAddress = await getUnikOwnerAddress(certifPayload.iss, height);
+        const factoryAddress = await getUnikOwnerAddress(certifPayload.iss);
         const factoryWallet: State.IWallet = walletManager.findByAddress(factoryAddress);
         factoryWallet.balance = factoryWallet.balance.plus(certifPayload.cost);
     }
@@ -119,10 +118,9 @@ export abstract class CertifiedTransactionHandler {
     protected async revertCostForFactory(
         transaction: Interfaces.ITransactionData | Database.IBootstrapTransaction,
         walletManager: State.IWalletManager,
-        height?: number,
     ): Promise<void> {
         const certifPayload: INftDemandCertificationPayload = transaction.asset.certification.payload;
-        const factoryAddress = await getUnikOwnerAddress(certifPayload.iss, height);
+        const factoryAddress = await getUnikOwnerAddress(certifPayload.iss);
         const factoryWallet: State.IWallet = walletManager.findByAddress(factoryAddress);
         factoryWallet.balance = factoryWallet.balance.minus(certifPayload.cost);
     }

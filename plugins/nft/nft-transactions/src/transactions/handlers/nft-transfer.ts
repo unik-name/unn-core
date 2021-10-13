@@ -98,6 +98,8 @@ export class NftTransferTransactionHandler extends Handlers.TransactionHandler {
         if (updateDb) {
             await applyNftTransferDb(recipientId, asset);
             await applyProperties(asset);
+            const { tokenId } = getCurrentNftAsset(asset);
+            walletManager.logger.debug(`[💎] Token transferred (id:'${tokenId}' to:${recipientId})`);
         }
     }
 
@@ -107,7 +109,7 @@ export class NftTransferTransactionHandler extends Handlers.TransactionHandler {
         updateDb = false,
     ): Promise<void> {
         await super.revertForSender(transaction, walletManager);
-        const { senderPublicKey, asset } = transaction.data;
+        const { senderPublicKey, asset, recipientId } = transaction.data;
         const senderWallet: State.IWallet = walletManager.findById(senderPublicKey);
         const { tokenId } = getCurrentNftAsset(asset);
         const nftManager = app.resolvePlugin<NftsManager>("core-nft");
@@ -116,6 +118,7 @@ export class NftTransferTransactionHandler extends Handlers.TransactionHandler {
         if (updateDb) {
             await applyNftTransferDb(senderWallet.address, asset);
             await revertProperties(transaction.data);
+            walletManager.logger.debug(`[💎] Reverting token transferred (id:'${tokenId}' to:${recipientId})`);
         }
     }
 

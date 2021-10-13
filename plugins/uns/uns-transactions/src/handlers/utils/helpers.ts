@@ -68,8 +68,6 @@ export const getUnikOwnerAddress = async (tokenId: string, height?: number): Pro
     const start = Date.now();
     if (!height) {
         const unik = await nftRepository().findById(tokenId);
-        const ms = Date.now() - start;
-        logger.debug(`Unik ${tokenId} owner found in ${ms}ms`);
         return unik.ownerId;
     } else {
         const asset = { nft: { unik: { tokenId } } };

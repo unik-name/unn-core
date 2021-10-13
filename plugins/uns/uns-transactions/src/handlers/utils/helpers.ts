@@ -1,10 +1,10 @@
 import { app } from "@arkecosystem/core-container";
-import { Database, Logger, State } from "@arkecosystem/core-interfaces";
+import { Database, State } from "@arkecosystem/core-interfaces";
 import { IWalletManager } from "@arkecosystem/core-interfaces/dist/core-state";
 import { Identities, Interfaces, Managers, Utils } from "@arkecosystem/crypto";
 import { nftRepository, NftsManager } from "@uns/core-nft";
-import { Enums, getCurrentNftAsset, getNftName, getTokenId } from "@uns/core-nft-crypto";
-import { DIDTypes, UnsTransactionGroup, UnsTransactionType } from "@uns/crypto";
+import { getCurrentNftAsset, getNftName, getTokenId } from "@uns/core-nft-crypto";
+import { DIDTypes } from "@uns/crypto";
 import { VoucherAlreadyUsedError, WrongFeeError, WrongServiceCostError } from "../../errors";
 
 export const EXPLICIT_PROP_KEY = "explicitValues";
@@ -58,68 +58,14 @@ export const revertExplicitValue = async (transaction: Interfaces.ITransactionDa
 };
 
 /**
- * Get Unik owner at the requested height.
+ * Get Unik owner.
  *
  * @returns publicKey
  *
  */
-export const getUnikOwnerAddress = async (tokenId: string, height?: number): Promise<string> => {
-    const logger = app.resolvePlugin<Logger.ILogger>("logger");
-    const start = Date.now();
-    if (!height) {
-        const unik = await nftRepository().findById(tokenId);
-        return unik.ownerId;
-    } else {
-        const asset = { nft: { unik: { tokenId } } };
-        const transactions = await nftRepository().findTransactionsByAsset(
-            asset,
-            [
-                Enums.NftTransactionType.NftMint,
-                Enums.NftTransactionType.NftTransfer,
-                UnsTransactionType.UnsCertifiedNftMint,
-                UnsTransactionType.UnsCertifiedNftTransfer,
-            ],
-            [UnsTransactionGroup, Enums.NftTransactionGroup],
-        );
-
-        if (!transactions || !transactions.length) {
-            throw new Error(
-                `UNIK Id \"${tokenId}\" owner not found at ` + height ? `height ${height}.` : "current height.",
-            );
-        }
-
-        // get Unik minter address
-        const ownerPubKey = transactions.find(tx =>
-            [UnsTransactionType.UnsCertifiedNftMint, Enums.NftTransactionType.NftMint].includes(tx.type),
-        ).senderPublicKey;
-        let ownerAddress = Identities.Address.fromPublicKey(ownerPubKey);
-
-        const transferTransactions = transactions.filter(tx =>
-            [UnsTransactionType.UnsCertifiedNftTransfer, Enums.NftTransactionType.NftTransfer].includes(tx.type),
-        );
-
-        if (!transferTransactions.length) {
-            const ms = Date.now() - start;
-            logger.debug(`Unik ${tokenId} owner found for height ${height} in ${ms}ms. No transfer transactions`);
-            return ownerAddress;
-        }
-
-        // parse transfer transactions to find last owner
-        const blocksRepo = app.resolvePlugin<Database.IDatabaseService>("database").blocksBusinessRepository;
-        for (const tx of transferTransactions) {
-            const block = await blocksRepo.findById(tx.blockId);
-            if (block.height <= height) {
-                ownerAddress = tx.recipientId;
-            } else {
-                break;
-            }
-        }
-        const ms = Date.now() - start;
-        logger.debug(
-            `Unik ${tokenId} owner found for height ${height} in ${ms}ms. ${transferTransactions.length} transfer transactions`,
-        );
-        return ownerAddress;
-    }
+export const getUnikOwnerAddress = async (tokenId: string): Promise<string> => {
+    const unik = await nftRepository().findById(tokenId);
+    return unik.ownerId;
 };
 
 export const getDidTypeFromProperties = (properties: Array<{ key: string; value: string }>): DIDTypes =>

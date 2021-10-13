@@ -22,7 +22,7 @@ export class StateBuilder {
 
         const transactionHandlers: Handlers.TransactionHandler[] = Handlers.Registry.getAll();
         const steps = transactionHandlers.length + 3;
-
+        const start = Date.now();
         this.logger.info(`State Generation - Step 1 of ${steps}: Block Rewards`);
         await this.buildBlockRewards();
 
@@ -43,9 +43,8 @@ export class StateBuilder {
         this.walletManager.buildVoteBalances();
         this.walletManager.buildDelegateRanking();
 
-        this.logger.info(
-            `State Generation complete! Wallets in memory: ${Object.keys(this.walletManager.allByAddress()).length}`,
-        );
+        this.logger.info(`State Generation complete!  (${Date.now() - start}ms)`);
+        this.logger.info(`Wallets in memory: ${Object.keys(this.walletManager.allByAddress()).length}`);
         this.logger.info(`Number of registered delegates: ${Object.keys(this.walletManager.allByUsername()).length}`);
 
         await this.verifyNftTableConsistency();

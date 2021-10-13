@@ -96,6 +96,7 @@ export class NftMintTransactionHandler extends Handlers.TransactionHandler {
         if (updateDb) {
             await applyNftMintDb(senderPublicKey, asset);
             await applyProperties(asset);
+            walletManager.logger.debug(`[💎] New token (id:${tokenId}, owner:${wallet.address})`);
         }
     }
 
@@ -110,6 +111,7 @@ export class NftMintTransactionHandler extends Handlers.TransactionHandler {
         const tokenId = getCurrentNftAsset(transaction.data.asset).tokenId;
         if (updateDb) {
             await app.resolvePlugin<NftsManager>("core-nft").delete(tokenId);
+            walletManager.logger.debug(`[💎] Token deleted (id:${tokenId}) and its properties`);
         }
     }
 

@@ -73,6 +73,7 @@ describe("certifiedNftTransfer handler tests", () => {
     });
 
     it("wallet bootstrap for nft transfer transaction", async () => {
+        const updateMock = jest.spyOn(nftRepo, "updateOwnerId");
         const transaction = NFTTransactionFactory.nftCertifiedTransfer(
             tokenId,
             senderPassphrase,
@@ -104,5 +105,7 @@ describe("certifiedNftTransfer handler tests", () => {
         // check forgeFactory balance
         expect(factoryWallet.balance).toStrictEqual(serviceCost);
         expect(factoryWallet.balance).toStrictEqual(transaction.data.asset.certification.payload.cost);
+
+        expect(updateMock).toHaveBeenCalledWith(tokenId, recipientWallet.address);
     });
 });

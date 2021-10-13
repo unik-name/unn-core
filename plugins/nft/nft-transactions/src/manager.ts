@@ -1,6 +1,6 @@
 import { app } from "@arkecosystem/core-container";
 import { ConnectionManager } from "@arkecosystem/core-database";
-import { Logger, NFT } from "@arkecosystem/core-interfaces";
+import { NFT } from "@arkecosystem/core-interfaces";
 import { Interfaces } from "@uns/core-nft-crypto";
 import { ConstraintsManager } from "./constraints/manager";
 import { IConstraintsConfig } from "./interfaces";
@@ -12,10 +12,7 @@ export const nftRepository = (): NFT.INftsRepository => {
 export class NftsManager {
     public constraints: ConstraintsManager;
 
-    private logger: Logger.ILogger;
-
     constructor(options) {
-        this.logger = app.resolvePlugin<Logger.ILogger>("logger");
         this.constraints = new ConstraintsManager(options.constraints as IConstraintsConfig); // TODO: uns : validate config
     }
 
@@ -29,21 +26,15 @@ export class NftsManager {
     }
 
     public async insert(id: string, ownerId: string) {
-        return this.repository.insert({ id, ownerId }).then(_ => {
-            this.logger.debug(`[💎] New token (id:${id}, owner:${ownerId})`);
-        });
+        return this.repository.insert({ id, ownerId });
     }
 
     public async delete(tokenId: string) {
-        return this.repository.delete(tokenId).then(_ => {
-            this.logger.debug(`[💎] Token deleted (id:${tokenId}) and its properties`);
-        });
+        return this.repository.delete(tokenId);
     }
 
     public async updateOwner(tokenId: string, newOwner: string) {
-        return this.repository.updateOwnerId(tokenId, newOwner).then(_ => {
-            this.logger.debug(`[💎] Token transferred (id:'${tokenId}' to:${newOwner})`);
-        });
+        return this.repository.updateOwnerId(tokenId, newOwner);
     }
 
     public async getProperty(tokenId: string, propertyKey: string) {
@@ -64,11 +55,7 @@ export class NftsManager {
     }
 
     public async insertProperty(propertyKey: string, propertyValue: string, tokenId: any): Promise<any> {
-        return this.repository.insertProperty(tokenId, propertyKey, propertyValue).then(_ => {
-            this.logger.debug(
-                `[💎] Property '${propertyKey}' added with value '${propertyValue}' for tokenid ${tokenId}`,
-            );
-        });
+        return this.repository.insertProperty(tokenId, propertyKey, propertyValue);
     }
 
     public async insertProperties(properties: Interfaces.INftProperties, tokenId: string): Promise<any> {
@@ -80,11 +67,7 @@ export class NftsManager {
     }
 
     public async updateProperty(propertyKey: string, propertyValue: string, tokenId: string): Promise<any> {
-        return this.repository.updateProperty(tokenId, propertyKey, propertyValue).then(_ => {
-            this.logger.debug(
-                `[💎] Property '${propertyKey}' updated with value '${propertyValue}' for tokenid ${tokenId}`,
-            );
-        });
+        return this.repository.updateProperty(tokenId, propertyKey, propertyValue);
     }
 
     public async manageProperties(properties: Interfaces.INftProperties, tokenId: string): Promise<any> {
@@ -100,16 +83,10 @@ export class NftsManager {
     }
 
     public async deleteProperty(propertyKey: string, tokenId: string): Promise<any> {
-        return this.repository.deletePropertyByKey(tokenId, propertyKey).then(_ => {
-            this.logger.debug(`[💎] Property '${propertyKey}' deleted for tokenid ${tokenId}`);
-        });
+        return this.repository.deletePropertyByKey(tokenId, propertyKey);
     }
 
     public async insertOrUpdateProperty(propertyKey: string, propertyValue: string, tokenId: string): Promise<any> {
-        return this.repository.insertOrUpdateProperty(tokenId, propertyKey, propertyValue).then(_ => {
-            this.logger.debug(
-                `[💎] Property '${propertyKey}' replaced with value '${propertyValue}' for tokenid ${tokenId}`,
-            );
-        });
+        return this.repository.insertOrUpdateProperty(tokenId, propertyKey, propertyValue);
     }
 }

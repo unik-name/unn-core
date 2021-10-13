@@ -81,7 +81,7 @@ export class NftUpdateTransactionHandler extends Handlers.TransactionHandler {
             await applyProperties(transaction.data.asset);
             const { tokenId, properties } = getCurrentNftAsset(transaction.data.asset);
             if (properties && Object.keys(properties).length) {
-                Object.entries<string>(properties).map(async ([key, value]) => {
+                for (const [key, value] of Object.entries(properties)) {
                     if (value === null) {
                         walletManager.logger.debug(`[💎] Property '${key}' deleted for tokenid ${tokenId}`);
                     } else {
@@ -89,7 +89,7 @@ export class NftUpdateTransactionHandler extends Handlers.TransactionHandler {
                             `[💎] Property '${key}' replaced with value '${key}' for tokenid ${tokenId}`,
                         );
                     }
-                });
+                }
             }
         }
     }
@@ -105,13 +105,13 @@ export class NftUpdateTransactionHandler extends Handlers.TransactionHandler {
 
             const { tokenId, properties } = getCurrentNftAsset(transaction.data.asset);
             if (properties && Object.keys(properties).length) {
-                Object.entries<string>(properties).map(async ([key, value]) => {
+                for (const [key, value] of Object.entries(properties)) {
                     if (value === null) {
                         walletManager.logger.debug(`[💎] Reverting property delete '${key}' for tokenid ${tokenId}`);
                     } else {
                         walletManager.logger.debug(`[💎] Reverting property add '${key}' for tokenid ${tokenId}`);
                     }
-                });
+                }
             }
         }
     }

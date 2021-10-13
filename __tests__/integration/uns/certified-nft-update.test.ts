@@ -87,6 +87,8 @@ describe("certifiedNftupdate handler tests", () => {
         expect(issuerWallet.balance).toStrictEqual(serviceCost);
         expect(issuerWallet.balance).toStrictEqual(Utils.BigNumber.make(transaction.data.amount));
         expect(issuerWallet.balance).toStrictEqual(transaction.data.asset.certification.payload.cost);
+
+        expect(await nftRepo.findProperties(Fixtures.tokenId)).toEqual(formatProperties(properties));
     });
 
     it("tokeneco v2: wallet bootstrap for individual alive demand", async () => {
@@ -131,6 +133,8 @@ describe("certifiedNftupdate handler tests", () => {
         expect(issuerWallet.balance).toStrictEqual(serviceCost);
         expect(issuerWallet.balance).toEqual(Utils.BigNumber.make(transaction.data.amount));
         expect(issuerWallet.balance).toStrictEqual(transaction.data.asset.certification.payload.cost);
+
+        expect(await nftRepo.findProperties(Fixtures.tokenId)).toEqual(formatProperties(properties));
     });
 
     it("tokeneco v2: wallet bootstrap for organization alive demand", async () => {
@@ -182,5 +186,9 @@ describe("certifiedNftupdate handler tests", () => {
         expect(issuerWallet.balance).toStrictEqual(serviceCost);
         expect(issuerWallet.balance).toEqual(Utils.BigNumber.make(transaction.data.amount));
         expect(issuerWallet.balance).toStrictEqual(transaction.data.asset.certification.payload.cost);
+
+        expect(await nftRepo.findProperties(Fixtures.tokenId)).toEqual(formatProperties(properties));
     });
 });
+
+const formatProperties = props => Object.entries(props).map(([key, val]) => ({ key, value: val }));

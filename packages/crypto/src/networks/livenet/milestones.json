@@ -110,5 +110,35 @@
         "p2p": {
             "minimumVersions": ["^5.6.4 || ^5.6.4-dev"]
         }
+    },
+    {
+        "height": 5827464,
+        "p2p": {
+            "minimumVersions": ["^5.7.0 || ^5.7.0-dev || ^6.0.0 || ^6.0.0-dev"]
+        },
+        "unsTokenEcoV3": true,
+        "voucherRewards": {
+            "individual": {
+                "forger": 0,
+                "sender": 0,
+                "foundation": 0
+            }
+        }
+    },
+    {
+        "height": 5894969,
+        "reward": 100000000,
+        "voucherRewards": {
+            "organization": {
+                "forger": 0,
+                "sender": 0,
+                "foundation": 0
+            },
+            "network": {
+                "forger": 0,
+                "sender": 0,
+                "foundation": 0
+            }
+        }
     }
 ]

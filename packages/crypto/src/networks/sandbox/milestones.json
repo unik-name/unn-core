@@ -135,5 +135,30 @@
                 "foundation": 99899900000000
             }
         }
+    },
+    {
+        "height": 3794172,
+        "reward": 100000000,
+        "p2p": {
+            "minimumVersions": ["^5.7.0 || ^5.7.0-dev || ^6.0.0 || ^6.0.0-dev"]
+        },
+        "unsTokenEcoV3": true,
+        "voucherRewards": {
+            "individual": {
+                "forger": 0,
+                "sender": 0,
+                "foundation": 0
+            },
+            "organization": {
+                "forger": 0,
+                "sender": 0,
+                "foundation": 0
+            },
+            "network": {
+                "forger": 0,
+                "sender": 0,
+                "foundation": 0
+            }
+        }
     }
 ]

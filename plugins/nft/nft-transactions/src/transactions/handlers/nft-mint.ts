@@ -44,6 +44,7 @@ export class NftMintTransactionHandler extends Handlers.TransactionHandler {
 
                 // Save changes in database
                 await applyNftMintDb(transaction.senderPublicKey, transaction.asset);
+                await applyProperties(transaction.asset);
             }
         }
     }

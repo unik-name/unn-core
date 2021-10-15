@@ -1,14 +1,13 @@
 import { app } from "@arkecosystem/core-container";
 import { Database } from "@arkecosystem/core-interfaces";
 import { IWalletManager } from "@arkecosystem/core-interfaces/dist/core-state";
-import { Identities, Managers, Utils } from "@arkecosystem/crypto";
+import { Identities, Utils } from "@arkecosystem/crypto";
 import * as support from "../__support__";
 import * as NftSupport from "../__support__/nft";
 import * as UnsSupport from "../__support__/uns";
 
 let walletManager: IWalletManager;
 beforeAll(async () => {
-    Managers.configManager.set("network.forgeFactory.unikidWhiteList", [UnsSupport.forgerFactoryTokenId]);
     await NftSupport.setUp();
 
     await UnsSupport.setupForgeFactory();

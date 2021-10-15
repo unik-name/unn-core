@@ -3,6 +3,8 @@ import ByteBuffer from "bytebuffer";
 import { IDiscloseDemandCertificationPayload, IDiscloseDemandPayload } from "../";
 
 class UnsCrypto {
+    public forgeFactoryAddrMap: Record<string, string> = {};
+
     public signPayload(payload: any, passphrase: string): string {
         return Crypto.Hash.signECDSA(this.getPayloadHashBuffer(payload), Identities.Keys.fromPassphrase(passphrase));
     }
@@ -26,9 +28,17 @@ class UnsCrypto {
      * Return false if the issuer is not allowed to
      */
     public verifyIssuerCredentials(issuerId: string): boolean {
+        return this.isForgeFactory(issuerId) || this.isUrlChecker(issuerId);
+    }
+
+    public isForgeFactory(tokenId: string): boolean {
         const nftFactoryList: string[] = Managers.configManager.get("network.forgeFactory.unikidWhiteList");
+        return nftFactoryList.includes(tokenId);
+    }
+
+    public isUrlChecker(tokenId: string): boolean {
         const urlCheckerList: string[] = Managers.configManager.getMilestone().urlCheckers || [];
-        return nftFactoryList.concat(urlCheckerList).includes(issuerId);
+        return urlCheckerList.includes(tokenId);
     }
 
     public serializeDiscloseDemand(payload: IDiscloseDemandPayload | IDiscloseDemandCertificationPayload): Buffer {

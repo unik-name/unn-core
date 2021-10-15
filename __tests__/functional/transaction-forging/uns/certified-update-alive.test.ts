@@ -13,7 +13,6 @@ import * as UnsSupport from "../__support__/uns";
 
 let walletManager: IWalletManager;
 beforeAll(async () => {
-    Managers.configManager.set("network.forgeFactory.unikidWhiteList", [UnsSupport.forgerFactoryTokenId]);
     await NftSupport.setUp();
 
     await UnsSupport.setupForgeFactory();

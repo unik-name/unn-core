@@ -1,6 +1,8 @@
 import { Container } from "@arkecosystem/core-interfaces";
-import { Crypto, Managers } from "@arkecosystem/crypto";
+import { Crypto, Identities, Managers } from "@arkecosystem/crypto";
 import { Builders } from "@uns/core-nft-crypto";
+import { unsCrypto } from "@uns/crypto";
+import * as txHelpers from "@uns/uns-transactions/dist/handlers/utils/helpers";
 import * as path from "path";
 import { TransactionFactory } from "../../../helpers";
 import { defaultInclude, setUp as setup, snoozeForBlock } from "./index";
@@ -41,6 +43,15 @@ export const setUp = async (options?: any): Promise<Container.IContainer> => {
 
     // tslint:disable-next-line
     const version = require(packageFilePath).version;
+
+    if (options?.forgeFactoryUnikId) {
+        jest.spyOn(unsCrypto, "isForgeFactory").mockImplementation(tokenId => tokenId === options.forgeFactoryUnikId);
+    }
+    if (options?.forgeFactoryPassphrase) {
+        jest.spyOn(txHelpers, "getForgeFactoryAddress").mockResolvedValue(
+            Identities.Address.fromPassphrase(options.forgeFactoryPassphrase),
+        );
+    }
 
     return setup(
         {

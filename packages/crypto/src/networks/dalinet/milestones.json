@@ -174,5 +174,30 @@
                 "foundation": 0
             }
         }
+    },
+    {
+        "height": 4713850,
+        "voucherRewards": {
+            "individual": {
+                "forger": 0,
+                "sender": 0,
+                "foundation": 0
+            }
+        }
+    },
+    {
+        "height": 4716541,
+        "voucherRewards": {
+            "organization": {
+                "forger": 0,
+                "sender": 0,
+                "foundation": 0
+            },
+            "network": {
+                "forger": 0,
+                "sender": 0,
+                "foundation": 0
+            }
+        }
     }
 ]

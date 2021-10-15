@@ -12,6 +12,7 @@ import * as NftSupport from "../../functional/transaction-forging/__support__/nf
 import { NFTTransactionFactory } from "../../helpers/nft-transaction-factory";
 import * as Fixtures from "../../unit/uns-crypto/__fixtures__/index";
 import genesisBlock from "../../utils/config/dalinet/genesisBlock.json";
+import { formatProperties } from "./utils";
 
 let walletManager: WalletManager;
 let database: Database.IDatabaseService;
@@ -190,5 +191,3 @@ describe("certifiedNftupdate handler tests", () => {
         expect(await nftRepo.findProperties(Fixtures.tokenId)).toEqual(formatProperties(properties));
     });
 });
-
-const formatProperties = props => Object.entries(props).map(([key, val]) => ({ key, value: val }));

@@ -11,6 +11,7 @@ import * as NftSupport from "../../functional/transaction-forging/__support__/nf
 import { NFTTransactionFactory } from "../../helpers/nft-transaction-factory";
 import * as Fixtures from "../../unit/uns-crypto/__fixtures__/index";
 import genesisBlock from "../../utils/config/dalinet/genesisBlock.json";
+import { formatProperties } from "./utils";
 
 let walletManager: WalletManager;
 let database: Database.IDatabaseService;
@@ -94,6 +95,7 @@ describe("certifiedNftMint handler tests", () => {
 
         expect(Object.keys(senderWallet.getAttribute("tokens")).includes(tokenId)).toBeTrue();
         expect(await nftManager.exists(tokenId)).toBeTrue();
+        expect(await nftRepository().findProperties(tokenId)).toEqual(formatProperties(properties));
     });
 
     it("wallet bootstrap for mint transaction with voucher", async () => {
@@ -103,8 +105,8 @@ describe("certifiedNftMint handler tests", () => {
         const rewards = getRewardsFromDidType(didType);
 
         const properties = {
-            type: didType.toString(),
             UnikVoucherId: voucherId,
+            type: didType.toString(),
         };
 
         const transaction = NFTTransactionFactory.nftCertifiedMint(
@@ -135,5 +137,6 @@ describe("certifiedNftMint handler tests", () => {
 
         expect(Object.keys(senderWallet.getAttribute("tokens")).includes(tokenId)).toBeTrue();
         expect(await nftManager.exists(tokenId)).toBeTrue();
+        expect(await nftRepository().findProperties(tokenId)).toEqual(formatProperties(properties));
     });
 });

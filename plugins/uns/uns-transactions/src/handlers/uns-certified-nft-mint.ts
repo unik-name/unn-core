@@ -1,7 +1,7 @@
 import { Database, State } from "@arkecosystem/core-interfaces";
 import { Handlers, Interfaces as TrxInterfaces, TransactionReader } from "@arkecosystem/core-transactions";
 import { Interfaces, Managers, Transactions, Utils } from "@arkecosystem/crypto";
-import { addNftToWallet, applyNftMintDb, NftMintTransactionHandler } from "@uns/core-nft";
+import { addNftToWallet, applyNftMintDb, applyProperties, NftMintTransactionHandler } from "@uns/core-nft";
 import { getCurrentNftAsset } from "@uns/core-nft-crypto";
 import {
     applyMixins,
@@ -57,6 +57,7 @@ export class CertifiedNftMintTransactionHandler extends NftMintTransactionHandle
 
                 // Save changes in database
                 await applyNftMintDb(transaction.senderPublicKey, transaction.asset);
+                await applyProperties(transaction.asset);
             }
         }
     }

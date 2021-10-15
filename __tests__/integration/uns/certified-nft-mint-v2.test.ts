@@ -12,6 +12,7 @@ import * as NftSupport from "../../functional/transaction-forging/__support__/nf
 import { NFTTransactionFactory } from "../../helpers/nft-transaction-factory";
 import * as Fixtures from "../../unit/uns-crypto/__fixtures__/index";
 import genesisBlock from "../../utils/config/dalinet/genesisBlock.json";
+import { formatProperties } from "./utils";
 
 let walletManager: WalletManager;
 let database: Database.IDatabaseService;
@@ -65,8 +66,8 @@ describe("certifiedNftMint handler tests for token eco v2", () => {
 
     it("wallet bootstrap for mint transaction", async () => {
         const properties = {
-            type: DIDTypes.INDIVIDUAL.toString(),
             [LIFE_CYCLE_PROPERTY_KEY]: LifeCycleGrades.MINTED.toString(),
+            type: DIDTypes.INDIVIDUAL.toString(),
         };
         const serviceCost = Utils.BigNumber.make(654321);
         const fee = 12345;
@@ -99,6 +100,8 @@ describe("certifiedNftMint handler tests for token eco v2", () => {
 
         expect(Object.keys(senderWallet.getAttribute("tokens")).includes(tokenId)).toBeTrue();
         expect(await nftManager.exists(tokenId)).toBeTrue();
+
+        expect(await nftRepository().findProperties(tokenId)).toEqual(formatProperties(properties));
     });
 
     it("wallet bootstrap for individual mint transaction with voucher", async () => {
@@ -106,9 +109,9 @@ describe("certifiedNftMint handler tests for token eco v2", () => {
         const serviceCost = Utils.BigNumber.ZERO;
         const fee = 0;
         const properties = {
-            type: DIDTypes.INDIVIDUAL.toString(),
-            UnikVoucherId: voucherId,
             [LIFE_CYCLE_PROPERTY_KEY]: LifeCycleGrades.MINTED.toString(),
+            UnikVoucherId: voucherId,
+            type: DIDTypes.INDIVIDUAL.toString(),
         };
         const transaction = NFTTransactionFactory.nftCertifiedMint(
             tokenId,
@@ -138,6 +141,7 @@ describe("certifiedNftMint handler tests for token eco v2", () => {
 
         expect(Object.keys(senderWallet.getAttribute("tokens")).includes(tokenId)).toBeTrue();
         expect(await nftManager.exists(tokenId)).toBeTrue();
+        expect(await nftRepository().findProperties(tokenId)).toEqual(formatProperties(properties));
     });
 
     it("wallet bootstrap for organization mint transaction with voucher", async () => {
@@ -149,9 +153,9 @@ describe("certifiedNftMint handler tests for token eco v2", () => {
         const fee = rewards.forger;
 
         const properties = {
-            type: didType.toString(),
-            UnikVoucherId: voucherId,
             [LIFE_CYCLE_PROPERTY_KEY]: LifeCycleGrades.MINTED.toString(),
+            UnikVoucherId: voucherId,
+            type: didType.toString(),
         };
         const transaction = NFTTransactionFactory.nftCertifiedMint(
             tokenId,
@@ -180,5 +184,6 @@ describe("certifiedNftMint handler tests for token eco v2", () => {
 
         expect(Object.keys(senderWallet.getAttribute("tokens")).includes(tokenId)).toBeTrue();
         expect(await nftManager.exists(tokenId)).toBeTrue();
+        expect(await nftRepository().findProperties(tokenId)).toEqual(formatProperties(properties));
     });
 });

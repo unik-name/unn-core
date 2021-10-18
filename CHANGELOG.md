@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [UNRELEASED]
 
+## [5.7.0] - 2021-10-15
+
 ### Added
 
 -   certified NFT transfer transaction
@@ -14,14 +16,28 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 
--   get total supply from wallet balances sum to speedup /blockchain route
 -   increase rate limit for peers.getBlocks
--   UNS => UNN rebranding
 
 ### Fixed
 
--   get resigned delegate from api
 -   do not revert transaction in db at bootstrap (#3485)
+
+## [5.6.4] - 2021-09-08
+
+### Fixed
+
+-   fix undefined voteBalance issue
+
+## [5.6.3] - 2021-09-08
+
+### Fixed
+
+-   wallet nfts api metadatas (count and links) issue
+-   get resigned delegate from api issue
+
+### Changed
+
+-   get total supply from wallet balances sum to speedup /blockchain route issue
 
 ## [5.6.2] - 2021-06-15
 

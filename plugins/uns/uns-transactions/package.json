@@ -1,6 +1,6 @@
 {
     "name": "@uns/uns-transactions",
-    "version": "5.7.0",
+    "version": "5.7.1",
     "private": true,
     "description": "NFT plugin for UNS Transactions",
     "license": "MIT",
@@ -27,9 +27,9 @@
         "@arkecosystem/crypto": "^2.6.31",
         "@hapi/boom": "^8.0.0",
         "@hapi/hapi": "^18.3.1",
-        "@uns/core-nft": "^5.7.0",
-        "@uns/core-nft-crypto": "^5.7.0",
-        "@uns/crypto": "^5.7.0"
+        "@uns/core-nft": "^5.7.1",
+        "@uns/core-nft-crypto": "^5.7.1",
+        "@uns/crypto": "^5.7.1"
     },
     "publishConfig": {
         "access": "public"

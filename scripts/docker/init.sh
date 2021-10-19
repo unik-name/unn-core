@@ -3,11 +3,12 @@
 set -e
 
 TAG=$(git tag --points-at HEAD)
-if [[ "$CIRCLE_BRANCH" != "develop" && "$TAG" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]];
+if [[ "$CIRCLE_BRANCH" == "develop" ]];
+then
+    TARGET=integration
+elif [[ "$TAG" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]];
 then
     TARGET=$TAG
-else
-    TARGET=integration
 fi
 
 echo "Build & publish target: $TARGET"

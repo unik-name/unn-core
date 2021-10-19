@@ -14,15 +14,15 @@ if [[ -n "$CI" ]];then
     set -x
 
     TAG=$(git tag --points-at HEAD)
-    #publish release
-    if [[ "$CIRCLE_BRANCH" != "develop" && "$TAG" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-        echo "Publishing UNS packages to version $TAG"
-        yarn publish:uns --yes $TAG
-    else
+    if [[ "$CIRCLE_BRANCH" == "develop" ]]; then
         BUILD_SUFFIX=""
         if [ -n "$CIRCLE_BUILD_NUM" ]; then
             BUILD_SUFFIX=".$CIRCLE_BUILD_NUM"
         fi
         NPM_PRE_ID="dev$BUILD_SUFFIX" yarn publish:uns:dev --yes
+    elif [[ "$TAG" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+        #publish release
+        echo "Publishing UNN packages to version $TAG"
+        yarn publish:uns --yes $TAG
     fi
 fi

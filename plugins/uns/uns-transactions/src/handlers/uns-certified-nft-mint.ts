@@ -145,7 +145,12 @@ export class CertifiedNftMintTransactionHandler extends NftMintTransactionHandle
 
     public dynamicFee(context: TrxInterfaces.IDynamicFeeContext): Utils.BigNumber {
         const didType = getDidType(context.transaction.data.asset);
-        if (Managers.configManager.getMilestone(context.height).unsTokenEcoV2 && didType === DIDTypes.INDIVIDUAL) {
+        const milestone = Managers.configManager.getMilestone(context.height);
+        if (
+            // From unsTokenEcoV3 all mints tx are allowed with zero fee
+            milestone.unsTokenEcoV3 ||
+            (milestone.unsTokenEcoV2 && didType === DIDTypes.INDIVIDUAL)
+        ) {
             return Utils.BigNumber.ZERO;
         } else {
             return super.dynamicFee(context);

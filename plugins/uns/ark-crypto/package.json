@@ -1,6 +1,6 @@
 {
     "name": "@uns/ark-crypto",
-    "version": "5.7.1",
+    "version": "5.7.2",
     "description": "Crypto utilities for the UNS Blockchain",
     "license": "MIT",
     "contributors": [

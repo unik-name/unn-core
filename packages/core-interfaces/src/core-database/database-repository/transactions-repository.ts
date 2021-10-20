@@ -52,7 +52,12 @@ export interface ITransactionsRepository extends IRepository {
 
     getCountOfType(type: number, typeGroup?: number): Promise<number>;
 
-    getAssetsByType(type: number, typeGroup: number, limit: number, offset: number): Promise<IBootstrapTransaction[]>;
+    getAssetsByTypes(
+        types: number[],
+        typeGroup: number,
+        limit: number,
+        offset: number,
+    ): Promise<IBootstrapTransaction[]>;
 
     getOpenHtlcLocks(): Promise<any>;
 

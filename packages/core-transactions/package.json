@@ -25,7 +25,8 @@
         "@arkecosystem/core-interfaces": "^2.7.25",
         "@arkecosystem/core-utils": "^2.7.25",
         "@arkecosystem/crypto": "^2.7.25",
-        "bs58check": "^2.1.2"
+        "bs58check": "^2.1.2",
+        "lodash.uniq": "^4.5.0"
     },
     "engines": {
         "node": ">=10.x"

@@ -114,7 +114,7 @@
     {
         "height": 5848417,
         "p2p": {
-            "minimumVersions": ["^5.7.1 || ^5.7.1-dev || ^6.0.0 || ^6.0.0-dev"]
+            "minimumVersions": ["^5.7.2 || ^5.7.2-dev || ^6.0.0 || ^6.0.0-dev"]
         },
         "unsTokenEcoV3": true,
         "voucherRewards": {

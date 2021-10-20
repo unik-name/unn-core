@@ -1,6 +1,6 @@
 {
     "name": "@uns/badges",
-    "version": "5.7.1",
+    "version": "5.7.2",
     "private": true,
     "description": "NFT Badges plugin for UNIKs token",
     "license": "MIT",
@@ -25,8 +25,8 @@
     "dependencies": {
         "@arkecosystem/core-api": "^2.6.31",
         "@arkecosystem/core-interfaces": "^2.6.31",
-        "@uns/core-nft": "^5.7.1",
-        "@uns/crypto": "^5.7.1",
+        "@uns/core-nft": "^5.7.2",
+        "@uns/crypto": "^5.7.2",
         "@hapi/boom": "^8.0.0",
         "@hapi/hapi": "^18.3.1"
     },

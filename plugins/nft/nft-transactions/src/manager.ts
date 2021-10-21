@@ -29,6 +29,10 @@ export class NftsManager {
         return this.repository.insert({ id, ownerId });
     }
 
+    public async insertMany(nfts: Array<{ id: string; ownerId: string }>) {
+        return this.repository.insert(nfts);
+    }
+
     public async delete(tokenId: string) {
         return this.repository.delete(tokenId);
     }

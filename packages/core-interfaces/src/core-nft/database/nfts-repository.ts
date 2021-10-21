@@ -23,4 +23,5 @@ export interface INftsRepository extends Database.IRepository {
         typeGroups: number[],
         order?: string,
     ): Promise<Interfaces.ITransactionData[]>;
+    insertManyProperties(props: Array<{ nftid: string; key: string; value: string }>): Promise<any>;
 }

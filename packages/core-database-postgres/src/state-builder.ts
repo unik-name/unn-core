@@ -1,10 +1,11 @@
 import { app } from "@arkecosystem/core-container";
 import { ApplicationEvents } from "@arkecosystem/core-event-emitter";
 import { Database, EventEmitter, Logger, State } from "@arkecosystem/core-interfaces";
-import { Handlers } from "@arkecosystem/core-transactions";
-import { Utils } from "@arkecosystem/crypto";
-import { Enums } from "@uns/core-nft-crypto";
+import { Handlers, TransactionReader } from "@arkecosystem/core-transactions";
+import { Identities, Utils } from "@arkecosystem/crypto";
+import { Enums, getCurrentNftAsset } from "@uns/core-nft-crypto";
 import { UnsTransactionGroup, UnsTransactionType } from "@uns/crypto";
+import forOwn from "lodash.forown";
 
 export class StateBuilder {
     private readonly logger: Logger.ILogger = app.resolvePlugin<Logger.ILogger>("logger");
@@ -20,9 +21,15 @@ export class StateBuilder {
         this.logger.info("Deleting NFT table and associated properties");
         await nftRepo.truncate();
 
+        const start = Date.now();
+        if (Handlers.Registry.isKnownWalletAttribute("tokens")) {
+            await this.bootstrapNftDatabase();
+            this.logger.info(`Nft database bootstrap complete!  (${Date.now() - start}ms)`);
+        }
+
         const transactionHandlers: Handlers.TransactionHandler[] = Handlers.Registry.getAll();
         const steps = transactionHandlers.length + 3;
-        const start = Date.now();
+
         this.logger.info(`State Generation - Step 1 of ${steps}: Block Rewards`);
         await this.buildBlockRewards();
 
@@ -137,6 +144,106 @@ export class StateBuilder {
                 `Unikname count in db ${countFromDb} doesnt match wallets attribute unikname count ${unikCount}.`,
             );
             throw new Error("Unikname count in db doesnt match wallets unikname count.");
+        }
+    }
+
+    private async bootstrapNftDatabase(): Promise<void> {
+        // Build nft table
+        await this.bootstrapNftMints();
+        await this.bootstrapNftLifeCycle();
+    }
+
+    private async bootstrapNftMints(): Promise<void> {
+        const mintHandler = await Handlers.Registry.get(
+            Enums.NftTransactionType.NftMint,
+            Enums.NftTransactionGroup,
+            true,
+        );
+        const certifiedMintHandler = await Handlers.Registry.get(
+            UnsTransactionType.UnsCertifiedNftMint,
+            UnsTransactionGroup,
+            true,
+        );
+
+        for (const handler of [mintHandler, certifiedMintHandler]) {
+            const reader: TransactionReader = await TransactionReader.create(this.connection, handler.getConstructor());
+
+            while (reader.hasNext()) {
+                const transactions = await reader.read();
+
+                let formatedProps: Array<{ nftid: string; key: string; value: string }> = [];
+
+                const nfts = transactions.map(tx => {
+                    const { tokenId, properties } = getCurrentNftAsset(tx.asset);
+                    const ownerId = Identities.Address.fromPublicKey(tx.senderPublicKey);
+
+                    // Format properties and remove nulls
+                    forOwn(properties, (value, key) => {
+                        if (value === null) {
+                            delete properties[key];
+                        } else {
+                            formatedProps = [...formatedProps, { nftid: tokenId, key, value }];
+                        }
+                    });
+
+                    return { id: tokenId, ownerId };
+                });
+
+                // Save changes in database
+                const nftRepo = (this.connection as any).db.nfts;
+                await Promise.all([nftRepo.insert(nfts), nftRepo.insertManyProperties(formatedProps)]);
+            }
+        }
+    }
+
+    private async bootstrapNftLifeCycle(): Promise<void> {
+        // We bootstrap only certified handlers
+        const updateHandler = await Handlers.Registry.get(
+            UnsTransactionType.UnsCertifiedNftUpdate,
+            UnsTransactionGroup,
+            true,
+        );
+        const transferHandler = await Handlers.Registry.get(
+            UnsTransactionType.UnsCertifiedNftTransfer,
+            UnsTransactionGroup,
+            true,
+        );
+
+        const reader: TransactionReader = await TransactionReader.create(this.connection, [
+            updateHandler.getConstructor(),
+            transferHandler.getConstructor(),
+        ]);
+
+        const nftRepo = (this.connection as any).db.nfts;
+
+        while (reader.hasNext()) {
+            const transactions = await reader.read();
+
+            let formatedProps: Array<{ nftid: string; key: string; value: string }> = [];
+
+            const nftTransfers = transactions
+                .map(tx => {
+                    const { tokenId, properties } = getCurrentNftAsset(tx.asset);
+
+                    // Format properties and remove nulls
+                    forOwn(properties, (value, key) => {
+                        formatedProps = [...formatedProps, { nftid: tokenId, key, value }];
+                    });
+
+                    if (tx.type === UnsTransactionType.UnsCertifiedNftTransfer) {
+                        return { id: tokenId, newOwnerId: tx.recipientId };
+                    }
+                    return undefined;
+                })
+                .filter(t => !!t);
+
+            console.log("nftTransfers", nftTransfers);
+            // Save changes in database
+            let promises = [nftRepo.updateOrDeleteManyProperties(formatedProps)];
+            if (nftTransfers.length) {
+                promises = [...promises, nftRepo.updateManyOwnerId(nftTransfers)];
+            }
+            await Promise.all(promises);
         }
     }
 }

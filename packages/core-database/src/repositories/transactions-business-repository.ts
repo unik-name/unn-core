@@ -97,9 +97,9 @@ export class TransactionsBusinessRepository implements Database.ITransactionsBus
         return this.databaseServiceProvider().connection.transactionsRepository.getCountOfType(type, typeGroup);
     }
 
-    public async getAssetsByType(type: number, typeGroup: number, limit: number, offset: number): Promise<any> {
-        return this.databaseServiceProvider().connection.transactionsRepository.getAssetsByType(
-            type,
+    public async getAssetsByTypes(types: number[], typeGroup: number, limit: number, offset: number): Promise<any> {
+        return this.databaseServiceProvider().connection.transactionsRepository.getAssetsByTypes(
+            types,
             typeGroup,
             limit,
             offset,

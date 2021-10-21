@@ -2,7 +2,7 @@ import { Database, State } from "@arkecosystem/core-interfaces";
 import { Handlers, TransactionReader } from "@arkecosystem/core-transactions";
 import { Interfaces, Managers, Transactions, Utils } from "@arkecosystem/crypto";
 import { NftUpdateTransactionHandler } from "@uns/core-nft";
-import { getCurrentNftAsset, getTokenId } from "@uns/core-nft-crypto";
+import { getTokenId } from "@uns/core-nft-crypto";
 import {
     applyMixins,
     CertifiedNftUpdateTransaction,
@@ -10,7 +10,6 @@ import {
     getRewardsFromDidType,
     isAliveDemand,
 } from "@uns/crypto";
-import { getNftsManager } from ".";
 import { CertifiedTransactionHandler } from "./uns-certified-handler";
 import { throwIfInvalidAmount, throwIfInvalidFee } from "./utils";
 
@@ -56,12 +55,6 @@ export class CertifiedNftUpdateTransactionHandler extends NftUpdateTransactionHa
                             .plus(transaction.fee)
                             .plus(Utils.BigNumber.make(rewards.sender));
                     }
-                }
-
-                // Save changes in database
-                const asset = getCurrentNftAsset(transaction.asset);
-                if (asset.properties) {
-                    await getNftsManager().manageProperties(asset.properties, asset.tokenId);
                 }
             }
         }

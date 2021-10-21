@@ -2,8 +2,7 @@ import { Database, NFT } from "@arkecosystem/core-interfaces";
 import { Interfaces } from "@arkecosystem/crypto";
 import pgPromise = require("pg-promise");
 import { Repository } from "../../repositories/repository";
-import { INftStatus } from "../models";
-import { Nft } from "../models/nft";
+import { INftStatus, Nft, NftProperty } from "../models";
 import { queries } from "../queries";
 
 const { nfts: sql } = queries;
@@ -104,6 +103,15 @@ export class NftsRepository extends Repository implements NFT.INftsRepository {
         return this.db.none(sql.updateOwnerId, { id, newOwnerId });
     }
 
+    public updateManyOwnerId(updates: Array<{ id: string; newOwnerId: string }>): Promise<any> {
+        return this.db.tx(t => {
+            const queries = updates.map(up => {
+                return t.none(sql.updateOwnerId, up);
+            });
+            return t.batch(queries);
+        });
+    }
+
     /**
      * Add property on nft token
      * @param nftid
@@ -141,6 +149,41 @@ export class NftsRepository extends Repository implements NFT.INftsRepository {
      */
     public insertOrUpdateProperty(nftid: string, propertyKey: string, propertyValue: string): Promise<any> {
         return this.db.none(sql.insertOrUpdateProperty, { nftid, key: propertyKey, value: propertyValue });
+    }
+
+    /**
+     * Inert many nft tokens properties
+     * @param nftid
+     * @param key
+     * @param value
+     */
+    public insertManyProperties(props: Array<{ nftid: string; key: string; value: string }>): Promise<any> {
+        return this.db.none(
+            this.pgp.helpers.insert(
+                props,
+                this.getPropertiesModel().getColumnSet(),
+                this.getPropertiesModel().getTable(),
+            ),
+        );
+    }
+
+    /**
+     * Inert many nft tokens properties
+     * @param nftid
+     * @param key
+     * @param value
+     */
+    public updateOrDeleteManyProperties(props: Array<{ nftid: string; key: string; value: string }>): Promise<any> {
+        return this.db.tx(t => {
+            const queries = props.map(prop => {
+                if (prop.value === null) {
+                    return t.none(sql.deleteByKey, { nftid: prop.nftid, key: prop.key });
+                } else {
+                    return t.none(sql.insertOrUpdateProperty, prop);
+                }
+            });
+            return t.batch(queries);
+        });
     }
 
     /**
@@ -186,7 +229,7 @@ export class NftsRepository extends Repository implements NFT.INftsRepository {
     }
 
     public async truncateNftProperties(): Promise<void> {
-        await this.db.none(`TRUNCATE nftproperties RESTART IDENTITY`);
+        await this.db.none(`TRUNCATE ${this.getPropertiesModel().getTable()} RESTART IDENTITY`);
     }
 
     /**
@@ -195,6 +238,14 @@ export class NftsRepository extends Repository implements NFT.INftsRepository {
      */
     public getModel() {
         return new Nft(this.pgp);
+    }
+
+    /**
+     * Get the nft properties model.
+     * @return {NftProperty}
+     */
+    public getPropertiesModel() {
+        return new NftProperty(this.pgp);
     }
 
     /**

@@ -1,4 +1,5 @@
 SELECT transactions.sender_public_key,
+       transactions.type,
        transactions.timestamp,
        transactions.asset,
        transactions.version,
@@ -11,10 +12,10 @@ SELECT transactions.sender_public_key,
        blocks.generator_public_key as "blockGeneratorPublicKey",
        blocks.reward as "blockReward"
 FROM transactions, blocks
-WHERE 
+WHERE
     transactions.block_id = blocks.id
 AND
-    transactions.type = ${type}
+    transactions.type IN (${types:list})
 AND
     transactions.type_group = ${typeGroup}
 ORDER BY transactions.timestamp ASC, transactions.sequence ASC

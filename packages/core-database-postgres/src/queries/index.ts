@@ -34,7 +34,7 @@ export const queries = {
         receivedTransactions: loadQueryFile(__dirname, "./state-builder/received-transactions.sql"),
         sentTransactions: loadQueryFile(__dirname, "./state-builder/sent-transactions.sql"),
         countType: loadQueryFile(__dirname, "./state-builder/count-type.sql"),
-        assetsByType: loadQueryFile(__dirname, "./state-builder/assets-by-type.sql"),
+        assetsByTypes: loadQueryFile(__dirname, "./state-builder/assets-by-type.sql"),
         openLocks: loadQueryFile(__dirname, "./state-builder/open-locks.sql"),
         refundedLocks: loadQueryFile(__dirname, "./state-builder/refunded-locks.sql"),
         claimedLocks: loadQueryFile(__dirname, "./state-builder/claimed-locks.sql"),

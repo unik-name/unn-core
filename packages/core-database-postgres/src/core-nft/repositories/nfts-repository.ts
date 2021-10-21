@@ -103,6 +103,15 @@ export class NftsRepository extends Repository implements NFT.INftsRepository {
         return this.db.none(sql.updateOwnerId, { id, newOwnerId });
     }
 
+    public updateManyOwnerId(updates: Array<{ id: string; newOwnerId: string }>): Promise<any> {
+        return this.db.tx(t => {
+            const queries = updates.map(up => {
+                return t.none(sql.updateOwnerId, up);
+            });
+            return t.batch(queries);
+        });
+    }
+
     /**
      * Add property on nft token
      * @param nftid
@@ -156,6 +165,25 @@ export class NftsRepository extends Repository implements NFT.INftsRepository {
                 this.getPropertiesModel().getTable(),
             ),
         );
+    }
+
+    /**
+     * Inert many nft tokens properties
+     * @param nftid
+     * @param key
+     * @param value
+     */
+    public updateOrDeleteManyProperties(props: Array<{ nftid: string; key: string; value: string }>): Promise<any> {
+        return this.db.tx(t => {
+            const queries = props.map(prop => {
+                if (prop.value === null) {
+                    return t.none(sql.deleteByKey, { nftid: prop.nftid, key: prop.key });
+                } else {
+                    return t.none(sql.insertOrUpdateProperty, prop);
+                }
+            });
+            return t.batch(queries);
+        });
     }
 
     /**

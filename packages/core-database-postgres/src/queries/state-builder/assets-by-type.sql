@@ -1,4 +1,5 @@
 SELECT transactions.sender_public_key,
+       transactions.type,
        transactions.timestamp,
        transactions.asset,
        transactions.version,

@@ -1,6 +1,6 @@
 import { app } from "@arkecosystem/core-container";
 import { Database, State, TransactionPool } from "@arkecosystem/core-interfaces";
-import { Handlers, TransactionReader } from "@arkecosystem/core-transactions";
+import { Handlers } from "@arkecosystem/core-transactions";
 import { Interfaces, Transactions } from "@arkecosystem/crypto";
 import { getCurrentNftAsset, Transactions as NftTransactions } from "@uns/core-nft-crypto";
 import { NftOwnerError } from "../../errors";
@@ -27,20 +27,8 @@ export class NftUpdateTransactionHandler extends Handlers.TransactionHandler {
         return [];
     }
 
-    public async bootstrap(connection: Database.IConnection, _: State.IWalletManager): Promise<void> {
-        const reader: TransactionReader = await TransactionReader.create(connection, this.getConstructor());
-        while (reader.hasNext()) {
-            const transactions = await reader.read();
-            for (const transaction of transactions) {
-                const asset = getCurrentNftAsset(transaction.asset);
-                if (asset.properties) {
-                    // Save changes in database
-                    const nftManager = app.resolvePlugin<NftsManager>("core-nft");
-                    await nftManager.manageProperties(asset.properties, asset.tokenId);
-                }
-            }
-        }
-    }
+    // tslint:disable-next-line:no-empty
+    public async bootstrap(_: Database.IConnection, __: State.IWalletManager): Promise<void> {}
 
     public async throwIfCannotBeApplied(
         transaction: Interfaces.ITransaction,

@@ -150,6 +150,7 @@ export class StateBuilder {
     private async bootstrapNftDatabase(): Promise<void> {
         // Build nft table
         await this.bootstrapNftMints();
+        await this.bootstrapNftLifeCycle();
     }
 
     private async bootstrapNftMints(): Promise<void> {
@@ -164,35 +165,85 @@ export class StateBuilder {
             true,
         );
 
+        for (const handler of [mintHandler, certifiedMintHandler]) {
+            const reader: TransactionReader = await TransactionReader.create(this.connection, handler.getConstructor());
+
+            while (reader.hasNext()) {
+                const transactions = await reader.read();
+
+                let formatedProps: Array<{ nftid: string; key: string; value: string }> = [];
+
+                const nfts = transactions.map(tx => {
+                    const { tokenId, properties } = getCurrentNftAsset(tx.asset);
+                    const ownerId = Identities.Address.fromPublicKey(tx.senderPublicKey);
+
+                    // Format properties and remove nulls
+                    forOwn(properties, (value, key) => {
+                        if (value === null) {
+                            delete properties[key];
+                        } else {
+                            formatedProps = [...formatedProps, { nftid: tokenId, key, value }];
+                        }
+                    });
+
+                    return { id: tokenId, ownerId };
+                });
+
+                // Save changes in database
+                const nftRepo = (this.connection as any).db.nfts;
+                await Promise.all([nftRepo.insert(nfts), nftRepo.insertManyProperties(formatedProps)]);
+            }
+        }
+    }
+
+    private async bootstrapNftLifeCycle(): Promise<void> {
+        // We bootstrap only certified handlers
+        const updateHandler = await Handlers.Registry.get(
+            UnsTransactionType.UnsCertifiedNftUpdate,
+            UnsTransactionGroup,
+            true,
+        );
+        const transferHandler = await Handlers.Registry.get(
+            UnsTransactionType.UnsCertifiedNftTransfer,
+            UnsTransactionGroup,
+            true,
+        );
+
         const reader: TransactionReader = await TransactionReader.create(this.connection, [
-            mintHandler.getConstructor(),
-            certifiedMintHandler.getConstructor(),
+            updateHandler.getConstructor(),
+            transferHandler.getConstructor(),
         ]);
+
+        const nftRepo = (this.connection as any).db.nfts;
+
         while (reader.hasNext()) {
             const transactions = await reader.read();
 
             let formatedProps: Array<{ nftid: string; key: string; value: string }> = [];
 
-            const nfts = transactions.map(tx => {
-                const { tokenId, properties } = getCurrentNftAsset(tx.asset);
-                const ownerId = Identities.Address.fromPublicKey(tx.senderPublicKey);
+            const nftTransfers = transactions
+                .map(tx => {
+                    const { tokenId, properties } = getCurrentNftAsset(tx.asset);
 
-                // Format properties and remove nulls
-                forOwn(properties, (value, key) => {
-                    if (value === null) {
-                        delete properties[key];
-                    } else {
+                    // Format properties and remove nulls
+                    forOwn(properties, (value, key) => {
                         formatedProps = [...formatedProps, { nftid: tokenId, key, value }];
+                    });
+
+                    if (tx.type === UnsTransactionType.UnsCertifiedNftTransfer) {
+                        return { id: tokenId, newOwnerId: tx.recipientId };
                     }
-                });
+                    return undefined;
+                })
+                .filter(t => !!t);
 
-                return { id: tokenId, ownerId };
-            });
-
+            console.log("nftTransfers", nftTransfers);
             // Save changes in database
-            const nftRepo = (this.connection as any).db.nfts;
-            await nftRepo.insert(nfts);
-            await nftRepo.insertManyProperties(formatedProps);
+            let promises = [nftRepo.updateOrDeleteManyProperties(formatedProps)];
+            if (nftTransfers.length) {
+                promises = [...promises, nftRepo.updateManyOwnerId(nftTransfers)];
+            }
+            await Promise.all(promises);
         }
     }
 }

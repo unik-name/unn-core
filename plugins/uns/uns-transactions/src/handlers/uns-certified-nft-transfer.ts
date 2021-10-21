@@ -1,12 +1,7 @@
 import { Database, State } from "@arkecosystem/core-interfaces";
 import { Handlers, TransactionReader } from "@arkecosystem/core-transactions";
 import { Identities, Interfaces, Transactions } from "@arkecosystem/crypto";
-import {
-    applyNftTransferDb,
-    applyNftTransferInWallets,
-    applyProperties,
-    NftTransferTransactionHandler,
-} from "@uns/core-nft";
+import { applyNftTransferInWallets, NftTransferTransactionHandler } from "@uns/core-nft";
 import { applyMixins, CertifiedNftTransferTransaction, INftDemandPayload } from "@uns/crypto";
 import * as Errors from "../errors";
 import { CertifiedTransactionHandler } from "./uns-certified-handler";
@@ -41,11 +36,6 @@ export class CertifiedNftTransferTransactionHandler extends NftTransferTransacti
 
                 this.applyCostToSender(transaction, walletManager);
                 await this.applyCostToFactory(transaction, walletManager);
-
-                // Save changes in database
-                const { asset, recipientId } = transaction;
-                await applyNftTransferDb(recipientId, asset);
-                await applyProperties(asset);
             }
         }
     }

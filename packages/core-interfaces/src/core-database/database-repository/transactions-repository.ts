@@ -6,6 +6,7 @@ import { IRepository } from "./repository";
 export interface IBootstrapTransaction {
     id: string;
     version: number;
+    type: number;
     timestamp: number;
     senderPublicKey: string;
     recipientId: string;

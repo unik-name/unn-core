@@ -41,10 +41,6 @@ export class NftMintTransactionHandler extends Handlers.TransactionHandler {
                 const wallet: State.IWallet = walletManager.findById(transaction.senderPublicKey);
                 const { tokenId, properties } = getCurrentNftAsset(transaction.asset);
                 await addNftToWallet(wallet, walletManager, tokenId, parseInt(properties!.type));
-
-                // Save changes in database
-                await applyNftMintDb(transaction.senderPublicKey, transaction.asset);
-                await applyProperties(transaction.asset);
             }
         }
     }

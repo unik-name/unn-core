@@ -41,14 +41,14 @@ export class TransactionHandlerRegistry {
         return [...this.registeredTransactionHandlers.values()];
     }
 
-    public async get(type: number, typeGroup?: number): Promise<TransactionHandler> {
+    public async get(type: number, typeGroup?: number, bootstrap: boolean = false): Promise<TransactionHandler> {
         const internalType: Transactions.InternalTransactionType = Transactions.InternalTransactionType.from(
             type,
             typeGroup,
         );
         if (this.registeredTransactionHandlers.has(internalType)) {
             const handler: TransactionHandler = this.registeredTransactionHandlers.get(internalType);
-            if (!(await handler.isActivated())) {
+            if (!bootstrap && !(await handler.isActivated())) {
                 throw new DeactivatedTransactionHandlerError(internalType);
             }
             return handler;

@@ -2,8 +2,7 @@ import { Database, NFT } from "@arkecosystem/core-interfaces";
 import { Interfaces } from "@arkecosystem/crypto";
 import pgPromise = require("pg-promise");
 import { Repository } from "../../repositories/repository";
-import { INftStatus } from "../models";
-import { Nft } from "../models/nft";
+import { INftStatus, Nft, NftProperty } from "../models";
 import { queries } from "../queries";
 
 const { nfts: sql } = queries;
@@ -144,6 +143,22 @@ export class NftsRepository extends Repository implements NFT.INftsRepository {
     }
 
     /**
+     * Inert many nft tokens properties
+     * @param nftid
+     * @param key
+     * @param value
+     */
+    public insertManyProperties(props: Array<{ nftid: string; key: string; value: string }>): Promise<any> {
+        return this.db.none(
+            this.pgp.helpers.insert(
+                props,
+                this.getPropertiesModel().getColumnSet(),
+                this.getPropertiesModel().getTable(),
+            ),
+        );
+    }
+
+    /**
      * Find nft token property by key
      * @param nftid
      * @param propertyKey
@@ -186,7 +201,7 @@ export class NftsRepository extends Repository implements NFT.INftsRepository {
     }
 
     public async truncateNftProperties(): Promise<void> {
-        await this.db.none(`TRUNCATE nftproperties RESTART IDENTITY`);
+        await this.db.none(`TRUNCATE ${this.getPropertiesModel().getTable()} RESTART IDENTITY`);
     }
 
     /**
@@ -195,6 +210,14 @@ export class NftsRepository extends Repository implements NFT.INftsRepository {
      */
     public getModel() {
         return new Nft(this.pgp);
+    }
+
+    /**
+     * Get the nft properties model.
+     * @return {NftProperty}
+     */
+    public getPropertiesModel() {
+        return new NftProperty(this.pgp);
     }
 
     /**

@@ -1,6 +1,7 @@
 import { Container } from "@arkecosystem/core-interfaces";
 import { Crypto, Managers } from "@arkecosystem/crypto";
 import { Builders } from "@uns/core-nft-crypto";
+import { LIFE_CYCLE_PROPERTY_KEY, LifeCycleGrades } from "@uns/crypto";
 import * as path from "path";
 import { TransactionFactory } from "../../../helpers";
 import { defaultInclude, setUp as setup, snoozeForBlock } from "./index";
@@ -74,7 +75,7 @@ export const generateNftId = () => {
     return Crypto.HashAlgorithms.sha256(new Date().getTime().toString()).toString("hex");
 };
 
-const defaultProperties = { type: "1" };
+const defaultProperties = { type: "1", [LIFE_CYCLE_PROPERTY_KEY]: LifeCycleGrades.MINTED.toString() };
 export const mintAndWait = async (nftId, properties = defaultProperties, passphrase = defaultPassphrase) => {
     const t = nftMintTransaction(nftId, properties)
         .withNetwork(network)

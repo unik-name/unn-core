@@ -62,7 +62,9 @@ export class InvalidUnikTypeError extends Errors.TransactionError {
 
 export class CryptoAccountAlreadyDelegateError extends Errors.TransactionError {
     constructor() {
-        super(`Failed to register a UniknameID as a delegate: the crypto-account already owns at least one UniknameID as a delegate `);
+        super(
+            `Failed to register a UniknameID as a delegate: the crypto-account already owns at least one UniknameID as a delegate `,
+        );
     }
 }
 
@@ -153,6 +155,14 @@ export class InvalidDidTypeError extends Errors.TransactionError {
             ).toLowerCase()} UniknameID because the crypto-account is already supporting (voting for) ${DIDHelpers.fromCode(
                 delegate,
             ).toLowerCase()} delegate. Please remove your support (unvote) first`,
+        );
+    }
+}
+
+export class NotAliveError extends Errors.TransactionError {
+    constructor(transactionId: string) {
+        super(
+            `Failed to apply transaction ${transactionId}: all UniknameID from sender cryptoaccount must have Alive lifecycle status`,
         );
     }
 }

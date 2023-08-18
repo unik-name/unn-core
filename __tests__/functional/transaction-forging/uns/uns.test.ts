@@ -2,6 +2,7 @@ import { app } from "@arkecosystem/core-container";
 import { Database } from "@arkecosystem/core-interfaces";
 import { IWallet, IWalletManager } from "@arkecosystem/core-interfaces/dist/core-state";
 import { Identities } from "@arkecosystem/crypto";
+import { LIFE_CYCLE_PROPERTY_KEY, LifeCycleGrades } from "@uns/crypto";
 import { DELEGATE_BADGE } from "@uns/uns-transactions";
 import { EXPLICIT_PROP_KEY } from "@uns/uns-transactions/src/handlers/utils/helpers";
 import * as support from "../__support__";
@@ -24,7 +25,11 @@ describe("Uns delegate scenario", () => {
 
         const nftId = NftSupport.generateNftId();
         const nftType = "2"; // Organization
-        let trx = await NftSupport.mintAndWait(nftId, { type: nftType }, delegatePasshrase);
+        let trx = await NftSupport.mintAndWait(
+            nftId,
+            { type: nftType, [LIFE_CYCLE_PROPERTY_KEY]: LifeCycleGrades.LIVE.toString() },
+            delegatePasshrase,
+        );
         await expect(trx.id).toBeForged();
 
         const discloseDemand = await UnsSupport.discloseDemand(nftId, delegatePasshrase, ["voteForMe"]);
@@ -59,8 +64,11 @@ describe("Uns delegate scenario", () => {
         expect(delegateWallet.getAttribute("vote")).toEqual(delegatePubKey);
 
         // Genesis votes for delegate
-        // Genesis must have a unik token to vote
-        trx = await NftSupport.mintAndWait(NftSupport.generateNftId(), { type: nftType });
+        // Genesis must have a alive unik token to vote
+        trx = await NftSupport.mintAndWait(NftSupport.generateNftId(), {
+            type: nftType,
+            [LIFE_CYCLE_PROPERTY_KEY]: LifeCycleGrades.LIVE.toString(),
+        });
         await expect(trx.id).toBeForged();
 
         const genesisPubKey: string = Identities.PublicKey.fromPassphrase(NftSupport.defaultPassphrase);

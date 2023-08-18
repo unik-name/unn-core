@@ -3,12 +3,13 @@ import "jest-extended";
 import "../mocks/core-container";
 import { Utils, Identities, Managers } from "@arkecosystem/crypto";
 import { UnsVoteTransactionHandler } from "@uns/uns-transactions";
-import { UNSVoteBuilder, DIDTypes } from "@uns/crypto";
+import { UNSVoteBuilder, DIDTypes, LifeCycleGrades } from "@uns/crypto";
 import { State } from "@arkecosystem/core-interfaces";
 import * as Fixtures from "../__fixtures__";
 import { Wallets } from "@arkecosystem/core-state";
 import { Handlers } from "@arkecosystem/core-transactions";
-import { VoteUnikTypeError, NoUnikError } from "@uns/uns-transactions/dist/errors";
+import { VoteUnikTypeError, NoUnikError, NotAliveError } from "@uns/uns-transactions/dist/errors";
+import { app } from "@arkecosystem/core-container";
 
 let transaction;
 let handler: UnsVoteTransactionHandler;
@@ -27,6 +28,8 @@ describe("UnsDelegateRegister Transaction", () => {
 
     const senderTokenId = "deadbabe5f38f6e3d16635f72a8445e0ff8fbacfdfa8f05df077e73de79d6e4f";
     const delegateTokenId = "deadbeef5f38f6e3d16635f72a8445e0ff8fbacfdfa8f05df077e73de79d6e4f";
+
+    const nftManager = app.resolvePlugin("core-nft");
 
     beforeEach(async () => {
         /* Init builder & handler */
@@ -60,10 +63,12 @@ describe("UnsDelegateRegister Transaction", () => {
 
     describe("throwIfCannotBeApplied", () => {
         it("should not throw", async () => {
+            nftManager.getPropertyBatch.mockResolvedValueOnce([{ value: LifeCycleGrades.LIVE.toString() }]);
             await expect(handler.throwIfCannotBeApplied(transaction.build(), senderWallet, walletManager)).toResolve();
         });
 
         it("should throw VoteUnikTypeError", async () => {
+            nftManager.getPropertyBatch.mockResolvedValueOnce([{ value: LifeCycleGrades.LIVE.toString() }]);
             senderWallet.setAttribute("tokens", { [senderTokenId]: { type: DIDTypes.INDIVIDUAL } });
             walletManager.reindex(senderWallet);
 
@@ -84,6 +89,12 @@ describe("UnsDelegateRegister Transaction", () => {
             await expect(
                 handler.throwIfCannotBeApplied(transaction.build(), senderWallet, walletManager),
             ).rejects.toThrow(NoUnikError);
+        });
+        it("should throw NotAliveError", async () => {
+            nftManager.getPropertyBatch.mockResolvedValueOnce([{ value: LifeCycleGrades.MINTED.toString() }]);
+            await expect(
+                handler.throwIfCannotBeApplied(transaction.build(), senderWallet, walletManager),
+            ).rejects.toThrow(NotAliveError);
         });
     });
 });

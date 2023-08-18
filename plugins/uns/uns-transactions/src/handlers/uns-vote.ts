@@ -1,11 +1,13 @@
 import { State } from "@arkecosystem/core-interfaces";
+import { Errors as coreErrors } from "@arkecosystem/core-transactions";
 import { TransactionHandlerConstructor } from "@arkecosystem/core-transactions/dist/handlers";
 import { VoteTransactionHandler } from "@arkecosystem/core-transactions/dist/handlers/vote";
 import { Interfaces, Transactions } from "@arkecosystem/crypto";
 import { NftMintTransactionHandler } from "@uns/core-nft";
 import { INftWalletAttributes } from "@uns/core-nft/dist/interfaces";
-import { DIDTypes, VoteTransaction } from "@uns/crypto";
-import { NoUnikError, VoteUnikTypeError } from "../errors";
+import { DIDTypes, LIFE_CYCLE_PROPERTY_KEY, LifeCycleGrades, VoteTransaction } from "@uns/crypto";
+import { getFoundationWallet, getNftsManager } from ".";
+import { NotAliveError, NoUnikError, VoteUnikTypeError } from "../errors";
 import { DelegateRegisterTransactionHandler } from "./uns-delegate-register";
 
 export class UnsVoteTransactionHandler extends VoteTransactionHandler {
@@ -33,6 +35,28 @@ export class UnsVoteTransactionHandler extends VoteTransactionHandler {
         // check sender token type
         if (!(wallet.hasAttribute("tokens") && Object.keys(wallet.getAttribute("tokens")).length)) {
             throw new NoUnikError(transaction.id);
+        }
+
+        // check sender tokens life cycle status. Must Be Live or everlasting
+        const lifeCycles = await getNftsManager().getPropertyBatch(
+            Object.keys(wallet.getAttribute("tokens")),
+            LIFE_CYCLE_PROPERTY_KEY,
+        );
+
+        if (
+            !lifeCycles ||
+            lifeCycles.some(
+                elt =>
+                    elt.value !== LifeCycleGrades.LIVE.toString() &&
+                    elt.value !== LifeCycleGrades.EVERLASTING.toString(),
+            )
+        ) {
+            throw new NotAliveError(transaction.id);
+        }
+
+        // Foundation is not allowed to vote
+        if (wallet.address === getFoundationWallet(walletManager).address) {
+            throw new coreErrors.TransactionError("Foundation wallet is not allowed to vote");
         }
 
         // get sender token type

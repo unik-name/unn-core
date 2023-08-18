@@ -5,7 +5,6 @@ import { Database, State } from "@arkecosystem/core-interfaces";
 import { WalletManager } from "@arkecosystem/core-state/src/wallets";
 import { Identities, Networks, Utils } from "@arkecosystem/crypto";
 import { DIDTypes } from "@uns/crypto";
-import * as transactionHelpers from "@uns/uns-transactions/dist/handlers/utils";
 import * as support from "../../functional/transaction-forging/__support__";
 import * as NftSupport from "../../functional/transaction-forging/__support__/nft";
 import { NFTTransactionFactory } from "../../helpers/nft-transaction-factory";
@@ -27,7 +26,11 @@ const serviceCost = Utils.BigNumber.make("321");
 const fee = Utils.BigNumber.make("1000");
 
 beforeAll(async () => {
-    await NftSupport.setUp({ disableP2P: true });
+    await NftSupport.setUp({
+        disableP2P: true,
+        forgeFactoryUnikId: Fixtures.issUnikId,
+        forgeFactoryPassphrase: Fixtures.issPassphrase,
+    });
     walletManager = new WalletManager();
     database = app.resolvePlugin<Database.IDatabaseService>("database");
     stateBuilder = new StateBuilder(database.connection, walletManager);
@@ -52,7 +55,7 @@ describe("certifiedNftTransfer handler tests", () => {
         await database.reset();
 
         factoryWallet = walletManager.findByAddress(Identities.Address.fromPassphrase(Fixtures.issPassphrase));
-        factoryWallet.publicKey = Identities.PublicKey.fromPassphrase(Fixtures.issPassphrase);
+        factoryWallet.publicKey = Fixtures.issKeys.publicKey;
         walletManager.reindex(factoryWallet);
 
         senderWallet = walletManager.findByAddress(Identities.Address.fromPassphrase(senderPassphrase));
@@ -64,8 +67,6 @@ describe("certifiedNftTransfer handler tests", () => {
         const recipientPassphrase = "the new owner passphrase";
         recipientWallet = walletManager.findByAddress(Identities.Address.fromPassphrase(recipientPassphrase));
         recipientWallet.publicKey = Identities.PublicKey.fromPassphrase(recipientPassphrase);
-
-        jest.spyOn(transactionHelpers, "getUnikOwnerAddress").mockResolvedValueOnce(factoryWallet.address);
 
         jest.spyOn(nftRepo, "count").mockResolvedValueOnce(1);
         // trick to mock private function

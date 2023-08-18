@@ -21,7 +21,11 @@ const tokenId = NftSupport.generateNftId();
 let nftManager: NftsManager;
 
 beforeAll(async () => {
-    await NftSupport.setUp({ disableP2P: true });
+    await NftSupport.setUp({
+        disableP2P: true,
+        forgeFactoryUnikId: Fixtures.issUnikId,
+        forgeFactoryPassphrase: Fixtures.issPassphrase,
+    });
 
     // force v2 token Eco
     Managers.configManager.setFromPreset(Fixtures.network);
@@ -50,10 +54,6 @@ describe("certifiedNftMint handler tests for token eco v2", () => {
 
     beforeEach(async () => {
         await database.reset();
-        jest.spyOn(nftRepository(), "findById").mockResolvedValue({
-            tokenId: Fixtures.issUnikId,
-            ownerId: Fixtures.issuerAddress,
-        });
 
         forgeFactoryWallet = walletManager.findByAddress(Identities.Address.fromPassphrase(Fixtures.issPassphrase));
         forgeFactoryWallet.publicKey = Fixtures.issKeys.publicKey;

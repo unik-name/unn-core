@@ -4,7 +4,7 @@ import { IWalletManager } from "@arkecosystem/core-interfaces/dist/core-state";
 import { Identities, Interfaces, Managers, Utils } from "@arkecosystem/crypto";
 import { nftRepository, NftsManager } from "@uns/core-nft";
 import { getCurrentNftAsset, getNftName, getTokenId } from "@uns/core-nft-crypto";
-import { DIDTypes } from "@uns/crypto";
+import { DIDTypes, unsCrypto } from "@uns/crypto";
 import { VoucherAlreadyUsedError, WrongFeeError, WrongServiceCostError } from "../../errors";
 
 export const EXPLICIT_PROP_KEY = "explicitValues";
@@ -64,8 +64,24 @@ export const revertExplicitValue = async (transaction: Interfaces.ITransactionDa
  *
  */
 export const getUnikOwnerAddress = async (tokenId: string): Promise<string> => {
+    if (unsCrypto.isForgeFactory(tokenId)) {
+        return getForgeFactoryAddress(tokenId);
+    }
     const unik = await nftRepository().findById(tokenId);
     return unik.ownerId;
+};
+
+// We cache forgeFactory addresses to reduce the call to the nft database.
+// We call getUnikOwnerAddress of forgefactory at every certified transactions, especially at core bootstrap.
+// Its imply that forge factory NFT should not be transferable
+export const getForgeFactoryAddress = async (tokenId: string): Promise<string> => {
+    if (unsCrypto.forgeFactoryAddrMap?.tokenId) {
+        return this.forgeFactoryAddrMap.tokenId;
+    } else {
+        const unik = await nftRepository().findById(tokenId);
+        unsCrypto.forgeFactoryAddrMap[tokenId] = unik.ownerId;
+        return unik.ownerId;
+    }
 };
 
 export const getDidTypeFromProperties = (properties: Array<{ key: string; value: string }>): DIDTypes =>

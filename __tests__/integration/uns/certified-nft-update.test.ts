@@ -20,7 +20,11 @@ let stateBuilder: StateBuilder;
 let nftRepo;
 
 beforeAll(async () => {
-    await NftSupport.setUp({ disableP2P: true });
+    await NftSupport.setUp({
+        disableP2P: true,
+        forgeFactoryUnikId: Fixtures.issUnikId,
+        forgeFactoryPassphrase: Fixtures.issPassphrase,
+    });
     walletManager = new WalletManager();
     database = app.resolvePlugin<Database.IDatabaseService>("database");
     stateBuilder = new StateBuilder(database.connection, walletManager);

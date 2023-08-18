@@ -1,4 +1,4 @@
-import { Identities, Utils } from "@arkecosystem/crypto";
+import { Identities, Managers, Utils } from "@arkecosystem/crypto";
 import {
     CertifiedNftMintTransaction,
     CertifiedNftUpdateTransaction,
@@ -8,6 +8,7 @@ import {
     UNSDiscloseExplicitBuilder,
     UNSVoteBuilder,
 } from "@uns/crypto";
+import * as txHelpers from "@uns/uns-transactions/dist/handlers/utils/helpers";
 import { snoozeForBlock } from ".";
 import { TransactionFactory } from "../../../helpers";
 import { NFTTransactionFactory } from "../../../helpers/nft-transaction-factory";
@@ -78,8 +79,12 @@ export const discloseDemand = async (tokenId, demanderPassphrase, explicitValues
 };
 
 export const setupForgeFactory = async () => {
+    Managers.configManager.set("network.forgeFactory.unikidWhiteList", [forgerFactoryTokenId]);
     await NftSupport.transferAndWait(Identities.Address.fromPassphrase(forgerFactoryPassphrase), 1000);
     await NftSupport.mintAndWait(forgerFactoryTokenId, { type: "1" }, forgerFactoryPassphrase);
+    jest.spyOn(txHelpers, "getForgeFactoryAddress").mockResolvedValue(
+        Identities.Address.fromPassphrase(forgerFactoryPassphrase),
+    );
     return forgerFactoryTokenId;
 };
 
